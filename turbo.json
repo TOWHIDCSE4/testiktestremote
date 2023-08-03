@@ -4,7 +4,15 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "ENCRYPT_KEY",
+        "SIGN_KEY",
+        "MONGO_URL",
+        "REDIS_PORT",
+        "ORIGINS",
+        "PORT"
+      ]
     },
     "lint": {},
     "dev": {
