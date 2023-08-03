@@ -7,12 +7,13 @@ import {
   getFactory,
   updateFactory,
 } from "./default"
+import isUserLoggedIn from "../../helpers/isUserloggedIn"
 
 //default
-router.get("/", getAllFactories)
-router.get("/:id", getFactory)
-router.post("/", addFactory)
-router.patch("/:id", updateFactory)
-router.delete("/:id", delteFactory)
+router.get("/", isUserLoggedIn, getAllFactories)
+router.get("/:id", isUserLoggedIn, getFactory)
+router.post("/", isUserLoggedIn, addFactory)
+router.patch("/:id", isUserLoggedIn, updateFactory)
+router.delete("/:id", isUserLoggedIn, delteFactory)
 
 export default router
