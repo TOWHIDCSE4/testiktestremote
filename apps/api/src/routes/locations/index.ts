@@ -7,12 +7,13 @@ import {
   getLocation,
   updateLocation,
 } from "./default"
+import isUserLoggedIn from "../../helpers/isUserloggedIn"
 
 //default
-router.get("/", getAllLocations)
-router.get("/:id", getLocation)
-router.post("/", addLocation)
-router.patch("/:id", updateLocation)
-router.delete("/:id", deleteLocation)
+router.get("/", isUserLoggedIn, getAllLocations)
+router.get("/:id", isUserLoggedIn, getLocation)
+router.post("/", isUserLoggedIn, addLocation)
+router.patch("/:id", isUserLoggedIn, updateLocation)
+router.delete("/:id", isUserLoggedIn, deleteLocation)
 
 export default router
