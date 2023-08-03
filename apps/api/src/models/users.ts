@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 const { Schema } = mongoose
 
 const users = new Schema({
-  first_name: String,
+  firstName: String,
   lastName: String,
   role: {
     type: String,
@@ -10,7 +10,11 @@ const users = new Schema({
   },
   email: String,
   password: String,
-  location: String,
+  location: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Location",
+    default: null,
+  },
   profile: String,
   lastLoggedIn: Date,
   lastLoggedOut: Date,
