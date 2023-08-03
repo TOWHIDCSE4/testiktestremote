@@ -25,6 +25,10 @@
   ],
   "dependencies": {
     "@headlessui/react": "^1.7.16",
-    "@heroicons/react": "^2.0.18"
+    "@heroicons/react": "^2.0.18",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.1.1",
+    "express": "^4.18.2",
+    "mongoose": "^7.4.1"
   }
 }
