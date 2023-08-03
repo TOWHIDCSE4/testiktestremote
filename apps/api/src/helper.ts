@@ -1,7 +1,7 @@
-import Users from "./src/models/users"
-import { keys } from "./src/config/keys"
+import Users from "./models/users"
+import { keys } from "./config/keys"
 import jwt, { Secret } from "jsonwebtoken"
-import { UNKNOWN_ERROR_OCCURRED } from "./src/utils/constants"
+import { UNKNOWN_ERROR_OCCURRED } from "./utils/constants"
 import { Request, Response, NextFunction } from "express"
 
 const isUserLoggedIn = async (
