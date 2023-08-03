@@ -1,4 +1,3 @@
-import express from "express"
 import { Request, Response } from "express"
 import Factories from "../../models/factories"
 import {
@@ -7,8 +6,6 @@ import {
   ACCOUNT_ALREADY_EXISTS,
   FACTORY_ALREADY_EXISTS,
 } from "../../utils/constants"
-import CryptoJS from "crypto-js"
-import { keys } from "../../config/keys"
 import isEmpty from "lodash/isEmpty"
 
 export const getAllFactories = async (req: Request, res: Response) => {
