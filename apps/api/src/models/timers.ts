@@ -6,15 +6,11 @@ const timers = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Factory",
   },
-  machineClassId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "MachineClass",
-  },
   machineId: {
     type: mongoose.Schema.ObjectId,
     ref: "Machine",
   },
-  PartId: {
+  partId: {
     type: mongoose.Schema.ObjectId,
     ref: "Part",
   },
