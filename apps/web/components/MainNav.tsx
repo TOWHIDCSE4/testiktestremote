@@ -16,6 +16,14 @@ import { Switch } from "@headlessui/react"
 import Image from "next/image"
 import Link from "next/link"
 import SideBarNav from "./SideBarNav"
+import DarkLogo from "../assets/logo/logo-dark.png"
+import { Roboto } from "next/font/google"
+
+const roboto = Roboto({
+  weight: ["100", "300", "400", "500", "700"],
+  style: ["normal", "italic"],
+  subsets: ["cyrillic"],
+})
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -128,8 +136,10 @@ const MainNav = () => {
                     </Menu>
                   </div>
 
-                  <div className="flex-shrink-0 items-center mr-4 hidden md:flex">
-                    Logo
+                  <div className="items-center mr-4 hidden md:flex">
+                    <div className="relative h-10 w-52">
+                      <Image src={DarkLogo} alt="logo" fill />
+                    </div>
                   </div>
                   <div className="hidden lg:ml-6 lg:flex lg:space-x-10 items-center">
                     <div className="">
@@ -146,7 +156,7 @@ const MainNav = () => {
                         <input
                           id="search"
                           name="search"
-                          className="block w-56 rounded-md border-0 bg-alice-blue py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                          className={`block w-56 rounded-md border-0 bg-alice-blue py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
                           placeholder="Search..."
                           type="search"
                         />
@@ -159,7 +169,7 @@ const MainNav = () => {
                         onChange={setEnabled}
                         className={classNames(
                           enabled ? "bg-pale-aqua" : "bg-gray-200",
-                          "relative inline-flex h-4 w-8 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-950 focus:ring-offset-2"
+                          "relative inline-flex h-4 w-8 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-1 focus:ring-blue-950 focus:ring-offset-2"
                         )}
                       >
                         <span
