@@ -7,12 +7,13 @@ import {
   getTimer,
   updateTimer,
 } from "./default"
+import isUserLoggedIn from "../../helpers/isUserloggedIn"
 
 //default
-router.get("/", getAllTimers)
-router.get("/:id", getTimer)
-router.post("/", addTimer)
-router.patch("/:id", updateTimer)
-router.delete("/:id", deleteTimer)
+router.get("/", isUserLoggedIn, getAllTimers)
+router.get("/:id", isUserLoggedIn, getTimer)
+router.post("/", isUserLoggedIn, addTimer)
+router.patch("/:id", isUserLoggedIn, updateTimer)
+router.delete("/:id", isUserLoggedIn, deleteTimer)
 
 export default router
