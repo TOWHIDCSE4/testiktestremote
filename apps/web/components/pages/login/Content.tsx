@@ -2,8 +2,14 @@
 import { HeartIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
 import Link from "next/link"
+import { UsersZodSchema } from "zod-schema"
 
 const Content = () => {
+  const testUser = UsersZodSchema.safeParse({
+    email: "jp.madrigal07@gmail.com",
+    password: "patrick22",
+  })
+  console.log("Test User: ", testUser)
   return (
     <>
       <div className="flex min-h-screen flex-1">
