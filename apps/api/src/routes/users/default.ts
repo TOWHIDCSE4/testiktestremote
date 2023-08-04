@@ -40,8 +40,8 @@ export const getUser = async (req: Request, res: Response) => {
 }
 
 export const addUser = async (req: Request, res: Response) => {
-  const { firstName, lastName, email, password, profile } = req.body
-  if (firstName && lastName && email && password && profile) {
+  const { firstName, lastName, email, password, profile, role } = req.body
+  if (firstName && lastName && email && password && profile && role) {
     const encryptPassword = CryptoJS.AES.encrypt(
       password,
       keys.encryptKey as string
@@ -49,9 +49,9 @@ export const addUser = async (req: Request, res: Response) => {
     const newUser = new Users({
       firstName,
       lastName,
+      role,
       email,
       password: encryptPassword,
-      role: "user",
       profile,
       lastLoggedIn: null,
       lastLoggedOut: null,

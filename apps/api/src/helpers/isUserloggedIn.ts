@@ -3,29 +3,39 @@ import { keys } from "../config/keys"
 import jwt, { Secret } from "jsonwebtoken"
 import { UNKNOWN_ERROR_OCCURRED } from "../utils/constants"
 import { Request, Response, NextFunction } from "express"
-
+import { createClient } from "redis"
 const isUserLoggedIn = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  const client = createClient()
+  client.connect()
   const bearerHeader = req.headers["authorization"]
   if (bearerHeader) {
     const bearer = bearerHeader.split(" ")
     const bearerToken = bearer[1]
     try {
-      const { email }: any = jwt.verify(bearerToken, keys.signKey as Secret)
-      const user = await Users.findOne({ email })
-      if (user && user.deletedAt) {
-        throw new Error("We cannot find your account in our system")
+      const { email, role }: any = jwt.verify(
+        bearerToken,
+        keys.signKey as Secret
+      )
+      const user = await Users.findOne({ email, role })
+      const getToken = await client.hGetAll(`${user?.email}`)
+      if (getToken.token != bearerToken) {
+        res.json({ message: "Token has been expired" })
+      } else {
+        if (user && user.deletedAt) {
+          throw new Error("We cannot find your account in our system")
+        }
+        if (user && user.blockedAt) {
+          throw new Error(
+            "Your account was banned, all actions and requested data was prohibited"
+          )
+        }
+        res.locals.user = user
+        next()
       }
-      if (user && user.blockedAt) {
-        throw new Error(
-          "Your account was banned, all actions and requested data was prohibited"
-        )
-      }
-      res.locals.user = user
-      next()
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       if (message === "jwt malformed") {
