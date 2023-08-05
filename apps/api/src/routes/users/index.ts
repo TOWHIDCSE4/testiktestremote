@@ -14,7 +14,7 @@ import { logout } from "./logout"
 //default
 router.get("/", isUserLoggedIn, getAllUsers)
 router.get("/:id", isUserLoggedIn, getUser)
-router.post("/", isUserLoggedIn, addUser)
+router.post("/", addUser)
 router.patch("/:id", isUserLoggedIn, updateUser)
 router.delete("/:id", isUserLoggedIn, deleteUser)
 

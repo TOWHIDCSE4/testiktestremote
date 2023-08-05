@@ -9,6 +9,7 @@ import {
 import CryptoJS from "crypto-js"
 import { keys } from "../../config/keys"
 import isEmpty from "lodash/isEmpty"
+import UserZodSchema from "../../../../../packages/zod-schema/UsersZodSchema"
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -40,8 +41,8 @@ export const getUser = async (req: Request, res: Response) => {
 }
 
 export const addUser = async (req: Request, res: Response) => {
-  const { firstName, lastName, email, password, profile, role } = req.body
-  if (firstName && lastName && email && password && profile && role) {
+  const { firstName, lastName, email, password, location, role } = req.body
+  if (firstName && lastName && email && password && location && role) {
     const encryptPassword = CryptoJS.AES.encrypt(
       password,
       keys.encryptKey as string
@@ -52,7 +53,8 @@ export const addUser = async (req: Request, res: Response) => {
       role,
       email,
       password: encryptPassword,
-      profile,
+      location,
+      profile: null,
       lastLoggedIn: null,
       lastLoggedOut: null,
       blockedAt: null,
@@ -66,8 +68,13 @@ export const addUser = async (req: Request, res: Response) => {
         deletedAt: { $exists: false },
       })
       if (getExistingUser.length === 0) {
-        const createUser = await newUser.save()
-        res.json({ data: createUser })
+        const validateUserInput = UserZodSchema.safeParse(newUser)
+        if (validateUserInput.success) {
+          const createUser = await newUser.save()
+          res.json({ data: createUser })
+        } else {
+          res.json({ error: true, errMessage: validateUserInput.error })
+        }
       } else {
         res.status(400).json(ACCOUNT_ALREADY_EXISTS)
       }

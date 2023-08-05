@@ -10,11 +10,7 @@ const users = new Schema({
   },
   email: String,
   password: String,
-  location: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Location",
-    default: null,
-  },
+  location: String,
   profile: {
     type: Object,
     default: null,
