@@ -1,3 +1,6 @@
+"use client"
+import { cookies } from "next/dist/client/components/headers"
+
 const Content = () => {
   return (
     <>

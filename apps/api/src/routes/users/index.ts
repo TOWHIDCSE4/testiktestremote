@@ -12,7 +12,7 @@ import { auth } from "./login"
 import { logout } from "./logout"
 
 //default
-router.get("/", isUserLoggedIn, getAllUsers)
+router.get("/", getAllUsers)
 router.get("/:id", isUserLoggedIn, getUser)
 router.post("/", addUser)
 router.patch("/:id", isUserLoggedIn, updateUser)

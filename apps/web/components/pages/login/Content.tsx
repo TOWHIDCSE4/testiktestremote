@@ -9,11 +9,16 @@ import useLoginUser from "../../../hooks/users/useLogin"
 import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { XCircleIcon } from "@heroicons/react/20/solid"
+import useEmail from "../../../store/useEmail"
+import { cookies } from "next/dist/client/components/headers"
 
 type I_USER = {
   email: string
   password: string
 }
+
 const Content = () => {
   const testUser = UsersZodSchema.safeParse({
     email: "jp.madrigal07@gmail.com",
@@ -24,7 +29,7 @@ const Content = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { mutate, isLoading } = useLoginUser()
-
+  const [message, setMessage] = useState("")
   const onSubmit = (data: I_USER) => {
     const callBackReq = {
       onSuccess: (data: any) => {
@@ -33,11 +38,11 @@ const Content = () => {
           reset()
           router.push(`/profile-home`)
         } else {
-          console.log("error")
+          setMessage(data)
         }
       },
       onError: (err: any) => {
-        console.log(err)
+        setMessage(err)
       },
     }
     mutate(data, callBackReq)
@@ -59,10 +64,30 @@ const Content = () => {
                 Sign in to APMS
               </p>
             </div>
+
+            <div
+              className={
+                message == "" ? "hidden" : "rounded-md bg-red-50 p-4 mt-4"
+              }
+            >
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <XCircleIcon
+                    className="h-5 w-5 text-red-400"
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800">
+                    {message}
+                  </h3>
+                </div>
+              </div>
+            </div>
             {/* Login form */}
             <div className="mt-8">
               <div>
-                <form action="#" method="POST" className="space-y-5">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   <div>
                     <label
                       htmlFor="username"
@@ -120,6 +145,7 @@ const Content = () => {
                     <div>
                       <button
                         type="submit"
+                        disabled={isLoading}
                         className="flex w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                       >
                         {isLoading ? (

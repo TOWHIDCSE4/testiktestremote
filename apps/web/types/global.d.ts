@@ -10,3 +10,10 @@ export interface I_User {
   deletedAt?: string
   updatedAt?: string
 }
+//stores
+type Email = {
+  email: string
+}
+type Action = {
+  updateEmail: (email: Email["email"]) => void
+}
