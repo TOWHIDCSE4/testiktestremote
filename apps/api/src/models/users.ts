@@ -15,7 +15,10 @@ const users = new Schema({
     ref: "Location",
     default: null,
   },
-  profile: String,
+  profile: {
+    type: Object,
+    default: null,
+  },
   lastLoggedIn: Date,
   lastLoggedOut: Date,
   machineId: {
