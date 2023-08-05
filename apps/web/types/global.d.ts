@@ -2,7 +2,7 @@ export interface I_User {
   id?: number
   firstName?: string
   lastName?: string
-  department?: string
+  role?: string
   location?: string
   email: string
   password: string

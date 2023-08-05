@@ -1,7 +1,7 @@
 "use client"
 import { HeartIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import DropDownMenu from "../../DropDownMenu"
 import Link from "next/link"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
@@ -10,6 +10,10 @@ import { I_User } from "../../../types/global"
 import { useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import useRegisterUser from "../../../hooks/users/useRegister"
+//
+import { Listbox, Transition } from "@headlessui/react"
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid"
+//
 
 const department = [
   { id: 0, name: "Select..." },
@@ -26,29 +30,50 @@ const location = [
   { id: 3, name: "Gunter" },
 ]
 
+//
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ")
+}
+//
+
 const Content = () => {
+  const [password, setPassword] = useState("")
+  const [confirmPass, setConfirmPass] = useState("")
+
   const queryClient = useQueryClient()
   const { register, handleSubmit, reset } = useForm<I_User>()
   const { mutate, isLoading } = useRegisterUser()
 
   const onSubmit = (data: I_User) => {
-    const callBackReq = {
-      onSuccess: (data: any) => {
-        if (typeof data === "object") {
-          queryClient.invalidateQueries({ queryKey: ["users"] })
-          console.log("success")
-          reset()
-        } else {
-          console.log(data)
-        }
-      },
-      onError: (err: any) => {
-        console.log("error")
-      },
-    }
+    if (password === confirmPass) {
+      const callBackReq = {
+        onSuccess: (data: any) => {
+          if (typeof data === "object") {
+            queryClient.invalidateQueries({ queryKey: ["users"] })
+            console.log("success")
+            reset()
+          } else {
+            console.log(data)
+          }
+        },
+        onError: (err: any) => {
+          console.log("error")
+        },
+      }
 
-    mutate(data, callBackReq)
+      mutate(data, callBackReq)
+    } else {
+      console.log("Password doesn't match")
+    }
   }
+
+  //
+  const [selectedDepartment, setSelectedDepartment] = useState(department[0])
+  const [selectedLocation, setSelectedLocation] = useState(location[0])
+
+  const optionsDepartment = department.slice(1)
+  const optionsLocation = location.slice(1)
+  //
 
   return (
     <>
@@ -81,7 +106,7 @@ const Content = () => {
                       <div className="mt-2">
                         <input
                           id="first-name"
-                          name="first-name"
+                          {...register("firstName", { required: true })}
                           type="text"
                           required
                           className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
@@ -99,7 +124,7 @@ const Content = () => {
                       <div className="mt-2">
                         <input
                           id="last-name"
-                          name="last-name"
+                          {...register("lastName", { required: true })}
                           type="text"
                           required
                           className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
@@ -108,16 +133,209 @@ const Content = () => {
                       </div>
                     </div>
                   </div>
-                  <DropDownMenu
+                  {/*  */}
+                  <input
+                    type="text"
+                    value={selectedDepartment.name}
+                    className="hidden"
+                    {...register("role", { required: true })}
+                  />
+                  <input
+                    type="text"
+                    value={selectedLocation.name}
+                    className="hidden"
+                    {...register("location", { required: true })}
+                  />
+                  <Listbox
+                    value={selectedDepartment}
+                    onChange={setSelectedDepartment}
+                  >
+                    {({ open }) => (
+                      <>
+                        <Listbox.Label className="block text-sm font-medium text-gray-900">
+                          Department
+                        </Listbox.Label>
+                        <div className="relative mt-2">
+                          <Listbox.Button
+                            className={`${
+                              selectedDepartment === department[0]
+                                ? "text-gray-400"
+                                : "text-gray-900"
+                            } relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6`}
+                          >
+                            <span className="block truncate">
+                              {selectedDepartment.name}
+                            </span>
+                            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 border-l border-gray-300 my-2">
+                              <ChevronDownIcon
+                                className="h-5 w-5 text-gray-900 ml-2"
+                                aria-hidden="true"
+                              />
+                            </span>
+                          </Listbox.Button>
+                          <Transition
+                            show={open}
+                            as={Fragment}
+                            leave="transition ease-in duration-100"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                          >
+                            <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                              <span className="py-2 pl-3 pr-9 select-none text-xs text-gray-400">
+                                ROLE
+                              </span>
+                              {optionsDepartment.map((department) => (
+                                <Listbox.Option
+                                  key={department.id}
+                                  className={({ active }) =>
+                                    classNames(
+                                      active
+                                        ? "bg-blue-300 text-white"
+                                        : "text-gray-900",
+                                      "relative cursor-pointer select-none py-2 pl-3 pr-9"
+                                    )
+                                  }
+                                  value={department}
+                                >
+                                  {({ selected, active }) => (
+                                    <>
+                                      <span
+                                        className={classNames(
+                                          selected
+                                            ? "font-semibold"
+                                            : "font-normal",
+                                          "block truncate"
+                                        )}
+                                      >
+                                        {department.name}
+                                      </span>
+                                      {selected ? (
+                                        <span
+                                          className={classNames(
+                                            active
+                                              ? "text-white"
+                                              : "text-blue-950",
+                                            "absolute inset-y-0 right-0 flex items-center pr-4"
+                                          )}
+                                        >
+                                          <CheckIcon
+                                            className="h-5 w-5"
+                                            aria-hidden="true"
+                                          />
+                                        </span>
+                                      ) : null}
+                                    </>
+                                  )}
+                                </Listbox.Option>
+                              ))}
+                            </Listbox.Options>
+                          </Transition>
+                        </div>
+                      </>
+                    )}
+                  </Listbox>
+
+                  <Listbox
+                    value={selectedLocation}
+                    onChange={setSelectedLocation}
+                  >
+                    {({ open }) => (
+                      <>
+                        <Listbox.Label className="block text-sm font-medium text-gray-900">
+                          Location
+                        </Listbox.Label>
+                        <div className="relative mt-2">
+                          <Listbox.Button
+                            className={`${
+                              selectedLocation === location[0]
+                                ? "text-gray-400"
+                                : "text-gray-900"
+                            } relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6`}
+                          >
+                            <span className="block truncate">
+                              {selectedLocation.name}
+                            </span>
+                            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 border-l border-gray-300 my-2">
+                              <ChevronDownIcon
+                                className="h-5 w-5 text-gray-900 ml-2"
+                                aria-hidden="true"
+                              />
+                            </span>
+                          </Listbox.Button>
+                          <Transition
+                            show={open}
+                            as={Fragment}
+                            leave="transition ease-in duration-100"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                          >
+                            <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                              <span className="py-2 pl-3 pr-9 select-none text-xs text-gray-400">
+                                ROLE
+                              </span>
+                              {optionsLocation.map((location) => (
+                                <Listbox.Option
+                                  key={location.id}
+                                  className={({ active }) =>
+                                    classNames(
+                                      active
+                                        ? "bg-blue-300 text-white"
+                                        : "text-gray-900",
+                                      "relative cursor-pointer select-none py-2 pl-3 pr-9"
+                                    )
+                                  }
+                                  value={location}
+                                >
+                                  {({ selected, active }) => (
+                                    <>
+                                      <span
+                                        className={classNames(
+                                          selected
+                                            ? "font-semibold"
+                                            : "font-normal",
+                                          "block truncate"
+                                        )}
+                                      >
+                                        {location.name}
+                                      </span>
+                                      {selected ? (
+                                        <span
+                                          className={classNames(
+                                            active
+                                              ? "text-white"
+                                              : "text-blue-950",
+                                            "absolute inset-y-0 right-0 flex items-center pr-4"
+                                          )}
+                                        >
+                                          <CheckIcon
+                                            className="h-5 w-5"
+                                            aria-hidden="true"
+                                          />
+                                        </span>
+                                      ) : null}
+                                    </>
+                                  )}
+                                </Listbox.Option>
+                              ))}
+                            </Listbox.Options>
+                          </Transition>
+                        </div>
+                      </>
+                    )}
+                  </Listbox>
+                  {/*  */}
+                  {/* <DropDownMenu
                     labelText="Department"
                     menuList={department}
                     optionText="ROLE"
+                    {...register("department", { required: true })}
                   />
                   <DropDownMenu
                     labelText="Location"
                     menuList={location}
                     optionText="LOCATION"
-                  />
+                    {...register("location", { required: true })}
+                  /> */}
                   <div>
                     <label
                       htmlFor="email-add"
@@ -128,7 +346,7 @@ const Content = () => {
                     <div className="mt-2">
                       <input
                         id="email-add"
-                        name="email-add"
+                        {...register("email", { required: true })}
                         type="email"
                         required
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
@@ -146,12 +364,14 @@ const Content = () => {
                     <div className="mt-2">
                       <input
                         id="reg-pass"
-                        name="reg-pass"
+                        {...register("password", { required: true })}
                         type="password"
                         autoComplete="current-password"
                         required
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
                         placeholder="Enter Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.currentTarget.value)}
                       />
                     </div>
                   </div>
@@ -165,12 +385,13 @@ const Content = () => {
                     <div className="mt-2">
                       <input
                         id="confirm-pass"
-                        name="confirm-pass"
                         type="password"
                         autoComplete="current-password"
                         required
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
                         placeholder="Confirm Password"
+                        value={confirmPass}
+                        onChange={(e) => setConfirmPass(e.currentTarget.value)}
                       />
                     </div>
                   </div>
@@ -178,9 +399,10 @@ const Content = () => {
                     <div>
                       <button
                         type="submit"
+                        disabled={isLoading}
                         className="flex w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-7 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                       >
-                        Register
+                        {isLoading ? "Loading..." : "Register"}
                       </button>
                     </div>
                   </div>

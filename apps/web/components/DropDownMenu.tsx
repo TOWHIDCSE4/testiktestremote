@@ -7,6 +7,7 @@ interface Props {
   menuList: any[]
   labelText: string
   optionText: string
+  registerType: string
 }
 
 function classNames(...classes) {
@@ -15,10 +16,9 @@ function classNames(...classes) {
 
 const DropDownMenu: NextPage<Props> = (props) => {
   const menuList = props.menuList
-
   const [selected, setSelected] = useState(menuList[0])
-
   const options = menuList.slice(1)
+
   return (
     <div>
       <Listbox value={selected} onChange={setSelected}>

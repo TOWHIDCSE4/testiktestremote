@@ -5,13 +5,44 @@ import Link from "next/link"
 import { UsersZodSchema } from "zod-schema"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
 import Slider from "../../Slider"
+import useLoginUser from "../../../hooks/users/useLogin"
+import { useForm } from "react-hook-form"
+import { useRouter } from "next/navigation"
+import { useQueryClient } from "@tanstack/react-query"
 
+type I_USER = {
+  email: string
+  password: string
+}
 const Content = () => {
   const testUser = UsersZodSchema.safeParse({
     email: "jp.madrigal07@gmail.com",
     password: "patrick22",
   })
   console.log("Test User: ", testUser)
+  const { register, handleSubmit, reset } = useForm<I_USER>()
+  const router = useRouter()
+  const queryClient = useQueryClient()
+  const { mutate, isLoading } = useLoginUser()
+
+  const onSubmit = (data: I_USER) => {
+    const callBackReq = {
+      onSuccess: (data: any) => {
+        if (typeof data === "object") {
+          queryClient.invalidateQueries({ queryKey: ["users"] })
+          reset()
+          router.push(`/profile-home`)
+        } else {
+          console.log("error")
+        }
+      },
+      onError: (err: any) => {
+        console.log(err)
+      },
+    }
+    mutate(data, callBackReq)
+  }
+
   return (
     <>
       <div className="flex min-h-screen flex-1">
@@ -41,9 +72,10 @@ const Content = () => {
                     </label>
                     <div className="mt-2">
                       <input
-                        id="username"
-                        name="username"
-                        type="text"
+                        id="email"
+                        {...register("email", { required: true })}
+                        name="email"
+                        type="email"
                         required
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
                         placeholder="Enter Username"
@@ -60,6 +92,7 @@ const Content = () => {
                     <div className="mt-2">
                       <input
                         id="password"
+                        {...register("password", { required: true })}
                         name="password"
                         type="password"
                         autoComplete="current-password"
@@ -89,7 +122,17 @@ const Content = () => {
                         type="submit"
                         className="flex w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                       >
-                        Log In
+                        {isLoading ? (
+                          <div
+                            className="animate-spin inline-block w-[20px] h-[20px] border-[2px] border-current border-t-transparent text-white rounded-full"
+                            role="status"
+                            aria-label="loading"
+                          >
+                            <span className="sr-only">Loading...</span>
+                          </div>
+                        ) : (
+                          "Login"
+                        )}
                       </button>
                     </div>
                   </div>

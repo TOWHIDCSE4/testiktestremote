@@ -1,3 +1,4 @@
+import QueryWrapper from "../../components/QueryWrapper"
 import "../globals.css"
 
 export default function RootLayout({
@@ -7,7 +8,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <QueryWrapper>{children}</QueryWrapper>
+      </body>
     </html>
   )
 }
