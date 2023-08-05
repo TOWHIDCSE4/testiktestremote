@@ -6,6 +6,10 @@ import DropDownMenu from "../../DropDownMenu"
 import Link from "next/link"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
 import Slider from "../../Slider"
+import { I_User } from "../../../types/global"
+import { useQueryClient } from "@tanstack/react-query"
+import { useForm } from "react-hook-form"
+import useRegisterUser from "../../../hooks/users/useRegister"
 
 const department = [
   { id: 0, name: "Select..." },
@@ -23,6 +27,29 @@ const location = [
 ]
 
 const Content = () => {
+  const queryClient = useQueryClient()
+  const { register, handleSubmit, reset } = useForm<I_User>()
+  const { mutate, isLoading } = useRegisterUser()
+
+  const onSubmit = (data: I_User) => {
+    const callBackReq = {
+      onSuccess: (data: any) => {
+        if (typeof data === "object") {
+          queryClient.invalidateQueries({ queryKey: ["users"] })
+          console.log("success")
+          reset()
+        } else {
+          console.log(data)
+        }
+      },
+      onError: (err: any) => {
+        console.log("error")
+      },
+    }
+
+    mutate(data, callBackReq)
+  }
+
   return (
     <>
       <div className="flex min-h-screen flex-1">
@@ -42,7 +69,7 @@ const Content = () => {
             {/* Registration form */}
             <div className="mt-8">
               <div>
-                <form action="#" method="POST" className="space-y-5">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   <div className="grid grid-cols-2 gap-x-3">
                     <div>
                       <label
