@@ -7,6 +7,13 @@ import {
 } from "@heroicons/react/24/outline"
 import Image from "next/image"
 import { useState } from "react"
+import { Roboto } from "next/font/google"
+
+const roboto = Roboto({
+  weight: ["100", "300", "400", "500", "700"],
+  style: ["normal", "italic"],
+  subsets: ["cyrillic"],
+})
 
 const navigation = [
   { name: "Profile Home", href: "#", current: true },
@@ -103,7 +110,7 @@ const SideBarNav = () => {
         <label htmlFor="search" className="sr-only">
           Search
         </label>
-        <div className="relative">
+        <div className={`relative ${roboto.className}`}>
           <input
             id="search"
             name="search"
@@ -119,7 +126,7 @@ const SideBarNav = () => {
           </div>
         </div>
       </div>
-      <nav className="flex flex-1 flex-col">
+      <nav className={`flex flex-1 flex-col ${roboto.className}`}>
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
             <ul role="list" className="-mx-2 space-y-1">
@@ -132,7 +139,7 @@ const SideBarNav = () => {
                         item.current
                           ? "text-white"
                           : "hover:text-white text-gray-500",
-                        "group flex gap-x-3 rounded-md p-2 leading-6 font-semibold uppercase"
+                        "group flex gap-x-3 rounded-md p-2 leading-6 font-medium uppercase"
                       )}
                     >
                       {item.current ? (
@@ -155,7 +162,7 @@ const SideBarNav = () => {
                                 : open
                                 ? "text-white"
                                 : "hover:text-white",
-                              "flex items-center w-full text-left rounded-md pl-2 pr-2 py-2 gap-x-3 leading-6 font-semibold text-gray-500 uppercase"
+                              "flex items-center w-full text-left rounded-md pl-2 pr-2 py-2 gap-x-3 leading-6 font-medium text-gray-500 uppercase"
                             )}
                           >
                             {item.current ? (
@@ -186,7 +193,7 @@ const SideBarNav = () => {
                                     subItem.current
                                       ? "text-white"
                                       : "hover:text-white",
-                                    "block rounded-md py-2 pr-2 pl-9 leading-6 text-gray-500 font-semibold"
+                                    "block rounded-md py-2 pr-2 pl-9 leading-6 text-gray-500 font-medium"
                                   )}
                                 >
                                   {subItem.name}

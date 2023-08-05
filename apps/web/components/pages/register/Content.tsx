@@ -4,6 +4,8 @@ import Image from "next/image"
 import { useState } from "react"
 import DropDownMenu from "../../DropDownMenu"
 import Link from "next/link"
+import DarkLogo from "../../../assets/logo/logo-dark.png"
+import Slider from "../../Slider"
 
 const department = [
   { id: 0, name: "Select..." },
@@ -27,8 +29,10 @@ const Content = () => {
         <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <div>
-              <h1 className="text-center">Logo</h1>
-              <h2 className="mt-4 text-md text-center font-bold leading-9 tracking-tight text-gray-900">
+              <div className="relative h-16 w-80 mx-auto">
+                <Image src={DarkLogo} alt="logo" fill />
+              </div>
+              <h2 className="mt-2 text-md text-center font-bold leading-9 tracking-tight text-gray-900">
                 Welcome
               </h2>
               <p className="text-sm font-semibold text-gray-900 text-center">
@@ -53,7 +57,7 @@ const Content = () => {
                           name="first-name"
                           type="text"
                           required
-                          className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                          className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
                           placeholder="First Name"
                         />
                       </div>
@@ -71,7 +75,7 @@ const Content = () => {
                           name="last-name"
                           type="text"
                           required
-                          className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                          className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
                           placeholder="Last Name"
                         />
                       </div>
@@ -92,7 +96,7 @@ const Content = () => {
                         name="email-add"
                         type="email"
                         required
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
                         placeholder="Enter Email"
                       />
                     </div>
@@ -111,7 +115,7 @@ const Content = () => {
                         type="password"
                         autoComplete="current-password"
                         required
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
                         placeholder="Enter Password"
                       />
                     </div>
@@ -130,7 +134,7 @@ const Content = () => {
                         type="password"
                         autoComplete="current-password"
                         required
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
                         placeholder="Confirm Password"
                       />
                     </div>
@@ -162,10 +166,12 @@ const Content = () => {
                   </Link>
                   .
                 </p>
-                <p className="text-sm flex items-center justify-center mt-9">
-                  &copy; 2023 AmeriTex Pipe & Products with{" "}
-                  <HeartIcon className="h-4 w-4 text-red-600 mx-1" /> by Ieko
-                  Media.
+                <p className="text-sm md:flex items-center justify-center mt-7 text-center">
+                  &copy; 2023 AmeriTex Pipe & Products with
+                  <span className="inline-flex">
+                    <HeartIcon className="h-4 w-4 text-red-600 mx-1 translate-y-1 md:translate-y-0" />
+                  </span>
+                  by Ieko Media.
                 </p>
               </div>
             </div>
@@ -173,19 +179,7 @@ const Content = () => {
           </div>
         </div>
 
-        <div className="relative hidden w-0 flex-1 lg:block">
-          <Image
-            src="https://images.unsplash.com/photo-1496917756835-20cb06e75b4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80"
-            fill
-            className="absolute inset-0 h-full w-full object-cover"
-            alt="Carousel image"
-          />
-          <div className="flex items-center justify-center h-full">
-            <h1 className="uppercase absolute text-[5vw] text-white font-semibold tracking-wider">
-              SUSTAINABILITY
-            </h1>
-          </div>
-        </div>
+        <Slider />
       </div>
     </>
   )
