@@ -81,8 +81,16 @@ const Content = () => {
                       </div>
                     </div>
                   </div>
-                  <DropDownMenu menuList={department} optionText="ROLE" />
-                  <DropDownMenu menuList={location} optionText="LOCATION" />
+                  <DropDownMenu
+                    labelText="Department"
+                    menuList={department}
+                    optionText="ROLE"
+                  />
+                  <DropDownMenu
+                    labelText="Location"
+                    menuList={location}
+                    optionText="LOCATION"
+                  />
                   <div>
                     <label
                       htmlFor="email-add"

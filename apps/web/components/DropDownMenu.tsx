@@ -5,6 +5,7 @@ import { NextPage } from "next"
 
 interface Props {
   menuList: any[]
+  labelText: string
   optionText: string
 }
 
@@ -24,7 +25,7 @@ const DropDownMenu: NextPage<Props> = (props) => {
         {({ open }) => (
           <>
             <Listbox.Label className="block text-sm font-medium text-gray-900">
-              Department
+              {props.labelText}
             </Listbox.Label>
             <div className="relative mt-2">
               <Listbox.Button
