@@ -7,15 +7,18 @@ const UserZodSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   location: z.string(),
-  profile: z
-    .object({
-      photo_url: z.string(),
-      profileName: z.string(),
-      aboutYou: z.string(),
-      realNameDisplay: z.boolean(),
-      allEveryOneSeeProfile: z.boolean(),
-    })
-    .nullable(),
+  profile: z.union([
+    z
+      .object({
+        photo_url: z.string(),
+        profileName: z.string(),
+        aboutYou: z.string(),
+        realNameDisplay: z.boolean(),
+        allEveryOneSeeProfile: z.boolean(),
+      })
+      .nullable(),
+    z.string(),
+  ]),
 })
 
 export default UserZodSchema

@@ -5,20 +5,22 @@ import { useMutation } from "@tanstack/react-query"
 export async function registerUser({
   firstName,
   lastName,
-  department,
+  role,
   location,
   email,
   password,
+  profile,
 }: I_User) {
   const res = await fetch(`${API_URL_USERS}`, {
     method: "POST",
     body: JSON.stringify({
       firstName,
       lastName,
-      department,
+      role,
       location,
       email,
       password,
+      profile,
     }),
     headers: {
       "content-type": "application/json",
@@ -30,14 +32,23 @@ export async function registerUser({
 
 function useRegisterUser() {
   const query = useMutation(
-    ({ firstName, lastName, department, location, email, password }: I_User) =>
+    ({
+      firstName,
+      lastName,
+      role,
+      location,
+      email,
+      password,
+      profile,
+    }: I_User) =>
       registerUser({
         firstName,
         lastName,
-        department,
+        role,
         location,
         email,
         password,
+        profile,
       })
   )
 
