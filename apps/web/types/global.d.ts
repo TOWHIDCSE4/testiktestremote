@@ -6,6 +6,7 @@ export interface I_User {
   location?: string
   email: string
   password: string
+  profile: object
   createdAt?: string
   deletedAt?: string
   updatedAt?: string
