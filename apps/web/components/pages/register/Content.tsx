@@ -5,14 +5,13 @@ import { Fragment, useState } from "react"
 import Link from "next/link"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
 import Slider from "../../Slider"
-import { I_User } from "../../../types/global"
-import { useQueryClient } from "@tanstack/react-query"
+import { I_User, T_BACKEND_RESPONSE } from "../../../types/global"
 import { set, useForm, Controller } from "react-hook-form"
 import useRegisterUser from "../../../hooks/users/useRegister"
 import { Listbox, Transition } from "@headlessui/react"
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid"
 import { useRouter } from "next/navigation"
-import { UsersZodSchema } from "zod-schema"
+import toast from "react-hot-toast"
 
 const department = [
   { id: 0, name: "Select..." },
@@ -29,7 +28,7 @@ const location = [
   { id: 3, name: "Gunter" },
 ]
 
-function classNames(...classes) {
+function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ")
 }
 
@@ -37,15 +36,6 @@ const Content = () => {
   const [password, setPassword] = useState("")
   const [confirmPass, setConfirmPass] = useState("")
 
-  const profile = {
-    photo_url: null,
-    profileName: null,
-    aboutYou: null,
-    realNameDisplay: null,
-    allEveryOneSeeProfile: null,
-  }
-
-  const queryClient = useQueryClient()
   const { register, handleSubmit, reset, control } = useForm<I_User>()
   const { mutate, isLoading } = useRegisterUser()
 
@@ -58,36 +48,24 @@ const Content = () => {
   const router = useRouter()
 
   const onSubmit = (data: I_User) => {
-    const validateUserInput = UsersZodSchema.safeParse(data)
-
-    if (validateUserInput.success) {
-      if (data.role === "Select..." || data.location === "Select Location") {
-        console.log("Please don't leave the form empty.")
-        return
+    if (password === confirmPass) {
+      const callBackReq = {
+        onSuccess: (data: T_BACKEND_RESPONSE) => {
+          if (!data.error) {
+            router.push("/")
+            resetForm()
+          } else {
+            toast.error(data.message)
+          }
+        },
+        onError: (err: any) => {
+          toast.error(String(err))
+        },
       }
 
-      if (password === confirmPass) {
-        const callBackReq = {
-          onSuccess: (data: any) => {
-            if (typeof data === "object") {
-              queryClient.invalidateQueries({ queryKey: ["users"] })
-              router.push("/")
-              resetForm()
-            } else {
-              console.log(data)
-            }
-          },
-          onError: (err: any) => {
-            console.log("error")
-          },
-        }
-
-        mutate(data, callBackReq)
-      } else {
-        console.log("Password doesn't match")
-      }
+      mutate(data, callBackReq)
     } else {
-      console.log("hello")
+      toast.error("Password doesn't match")
     }
   }
 
@@ -118,7 +96,7 @@ const Content = () => {
             {/* Registration form */}
             <div className="mt-8">
               <div>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="grid grid-cols-2 gap-x-3">
                     <input
                       type="text"
@@ -178,7 +156,7 @@ const Content = () => {
                       >
                         {({ open }) => (
                           <>
-                            <Listbox.Label className="block text-sm font-medium text-gray-900">
+                            <Listbox.Label className="block text-sm font-medium text-gray-900 mt-4">
                               Department
                             </Listbox.Label>
                             <div className="relative mt-2">
@@ -275,7 +253,7 @@ const Content = () => {
                       >
                         {({ open }) => (
                           <>
-                            <Listbox.Label className="block text-sm font-medium text-gray-900">
+                            <Listbox.Label className="block text-sm font-medium text-gray-900 mt-4">
                               Location
                             </Listbox.Label>
                             <div className="relative mt-2">
@@ -360,7 +338,7 @@ const Content = () => {
                     )}
                   />
 
-                  <div>
+                  <div className="mt-4">
                     <label
                       htmlFor="email-add"
                       className="block text-sm font-medium leading-6 text-gray-900"
@@ -378,7 +356,7 @@ const Content = () => {
                       />
                     </div>
                   </div>
-                  <div>
+                  <div className="mt-4">
                     <label
                       htmlFor="reg-pass"
                       className="block text-sm font-medium leading-6 text-gray-900"
@@ -399,7 +377,7 @@ const Content = () => {
                       />
                     </div>
                   </div>
-                  <div>
+                  <div className="mt-4">
                     <label
                       htmlFor="confirm-pass"
                       className="block text-sm font-medium leading-6 text-gray-900"
@@ -419,14 +397,24 @@ const Content = () => {
                       />
                     </div>
                   </div>
-                  <div className="md:flex items-center justify-end">
+                  <div className="md:flex items-center justify-end mt-4">
                     <div>
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-7 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                        className="flex w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-4 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                       >
-                        {isLoading ? "Loading..." : "Register"}
+                        {isLoading ? (
+                          <div
+                            className="animate-spin inline-block w-[20px] h-[20px] border-[2px] border-current border-t-transparent text-white rounded-full"
+                            role="status"
+                            aria-label="loading"
+                          >
+                            <span className="sr-only">Loading...</span>
+                          </div>
+                        ) : (
+                          "Create"
+                        )}
                       </button>
                     </div>
                   </div>
@@ -440,14 +428,14 @@ const Content = () => {
                   </Link>
                   .
                 </p>
-                <p className="text-sm text-center mt-7">
+                <p className="text-sm text-center mt-2">
                   Already have an account?{" "}
                   <Link href="/" className="cursor-pointer text-blue-700">
                     Sign-in now
                   </Link>
                   .
                 </p>
-                <p className="text-sm md:flex items-center justify-center mt-7 text-center">
+                <p className="text-sm md:flex items-center justify-center mt-2 text-center">
                   &copy; 2023 AmeriTex Pipe & Products with
                   <span className="inline-flex">
                     <HeartIcon className="h-4 w-4 text-red-600 mx-1 translate-y-1 md:translate-y-0" />

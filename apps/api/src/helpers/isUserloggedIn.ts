@@ -3,14 +3,13 @@ import { keys } from "../config/keys"
 import jwt, { Secret } from "jsonwebtoken"
 import { UNKNOWN_ERROR_OCCURRED } from "../utils/constants"
 import { Request, Response, NextFunction } from "express"
-import { createClient } from "redis"
+import redisClient from "../utils/redisClient"
+
 const isUserLoggedIn = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const client = createClient()
-  client.connect()
   const bearerHeader = req.headers["authorization"]
   if (bearerHeader) {
     const bearer = bearerHeader.split(" ")
@@ -21,7 +20,7 @@ const isUserLoggedIn = async (
         keys.signKey as Secret
       )
       const user = await Users.findOne({ email, role })
-      const getToken = await client.hGetAll(`${user?.email}`)
+      const getToken = await redisClient.hGetAll(`${user?.email}`)
       if (getToken.token != bearerToken) {
         res.json({ message: "Token has been expired" })
       } else {

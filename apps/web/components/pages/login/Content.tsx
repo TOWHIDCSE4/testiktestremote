@@ -2,47 +2,35 @@
 import { HeartIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
 import Link from "next/link"
-import { UsersZodSchema } from "zod-schema"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
 import Slider from "../../Slider"
-import useLoginUser from "../../../hooks/users/useLogin"
+import useLogin from "../../../hooks/users/useLogin"
 import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
-import { useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
-import { XCircleIcon } from "@heroicons/react/20/solid"
-import useEmail from "../../../store/useEmail"
-import { cookies } from "next/dist/client/components/headers"
-
-type I_USER = {
-  email: string
-  password: string
-}
+import toast from "react-hot-toast"
+import Cookies from "js-cookie"
+import { T_BACKEND_RESPONSE, T_LOGIN } from "../../../types/global"
 
 const Content = () => {
-  const testUser = UsersZodSchema.safeParse({
-    email: "jp.madrigal07@gmail.com",
-    password: "patrick22",
-  })
-  console.log("Test User: ", testUser)
-  const { register, handleSubmit, reset } = useForm<I_USER>()
+  const { register, handleSubmit, reset } = useForm<T_LOGIN>()
   const router = useRouter()
-  const queryClient = useQueryClient()
-  const { mutate, isLoading } = useLoginUser()
-  const [message, setMessage] = useState("")
-  const onSubmit = (data: I_USER) => {
+  const { mutate, isLoading } = useLogin()
+  const onSubmit = (data: T_LOGIN) => {
     const callBackReq = {
-      onSuccess: (data: any) => {
-        if (typeof data === "object") {
-          queryClient.invalidateQueries({ queryKey: ["users"] })
+      onSuccess: (data: T_BACKEND_RESPONSE) => {
+        if (!data.error) {
           reset()
-          router.push(`/profile-home`)
+          if (data.item) {
+            // @ts-expect-error
+            Cookies.set("tfl", data.item?.token)
+            router.push(`/profile-home`)
+          }
         } else {
-          setMessage(data)
+          toast.error(data.message)
         }
       },
       onError: (err: any) => {
-        setMessage(err)
+        toast.error(String(err))
       },
     }
     mutate(data, callBackReq)
@@ -65,35 +53,16 @@ const Content = () => {
               </p>
             </div>
 
-            <div
-              className={
-                message == "" ? "hidden" : "rounded-md bg-red-50 p-4 mt-4"
-              }
-            >
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <XCircleIcon
-                    className="h-5 w-5 text-red-400"
-                    aria-hidden="true"
-                  />
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">
-                    {message}
-                  </h3>
-                </div>
-              </div>
-            </div>
             {/* Login form */}
             <div className="mt-8">
               <div>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   <div>
                     <label
-                      htmlFor="username"
+                      htmlFor="email"
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
-                      Username
+                      Email
                     </label>
                     <div className="mt-2">
                       <input
@@ -103,7 +72,6 @@ const Content = () => {
                         type="email"
                         required
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
-                        placeholder="Enter Username"
                       />
                     </div>
                   </div>
@@ -123,7 +91,6 @@ const Content = () => {
                         autoComplete="current-password"
                         required
                         className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
-                        placeholder="Enter Password"
                       />
                     </div>
                   </div>
@@ -175,7 +142,7 @@ const Content = () => {
                   </Link>
                   .
                 </p>
-                <p className="text-sm md:flex items-center justify-center mt-7 text-center">
+                <p className="text-sm md:flex items-center justify-center mt-2 text-center">
                   &copy; 2023 AmeriTex Pipe & Products with
                   <span className="inline-flex">
                     <HeartIcon className="h-4 w-4 text-red-600 mx-1 translate-y-1 md:translate-y-0" />

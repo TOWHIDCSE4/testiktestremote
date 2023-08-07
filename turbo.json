@@ -9,7 +9,7 @@
         "ENCRYPT_KEY",
         "SIGN_KEY",
         "MONGO_URL",
-        "REDIS_PORT",
+        "REDIS_URL",
         "ORIGINS",
         "PORT"
       ]

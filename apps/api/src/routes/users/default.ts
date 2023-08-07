@@ -9,7 +9,7 @@ import {
 import CryptoJS from "crypto-js"
 import { keys } from "../../config/keys"
 import isEmpty from "lodash/isEmpty"
-import UserZodSchema from "../../../../../packages/zod-schema/UsersZodSchema"
+import { UsersZodSchema } from "zod-schema"
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -68,12 +68,12 @@ export const addUser = async (req: Request, res: Response) => {
         deletedAt: { $exists: false },
       })
       if (getExistingUser.length === 0) {
-        const validateUserInput = UserZodSchema.safeParse(newUser)
+        const validateUserInput = UsersZodSchema.safeParse(newUser)
         if (validateUserInput.success) {
           const createUser = await newUser.save()
           res.json({ data: createUser })
         } else {
-          res.json({ error: true, errMessage: validateUserInput.error })
+          res.json({ error: true, message: validateUserInput.error })
         }
       } else {
         res.status(400).json(ACCOUNT_ALREADY_EXISTS)
