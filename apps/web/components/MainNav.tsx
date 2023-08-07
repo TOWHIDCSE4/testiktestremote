@@ -18,6 +18,11 @@ import Link from "next/link"
 import SideBarNav from "./SideBarNav"
 import DarkLogo from "../assets/logo/logo-dark.png"
 import { Roboto } from "next/font/google"
+import { T_BACKEND_RESPONSE, T_LOGOUT } from "../types/global"
+import toast from "react-hot-toast"
+import Cookies from "js-cookie"
+import { useRouter } from "next/navigation"
+// import useLogout from "../hooks/users/useLogout"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -25,13 +30,33 @@ const roboto = Roboto({
   subsets: ["cyrillic"],
 })
 
-function classNames(...classes) {
+function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ")
 }
 
 const MainNav = () => {
+  const router = useRouter()
   const [enabled, setEnabled] = useState(true)
   const [showSideNav, setShowSideNav] = useState(false)
+  // const { mutate, isLoading } = useLogout()
+  const onSubmit = (data: T_LOGOUT) => {
+    const callBackReq = {
+      onSuccess: (data: T_BACKEND_RESPONSE) => {
+        if (!data.error) {
+          if (data.item) {
+            Cookies.remove("tfl")
+            router.push(`/`)
+          }
+        } else {
+          toast.error(data.message)
+        }
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+      },
+    }
+    // mutate(data, callBackReq)
+  }
   return (
     <>
       <Disclosure
@@ -120,15 +145,15 @@ const MainNav = () => {
                           </Menu.Item>
                           <Menu.Item>
                             {({ active }) => (
-                              <a
-                                href="#"
+                              <span
+                                onClick={() => onSubmit}
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-3 text-sm text-gray-600 font-medium"
+                                  "block px-4 py-3 text-sm text-gray-600 font-medium cursor-pointer"
                                 )}
                               >
                                 Logout
-                              </a>
+                              </span>
                             )}
                           </Menu.Item>
                         </Menu.Items>

@@ -1,28 +1,28 @@
 import Users from "../../models/users"
 import { UNKNOWN_ERROR_OCCURRED } from "../../utils/constants"
-import { keys } from "../../config/keys"
-import CryptoJS from "crypto-js"
-import jwt from "jsonwebtoken"
 import { Request, Response, NextFunction } from "express"
-import { createClient } from "redis"
+import redisClient from "../../utils/redisClient"
 
 export const logout = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const client = createClient()
-  client.connect()
   try {
-    const logoutUser = await Users.findByIdAndUpdate(
-      req.params.id,
+    const logoutUser = await Users.findOneAndUpdate(
+      { email: req.params.email },
       {
         lastLoggedOut: Date.now(),
       },
       { new: true }
     )
-    client.del(`${logoutUser?.email}`)
-    res.json({ message: `User ${logoutUser?.email} has been logout` })
+    redisClient.del(`${logoutUser?.email}`)
+    res.json({
+      error: false,
+      message: "User has been logged out",
+      item: null,
+      itemCount: null,
+    })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
     res.status(500).json(message)

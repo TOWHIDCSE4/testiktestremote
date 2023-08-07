@@ -1,14 +1,16 @@
 import Users from "../../models/users"
-import { UNKNOWN_ERROR_OCCURRED } from "../../utils/constants"
+import {
+  REQUIRED_VALUES_MISSING,
+  UNKNOWN_ERROR_OCCURRED,
+} from "../../utils/constants"
 import { keys } from "../../config/keys"
 import CryptoJS from "crypto-js"
 import jwt from "jsonwebtoken"
 import { Request, Response, NextFunction } from "express"
-import { createClient } from "redis"
-import LoginZodSchema from "../../../../../packages/zod-schema/LoginZodSchema"
+import { LoginZodSchema } from "zod-schema"
+import redisClient from "../../utils/redisClient"
 
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
-  const client = createClient()
+export const auth = async (req: Request, res: Response) => {
   const validateUserInput = LoginZodSchema.safeParse(req.body)
   if (validateUserInput.success) {
     const { email, password } = req.body
@@ -46,30 +48,36 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
             return date
           }
           const now = new Date(Date.now())
-          client.connect()
-          client.hSet(`${user.email}`, {
+          redisClient.hSet(`${user.email}`, {
             token: `${token}`,
             expireIn: `${addHours(now, 4)}`,
           })
-          const getToken = await client.hGetAll(`${user.email}`)
+          const getToken = await redisClient.hGetAll(`${user.email}`)
           res.json({
             error: false,
-            token: getToken.token,
-            expireIn: getToken.expireIn,
+            message: null,
+            item: getToken,
+            itemCount: null,
           })
-          client.quit()
+          redisClient.quit()
         }
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json(message)
+        res.json({
+          error: true,
+          message: message,
+        })
       }
     } else {
-      res.status(500).json("Required values are missing")
+      res.json({
+        error: true,
+        message: REQUIRED_VALUES_MISSING,
+      })
     }
   } else {
     res.json({
       error: true,
-      errMessage: validateUserInput.error,
+      message: validateUserInput.error,
     })
   }
 }
