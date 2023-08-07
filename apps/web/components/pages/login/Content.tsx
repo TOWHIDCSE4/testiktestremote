@@ -19,7 +19,7 @@ const Content = () => {
     const callBackReq = {
       onSuccess: (data: T_BACKEND_RESPONSE) => {
         if (!data.error) {
-          reset()
+          // reset()
           if (data.item) {
             // @ts-expect-error
             Cookies.set("tfl", data.item?.token)
