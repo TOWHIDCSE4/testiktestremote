@@ -141,7 +141,7 @@ const Content = () => {
                 </div>
                 <div className="ml-2 md:ml-3 text-xs md:text-sm leading-6">
                   <label
-                    htmlFor="candidates"
+                    htmlFor="compare"
                     className="font-medium text-gray-900 uppercase"
                   >
                     Compare
