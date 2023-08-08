@@ -77,7 +77,7 @@ const Content = () => {
 
   return (
     <div className={`mt-20 my-10 lg:ml-64`}>
-      <div className="content px-4 md:px-7 lg:px-16 mt-28">
+      <div className="content px-4 md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mx-auto mt-28">
         <div className="flex justify-between items-center py-2">
           <div>
             <h2 className="text-gray-800 text-[33px] font-semibold leading-none">
@@ -124,7 +124,7 @@ const Content = () => {
                   aria-hidden="true"
                   className={classNames(
                     tab.current ? "bg-blue-950" : "bg-transparent",
-                    "absolute inset-x-0 bottom-0 h-0.5"
+                    "absolute inset-x-0 bottom-0 h-1"
                   )}
                 />
               </button>
@@ -237,7 +237,7 @@ const Content = () => {
         <h6 className="font-bold mt-7 text-lg text-gray-800">2716 Parts</h6>
         <div>
           <div className="mx-auto">
-            <div className="mt-7 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 xl:gap-x-8">
+            <div className="mt-7 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
               {products.map((product) => (
                 <div
                   key={product.id}
