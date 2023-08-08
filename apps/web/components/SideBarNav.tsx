@@ -1,13 +1,19 @@
 "use client"
-import { Disclosure } from "@headlessui/react"
+import { Disclosure, Menu, Transition } from "@headlessui/react"
 import { ChevronRightIcon } from "@heroicons/react/20/solid"
 import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline"
 import Image from "next/image"
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { Roboto } from "next/font/google"
+import Link from "next/link"
+import useLogout from "../hooks/users/useLogout"
+import { T_BACKEND_RESPONSE } from "../types/global"
+import Cookies from "js-cookie"
+import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -78,35 +84,100 @@ const navigation = [
   { name: "Team Members", href: "#", current: false },
 ]
 
+// @ts-expect-error
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
 const SideBarNav = () => {
   const [openItem, setOpenItem] = useState(null)
+  const router = useRouter()
+
+  const { mutate } = useLogout()
+  const logoutUser = () => {
+    const callBackReq = {
+      onSuccess: (data: T_BACKEND_RESPONSE) => {
+        if (!data.error) {
+          Cookies.remove("tfl")
+          router.push(`/`)
+        } else {
+          toast.error(data.message)
+        }
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+      },
+    }
+    mutate(undefined, callBackReq)
+  }
 
   return (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-dark-blue px-4 fixed h-full mt-16 z-10">
-      <div className="flex items-center bg-white px-3 py-1.5 w-full rounded-full mt-7 relative">
-        <div className="relative h-9 w-9">
-          <Image
-            className="rounded-full"
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-            alt="Profile image"
-            fill
-          />
-        </div>
-        <div className="flex flex-col ml-2">
-          <span className="text-left font-bold text-gray-600 text-[15px] leading-5">
-            Dylan Lorenz
-          </span>
-          <span className="text-left text-gray-500 font-semibold text-sm leading-5">
-            Administrator
-          </span>
-        </div>
-        <ChevronDownIcon className="h-3 w-3 absolute right-5" />
-      </div>
-      <div>
+      <Menu
+        as="div"
+        className="flex lg:hidden items-center bg-white px-3 py-1.5 w-full rounded-full mt-7 relative"
+      >
+        <Menu.Button>
+          <div className="flex items-center">
+            <div className="relative h-9 w-9">
+              <Image
+                className="rounded-full"
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                alt="Profile image"
+                fill
+              />
+            </div>
+            <div className="flex flex-col ml-2">
+              <span className="text-left font-bold text-gray-600 text-[15px] leading-5">
+                Dylan Lorenz
+              </span>
+              <span className="text-left text-gray-500 font-semibold text-sm leading-5">
+                Administrator
+              </span>
+            </div>
+            <ChevronDownIcon className="h-3 w-3 absolute right-5" />
+          </div>
+        </Menu.Button>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="absolute right-0 z-10 mt-40 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Item>
+              {({ active }) => (
+                <Link
+                  href="/profile"
+                  className={classNames(
+                    active ? "bg-gray-100" : "",
+                    "block px-4 py-3 text-sm text-gray-600 border-b border-gray-200 font-medium"
+                  )}
+                >
+                  Profile
+                </Link>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <span
+                  onClick={() => logoutUser()}
+                  className={classNames(
+                    active ? "bg-gray-100" : "",
+                    "block px-4 py-3 text-sm text-gray-600 font-medium cursor-pointer"
+                  )}
+                >
+                  Logout
+                </span>
+              )}
+            </Menu.Item>
+          </Menu.Items>
+        </Transition>
+      </Menu>
+      <div className="lg:hidden">
         <label htmlFor="search" className="sr-only">
           Search
         </label>
@@ -126,7 +197,7 @@ const SideBarNav = () => {
           </div>
         </div>
       </div>
-      <nav className={`flex flex-1 flex-col ${roboto.className}`}>
+      <nav className={`flex flex-1 flex-col lg:mt-7 ${roboto.className}`}>
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
             <ul role="list" className="-mx-2 space-y-1">
