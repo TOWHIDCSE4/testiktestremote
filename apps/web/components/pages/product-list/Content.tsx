@@ -150,16 +150,16 @@ const Content = () => {
               <div className="flex mt-1">
                 <div className="flex h-6 items-center">
                   <input
-                    id="candidates"
-                    aria-describedby="candidates-description"
-                    name="candidates"
+                    id="compare"
+                    aria-describedby="compare-description"
+                    name="compare"
                     type="checkbox"
                     className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
                   />
                 </div>
                 <div className="ml-2 md:ml-3 text-xs md:text-sm leading-6">
                   <label
-                    htmlFor="candidates"
+                    htmlFor="compare"
                     className="font-medium text-gray-900 uppercase"
                   >
                     Compare
