@@ -58,7 +58,6 @@ export const auth = async (req: Request, res: Response) => {
             redisClient.hSet(`${token}`, {
               expireIn: `${dayjs(addHours(now, 4)).format()}`,
             })
-            redisClient.quit()
             res.json({
               error: false,
               message: null,
