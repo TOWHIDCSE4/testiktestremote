@@ -1,14 +1,10 @@
-import express from "express"
 import { Request, Response } from "express"
 import Parts from "../../models/parts"
 import {
   UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUE_EMPTY,
-  ACCOUNT_ALREADY_EXISTS,
   PART_ALREADY_EXISTS,
 } from "../../utils/constants"
-import CryptoJS from "crypto-js"
-import { keys } from "../../config/keys"
 import isEmpty from "lodash/isEmpty"
 
 export const getAllParts = async (req: Request, res: Response) => {

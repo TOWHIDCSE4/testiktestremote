@@ -13,10 +13,7 @@ const timerLogs = new Schema({
   time: String,
   operator: String,
   status: String,
-  stopReason: {
-    type: String,
-    default: "",
-  },
+  stopReason: String,
   createdAt: {
     type: Date,
     default: Date.now,
