@@ -9,6 +9,7 @@ import MachineRoute from "./machines"
 import PartRoute from "./parts"
 import TimerLogRoute from "./timerLogs"
 import TimerReadingsRoute from "./timerReadings"
+import JobRoute from "./jobs"
 
 export default function (app: Application) {
   app.use(`${API_ROOT}/users`, UsersRoute)
@@ -20,4 +21,5 @@ export default function (app: Application) {
   app.use(`${API_ROOT}/machine-classes`, MachineClassRoute)
   app.use(`${API_ROOT}/locations`, LocationRoute)
   app.use(`${API_ROOT}/factories`, FactoryRoute)
+  app.use(`${API_ROOT}/jobs`, JobRoute)
 }
