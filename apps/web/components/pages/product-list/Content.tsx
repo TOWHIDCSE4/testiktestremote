@@ -1,6 +1,12 @@
+"use client"
+import { useState } from "react"
 import Image from "next/image"
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
+import NewModal from "./modals/NewModal"
+import EditModal from "./modals/EditModal"
+import DeleteModal from "./modals/DeleteModal"
+import DetailsModal from "./modals/DetailsModal"
 
 const products = [
   {
@@ -35,31 +41,40 @@ const products = [
   },
 ]
 
-const tabs = [
-  { name: "Part", current: true },
-  { name: "Machine", current: false },
-]
-
-const locationTabs = [
-  {
-    name: "Seguin",
-    current: true,
-  },
-  {
-    name: "Conroe",
-    current: false,
-  },
-  {
-    name: "Gunter",
-    current: false,
-  },
-]
-
+// @ts-expect-error
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
 const Content = () => {
+  const [openNewModal, setOpenNewModal] = useState(false)
+  const [openDetailsModal, setOpenDetailsModal] = useState(false)
+  const [openEditModal, setOpenEditModal] = useState(false)
+  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+
+  const [typeState, setTypeState] = useState("Part")
+  const [locationState, setLocationState] = useState("Seguin")
+
+  const tabs = [
+    { name: "Part", current: typeState === "Part" },
+    { name: "Machine", current: typeState === "Machine" },
+  ]
+
+  const locationTabs = [
+    {
+      name: "Seguin",
+      current: locationState === "Seguin",
+    },
+    {
+      name: "Conroe",
+      current: locationState === "Conroe",
+    },
+    {
+      name: "Gunter",
+      current: locationState === "Gunter",
+    },
+  ]
+
   return (
     <div className={`mt-20 my-10 lg:ml-64`}>
       <div className="content px-4 md:px-7 lg:px-16 mt-28">
@@ -77,8 +92,9 @@ const Content = () => {
             <button
               type="button"
               className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+              onClick={() => setOpenNewModal(true)}
             >
-              New Part
+              New {typeState}
             </button>
           </div>
         </div>
@@ -101,6 +117,7 @@ const Content = () => {
                   "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center font-extrabold hover:bg-gray-50 focus:z-10"
                 )}
                 aria-current={tab.current ? "page" : undefined}
+                onClick={() => setTypeState(tab.name)}
               >
                 <span>{tab.name}</span>
                 <span
@@ -126,6 +143,7 @@ const Content = () => {
                     : "bg-white text-gray-700 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
+                onClick={() => setLocationState(tab.name)}
               >
                 {tab.name}
               </button>
@@ -223,14 +241,15 @@ const Content = () => {
               {products.map((product) => (
                 <div
                   key={product.id}
-                  className="group relative bg-white rounded-md border border-gray-200 drop-shadow-lg"
+                  className="group relative bg-white rounded-md border border-gray-200 drop-shadow-lg cursor-pointer"
+                  onClick={() => setOpenDetailsModal(true)}
                 >
                   <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md lg:aspect-none group-hover:opacity-75 h-72">
                     <div className="h-full w-full lg:h-full lg:w-full relative">
                       <Image
                         src={product.imageSrc}
                         alt={product.imageAlt}
-                        className="h-full w-full object-contain  object-center "
+                        className="h-full w-full object-contain object-center "
                         width={400}
                         height={400}
                       />
@@ -239,16 +258,12 @@ const Content = () => {
                   <div className="flex justify-between px-4 py-4">
                     <div>
                       <h3 className="text-gray-700 font-bold uppercase">
-                        <a href={product.href}>
-                          <span
-                            aria-hidden="true"
-                            className="absolute inset-0"
-                          />
-                          {product.name}
-                        </a>
+                        {product.name}
                       </h3>
                     </div>
-                    <p className="font-bold uppercase text-green-600">Seguin</p>
+                    <p className="font-bold uppercase text-green-600">
+                      {locationState}
+                    </p>
                   </div>
                   <div className="px-4">
                     <div className="flex justify-between text-gray-900">
@@ -261,10 +276,22 @@ const Content = () => {
                     </div>
                   </div>
                   <div className="flex justify-end px-4 space-x-3 my-4">
-                    <button className="p-1 bg-green-800 rounded-md">
+                    <button
+                      className="p-1 bg-green-800 rounded-md"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setOpenEditModal(true)
+                      }}
+                    >
                       <PencilIcon className="h-5 w-5 text-white" />
                     </button>
-                    <button className="p-1 bg-red-700 rounded-md">
+                    <button
+                      className="p-1 bg-red-700 rounded-md"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setOpenDeleteModal(true)
+                      }}
+                    >
                       <TrashIcon className="h-5 w-5 text-white" />
                     </button>
                   </div>
@@ -361,6 +388,26 @@ const Content = () => {
           </div>
         </div>
       </div>
+      <NewModal
+        isOpen={openNewModal}
+        typeState={typeState}
+        onClose={() => setOpenNewModal(false)}
+      />
+      <EditModal
+        isOpen={openEditModal}
+        typeState={typeState}
+        onClose={() => setOpenEditModal(false)}
+      />
+      <DeleteModal
+        isOpen={openDeleteModal}
+        onClose={() => setOpenDeleteModal(false)}
+      />
+      <DetailsModal
+        isOpen={openDetailsModal}
+        locationState={locationState}
+        typeState={typeState}
+        onClose={() => setOpenDetailsModal(false)}
+      />
     </div>
   )
 }
