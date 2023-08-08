@@ -59,7 +59,7 @@ export const addUser = async (req: Request, res: Response) => {
     try {
       const getExistingUser = await Users.find({
         $or: [{ email }],
-        deletedAt: { $exists: false },
+        deletedAt: { $exists: true },
       })
       if (getExistingUser.length === 0) {
         const validateUserInput = UsersZodSchema.safeParse(newUser)
@@ -70,7 +70,7 @@ export const addUser = async (req: Request, res: Response) => {
           res.json({ error: true, message: validateUserInput.error })
         }
       } else {
-        res.status(400).json(ACCOUNT_ALREADY_EXISTS)
+        res.status(400).json({ error: true, message: ACCOUNT_ALREADY_EXISTS })
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
