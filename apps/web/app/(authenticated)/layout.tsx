@@ -1,3 +1,5 @@
+import AuthWrapper from "../../components/AuthWrapper"
+import QueryWrapper from "../../components/QueryWrapper"
 import MainNav from "../../components/MainNav"
 import "../globals.css"
 import { Exo_2 } from "next/font/google"
@@ -12,10 +14,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`bg-[#F5F7FA] ${exo.className}`}>
-        <div className="absolute top-0">
-          <MainNav />
-        </div>
-        {children}
+        <QueryWrapper>
+          <AuthWrapper>
+            <div className="absolute top-0">
+              <MainNav />
+            </div>
+            {children}
+          </AuthWrapper>
+        </QueryWrapper>
       </body>
     </html>
   )

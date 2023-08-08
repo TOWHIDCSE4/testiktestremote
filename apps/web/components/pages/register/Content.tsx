@@ -7,7 +7,7 @@ import DarkLogo from "../../../assets/logo/logo-dark.png"
 import Slider from "../../Slider"
 import { I_User, T_BACKEND_RESPONSE } from "../../../types/global"
 import { set, useForm, Controller } from "react-hook-form"
-import useRegisterUser from "../../../hooks/users/useRegister"
+import useRegister from "../../../hooks/users/useRegister"
 import { Listbox, Transition } from "@headlessui/react"
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid"
 import { useRouter } from "next/navigation"
@@ -37,7 +37,7 @@ const Content = () => {
   const [confirmPass, setConfirmPass] = useState("")
 
   const { register, handleSubmit, reset, control } = useForm<I_User>()
-  const { mutate, isLoading } = useRegisterUser()
+  const { mutate, isLoading } = useRegister()
 
   const [selectedDepartment, setSelectedDepartment] = useState(department[0])
   const [selectedLocation, setSelectedLocation] = useState(location[0])
@@ -117,7 +117,8 @@ const Content = () => {
                           {...register("firstName", { required: true })}
                           type="text"
                           required
-                          className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                          disabled={isLoading}
+                          className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                           placeholder="First Name"
                         />
                       </div>
@@ -135,7 +136,8 @@ const Content = () => {
                           {...register("lastName", { required: true })}
                           type="text"
                           required
-                          className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                          disabled={isLoading}
+                          className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                           placeholder="Last Name"
                         />
                       </div>
@@ -149,6 +151,7 @@ const Content = () => {
                       <Listbox
                         as="div"
                         value={selectedDepartment}
+                        disabled={isLoading}
                         onChange={(e) => {
                           onChange(e.name)
                           setSelectedDepartment(e)
@@ -165,7 +168,7 @@ const Content = () => {
                                   selectedDepartment === department[0]
                                     ? "text-gray-400"
                                     : "text-gray-900"
-                                } relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6`}
+                                } relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                               >
                                 <span className="block truncate">
                                   {selectedDepartment.name}
@@ -184,7 +187,7 @@ const Content = () => {
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                               >
-                                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm disabled:opacity-70">
                                   <span className="py-2 pl-3 pr-9 select-none text-xs text-gray-400">
                                     ROLE
                                   </span>
@@ -246,6 +249,7 @@ const Content = () => {
                     render={({ field: { onChange } }) => (
                       <Listbox
                         value={selectedLocation}
+                        disabled={isLoading}
                         onChange={(e) => {
                           onChange(e.name)
                           setSelectedLocation(e)
@@ -262,7 +266,7 @@ const Content = () => {
                                   selectedLocation === location[0]
                                     ? "text-gray-400"
                                     : "text-gray-900"
-                                } relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6`}
+                                } relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                               >
                                 <span className="block truncate">
                                   {selectedLocation.name}
@@ -349,9 +353,10 @@ const Content = () => {
                       <input
                         id="email-add"
                         {...register("email", { required: true })}
+                        disabled={isLoading}
                         type="email"
                         required
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                         placeholder="Enter Email"
                       />
                     </div>
@@ -367,10 +372,11 @@ const Content = () => {
                       <input
                         id="reg-pass"
                         {...register("password", { required: true })}
+                        disabled={isLoading}
                         type="password"
                         autoComplete="current-password"
                         required
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                         placeholder="Enter Password"
                         value={password}
                         onChange={(e) => setPassword(e.currentTarget.value)}
@@ -388,21 +394,22 @@ const Content = () => {
                       <input
                         id="confirm-pass"
                         type="password"
+                        disabled={isLoading}
                         autoComplete="current-password"
                         required
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                         placeholder="Confirm Password"
                         value={confirmPass}
                         onChange={(e) => setConfirmPass(e.currentTarget.value)}
                       />
                     </div>
                   </div>
-                  <div className="md:flex items-center justify-end mt-4">
+                  <div className="md:flex items-center justify-end mt-5">
                     <div>
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-4 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                        className="flex w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-4 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-70"
                       >
                         {isLoading ? (
                           <div
@@ -423,24 +430,29 @@ const Content = () => {
               <div className="mt-10">
                 <p className="text-sm text-center">
                   By registering you agree to the Ameritex{" "}
-                  <Link href="#" className="cursor-pointer text-blue-700">
+                  <Link
+                    href="#"
+                    className="cursor-pointer text-blue-700 font-semibold hover:underline"
+                  >
                     Terms of Use
                   </Link>
                   .
                 </p>
                 <p className="text-sm text-center mt-2">
                   Already have an account?{" "}
-                  <Link href="/" className="cursor-pointer text-blue-700">
-                    Sign-in now
+                  <Link
+                    href="/"
+                    className="cursor-pointer text-blue-700 font-semibold hover:underline"
+                  >
+                    Sign in
                   </Link>
-                  .
                 </p>
                 <p className="text-sm md:flex items-center justify-center mt-2 text-center">
                   &copy; 2023 AmeriTex Pipe & Products with
                   <span className="inline-flex">
                     <HeartIcon className="h-4 w-4 text-red-600 mx-1 translate-y-1 md:translate-y-0" />
                   </span>
-                  by Ieko Media.
+                  by Ieko Media
                 </p>
               </div>
             </div>

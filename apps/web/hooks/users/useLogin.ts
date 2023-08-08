@@ -13,7 +13,7 @@ export async function loginUser({ email, password }: T_LOGIN) {
       "content-type": "application/json",
     },
   })
-  return res.json()
+  return await res.json()
 }
 
 function useLogin() {

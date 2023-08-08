@@ -6,9 +6,10 @@ import {
 import { keys } from "../../config/keys"
 import CryptoJS from "crypto-js"
 import jwt from "jsonwebtoken"
-import { Request, Response, NextFunction } from "express"
-import { LoginZodSchema } from "zod-schema"
+import { Request, Response } from "express"
+import { LoginZodSchema, SessionZodSchema } from "zod-schema"
 import redisClient from "../../utils/redisClient"
+import dayjs from "dayjs"
 
 export const auth = async (req: Request, res: Response) => {
   const validateUserInput = LoginZodSchema.safeParse(req.body)
@@ -47,19 +48,31 @@ export const auth = async (req: Request, res: Response) => {
             date.setTime(date.getTime() + hours * 60 * 60 * 1000)
             return date
           }
-          const now = new Date(Date.now())
-          redisClient.hSet(`${user.email}`, {
-            token: `${token}`,
-            expireIn: `${addHours(now, 4)}`,
+          const zodParsedSession = SessionZodSchema.safeParse({
+            token,
+            email: user.email,
+            role: user.role,
           })
-          const getToken = await redisClient.hGetAll(`${user.email}`)
-          res.json({
-            error: false,
-            message: null,
-            item: getToken,
-            itemCount: null,
-          })
-          redisClient.quit()
+          if (zodParsedSession.success) {
+            const now = new Date(Date.now())
+            redisClient.hSet(`${token}`, {
+              expireIn: `${dayjs(addHours(now, 4)).format()}`,
+            })
+            redisClient.quit()
+            res.json({
+              error: false,
+              message: null,
+              item: zodParsedSession.data,
+              itemCount: null,
+            })
+          } else {
+            res.json({
+              error: true,
+              message: zodParsedSession.error,
+              item: null,
+              itemCount: null,
+            })
+          }
         }
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED

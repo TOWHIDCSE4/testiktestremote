@@ -25,3 +25,8 @@ type Action = {
 export type T_LOGIN = z.input<typeof LoginZodSchema>
 export type T_LOGOUT = { token: string }
 export type T_BACKEND_RESPONSE = z.input<typeof BackendResponse>
+
+export type T_SESSION_ACTIONS = {
+  update: (session: T_SESSION) => void
+  reset: () => void
+}

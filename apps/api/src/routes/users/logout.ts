@@ -1,30 +1,36 @@
 import Users from "../../models/users"
 import { UNKNOWN_ERROR_OCCURRED } from "../../utils/constants"
-import { Request, Response, NextFunction } from "express"
+import { Request, Response } from "express"
 import redisClient from "../../utils/redisClient"
+import jwt, { Secret } from "jsonwebtoken"
+import { keys } from "../../config/keys"
 
-export const logout = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const logout = async (req: Request, res: Response) => {
   try {
+    const { email }: any = jwt.verify(req.body.token, keys.signKey as Secret)
     const logoutUser = await Users.findOneAndUpdate(
-      { email: req.params.email },
+      { email },
       {
         lastLoggedOut: Date.now(),
-      },
-      { new: true }
+      }
     )
-    redisClient.del(`${logoutUser?.email}`)
-    res.json({
-      error: false,
-      message: "User has been logged out",
-      item: null,
-      itemCount: null,
-    })
+    const RD_DeleteAuh = await redisClient.del(`${req.body.token}`)
+    if (logoutUser && RD_DeleteAuh) {
+      res.json({
+        error: false,
+        message: "User has been logged out",
+      })
+    } else {
+      res.json({
+        error: true,
+        message: "Error while logging out user",
+      })
+    }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.json({
+      error: true,
+      message,
+    })
   }
 }

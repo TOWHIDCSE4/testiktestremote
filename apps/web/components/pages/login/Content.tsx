@@ -12,14 +12,13 @@ import Cookies from "js-cookie"
 import { T_BACKEND_RESPONSE, T_LOGIN } from "../../../types/global"
 
 const Content = () => {
-  const { register, handleSubmit, reset } = useForm<T_LOGIN>()
+  const { register, handleSubmit } = useForm<T_LOGIN>()
   const router = useRouter()
   const { mutate, isLoading } = useLogin()
   const onSubmit = (data: T_LOGIN) => {
     const callBackReq = {
       onSuccess: (data: T_BACKEND_RESPONSE) => {
         if (!data.error) {
-          // reset()
           if (data.item) {
             // @ts-expect-error
             Cookies.set("tfl", data.item?.token)
@@ -49,7 +48,7 @@ const Content = () => {
                 Welcome
               </h2>
               <p className="text-sm font-semibold text-gray-900 text-center">
-                Sign in to APMS
+                Sign in to your account
               </p>
             </div>
 
@@ -70,8 +69,9 @@ const Content = () => {
                         {...register("email", { required: true })}
                         name="email"
                         type="email"
+                        disabled={isLoading}
                         required
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                       />
                     </div>
                   </div>
@@ -89,8 +89,9 @@ const Content = () => {
                         name="password"
                         type="password"
                         autoComplete="current-password"
+                        disabled={isLoading}
                         required
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                       />
                     </div>
                   </div>
@@ -99,8 +100,9 @@ const Content = () => {
                       <input
                         id="remember-me"
                         name="remember-me"
+                        disabled={isLoading}
                         type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-600"
+                        className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-600 disabled:opacity-70"
                       />
                       <label
                         htmlFor="remember-me"
@@ -113,7 +115,7 @@ const Content = () => {
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="flex w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                        className="flex w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-70"
                       >
                         {isLoading ? (
                           <div
@@ -136,18 +138,17 @@ const Content = () => {
                   Don&apos;t have an account?{" "}
                   <Link
                     href="/register"
-                    className="cursor-pointer text-blue-700"
+                    className="cursor-pointer text-blue-700 font-semibold hover:underline"
                   >
-                    Sign-up now
+                    Create account
                   </Link>
-                  .
                 </p>
                 <p className="text-sm md:flex items-center justify-center mt-2 text-center">
                   &copy; 2023 AmeriTex Pipe & Products with
                   <span className="inline-flex">
                     <HeartIcon className="h-4 w-4 text-red-600 mx-1 translate-y-1 md:translate-y-0" />
                   </span>
-                  by Ieko Media.
+                  by Ieko Media
                 </p>
               </div>
             </div>

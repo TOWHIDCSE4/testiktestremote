@@ -10,6 +10,7 @@ import {
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { auth } from "./login"
 import { logout } from "./logout"
+import { verify } from "./verify"
 
 //default
 router.get("/", isUserLoggedIn, getAllUsers)
@@ -20,5 +21,6 @@ router.delete("/:id", isUserLoggedIn, deleteUser)
 
 //auth
 router.post("/login", auth)
-router.get("/logout/:id", logout)
+router.post("/logout", logout)
+router.get("/verify/:token", verify)
 export default router

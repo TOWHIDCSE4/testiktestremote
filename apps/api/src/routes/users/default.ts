@@ -54,12 +54,6 @@ export const addUser = async (req: Request, res: Response) => {
       email,
       password: encryptPassword,
       location,
-      profile: null,
-      lastLoggedIn: null,
-      lastLoggedOut: null,
-      blockedAt: null,
-      updatedAt: null,
-      deletedAt: null,
     })
 
     try {

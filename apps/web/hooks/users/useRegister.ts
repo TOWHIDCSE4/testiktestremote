@@ -26,8 +26,7 @@ export async function registerUser({
       "content-type": "application/json",
     },
   })
-
-  return res.json()
+  return await res.json()
 }
 
 function useRegisterUser() {

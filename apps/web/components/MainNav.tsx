@@ -22,7 +22,7 @@ import { T_BACKEND_RESPONSE, T_LOGOUT } from "../types/global"
 import toast from "react-hot-toast"
 import Cookies from "js-cookie"
 import { useRouter } from "next/navigation"
-// import useLogout from "../hooks/users/useLogout"
+import useLogout from "../hooks/users/useLogout"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -38,15 +38,13 @@ const MainNav = () => {
   const router = useRouter()
   const [enabled, setEnabled] = useState(true)
   const [showSideNav, setShowSideNav] = useState(false)
-  // const { mutate, isLoading } = useLogout()
-  const onSubmit = (data: T_LOGOUT) => {
+  const { mutate } = useLogout()
+  const logoutUser = () => {
     const callBackReq = {
       onSuccess: (data: T_BACKEND_RESPONSE) => {
         if (!data.error) {
-          if (data.item) {
-            Cookies.remove("tfl")
-            router.push(`/`)
-          }
+          Cookies.remove("tfl")
+          router.push(`/`)
         } else {
           toast.error(data.message)
         }
@@ -55,7 +53,7 @@ const MainNav = () => {
         toast.error(String(err))
       },
     }
-    // mutate(data, callBackReq)
+    mutate(undefined, callBackReq)
   }
   return (
     <>
@@ -146,7 +144,7 @@ const MainNav = () => {
                           <Menu.Item>
                             {({ active }) => (
                               <span
-                                onClick={() => onSubmit}
+                                onClick={() => logoutUser()}
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
                                   "block px-4 py-3 text-sm text-gray-600 font-medium cursor-pointer"
@@ -269,15 +267,15 @@ const MainNav = () => {
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <a
-                              href="#"
+                            <span
+                              onClick={() => logoutUser()}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
-                                "block px-4 py-3 text-sm text-gray-600 font-medium"
+                                "block px-4 py-3 text-sm text-gray-600 font-medium cursor-pointer"
                               )}
                             >
                               Logout
-                            </a>
+                            </span>
                           )}
                         </Menu.Item>
                       </Menu.Items>
