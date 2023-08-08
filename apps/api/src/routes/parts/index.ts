@@ -7,12 +7,13 @@ import {
   getPart,
   updatePart,
 } from "./default"
+import isUserLoggedIn from "../../helpers/isUserloggedIn"
 
 //default
-router.get("/", getAllParts)
-router.get("/:id", getPart)
-router.post("/", addPart)
-router.patch("/:id", updatePart)
-router.delete("/:id", deletePart)
+router.get("/", isUserLoggedIn, getAllParts)
+router.get("/:id", isUserLoggedIn, getPart)
+router.post("/", isUserLoggedIn, addPart)
+router.patch("/:id", isUserLoggedIn, updatePart)
+router.delete("/:id", isUserLoggedIn, deletePart)
 
 export default router
