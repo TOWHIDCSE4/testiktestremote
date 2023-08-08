@@ -30,7 +30,7 @@ const Content = () => {
 
   return (
     <div className={`my-20 lg:ml-64`}>
-      <div className="content px-4 md:px-7 lg:px-16 2xl:px-60 2xl:max-w-7xl mx-auto mt-28 ">
+      <div className="content px-4 md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mx-auto mt-28 ">
         <div className="flex justify-between items-center py-2">
           <div>
             <h2 className="text-gray-800 text-[33px] font-semibold leading-none">

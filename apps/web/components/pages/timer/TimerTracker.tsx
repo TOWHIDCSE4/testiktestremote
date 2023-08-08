@@ -76,7 +76,7 @@ const TimerTracker = () => {
                           aria-hidden="true"
                           className={classNames(
                             tab.current ? "bg-blue-950" : "bg-transparent",
-                            "absolute inset-x-0 bottom-0 h-0.5"
+                            "absolute inset-x-0 bottom-0 h-1"
                           )}
                         />
                       </button>
