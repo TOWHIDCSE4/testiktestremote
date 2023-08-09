@@ -1,3 +1,4 @@
+"use client"
 import { Roboto } from "next/font/google"
 import BasicInformation from "./BasicInformation"
 import ProfileAndPrivacy from "./ProfileAndPrivacy"

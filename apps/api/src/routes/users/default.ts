@@ -40,6 +40,21 @@ export const getUser = async (req: Request, res: Response) => {
   }
 }
 
+export const getUserByEmail = async (req: Request, res: Response) => {
+  try {
+    const getUser = await Users.findOne({
+      email: req.params.email,
+      deletedAt: null,
+    })
+    res.json({
+      item: getUser,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    res.status(500).json(message)
+  }
+}
+
 export const addUser = async (req: Request, res: Response) => {
   const { firstName, lastName, email, password, location, role } = req.body
   if (firstName && lastName && email && password && location && role) {
@@ -84,8 +99,16 @@ export const addUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   const getUser = await Users.find({
     _id: req.params.id,
-    deletedAt: { $exists: false },
+    deletedAt: { $exists: true },
   })
+
+  const password = req.body.password
+
+  const encryptPassword = CryptoJS.AES.encrypt(
+    password,
+    keys.encryptKey as string
+  )
+
   const condition = req.body
   if (getUser.length === 0) {
     if (!isEmpty(condition)) {
@@ -94,6 +117,7 @@ export const updateUser = async (req: Request, res: Response) => {
           req.params.id,
           {
             $set: req.body,
+            password: encryptPassword.toString(),
             updatedAt: Date.now(),
           },
           { new: true }

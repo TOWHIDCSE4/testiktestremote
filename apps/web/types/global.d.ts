@@ -14,6 +14,17 @@ export interface I_User {
   deletedAt?: string
   updatedAt?: string
 }
+
+export interface I_UserUpdate {
+  id?: string
+  firstName?: string
+  lastName?: string
+  email?: string
+  password?: string
+  createdAt?: string
+  deletedAt?: string
+  updatedAt?: string
+}
 //stores
 type Email = {
   email: string
