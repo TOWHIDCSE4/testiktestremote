@@ -6,7 +6,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline"
 import Image from "next/image"
-import { Fragment, useState } from "react"
+import React, { Fragment, useEffect, useRef, useState } from "react"
 import { Roboto } from "next/font/google"
 import Link from "next/link"
 import useLogout from "../hooks/users/useLogout"
@@ -14,6 +14,7 @@ import { T_BACKEND_RESPONSE } from "../types/global"
 import Cookies from "js-cookie"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
+import { usePathname } from "next/navigation"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -22,10 +23,10 @@ const roboto = Roboto({
 })
 
 const navigation = [
-  { name: "Profile Home", href: "#", current: true },
+  { name: "Profile Home", slug: "profile-home", href: "/profile-home" },
   {
     name: "Order Flow",
-    current: false,
+    slug: "order-flow",
     children: [
       { name: "Project Dashboard", href: "#" },
       { name: "Projects", href: "#" },
@@ -38,50 +39,58 @@ const navigation = [
   },
   {
     name: "Production",
-    current: false,
+    slug: "production",
     children: [
-      { name: "Timer", href: "#" },
-      { name: "System Check", href: "#" },
-      { name: "Product List", href: "#" },
+      { name: "Timer", href: "/production/timer" },
+      { name: "System Check", href: "/production/system-check" },
+      { name: "Product List", href: "/production/product-list" },
     ],
   },
   {
     name: "Operations",
-    current: false,
+    slug: "operations",
     children: [
-      { name: "Operations Dashboard", href: "#" },
-      { name: "Quality Control", href: "#" },
-      { name: "Maintenance", href: "#" },
-      { name: "Safety 101", href: "#" },
-      { name: "Forms", href: "#" },
-      { name: "Line Data", href: "#" },
-      { name: "FIXX", href: "#" },
+      {
+        name: "Operations Dashboard",
+        href: "/operations/operations-dashboard",
+      },
+      { name: "Quality Control", href: "/operations/quality-control" },
+      { name: "Maintenance", href: "/operations/maintenance" },
+      { name: "Safety 101", href: "/operations/safety-101" },
+      { name: "Forms", href: "/operations/forms" },
+      { name: "Line Data", href: "/operations/line-data" },
+      { name: "FIXX", href: "/operations/fixx" },
     ],
   },
   {
     name: "Human Resources",
-    current: false,
+    slug: "human-resources",
     children: [
-      { name: "HR Dashboard", href: "#" },
-      { name: "Gallery", href: "#" },
-      { name: "Device Checkout", href: "#" },
-      { name: "ADT", href: "#" },
-      { name: "Down Time", href: "#" },
-      { name: "Community", href: "#" },
-      { name: "Msg / Discussions", href: "#" },
+      { name: "HR Dashboard", href: "/human-resources/hr-dashboard" },
+      { name: "Gallery", href: "/human-resources/gallery" },
+      { name: "Device Checkout", href: "/human-resources/device-checkout" },
+      { name: "ADT", href: "/human-resources/adt" },
+      { name: "Down Time", href: "/human-resources/down-time" },
+      { name: "Community", href: "/human-resources/community" },
+      { name: "Msg / Discussions", href: "/human-resources/msg-discussion" },
     ],
   },
   {
     name: "Accounting",
-    current: false,
-    children: [{ name: "Accounting Dashboard", href: "#" }],
+    slug: "accounting",
+    children: [
+      {
+        name: "Accounting Dashboard",
+        href: "/accounting/accounting-dashboard",
+      },
+    ],
   },
   {
     name: "Sales",
-    current: false,
-    children: [{ name: "Sales Dashboard", href: "#" }],
+    slug: "sales",
+    children: [{ name: "Sales Dashboard", href: "/sales/sales-dashboard" }],
   },
-  { name: "Team Members", href: "#", current: false },
+  { name: "Team Members", slug: "team-members", href: "/team-members" },
 ]
 
 // @ts-expect-error
@@ -90,9 +99,8 @@ function classNames(...classes) {
 }
 
 const SideBarNav = () => {
-  const [openItem, setOpenItem] = useState(null)
+  const pathname = usePathname()
   const router = useRouter()
-
   const { mutate } = useLogout()
   const logoutUser = () => {
     const callBackReq = {
@@ -185,7 +193,7 @@ const SideBarNav = () => {
           <input
             id="search"
             name="search"
-            className="block text-sm w-56 rounded-md border-0 bg-alice-blue py-2 pl-4 pr-3 text-white bg-dark-cyan-blue placeholder:text-gray-400"
+            className="block text-sm w-56 rounded-md border-0 py-2 pl-4 pr-3 text-white bg-dark-cyan-blue placeholder:text-gray-400"
             placeholder="Search..."
             type="search"
           />
@@ -201,19 +209,19 @@ const SideBarNav = () => {
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
             <ul role="list" className="-mx-2 space-y-1">
-              {navigation.map((item) => (
+              {navigation.map((item, index) => (
                 <li key={item.name}>
                   {!item.children ? (
-                    <a
+                    <Link
                       href={item.href}
                       className={classNames(
-                        item.current
+                        item.href === pathname
                           ? "text-white"
                           : "hover:text-white text-gray-500",
                         "group flex gap-x-3 rounded-md p-2 leading-6 font-medium uppercase"
                       )}
                     >
-                      {item.current ? (
+                      {item.href === pathname ? (
                         <div className="flex items-center">
                           <div className="h-2.5 w-2.5 bg-red-700 rounded-full ml-1"></div>
                           <span className="ml-[18.5px]">{item.name}</span>
@@ -221,14 +229,14 @@ const SideBarNav = () => {
                       ) : (
                         <span className="ml-8">{item.name}</span>
                       )}
-                    </a>
+                    </Link>
                   ) : (
                     <Disclosure as="div">
                       {({ open }) => (
                         <>
                           <Disclosure.Button
                             className={classNames(
-                              item.current
+                              item.href === pathname
                                 ? "text-white"
                                 : open
                                 ? "text-white"
@@ -236,7 +244,7 @@ const SideBarNav = () => {
                               "flex items-center w-full text-left rounded-md pl-2 pr-2 py-2 gap-x-3 leading-6 font-medium text-gray-500 uppercase"
                             )}
                           >
-                            {item.current ? (
+                            {pathname.includes(item.slug) ? (
                               <div className="flex items-center">
                                 <div className="h-2.5 w-2.5 bg-red-700 rounded-full ml-1"></div>
                                 <span className="ml-[18.5px]">{item.name}</span>
@@ -256,19 +264,17 @@ const SideBarNav = () => {
                             {item.children.map((subItem) => (
                               <li key={subItem.name}>
                                 {/* 44px */}
-                                <Disclosure.Button
-                                  as="a"
+                                <Link
                                   href={subItem.href}
                                   className={classNames(
-                                    // @ts-expect-error
-                                    subItem.current
+                                    subItem.href === pathname
                                       ? "text-white"
                                       : "hover:text-white",
                                     "block rounded-md py-2 pr-2 pl-9 leading-6 text-gray-500 font-medium"
                                   )}
                                 >
                                   {subItem.name}
-                                </Disclosure.Button>
+                                </Link>
                               </li>
                             ))}
                           </Disclosure.Panel>
