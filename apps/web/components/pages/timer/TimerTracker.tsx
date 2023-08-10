@@ -1,7 +1,10 @@
+"use client"
 import {
   ChevronUpDownIcon,
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/solid"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const tabs = [
   { name: "RPP1225", current: true },
@@ -26,13 +29,21 @@ function classNames(...classes) {
 }
 
 const TimerTracker = () => {
+  const pathName = usePathname()
+
   return (
     <>
-      <div className="drop-shadow-lg border border-gray-200 bg-white rounded-md mt-7">
+      <div
+        className={`drop-shadow-lg border border-gray-200 bg-white rounded-md ${
+          pathName === "/timer-tracker/full-screen" ? "mt-0 h-screen" : "mt-7"
+        }`}
+      >
         <div>
           <div>
             {/* Tabs */}
-            <div className="flex items-center px-4 md:px-0 mt-4 pb-4 md:pb-0 md:mt-0 shadow">
+            <div
+              className={`flex items-center px-4 md:px-0 mt-4 pb-4 md:pb-0 md:mt-0 shadow`}
+            >
               <div className="w-[90%]">
                 <div className="sm:hidden">
                   <label htmlFor="tabs" className="sr-only">
@@ -84,8 +95,12 @@ const TimerTracker = () => {
                   </nav>
                 </div>
               </div>
-              <div className="w-[10%] bg-white flex justify-center">
-                <span>
+              <div
+                className={`w-[10%] bg-white flex justify-center ${
+                  pathName === "/timer-tracker/full-screen" ? "hidden" : ""
+                }`}
+              >
+                <Link href="/timer-tracker/full-screen" target="_blank">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="14"
@@ -105,7 +120,7 @@ const TimerTracker = () => {
                       </g>
                     </g>
                   </svg>
-                </span>
+                </Link>
               </div>
             </div>
             {/* Table */}
