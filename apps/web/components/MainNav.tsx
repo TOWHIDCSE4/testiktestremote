@@ -1,13 +1,12 @@
 "use client"
 import { Fragment } from "react"
 import { Disclosure, Menu, Transition } from "@headlessui/react"
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid"
+import { MagnifyingGlassIcon, ChevronDownIcon } from "@heroicons/react/20/solid"
 import {
   Bars3Icon,
   BellIcon,
   XMarkIcon,
   ClockIcon,
-  ChevronDownIcon,
   CircleStackIcon,
 } from "@heroicons/react/24/outline"
 import { ChartBarIcon, LockClosedIcon } from "@heroicons/react/24/solid"
@@ -23,6 +22,8 @@ import toast from "react-hot-toast"
 import Cookies from "js-cookie"
 import { useRouter } from "next/navigation"
 import useLogout from "../hooks/users/useLogout"
+import useStoreSession from "../store/useStoreSession"
+import useProfile from "../hooks/users/useProfile"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -38,6 +39,10 @@ const MainNav = () => {
   const router = useRouter()
   const [enabled, setEnabled] = useState(true)
   const [showSideNav, setShowSideNav] = useState(false)
+  const storeSession = useStoreSession((state) => state)
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile(
+    storeSession.email
+  )
   const { mutate } = useLogout()
   const logoutUser = () => {
     const callBackReq = {
@@ -55,6 +60,7 @@ const MainNav = () => {
     }
     mutate(undefined, callBackReq)
   }
+
   return (
     <>
       <Disclosure
@@ -88,78 +94,9 @@ const MainNav = () => {
                         />
                       )}
                     </Disclosure.Button>
-                    {/* Profile dropdown for small screen */}
-                    <Menu
-                      as="div"
-                      className="relative flex-shrink-0 md:hidden ml-7"
-                    >
-                      <div>
-                        <Menu.Button className="relative flex rounded-full text-sm">
-                          <span className="absolute -inset-1.5" />
-                          <span className="sr-only">Open user menu</span>
-                          <div className="flex items-center">
-                            <div className="relative h-9 w-9">
-                              <Image
-                                className="rounded-full"
-                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                alt="Profile image"
-                                fill
-                              />
-                            </div>
-                            <div className="flex flex-col ml-2">
-                              <span className="text-left font-bold text-indigo-blue text-[15px]">
-                                Dylan Lorenz
-                              </span>
-                              <span className="text-left text-gray-500 font-semibold">
-                                Administrator
-                              </span>
-                            </div>
-                            <ChevronDownIcon className="h-2 w-2 ml-3" />
-                          </div>
-                        </Menu.Button>
-                      </div>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <Menu.Item>
-                            {({ active }) => (
-                              <Link
-                                href="/profile"
-                                className={classNames(
-                                  active ? "bg-gray-100" : "",
-                                  "block px-4 py-3 text-sm text-gray-600 border-b border-gray-200 font-medium"
-                                )}
-                              >
-                                Profile
-                              </Link>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <span
-                                onClick={() => logoutUser()}
-                                className={classNames(
-                                  active ? "bg-gray-100" : "",
-                                  "block px-4 py-3 text-sm text-gray-600 font-medium cursor-pointer"
-                                )}
-                              >
-                                Logout
-                              </span>
-                            )}
-                          </Menu.Item>
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
                   </div>
 
-                  <div className="items-center mr-4 hidden md:flex">
+                  <div className="items-center mr-4 flex">
                     <div className="relative h-10 w-52">
                       <Image src={DarkLogo} alt="logo" fill />
                     </div>
@@ -215,7 +152,7 @@ const MainNav = () => {
                   {/* Profile dropdown for medium to large screen*/}
                   <Menu
                     as="div"
-                    className="relative ml-4 flex-shrink-0 hidden md:block"
+                    className="relative ml-4 flex-shrink-0 hidden lg:block"
                   >
                     <div>
                       <Menu.Button className="relative flex rounded-full text-sm">
@@ -223,22 +160,47 @@ const MainNav = () => {
                         <span className="sr-only">Open user menu</span>
                         <div className="flex items-center">
                           <div className="relative h-9 w-9">
-                            <Image
-                              className="rounded-full"
-                              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                              alt="Profile image"
-                              fill
-                            />
+                            {isUserProfileLoading ? (
+                              <div className="animate-pulse flex space-x-4">
+                                <div className="h-9 w-9 rounded-full bg-slate-200"></div>
+                              </div>
+                            ) : (
+                              <Image
+                                className="rounded-full"
+                                src={`https://ui-avatars.com/api/?name=${userProfile?.item?.firstName}+${userProfile?.item?.lastName}`}
+                                alt="Profile image"
+                                fill
+                              />
+                            )}
                           </div>
-                          <div className="flex flex-col ml-2">
+                          <div
+                            className={`flex flex-col ml-4 items-start ${
+                              isUserProfileLoading && "gap-2"
+                            }`}
+                          >
                             <span className="text-left font-bold text-indigo-blue text-[15px]">
-                              Dylan Lorenz
+                              {isUserProfileLoading ? (
+                                <div className="animate-pulse flex space-x-4">
+                                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                                </div>
+                              ) : (
+                                <>
+                                  {userProfile?.item?.firstName}{" "}
+                                  {userProfile?.item?.lastName}
+                                </>
+                              )}
                             </span>
                             <span className="text-left text-gray-500 font-semibold">
-                              Administrator
+                              {isUserProfileLoading ? (
+                                <div className="animate-pulse flex space-x-4">
+                                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                                </div>
+                              ) : (
+                                <>{userProfile?.item?.role}</>
+                              )}
                             </span>
                           </div>
-                          <ChevronDownIcon className="h-2 w-2 ml-3" />
+                          <ChevronDownIcon className="h-4 w-4 ml-3" />
                         </div>
                       </Menu.Button>
                     </div>
@@ -251,7 +213,7 @@ const MainNav = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <Menu.Item>
                           {({ active }) => (
                             <Link

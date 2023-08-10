@@ -1,11 +1,15 @@
 import { I_UserUpdate } from "../../types/global"
 import { API_URL_USERS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
+import Cookies from "js-cookie"
 
-export async function updateBasicInfo(
-  { firstName, lastName, email, id }: I_UserUpdate,
-  token: string
-) {
+export async function updateBasicInfo({
+  firstName,
+  lastName,
+  email,
+  id,
+}: I_UserUpdate) {
+  const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_USERS}/${id}`, {
     method: "PATCH",
     body: JSON.stringify({
@@ -21,18 +25,15 @@ export async function updateBasicInfo(
   return await res.json()
 }
 
-function useUpdateBasicInfo(token: string) {
+function useUpdateBasicInfo() {
   const query = useMutation(
     ({ firstName, lastName, email, id }: I_UserUpdate) =>
-      updateBasicInfo(
-        {
-          firstName,
-          lastName,
-          email,
-          id,
-        },
-        token
-      )
+      updateBasicInfo({
+        firstName,
+        lastName,
+        email,
+        id,
+      })
   )
 
   return query
