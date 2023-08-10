@@ -3,6 +3,7 @@ import QueryWrapper from "../../components/QueryWrapper"
 import MainNav from "../../components/MainNav"
 import "../globals.css"
 import { Exo_2 } from "next/font/google"
+import { Toaster } from "react-hot-toast"
 
 const exo = Exo_2({ subsets: ["latin"] })
 
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`bg-[#F5F7FA] ${exo.className}`}>
+        <Toaster />
         <QueryWrapper>
           <AuthWrapper>
             <div className="absolute top-0">

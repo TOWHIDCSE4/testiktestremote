@@ -40,6 +40,21 @@ export const getUser = async (req: Request, res: Response) => {
   }
 }
 
+export const getUserByEmail = async (req: Request, res: Response) => {
+  try {
+    const getUser = await Users.findOne({
+      email: req.params.email,
+      deletedAt: null,
+    })
+    res.json({
+      item: getUser,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    res.status(500).json(message)
+  }
+}
+
 export const addUser = async (req: Request, res: Response) => {
   const { firstName, lastName, email, password, location, role } = req.body
   if (firstName && lastName && email && password && location && role) {
@@ -82,12 +97,13 @@ export const addUser = async (req: Request, res: Response) => {
 }
 
 export const updateUser = async (req: Request, res: Response) => {
-  const getUser = await Users.find({
+  const getUser = await Users.findById({
     _id: req.params.id,
-    deletedAt: { $exists: false },
+    deletedAt: { $exists: true },
   })
+
   const condition = req.body
-  if (getUser.length === 0) {
+  if (getUser) {
     if (!isEmpty(condition)) {
       try {
         const updateUser = await Users.findByIdAndUpdate(
@@ -98,16 +114,30 @@ export const updateUser = async (req: Request, res: Response) => {
           },
           { new: true }
         )
-        res.json(updateUser)
+        res.json({
+          error: false,
+          message: null,
+          item: updateUser,
+          itemCount: null,
+        })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json(message)
+        res.json({
+          error: true,
+          message: message,
+        })
       }
     } else {
-      res.status(500).json("User cannot be found")
+      res.json({
+        error: true,
+        message: "User cannot be found",
+      })
     }
   } else {
-    res.status(400).json("User does not exist")
+    res.json({
+      error: true,
+      message: "User does not exist",
+    })
   }
 }
 

@@ -1,4 +1,14 @@
 import { Roboto } from "next/font/google"
+import useProfile from "../../../hooks/users/useProfile"
+import useSession from "../../../hooks/users/useSession"
+import { useForm } from "react-hook-form"
+import {
+  I_UserUpdate,
+  T_BACKEND_RESPONSE,
+  T_USER_FOR_EDIT,
+} from "../../../types/global"
+import toast from "react-hot-toast"
+import useUpdateBasicInfo from "../../../hooks/users/useUpdateProfile"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -7,8 +17,42 @@ const roboto = Roboto({
 })
 
 const BasicInformation = () => {
+  const session = useSession()
+  const emailToken = session.data.item.email
+  const token = session.data.item.token
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile(
+    emailToken,
+    token
+  )
+
+  const { register, handleSubmit } = useForm<T_USER_FOR_EDIT>({
+    values: {
+      firstName: userProfile?.item.firstName,
+      lastName: userProfile?.item.lastName,
+      email: userProfile?.item.email,
+    },
+  })
+  const { mutate, isLoading: updateInfoLoading } = useUpdateBasicInfo(token)
+
+  const onSubmit = (data: T_USER_FOR_EDIT) => {
+    const callBackReq = {
+      onSuccess: (data: T_BACKEND_RESPONSE) => {
+        console.log(data)
+        if (!data.error) {
+          toast.success("Profile information successfully updated")
+        } else {
+          toast.error(data.message)
+        }
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+      },
+    }
+    mutate({ id: userProfile.item._id, ...data }, callBackReq)
+  }
+
   return (
-    <form className="mt-12">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-12">
       <h2 className="text-gray-800 text-[23px] font-semibold">
         Basic Information
       </h2>
@@ -26,10 +70,10 @@ const BasicInformation = () => {
               </label>
               <input
                 type="text"
-                name="first-name"
-                id="first-name"
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-                value="Dylan"
+                {...register("firstName", { required: true })}
+                disabled={updateInfoLoading || isProfileLoading}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                defaultValue={userProfile?.item.firstName}
               />
             </div>
           </div>
@@ -47,10 +91,10 @@ const BasicInformation = () => {
               </label>
               <input
                 type="text"
-                name="last-name"
-                id="last-name"
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-                value="Lorenz"
+                {...register("lastName", { required: true })}
+                disabled={updateInfoLoading || isProfileLoading}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                defaultValue={userProfile?.item.lastName}
               />
             </div>
           </div>
@@ -68,10 +112,10 @@ const BasicInformation = () => {
               </label>
               <input
                 type="email"
-                name="email"
-                id="email"
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-                value="dylan@ameritexpipe.com"
+                {...register("email", { required: true })}
+                disabled={updateInfoLoading || isProfileLoading}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                defaultValue={userProfile?.item.email}
               />
             </div>
             <p
@@ -95,9 +139,8 @@ const BasicInformation = () => {
               </label>
               <input
                 type="text"
-                name="factory"
-                id="factory"
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                disabled={updateInfoLoading || isProfileLoading}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                 placeholder="Your factory name..."
               />
             </div>
@@ -112,9 +155,20 @@ const BasicInformation = () => {
           </div>
           <button
             type="submit"
-            className="uppercase rounded-md bg-cyan-500 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            className="uppercase flex items-center rounded-md bg-cyan-500 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-70"
+            disabled={updateInfoLoading || isProfileLoading}
           >
-            Save Changes
+            {updateInfoLoading ? (
+              <div
+                className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
+                role="status"
+                aria-label="loading"
+              >
+                <span className="sr-only">Loading...</span>
+              </div>
+            ) : (
+              "Save Changes"
+            )}
           </button>
         </div>
       </div>
