@@ -1,6 +1,8 @@
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Listbox, Transition } from "@headlessui/react"
 import { Fragment, useState } from "react"
+import DetailsModal from "./modals/DetailsModal"
+import DeleteModal from "./modals/DeleteModal"
 
 const people = [
   { id: 1, name: "60x8x3 RUBBER GASKET" },
@@ -49,6 +51,8 @@ const products = [
 
 const TimerCard = () => {
   const [selected, setSelected] = useState(people[0])
+  const [openDetailsModal, setOpenDetailsModal] = useState(false)
+  const [openDeleteModal, setDeleteModal] = useState(false)
   return (
     <div>
       <div className="mx-auto">
@@ -150,13 +154,22 @@ const TimerCard = () => {
                 <button className="uppercase text-sm text-white bg-green-800 p-1 rounded-md">
                   Controller
                 </button>
-                <button className="uppercase text-sm text-white bg-stone-600 p-1 rounded-md">
+                <button
+                  className="uppercase text-sm text-white bg-stone-300 p-1 rounded-md"
+                  onClick={() => alert("Coming soon...")}
+                >
                   Live Camera
                 </button>
-                <button className="uppercase text-sm text-white bg-blue-950 p-1 rounded-md">
+                <button
+                  className="uppercase text-sm text-white bg-blue-950 p-1 rounded-md"
+                  onClick={() => setOpenDetailsModal(true)}
+                >
                   Details
                 </button>
-                <button className="uppercase text-sm text-white bg-red-600 p-1 rounded-md">
+                <button
+                  className="uppercase text-sm text-white bg-red-600 p-1 rounded-md"
+                  onClick={() => setDeleteModal(true)}
+                >
                   Remove
                 </button>
               </div>
@@ -164,6 +177,14 @@ const TimerCard = () => {
           ))}
         </div>
       </div>
+      <DetailsModal
+        isOpen={openDetailsModal}
+        onClose={() => setOpenDetailsModal(false)}
+      />
+      <DeleteModal
+        isOpen={openDeleteModal}
+        onClose={() => setDeleteModal(false)}
+      />
     </div>
   )
 }

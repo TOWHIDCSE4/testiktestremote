@@ -4,21 +4,7 @@ import { Menu, Transition } from "@headlessui/react"
 import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import TimerCard from "./TimerCard"
 import TimerTracker from "./TimerTracker"
-
-const locationTabs = [
-  {
-    name: "Seguin",
-    current: true,
-  },
-  {
-    name: "Conroe",
-    current: false,
-  },
-  {
-    name: "Gunter",
-    current: false,
-  },
-]
+import NewModal from "./modals/NewModal"
 
 // @ts-expect-error
 function classNames(...classes) {
@@ -27,9 +13,26 @@ function classNames(...classes) {
 
 const Content = () => {
   const [openFilter, setOpenFilter] = useState(false)
+  const [openNewModal, setOpenNewModal] = useState(false)
+  const [locationState, setLocationState] = useState("Seguin")
+
+  const locationTabs = [
+    {
+      name: "Seguin",
+      current: locationState === "Seguin",
+    },
+    {
+      name: "Conroe",
+      current: locationState === "Conroe",
+    },
+    {
+      name: "Gunter",
+      current: locationState === "Gunter",
+    },
+  ]
 
   return (
-    <div className={`my-20 lg:ml-64`}>
+    <div className={`my-20 lg:ml-[305px] 2xl:ml-64`}>
       <div className="content px-4 md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mx-auto mt-28 ">
         <div className="flex justify-between items-center py-2">
           <div>
@@ -45,6 +48,7 @@ const Content = () => {
             <button
               type="button"
               className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+              onClick={() => setOpenNewModal(true)}
             >
               New Timer
             </button>
@@ -63,6 +67,7 @@ const Content = () => {
                     : "bg-white text-gray-700 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
+                onClick={() => setLocationState(tab.name)}
               >
                 {tab.name}
               </button>
@@ -132,7 +137,7 @@ const Content = () => {
                             name="all"
                             type="checkbox"
                             className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                            checked
+                            defaultChecked
                           />
                         </div>
                         <div className="ml-3 text-sm leading-6">
@@ -344,6 +349,7 @@ const Content = () => {
           No timer with MISC. Please add the timer.
         </p>
       </div>
+      <NewModal isOpen={openNewModal} onClose={() => setOpenNewModal(false)} />
     </div>
   )
 }
