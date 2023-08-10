@@ -47,11 +47,15 @@ export const getUserByEmail = async (req: Request, res: Response) => {
       deletedAt: null,
     })
     res.json({
+      error: false,
       item: getUser,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.json({
+      error: true,
+      message: message,
+    })
   }
 }
 

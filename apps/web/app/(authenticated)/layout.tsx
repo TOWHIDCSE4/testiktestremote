@@ -21,7 +21,7 @@ export default function RootLayout({
             <div className="absolute top-0">
               <MainNav />
             </div>
-            {children}
+            <div className="lg:ml-80">{children}</div>
           </AuthWrapper>
         </QueryWrapper>
       </body>

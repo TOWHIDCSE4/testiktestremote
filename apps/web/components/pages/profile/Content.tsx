@@ -14,7 +14,7 @@ const roboto = Roboto({
 const Content = () => {
   return (
     <>
-      <div className={`my-20 lg:ml-64`}>
+      <div className={`my-20`}>
         <div className="content px-4 md:px-7 lg:px-16 2xl:px-80 mt-28">
           <h2 className="text-gray-800 text-[33px] font-semibold">
             My Profile
