@@ -15,6 +15,8 @@ import Cookies from "js-cookie"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import { usePathname } from "next/navigation"
+import combineClasses from "../helpers/combineClasses"
+import Accordion from "./Accordion"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -93,11 +95,6 @@ const navigation = [
   { name: "Team Members", slug: "team-members", href: "/team-members" },
 ]
 
-// @ts-expect-error
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
-}
-
 const SideBarNav = () => {
   const pathname = usePathname()
   const router = useRouter()
@@ -118,7 +115,6 @@ const SideBarNav = () => {
     }
     mutate(undefined, callBackReq)
   }
-
   return (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-dark-blue px-4 fixed h-full mt-16 z-10">
       <Menu
@@ -160,7 +156,7 @@ const SideBarNav = () => {
               {({ active }) => (
                 <Link
                   href="/profile"
-                  className={classNames(
+                  className={combineClasses(
                     active ? "bg-gray-100" : "",
                     "block px-4 py-3 text-sm text-gray-600 border-b border-gray-200 font-medium"
                   )}
@@ -173,7 +169,7 @@ const SideBarNav = () => {
               {({ active }) => (
                 <span
                   onClick={() => logoutUser()}
-                  className={classNames(
+                  className={combineClasses(
                     active ? "bg-gray-100" : "",
                     "block px-4 py-3 text-sm text-gray-600 font-medium cursor-pointer"
                   )}
@@ -214,7 +210,7 @@ const SideBarNav = () => {
                   {!item.children ? (
                     <Link
                       href={item.href}
-                      className={classNames(
+                      className={combineClasses(
                         item.href === pathname
                           ? "text-white"
                           : "hover:text-white text-gray-500",
@@ -224,63 +220,14 @@ const SideBarNav = () => {
                       {item.href === pathname ? (
                         <div className="flex items-center">
                           <div className="h-2.5 w-2.5 bg-red-700 rounded-full ml-1"></div>
-                          <span className="ml-[18.5px]">{item.name}</span>
+                          <span className="ml-5">{item.name}</span>
                         </div>
                       ) : (
                         <span className="ml-8">{item.name}</span>
                       )}
                     </Link>
                   ) : (
-                    <Disclosure as="div">
-                      {({ open }) => (
-                        <>
-                          <Disclosure.Button
-                            className={classNames(
-                              item.href === pathname
-                                ? "text-white"
-                                : open
-                                ? "text-white"
-                                : "hover:text-white",
-                              "flex items-center w-full text-left rounded-md pl-2 pr-2 py-2 gap-x-3 leading-6 font-medium text-gray-500 uppercase"
-                            )}
-                          >
-                            {pathname.includes(item.slug) ? (
-                              <div className="flex items-center">
-                                <div className="h-2.5 w-2.5 bg-red-700 rounded-full ml-1"></div>
-                                <span className="ml-[18.5px]">{item.name}</span>
-                              </div>
-                            ) : (
-                              <span className="ml-8">{item.name}</span>
-                            )}
-                            <ChevronRightIcon
-                              className={classNames(
-                                open ? "rotate-90 text-white" : "text-gray-500",
-                                "ml-auto h-5 w-5 shrink-0"
-                              )}
-                              aria-hidden="true"
-                            />
-                          </Disclosure.Button>
-                          <Disclosure.Panel as="ul" className="mt-1 ml-4 px-2">
-                            {item.children.map((subItem) => (
-                              <li key={subItem.name}>
-                                {/* 44px */}
-                                <Link
-                                  href={subItem.href}
-                                  className={classNames(
-                                    subItem.href === pathname
-                                      ? "text-white"
-                                      : "hover:text-white",
-                                    "block rounded-md py-2 pr-2 pl-9 leading-6 text-gray-500 font-medium"
-                                  )}
-                                >
-                                  {subItem.name}
-                                </Link>
-                              </li>
-                            ))}
-                          </Disclosure.Panel>
-                        </>
-                      )}
-                    </Disclosure>
+                    <Accordion item={item} />
                   )}
                 </li>
               ))}

@@ -1,5 +1,9 @@
 import z from "zod"
-import { BackendResponse, LoginZodSchema } from "zod-schema"
+import {
+  BackendResponseZodSchema,
+  LoginZodSchema,
+  UserBasicForEdit,
+} from "zod-schema"
 
 export interface I_User {
   id?: number
@@ -35,7 +39,8 @@ type Action = {
 
 export type T_LOGIN = z.input<typeof LoginZodSchema>
 export type T_LOGOUT = { token: string }
-export type T_BACKEND_RESPONSE = z.input<typeof BackendResponse>
+export type T_BACKEND_RESPONSE = z.input<typeof BackendResponseZodSchema>
+export type T_USER_FOR_EDIT = z.input<typeof UserBasicForEdit>
 
 export type T_SESSION_ACTIONS = {
   update: (session: T_SESSION) => void
