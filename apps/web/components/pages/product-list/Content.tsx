@@ -277,15 +277,6 @@ const Content = () => {
                   </div>
                   <div className="flex justify-end px-4 space-x-3 my-4">
                     <button
-                      className="p-1 bg-green-800 rounded-md"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setOpenEditModal(true)
-                      }}
-                    >
-                      <PencilIcon className="h-5 w-5 text-white" />
-                    </button>
-                    <button
                       className="p-1 bg-red-700 rounded-md"
                       onClick={(e) => {
                         e.stopPropagation()
