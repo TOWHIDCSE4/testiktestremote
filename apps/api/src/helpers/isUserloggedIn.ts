@@ -4,6 +4,7 @@ import jwt, { Secret } from "jsonwebtoken"
 import { UNKNOWN_ERROR_OCCURRED } from "../utils/constants"
 import { Request, Response, NextFunction } from "express"
 import redisClient from "../utils/redisClient"
+import dayjs from "dayjs"
 
 const isUserLoggedIn = async (
   req: Request,
@@ -20,8 +21,9 @@ const isUserLoggedIn = async (
         keys.signKey as Secret
       )
       const user = await Users.findOne({ email, role })
-      const getToken = await redisClient.hGetAll(`${user?.email}`)
-      if (getToken.token != bearerToken) {
+      const RD_Session = await redisClient.hGetAll(`${bearerToken}`)
+      const isTokenExpired = dayjs().isAfter(RD_Session.expireIn)
+      if (!RD_Session || isTokenExpired) {
         res.json({ message: "Token has been expired" })
       } else {
         if (user && user.deletedAt) {

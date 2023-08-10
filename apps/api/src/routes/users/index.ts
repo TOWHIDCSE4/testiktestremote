@@ -5,6 +5,7 @@ import {
   deleteUser,
   getAllUsers,
   getUser,
+  getUserByEmail,
   updateUser,
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
@@ -15,6 +16,7 @@ import { verify } from "./verify"
 //default
 router.get("/", isUserLoggedIn, getAllUsers)
 router.get("/:id", isUserLoggedIn, getUser)
+router.get("/profile/:email", isUserLoggedIn, getUserByEmail)
 router.post("/", addUser)
 router.patch("/:id", isUserLoggedIn, updateUser)
 router.delete("/:id", isUserLoggedIn, deleteUser)
