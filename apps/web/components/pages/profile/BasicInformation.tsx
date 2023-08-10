@@ -2,6 +2,7 @@ import { Roboto } from "next/font/google"
 import useProfile from "../../../hooks/users/useProfile"
 import useSession from "../../../hooks/users/useSession"
 import { useForm } from "react-hook-form"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   I_UserUpdate,
   T_BACKEND_RESPONSE,
@@ -9,6 +10,7 @@ import {
 } from "../../../types/global"
 import toast from "react-hot-toast"
 import useUpdateBasicInfo from "../../../hooks/users/useUpdateProfile"
+import useStoreSession from "../../../store/useStoreSession"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -17,12 +19,10 @@ const roboto = Roboto({
 })
 
 const BasicInformation = () => {
-  const session = useSession()
-  const emailToken = session.data.item.email
-  const token = session.data.item.token
+  const queryClient = useQueryClient()
+  const storeSession = useStoreSession((state) => state)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile(
-    emailToken,
-    token
+    storeSession.email
   )
 
   const { register, handleSubmit } = useForm<T_USER_FOR_EDIT>({
@@ -32,13 +32,15 @@ const BasicInformation = () => {
       email: userProfile?.item.email,
     },
   })
-  const { mutate, isLoading: updateInfoLoading } = useUpdateBasicInfo(token)
+  const { mutate, isLoading: updateInfoLoading } = useUpdateBasicInfo()
 
   const onSubmit = (data: T_USER_FOR_EDIT) => {
     const callBackReq = {
       onSuccess: (data: T_BACKEND_RESPONSE) => {
-        console.log(data)
         if (!data.error) {
+          queryClient.invalidateQueries({
+            queryKey: ["profile", storeSession.email],
+          })
           toast.success("Profile information successfully updated")
         } else {
           toast.error(data.message)

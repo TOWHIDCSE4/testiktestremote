@@ -17,6 +17,8 @@ import toast from "react-hot-toast"
 import { usePathname } from "next/navigation"
 import combineClasses from "../helpers/combineClasses"
 import Accordion from "./Accordion"
+import useStoreSession from "../store/useStoreSession"
+import useProfile from "../hooks/users/useProfile"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -98,6 +100,10 @@ const navigation = [
 const SideBarNav = () => {
   const pathname = usePathname()
   const router = useRouter()
+  const storeSession = useStoreSession((state) => state)
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile(
+    storeSession.email
+  )
   const { mutate } = useLogout()
   const logoutUser = () => {
     const callBackReq = {
@@ -124,19 +130,39 @@ const SideBarNav = () => {
         <Menu.Button>
           <div className="flex items-center">
             <div className="relative h-9 w-9">
-              <Image
-                className="rounded-full"
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt="Profile image"
-                fill
-              />
+              {isUserProfileLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-9 w-9 rounded-full bg-slate-200"></div>
+                </div>
+              ) : (
+                <Image
+                  className="rounded-full"
+                  src={`https://ui-avatars.com/api/?name=${userProfile?.item?.firstName}+${userProfile?.item?.lastName}`}
+                  alt="Profile image"
+                  fill
+                />
+              )}
             </div>
             <div className="flex flex-col ml-2">
               <span className="text-left font-bold text-gray-600 text-[15px] leading-5">
-                Dylan Lorenz
+                {isUserProfileLoading ? (
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                  </div>
+                ) : (
+                  <>
+                    {userProfile?.item?.firstName} {userProfile?.item?.lastName}
+                  </>
+                )}
               </span>
               <span className="text-left text-gray-500 font-semibold text-sm leading-5">
-                Administrator
+                {isUserProfileLoading ? (
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                  </div>
+                ) : (
+                  <>{userProfile?.item?.role}</>
+                )}
               </span>
             </div>
             <ChevronDownIcon className="h-3 w-3 absolute right-5" />

@@ -25,7 +25,7 @@ const AuthWrapper = ({ children }: Props) => {
       </div>
     )
   } else {
-    updateStoreSession(data)
+    updateStoreSession(data.item)
     return <>{children}</>
   }
 }
