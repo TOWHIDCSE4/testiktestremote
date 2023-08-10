@@ -7,6 +7,8 @@ import NewModal from "./modals/NewModal"
 import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
 import DetailsModal from "./modals/DetailsModal"
+import useSession from "../../../hooks/users/useSession"
+import useGetAllFactories from "../../../hooks/factories/useGetAllFactories"
 
 const products = [
   {
@@ -382,6 +384,7 @@ const Content = () => {
       <NewModal
         isOpen={openNewModal}
         typeState={typeState}
+        locationState={locationState}
         onClose={() => setOpenNewModal(false)}
       />
       <EditModal

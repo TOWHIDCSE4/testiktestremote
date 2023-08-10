@@ -1,6 +1,9 @@
 import { Fragment, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { Roboto } from "next/font/google"
+import useSession from "../../../../hooks/users/useSession"
+import useGetAllFactories from "../../../../hooks/factories/useGetAllFactories"
+import { I_FACTORY } from "../../../../types/global"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -11,11 +14,21 @@ const roboto = Roboto({
 interface NewModalProps {
   isOpen: boolean
   typeState: string
+  locationState: string
   onClose: () => void
 }
 
-const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
+const NewModal = ({
+  isOpen,
+  typeState,
+  locationState,
+  onClose,
+}: NewModalProps) => {
   const cancelButtonRef = useRef(null)
+  const session = useSession()
+  const token = session.data.item.token
+  let { data: factoriesDatas, isLoading: factoriesIsLoading } =
+    useGetAllFactories(token)
 
   const machineSets = [
     ["Radial Press", "Variant", "Wire Cage (BMK)"],
@@ -23,15 +36,19 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
     ["Steel"],
     ["Fittings", "Misc"],
   ]
-
+  const factories = [factoriesIsLoading ? "" : factoriesDatas.items]
+  console.log(factoriesIsLoading ? "loading" : factories[0][0].name)
   const [selectedFactory, setSelectedFactory] = useState("Factory")
   const [machineSet, setMachineSet] = useState(machineSets[0])
+  const [factory, setFactory] = useState([])
 
   const partForm = () => {
     return (
       <form>
         <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-          <h3 className="text-gray-800 font-semibold text-2xl">New Part</h3>
+          <h3 className="text-gray-800 font-semibold text-2xl">
+            {locationState + ">"}New Part
+          </h3>
           <div className="md:flex items-center mt-4">
             <label
               htmlFor="name-id"
@@ -73,11 +90,14 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
                 }
               }}
             >
-              <option disabled>Factory</option>
-              <option>Pipe And Box</option>
-              <option>Precast</option>
-              <option>Steel</option>
-              <option>Exterior</option>
+              <option>Select</option>
+              {factories[0].map((item: I_FACTORY, index: number) => {
+                return (
+                  <option key={index} value={item._id}>
+                    {item.name}
+                  </option>
+                )
+              })}
             </select>
           </div>
           <div className="md:flex items-center mt-4">

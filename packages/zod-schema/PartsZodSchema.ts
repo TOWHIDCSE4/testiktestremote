@@ -6,9 +6,10 @@ const PartsZodSchema = z.object({
   machineClassId: z.string().min(23),
   files: z.string().array().nullable(),
   punds: z.string().min(1),
-  finishGoodWeight: z.boolean(),
-  cageWeightActual: z.string().min(1),
-  cageWeightScrap: z.string().min(1),
+  time: z.number(),
+  finishGoodWeight: z.number(),
+  cageWeightActual: z.number(),
+  cageWeightScrap: z.number(),
   locationId: z.string().min(23),
 })
 
