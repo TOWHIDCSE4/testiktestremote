@@ -20,7 +20,6 @@ const Content = () => {
       onSuccess: (data: T_BACKEND_RESPONSE) => {
         if (!data.error) {
           if (data.item) {
-            // @ts-expect-error
             Cookies.set("tfl", data.item?.token)
             router.push(`/profile-home`)
           }

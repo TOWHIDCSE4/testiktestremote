@@ -12,7 +12,7 @@ import {
 import CryptoJS from "crypto-js"
 import { keys } from "../../config/keys"
 import isEmpty from "lodash/isEmpty"
-import { UsersZodSchema } from "zod-schema"
+import { UsersZodSchema } from "custom-validator"
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {

@@ -1,4 +1,4 @@
-import { SessionZodSchema } from "zod-schema"
+import { SessionZodSchema } from "custom-validator"
 import { T_SESSION_ACTIONS } from "../types/global"
 import { create } from "zustand"
 import z from "zod"

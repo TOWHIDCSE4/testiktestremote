@@ -9,6 +9,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZPart } from "custom-validator"
 
 export const getAllParts = async (req: Request, res: Response) => {
   try {
@@ -67,16 +68,8 @@ export const addPart = async (req: Request, res: Response) => {
     cageWeightScrap,
     locationId,
   } = req.body
-  if (
-    name &&
-    factoryId &&
-    machineClassId &&
-    pounds &&
-    finishGoodWeight &&
-    cageWeightActual &&
-    cageWeightScrap &&
-    locationId
-  ) {
+  const parsedPart = ZPart.safeParse(req.body)
+  if (parsedPart.success) {
     const newPart = new Parts({
       name,
       factoryId,
@@ -89,7 +82,6 @@ export const addPart = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-
     try {
       const getExistingPart = await Parts.find({
         $or: [{ name }],
@@ -109,21 +101,23 @@ export const addPart = async (req: Request, res: Response) => {
           message: PART_ALREADY_EXISTS,
           items: null,
           itemCount: null,
+
         })
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+
+      res.json({
         error: true,
         message: message,
-        items: null,
-        itemCount: null,
+      items: null,
+      itemCount: null,
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
-      message: REQUIRED_VALUE_EMPTY,
+      message: "Data is not valid",
       items: null,
       itemCount: null,
     })

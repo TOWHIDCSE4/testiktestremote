@@ -31,11 +31,19 @@ function classNames(...classes) {
 const TimerTracker = () => {
   const pathName = usePathname()
 
+  const openFullScreenTracker = () => {
+    window.open(
+      "http://localhost:3000/production/timer/tracker",
+      "Timer Tracker",
+      "location,status,scrollbars,resizable,width=1024, height=800"
+    )
+  }
+
   return (
     <>
       <div
         className={`drop-shadow-lg border border-gray-200 bg-white rounded-md ${
-          pathName === "/timer-tracker/full-screen" ? "mt-0 h-screen" : "mt-7"
+          pathName === "/production/timer/tracker" ? "mt-0 h-screen" : "mt-7"
         }`}
       >
         <div>
@@ -44,7 +52,13 @@ const TimerTracker = () => {
             <div
               className={`flex items-center px-4 md:px-0 mt-4 pb-4 md:pb-0 md:mt-0 shadow`}
             >
-              <div className="w-[90%]">
+              <div
+                className={`${
+                  pathName === "/production/timer/tracker"
+                    ? "w-full"
+                    : "w-[90%]"
+                } `}
+              >
                 <div className="sm:hidden">
                   <label htmlFor="tabs" className="sr-only">
                     Select a tab
@@ -97,10 +111,13 @@ const TimerTracker = () => {
               </div>
               <div
                 className={`w-[10%] bg-white flex justify-center ${
-                  pathName === "/timer-tracker/full-screen" ? "hidden" : ""
+                  pathName === "/production/timer/tracker" ? "hidden" : ""
                 }`}
               >
-                <Link href="/timer-tracker/full-screen" target="_blank">
+                <span
+                  onClick={openFullScreenTracker}
+                  className="cursor-pointer"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="14"
@@ -120,7 +137,7 @@ const TimerTracker = () => {
                       </g>
                     </g>
                   </svg>
-                </Link>
+                </span>
               </div>
             </div>
             {/* Table */}

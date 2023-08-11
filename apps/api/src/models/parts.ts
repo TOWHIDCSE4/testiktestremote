@@ -16,13 +16,11 @@ const parts = new Schema({
     default: [],
   },
   pounds: String,
-  finishGoodWeight: Boolean,
-  cageWeightActual: String,
-  cageWeightScrap: String,
-  locationId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Location",
-  },
+  time: Number,
+  finishGoodWeight: Number,
+  cageWeightActual: Number,
+  cageWeightScrap: Number,
+  locationId: String, //to change
   createdAt: {
     type: Date,
     default: Date.now,
