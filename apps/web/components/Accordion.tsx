@@ -22,9 +22,13 @@ const Accordion = (props: { item: AccordionProps }) => {
   }, [pathname, props.item.slug])
 
   return (
-    <div className="cursor-pointer text-gray-500 p-2 w-72">
+    <div
+      className={`cursor-pointer text-gray-500 p-2 w-72 ${
+        isOpen && "bg-dark-cyan-blue"
+      } rounded-r-lg`}
+    >
       <div
-        className="flex items-center gap-4 hover:text-white"
+        className="flex items-center gap-4 hover:text-white ml-2"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center">

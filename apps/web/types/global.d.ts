@@ -1,9 +1,9 @@
 import z from "zod"
 import {
-  BackendResponseZodSchema,
   LoginZodSchema,
   UserBasicForEdit,
-} from "zod-schema"
+  ZBackendResponse,
+} from "custom-validator"
 
 export interface I_User {
   id?: number
@@ -56,7 +56,7 @@ type Action = {
 
 export type T_LOGIN = z.input<typeof LoginZodSchema>
 export type T_LOGOUT = { token: string }
-export type T_BACKEND_RESPONSE = z.input<typeof BackendResponseZodSchema>
+export type T_BACKEND_RESPONSE = z.input<typeof ZBackendResponse>
 export type T_USER_FOR_EDIT = z.input<typeof UserBasicForEdit>
 
 export type T_SESSION_ACTIONS = {

@@ -2,6 +2,7 @@
 import { Fragment } from "react"
 import { Disclosure, Menu, Transition } from "@headlessui/react"
 import { MagnifyingGlassIcon, ChevronDownIcon } from "@heroicons/react/20/solid"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   Bars3Icon,
   BellIcon,
@@ -37,6 +38,7 @@ function classNames(...classes: any) {
 
 const MainNav = () => {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [enabled, setEnabled] = useState(true)
   const [showSideNav, setShowSideNav] = useState(false)
   const storeSession = useStoreSession((state) => state)
@@ -48,6 +50,9 @@ const MainNav = () => {
     const callBackReq = {
       onSuccess: (data: T_BACKEND_RESPONSE) => {
         if (!data.error) {
+          queryClient.invalidateQueries({
+            queryKey: ["session"],
+          })
           Cookies.remove("tfl")
           router.push(`/`)
         } else {

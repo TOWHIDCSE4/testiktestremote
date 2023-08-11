@@ -1,28 +1,27 @@
-import { I_Part, I_User } from "../../../web/types/global"
 import { API_URL_PARTS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
+import { T_Part } from "custom-validator"
+import Cookies from "js-cookie"
 
-export async function addPart(
-  token: string,
-  {
-    name,
-    factoryId,
-    machineClassId,
-    pounds,
-    time,
-    finishGoodWeight,
-    cageWeightActual,
-    cageWeightScrap,
-    locationId,
-  }: I_Part
-) {
+export async function addPart({
+  name,
+  factoryId,
+  machineClassId,
+  lbs,
+  time,
+  finishGoodWeight,
+  cageWeightActual,
+  cageWeightScrap,
+  locationId,
+}: T_Part) {
+  const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_PARTS}`, {
     method: "POST",
     body: JSON.stringify({
       name,
       factoryId,
       machineClassId,
-      pounds,
+      lbs,
       time,
       finishGoodWeight,
       cageWeightActual,
@@ -37,25 +36,26 @@ export async function addPart(
   return await res.json()
 }
 
-function useAddPart(token: string) {
+function useAddPart() {
   const query = useMutation(
     ({
       name,
       factoryId,
       machineClassId,
-      pounds,
+      lbs,
       time,
       finishGoodWeight,
       cageWeightActual,
       cageWeightScrap,
       locationId,
-    }: I_Part) =>
-      addPart(token, {
+    }: T_Part) =>
+      addPart({
         name,
         factoryId,
         machineClassId,
-        pounds,
+        lbs,
         time,
+        files: null,
         finishGoodWeight,
         cageWeightActual,
         cageWeightScrap,

@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import useSession from "../hooks/users/useSession"
 import useStoreSession from "../store/useStoreSession"
@@ -12,6 +12,12 @@ const AuthWrapper = ({ children }: Props) => {
   const { data, isLoading } = useSession()
   const router = useRouter()
   const updateStoreSession = useStoreSession((state) => state.update)
+  useEffect(() => {
+    if (!isLoading && !data.error && data.item) {
+      updateStoreSession(data.item)
+    }
+  }, [isLoading, data, updateStoreSession])
+
   if (!isLoading && data.error) {
     router.push("/")
   } else if (isLoading) {
@@ -25,7 +31,6 @@ const AuthWrapper = ({ children }: Props) => {
       </div>
     )
   } else {
-    updateStoreSession(data.item)
     return <>{children}</>
   }
 }

@@ -8,7 +8,8 @@ import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
 import DetailsModal from "./modals/DetailsModal"
 import useSession from "../../../hooks/users/useSession"
-import useGetAllFactories from "../../../hooks/factories/useGetAllFactories"
+import useGetAllFactories from "../../../hooks/factories/useFactories"
+import NewPartModal from "./modals/NewPartModal"
 
 const products = [
   {
@@ -381,9 +382,8 @@ const Content = () => {
           </div>
         </div>
       </div>
-      <NewModal
+      <NewPartModal
         isOpen={openNewModal}
-        typeState={typeState}
         locationState={locationState}
         onClose={() => setOpenNewModal(false)}
       />
