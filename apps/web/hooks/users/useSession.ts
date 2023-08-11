@@ -1,5 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
-import { API_URL_USERS } from "../../helpers/constants"
+import {
+  API_URL_USERS,
+  FIFTEEN_MINUTES,
+  TEN_MINUTES,
+} from "../../helpers/constants"
 import Cookies from "js-cookie"
 
 export async function getSession() {
@@ -15,6 +19,8 @@ export async function getSession() {
 
 function useSession() {
   const query = useQuery(["session"], () => getSession(), {
+    cacheTime: FIFTEEN_MINUTES,
+    staleTime: TEN_MINUTES,
     refetchOnWindowFocus: false,
   })
 

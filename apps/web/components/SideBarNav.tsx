@@ -1,6 +1,6 @@
 "use client"
-import { Disclosure, Menu, Transition } from "@headlessui/react"
-import { ChevronRightIcon } from "@heroicons/react/20/solid"
+import { Menu, Transition } from "@headlessui/react"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
@@ -99,6 +99,7 @@ const navigation = [
 
 const SideBarNav = () => {
   const pathname = usePathname()
+  const queryClient = useQueryClient()
   const router = useRouter()
   const storeSession = useStoreSession((state) => state)
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile(
@@ -109,6 +110,9 @@ const SideBarNav = () => {
     const callBackReq = {
       onSuccess: (data: T_BACKEND_RESPONSE) => {
         if (!data.error) {
+          queryClient.invalidateQueries({
+            queryKey: ["session"],
+          })
           Cookies.remove("tfl")
           router.push(`/`)
         } else {
@@ -122,115 +126,118 @@ const SideBarNav = () => {
     mutate(undefined, callBackReq)
   }
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-dark-blue px-4 fixed h-full mt-16 z-10">
-      <Menu
-        as="div"
-        className="flex lg:hidden items-center bg-white px-3 py-1.5 w-full rounded-full mt-7 relative"
-      >
-        <Menu.Button>
-          <div className="flex items-center">
-            <div className="relative h-9 w-9">
-              {isUserProfileLoading ? (
-                <div className="animate-pulse flex space-x-4">
-                  <div className="h-9 w-9 rounded-full bg-slate-200"></div>
-                </div>
-              ) : (
-                <Image
-                  className="rounded-full"
-                  src={`https://ui-avatars.com/api/?name=${userProfile?.item?.firstName}+${userProfile?.item?.lastName}`}
-                  alt="Profile image"
-                  fill
-                />
-              )}
-            </div>
-            <div className="flex flex-col ml-2">
-              <span className="text-left font-bold text-gray-600 text-[15px] leading-5">
-                {isUserProfileLoading ? (
-                  <div className="animate-pulse flex space-x-4">
-                    <div className="h-3 w-24 bg-slate-200 rounded"></div>
-                  </div>
-                ) : (
-                  <>
-                    {userProfile?.item?.firstName} {userProfile?.item?.lastName}
-                  </>
-                )}
-              </span>
-              <span className="text-left text-gray-500 font-semibold text-sm leading-5">
-                {isUserProfileLoading ? (
-                  <div className="animate-pulse flex space-x-4">
-                    <div className="h-3 w-24 bg-slate-200 rounded"></div>
-                  </div>
-                ) : (
-                  <>{userProfile?.item?.role}</>
-                )}
-              </span>
-            </div>
-            <ChevronDownIcon className="h-3 w-3 absolute right-5" />
-          </div>
-        </Menu.Button>
-        <Transition
-          as={Fragment}
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-95"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-95"
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-dark-blue pr-4 fixed h-full mt-16 z-10">
+      <div className="lg:hidden ml-4">
+        <Menu
+          as="div"
+          className="flex items-center bg-white px-3 py-1.5 w-full rounded-full mt-7 relative"
         >
-          <Menu.Items className="absolute right-0 z-10 mt-40 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <Menu.Item>
-              {({ active }) => (
-                <Link
-                  href="/profile"
-                  className={combineClasses(
-                    active ? "bg-gray-100" : "",
-                    "block px-4 py-3 text-sm text-gray-600 border-b border-gray-200 font-medium"
+          <Menu.Button>
+            <div className="flex items-center">
+              <div className="relative h-9 w-9">
+                {isUserProfileLoading ? (
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-9 w-9 rounded-full bg-slate-200"></div>
+                  </div>
+                ) : (
+                  <Image
+                    className="rounded-full"
+                    src={`https://ui-avatars.com/api/?name=${userProfile?.item?.firstName}+${userProfile?.item?.lastName}`}
+                    alt="Profile image"
+                    fill
+                  />
+                )}
+              </div>
+              <div className="flex flex-col ml-2">
+                <span className="text-left font-bold text-gray-600 text-[15px] leading-5">
+                  {isUserProfileLoading ? (
+                    <div className="animate-pulse flex space-x-4">
+                      <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                    </div>
+                  ) : (
+                    <>
+                      {userProfile?.item?.firstName}{" "}
+                      {userProfile?.item?.lastName}
+                    </>
                   )}
-                >
-                  Profile
-                </Link>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <span
-                  onClick={() => logoutUser()}
-                  className={combineClasses(
-                    active ? "bg-gray-100" : "",
-                    "block px-4 py-3 text-sm text-gray-600 font-medium cursor-pointer"
-                  )}
-                >
-                  Logout
                 </span>
-              )}
-            </Menu.Item>
-          </Menu.Items>
-        </Transition>
-      </Menu>
-      <div className="lg:hidden">
-        <label htmlFor="search" className="sr-only">
-          Search
-        </label>
-        <div className={`relative ${roboto.className}`}>
-          <input
-            id="search"
-            name="search"
-            className="block text-sm w-56 rounded-md border-0 py-2 pl-4 pr-3 text-white bg-dark-cyan-blue placeholder:text-gray-400"
-            placeholder="Search..."
-            type="search"
-          />
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <MagnifyingGlassIcon
-              className="h-4 w-4 text-gray-400"
-              aria-hidden="true"
+                <span className="text-left text-gray-500 font-semibold text-sm leading-5">
+                  {isUserProfileLoading ? (
+                    <div className="animate-pulse flex space-x-4">
+                      <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                    </div>
+                  ) : (
+                    <>{userProfile?.item?.role}</>
+                  )}
+                </span>
+              </div>
+              <ChevronDownIcon className="h-3 w-3 absolute right-5" />
+            </div>
+          </Menu.Button>
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
+          >
+            <Menu.Items className="absolute right-0 z-10 mt-40 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Menu.Item>
+                {({ active }) => (
+                  <Link
+                    href="/profile"
+                    className={combineClasses(
+                      active ? "bg-gray-100" : "",
+                      "block px-4 py-3 text-sm text-gray-600 border-b border-gray-200 font-medium"
+                    )}
+                  >
+                    Profile
+                  </Link>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <span
+                    onClick={() => logoutUser()}
+                    className={combineClasses(
+                      active ? "bg-gray-100" : "",
+                      "block px-4 py-3 text-sm text-gray-600 font-medium cursor-pointer"
+                    )}
+                  >
+                    Logout
+                  </span>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Transition>
+        </Menu>
+        <div className="mt-4">
+          <label htmlFor="search" className="sr-only">
+            Search
+          </label>
+          <div className={`relative ${roboto.className}`}>
+            <input
+              id="search"
+              name="search"
+              className="block text-sm w-56 rounded-md border-0 py-2 pl-4 pr-3 text-white bg-dark-cyan-blue placeholder:text-gray-400"
+              placeholder="Search..."
+              type="search"
             />
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <MagnifyingGlassIcon
+                className="h-4 w-4 text-gray-400"
+                aria-hidden="true"
+              />
+            </div>
           </div>
         </div>
       </div>
       <nav className={`flex flex-1 flex-col lg:mt-7 ${roboto.className}`}>
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
-            <ul role="list" className="-mx-2 space-y-1">
+            <ul role="list" className="space-y-1">
               {navigation.map((item, index) => (
                 <li key={item.name}>
                   {!item.children ? (
@@ -240,7 +247,7 @@ const SideBarNav = () => {
                         item.href === pathname
                           ? "text-white"
                           : "hover:text-white text-gray-500",
-                        "group flex gap-x-3 rounded-md p-2 leading-6 font-medium uppercase"
+                        "group flex gap-x-3 rounded-md p-2 leading-6 font-medium uppercase ml-2"
                       )}
                     >
                       {item.href === pathname ? (

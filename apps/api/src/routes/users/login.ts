@@ -7,7 +7,7 @@ import { keys } from "../../config/keys"
 import CryptoJS from "crypto-js"
 import jwt from "jsonwebtoken"
 import { Request, Response } from "express"
-import { LoginZodSchema, SessionZodSchema } from "zod-schema"
+import { LoginZodSchema, SessionZodSchema } from "custom-validator"
 import redisClient from "../../utils/redisClient"
 import dayjs from "dayjs"
 

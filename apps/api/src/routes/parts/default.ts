@@ -6,6 +6,7 @@ import {
   PART_ALREADY_EXISTS,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZPart } from "custom-validator"
 
 export const getAllParts = async (req: Request, res: Response) => {
   try {
@@ -53,16 +54,8 @@ export const addPart = async (req: Request, res: Response) => {
     cageWeightScrap,
     locationId,
   } = req.body
-  if (
-    name &&
-    factoryId &&
-    machineClassId &&
-    pounds &&
-    finishGoodWeight &&
-    cageWeightActual &&
-    cageWeightScrap &&
-    locationId
-  ) {
+  const parsedPart = ZPart.safeParse(req.body)
+  if (parsedPart.success) {
     const newPart = new Parts({
       name,
       factoryId,
@@ -75,7 +68,6 @@ export const addPart = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-
     try {
       const getExistingPart = await Parts.find({
         $or: [{ name }],
@@ -83,16 +75,29 @@ export const addPart = async (req: Request, res: Response) => {
       })
       if (getExistingPart.length === 0) {
         const createPart = await newPart.save()
-        res.json({ error: false, data: createPart, errMessage: null })
+        res.json({
+          error: false,
+          message: null,
+          item: createPart,
+        })
       } else {
-        res.status(400).json(PART_ALREADY_EXISTS)
+        res.json({
+          error: true,
+          message: PART_ALREADY_EXISTS,
+        })
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json(message)
+      res.json({
+        error: true,
+        message: message,
+      })
     }
   } else {
-    res.status(400).json(REQUIRED_VALUE_EMPTY)
+    res.json({
+      error: true,
+      message: "Data is not valid",
+    })
   }
 }
 

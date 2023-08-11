@@ -6,7 +6,7 @@ import {
   JOB_ALREADY_EXISTS,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
-import { JobsZodSchema } from "zod-schema"
+import { JobsZodSchema } from "custom-validator"
 
 export const getAllJobs = async (req: Request, res: Response) => {
   try {

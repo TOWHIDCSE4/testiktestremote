@@ -1,4 +1,4 @@
-import { API_URL_USERS } from "../../helpers/constants"
+import { API_URL_USERS, ONE_DAY } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 
@@ -16,9 +16,10 @@ export async function getProfile(email: string) {
 
 function useProfile(email: string) {
   const query = useQuery(["profile", email], () => getProfile(email), {
-    cacheTime: 60 * 60 * 24,
-    staleTime: 60 * 60 * 24,
+    cacheTime: ONE_DAY,
+    staleTime: ONE_DAY,
     refetchOnWindowFocus: false,
+    enabled: !!email,
   })
   return query
 }

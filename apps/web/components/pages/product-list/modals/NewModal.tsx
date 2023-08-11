@@ -1,6 +1,10 @@
 import { Fragment, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { Roboto } from "next/font/google"
+import useFactories from "../../../../hooks/factories/useFactories"
+import { I_FACTORY } from "../../../../types/global"
+import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
+import { T_MachineClasses } from "custom-validator"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -11,28 +15,43 @@ const roboto = Roboto({
 interface NewModalProps {
   isOpen: boolean
   typeState: string
+  locationState: string
   onClose: () => void
 }
 
-const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
+const NewModal = ({
+  isOpen,
+  typeState,
+  locationState,
+  onClose,
+}: NewModalProps) => {
   const cancelButtonRef = useRef(null)
+  const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+  const {
+    data: machineClasses,
+    isRefetching: isMachineClassesRefetching,
+    setSelectedFactoryId,
+  } = useFactoryMachineClasses()
 
-  const machineSets = [
-    ["Radial Press", "Variant", "Wire Cage (BMK)"],
-    ["Blizard", "Tornado", "Perfect System"],
-    ["Steel"],
-    ["Fittings", "Misc"],
-  ]
+  const [nameId, setNameId] = useState("")
+  const [selectedFactory, setSelectedFactory] = useState("")
+  const [selectedMachineClass, setSelectedMachineClass] = useState("")
+  const [weightInLbs, setWeightInLbs] = useState<number | null>(null)
+  const [timeInSeconds, setTimeInSeconds] = useState<number | null>(null)
+  const [finishGoodWeight, setFinishGoodWeight] = useState<number | null>(null)
+  const [cageWeightScrap, setCageWeightScrap] = useState<number | null>(null)
+  const [cageWeightActual, setCageWeightActual] = useState<number | null>(null)
 
-  const [selectedFactory, setSelectedFactory] = useState("Factory")
-  const [machineSet, setMachineSet] = useState(machineSets[0])
+  const savePart = () => {}
 
   const partForm = () => {
     return (
-      <form>
+      <form onSubmit={() => savePart()}>
         <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-          <h3 className="text-gray-800 font-semibold text-2xl">New Part</h3>
-          <div className="md:flex items-center mt-4">
+          <h3 className="text-gray-800 font-semibold text-2xl">
+            {`${locationState} > New Part`}
+          </h3>
+          <div className="md:flex items-center mt-6">
             <label
               htmlFor="name-id"
               className="uppercase font-semibold text-gray-800 md:w-[20%]"
@@ -43,8 +62,10 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
               type="text"
               name="name-id"
               id="name-id"
+              required
               className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
               placeholder="Part"
+              onChange={(e) => setNameId(e.target.value)}
             />
           </div>
           <div className="md:flex items-center mt-4">
@@ -55,29 +76,25 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
               Factory
             </label>
             <select
+              disabled={isFactoriesLoading}
               id="factory"
               name="factory"
-              className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-              value={selectedFactory}
+              required
+              className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className} disabled:opacity-70`}
               onChange={(e) => {
-                setSelectedFactory(e.currentTarget.value)
-
-                {
-                  e.currentTarget.value === "Precast"
-                    ? setMachineSet(machineSets[1])
-                    : e.currentTarget.value === "Steel"
-                    ? setMachineSet(machineSets[2])
-                    : e.currentTarget.value === "Exterior"
-                    ? setMachineSet(machineSets[3])
-                    : setMachineSet(machineSets[0])
-                }
+                setSelectedFactory(e.target.value)
+                setSelectedFactoryId(e.target.value)
+                setSelectedMachineClass("")
               }}
             >
-              <option disabled>Factory</option>
-              <option>Pipe And Box</option>
-              <option>Precast</option>
-              <option>Steel</option>
-              <option>Exterior</option>
+              <option>Select Factory</option>
+              {factories?.items.map((item: I_FACTORY, index: number) => {
+                return (
+                  <option key={index} value={item._id}>
+                    {item.name}
+                  </option>
+                )
+              })}
             </select>
           </div>
           <div className="md:flex items-center mt-4">
@@ -90,18 +107,22 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
             <select
               id="machine-class"
               name="machine-class"
+              required
               className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-              defaultValue="Machine Class"
-              disabled={selectedFactory === "Factory"}
+              disabled={selectedFactory === "" || isMachineClassesRefetching}
+              defaultValue="Select Machine Class"
+              onChange={(e) => setSelectedMachineClass(e.target.value)}
             >
-              <option disabled>Machine Class</option>
-              {machineSet.map((machine) => {
-                return (
-                  <option key={machine} value={machine}>
-                    {machine}
-                  </option>
-                )
-              })}
+              <option disabled>Select Machine Class</option>
+              {machineClasses?.items.map(
+                (machine: T_MachineClasses, index: number) => {
+                  return (
+                    <option key={index} value={machine._id}>
+                      {machine.name}
+                    </option>
+                  )
+                }
+              )}
             </select>
           </div>
           <h6 className="uppercase font-semibold text-gray-400 mt-4">
@@ -119,8 +140,10 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
                 type="number"
                 name="weight"
                 id="weight"
+                required
                 className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
                 placeholder="Pounds"
+                onChange={(e) => setWeightInLbs(Number(e.target.value))}
               />
             </div>
             <div className="md:w-2/4 mt-4 md:mt-0">
@@ -134,8 +157,10 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
                 type="number"
                 name="time"
                 id="time"
+                required
                 className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
                 placeholder="Avg Time"
+                onChange={(e) => setTimeInSeconds(Number(e.target.value))}
               />
             </div>
           </div>
@@ -146,14 +171,14 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
             >
               Assign Photos And Video Previews
             </label>
-            <div className="text-gray-400 text-sm border-2 border-gray-300 border-dashed text-center p-5 rounded rounded-md mt-2">
+            <div className="text-gray-400 text-sm border-2 border-gray-300 border-dashed text-center p-5 rounded mt-2">
               Drop files here or click to upload.
             </div>
             <p className="text-xs mt-1 text-gray-600">
               photos will be resized under 1mb and videos compressed to 1min at
               720p
             </p>
-            <div className="border-2 border-gray-300 p-2 h-20 mt-4">
+            <div className="border-2 border-gray-300 p-2 h-20 mt-4 rounded-md">
               <div className="grid grid-cols-5">
                 <div className="col-span-3 text-xs text-gray-600">
                   File Name
@@ -177,9 +202,11 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
               </label>
               <input
                 type="number"
+                required
                 name="finish-good-weight"
                 id="finish-good-weight"
                 className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                onChange={(e) => setFinishGoodWeight(Number(e.target.value))}
               />
             </div>
             <div>
@@ -191,9 +218,11 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
               </label>
               <input
                 type="number"
+                required
                 name="cage-weight-scrap"
                 id="cage-weight-scrap"
                 className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                onChange={(e) => setCageWeightActual(Number(e.target.value))}
               />
             </div>
             <div>
@@ -205,16 +234,18 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
               </label>
               <input
                 type="number"
+                required
                 name="cage-weight-actuals"
                 id="cage-weight-actuals"
                 className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                onChange={(e) => setCageWeightActual(Number(e.target.value))}
               />
             </div>
           </div>
         </div>
         <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
           <button
-            type="button"
+            type="submit"
             className="uppercase inline-flex w-full justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 sm:w-auto"
           >
             Add
@@ -266,16 +297,6 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
               value={selectedFactory}
               onChange={(e) => {
                 setSelectedFactory(e.currentTarget.value)
-
-                {
-                  e.currentTarget.value === "Precast"
-                    ? setMachineSet(machineSets[1])
-                    : e.currentTarget.value === "Steel"
-                    ? setMachineSet(machineSets[2])
-                    : e.currentTarget.value === "Exterior"
-                    ? setMachineSet(machineSets[3])
-                    : setMachineSet(machineSets[0])
-                }
               }}
             >
               <option disabled>Factory</option>
@@ -300,13 +321,13 @@ const NewModal = ({ isOpen, typeState, onClose }: NewModalProps) => {
               disabled={selectedFactory === "Factory"}
             >
               <option disabled>Machine Class</option>
-              {machineSet.map((machine) => {
+              {/* {machineSet.map((machine) => {
                 return (
                   <option key={machine} value={machine}>
                     {machine}
                   </option>
                 )
-              })}
+              })} */}
             </select>
           </div>
           <h6 className="uppercase font-semibold text-gray-400 mt-4">
