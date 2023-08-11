@@ -19,18 +19,24 @@ export const logout = async (req: Request, res: Response) => {
       res.json({
         error: false,
         message: "User has been logged out",
+        items: null,
+        itemCount: null,
       })
     } else {
       res.json({
         error: true,
         message: "Error while logging out user",
+        items: null,
+        itemCount: null,
       })
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
     res.json({
       error: true,
-      message,
+      message: message,
+      items: null,
+      itemCount: null,
     })
   }
 }

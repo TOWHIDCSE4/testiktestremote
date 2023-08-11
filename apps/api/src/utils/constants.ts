@@ -29,3 +29,7 @@ export const ALLOWED_ALL_ROLES = [
   "Production",
   "Personnel",
 ]
+//Success Message
+export const ADD_SUCCESS_MESSAGE = "Successfully added"
+export const UPDATE_SUCCESS_MESSAGE = "Successfully updated"
+export const DELETE_SUCCESS_MESSAGE = "Successfully deleted"

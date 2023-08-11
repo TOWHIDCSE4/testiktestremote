@@ -6,9 +6,10 @@ import {
   REQUIRED_VALUE_EMPTY,
   ACCOUNT_ALREADY_EXISTS,
   TIMER_LOG_ALREADY_EXISTS,
+  ADD_SUCCESS_MESSAGE,
+  UPDATE_SUCCESS_MESSAGE,
+  DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
-import CryptoJS from "crypto-js"
-import { keys } from "../../config/keys"
 import isEmpty from "lodash/isEmpty"
 
 export const getAllTimeLogs = async (req: Request, res: Response) => {
@@ -20,12 +21,17 @@ export const getAllTimeLogs = async (req: Request, res: Response) => {
     res.json({
       error: false,
       items: getAllTimerLogs,
-      count: timerLogsCount,
-      errMessage: null,
+      itemCount: timerLogsCount,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -38,11 +44,17 @@ export const getTimeLog = async (req: Request, res: Response) => {
     res.json({
       error: false,
       item: getTimerLog,
-      errMessage: null,
+      itemCount: 1,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -67,16 +79,36 @@ export const addTimeLog = async (req: Request, res: Response) => {
       })
       if (getExistingTimerLog.length === 0) {
         const createTimerLog = await newTomerLog.save()
-        res.json({ error: false, data: createTimerLog, errMessage: null })
+        res.json({
+          error: false,
+          item: createTimerLog,
+          itemCount: 1,
+          message: ADD_SUCCESS_MESSAGE,
+        })
       } else {
-        res.status(400).json(TIMER_LOG_ALREADY_EXISTS)
+        res.status(400).json({
+          error: true,
+          message: TIMER_LOG_ALREADY_EXISTS,
+          items: null,
+          itemCount: null,
+        })
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json(message)
+      res.status(500).json({
+        error: true,
+        message: message,
+        items: null,
+        itemCount: null,
+      })
     }
   } else {
-    res.status(400).json(REQUIRED_VALUE_EMPTY)
+    res.status(400).json({
+      error: true,
+      message: REQUIRED_VALUE_EMPTY,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -97,16 +129,36 @@ export const updateTimeLog = async (req: Request, res: Response) => {
           },
           { new: true }
         )
-        res.json(updateTimerLog)
+        res.json({
+          error: false,
+          item: updateTimerLog,
+          itemCount: 1,
+          message: UPDATE_SUCCESS_MESSAGE,
+        })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json(message)
+        res.status(500).json({
+          error: true,
+          message: message,
+          items: null,
+          itemCount: null,
+        })
       }
     } else {
-      res.status(500).json("Timer log cannot be found")
+      res.status(500).json({
+        error: true,
+        message: "Timer log cannot be found",
+        items: null,
+        itemCount: null,
+      })
     }
   } else {
-    res.status(400).json("Timer log does not exist")
+    res.status(400).json({
+      error: true,
+      message: "Timer log does not exist",
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -125,12 +177,22 @@ export const deleteTimeLog = async (req: Request, res: Response) => {
       const deletedTimerLog = await TimerLogs.findById({
         _id: req.params.id,
       })
-      res.json(deletedTimerLog)
+      res.json({
+        error: false,
+        item: deletedTimerLog,
+        itemCount: 1,
+        message: DELETE_SUCCESS_MESSAGE,
+      })
     } else {
       throw new Error("Timer log is already deleted")
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }

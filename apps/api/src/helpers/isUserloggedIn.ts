@@ -24,7 +24,7 @@ const isUserLoggedIn = async (
       const RD_Session = await redisClient.hGetAll(`${bearerToken}`)
       const isTokenExpired = dayjs().isAfter(RD_Session.expireIn)
       if (!RD_Session || isTokenExpired) {
-        res.json({ message: "Token has been expired" })
+        res.json({ error: true, message: "Token has been expired" })
       } else {
         if (user && user.deletedAt) {
           throw new Error("We cannot find your account in our system")
@@ -40,15 +40,27 @@ const isUserLoggedIn = async (
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       if (message === "jwt malformed") {
-        res.status(401).json("Invalid authentication credentials")
+        res
+          .status(401)
+          .json({ error: true, message: "Invalid authentication credentials" })
       } else if (message === "jwt expired") {
-        res.status(403).json("Authentication is expired, please login again")
+        res
+          .status(403)
+          .json({
+            error: true,
+            message: "Authentication is expired, please login again",
+          })
       } else {
-        res.status(403).json(message)
+        res.status(403).json({ error: true, message: message })
       }
     }
   } else {
-    res.status(401).json(`You are not authorized to perform this action`)
+    res
+      .status(401)
+      .json({
+        error: true,
+        message: `You are not authorized to perform this action`,
+      })
   }
 }
 

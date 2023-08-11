@@ -5,6 +5,9 @@ import {
   REQUIRED_VALUE_EMPTY,
   ACCOUNT_ALREADY_EXISTS,
   FACTORY_ALREADY_EXISTS,
+  ADD_SUCCESS_MESSAGE,
+  UPDATE_SUCCESS_MESSAGE,
+  DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 
@@ -13,12 +16,19 @@ export const getAllFactories = async (req: Request, res: Response) => {
     const factoriesCount = await Factories.find().countDocuments()
     const getAllFactories = await Factories.find().sort({ createdAt: -1 })
     res.json({
+      error: false,
       items: getAllFactories,
-      count: factoriesCount,
+      itemCount: factoriesCount,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      item: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -29,11 +39,19 @@ export const getFactory = async (req: Request, res: Response) => {
       deletedAt: null,
     })
     res.json({
+      error: false,
       item: getFactory,
+      itemCount: 1,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      item: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -53,16 +71,38 @@ export const addFactory = async (req: Request, res: Response) => {
       })
       if (getExistingFactory.length === 0) {
         const createFactory = await newFactory.save()
-        res.json({ data: createFactory })
+        res.json({
+          error: false,
+          item: createFactory,
+          itemCount: 1,
+          message: ADD_SUCCESS_MESSAGE,
+        })
       } else {
-        res.status(400).json(FACTORY_ALREADY_EXISTS)
+        res.status(400).json({
+          error: true,
+          message: FACTORY_ALREADY_EXISTS,
+          item: null,
+          itemCount: null,
+        })
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json(message)
+      res.status(500).json({
+        error: true,
+        message: message,
+        item: null,
+        itemCount: null,
+      })
     }
   } else {
-    res.status(400).json(REQUIRED_VALUE_EMPTY)
+    res
+      .status(400)
+      .json({
+        error: true,
+        message: REQUIRED_VALUE_EMPTY,
+        item: null,
+        itemCount: null,
+      })
   }
 }
 
@@ -83,16 +123,36 @@ export const updateFactory = async (req: Request, res: Response) => {
           },
           { new: true }
         )
-        res.json(updateFactory)
+        res.json({
+          error: false,
+          message: UPDATE_SUCCESS_MESSAGE,
+          item: updateFactory,
+          itemCount: 1,
+        })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json(message)
+        res.status(500).json({
+          error: true,
+          message: message,
+          item: null,
+          itemCount: null,
+        })
       }
     } else {
-      res.status(500).json("Factory cannot be found")
+      res.status(500).json({
+        error: true,
+        message: "Factory cannot be found",
+        item: null,
+        itemCount: null,
+      })
     }
   } else {
-    res.status(400).json("Factory does not exist")
+    res.status(400).json({
+      error: true,
+      message: "Factory does not exist",
+      item: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -108,12 +168,22 @@ export const delteFactory = async (req: Request, res: Response) => {
           deletedAt: Date.now(),
         },
       })
-      res.json(deleteFactory)
+      res.json({
+        error: false,
+        message: DELETE_SUCCESS_MESSAGE,
+        item: deleteFactory,
+        itemCount: null,
+      })
     } else {
       throw new Error("Factory is already deleted")
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      item: null,
+      itemCount: null,
+    })
   }
 }
