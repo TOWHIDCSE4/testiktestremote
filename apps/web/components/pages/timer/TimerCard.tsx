@@ -53,6 +53,15 @@ const TimerCard = () => {
   const [selected, setSelected] = useState(people[0])
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openDeleteModal, setDeleteModal] = useState(false)
+
+  const openController = () => {
+    window.open(
+      "http://localhost:3000/production/timer/controller",
+      "Timer Controller",
+      "location,status,scrollbars,resizable,width=1024, height=800"
+    )
+  }
+
   return (
     <div>
       <div className="mx-auto">
@@ -151,7 +160,10 @@ const TimerCard = () => {
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-x-5 gap-y-3 px-4 my-4">
-                <button className="uppercase text-sm text-white bg-green-800 p-1 rounded-md">
+                <button
+                  className="uppercase text-sm text-white bg-green-800 p-1 rounded-md"
+                  onClick={openController}
+                >
                   Controller
                 </button>
                 <button
