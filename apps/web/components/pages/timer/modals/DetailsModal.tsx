@@ -61,7 +61,7 @@ const DetailsModal = ({ isOpen, onClose }: DetailsModalProps) => {
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
                 <Dialog.Panel
-                  className={`relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 max-w-2xl lg:max-w-lg sm:w-full sm:max-w-lg`}
+                  className={`relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 max-w-2xl lg:max-w-4xl sm:w-full sm:max-w-lg`}
                 >
                   <form>
                     <div className="bg-white">
@@ -77,61 +77,122 @@ const DetailsModal = ({ isOpen, onClose }: DetailsModalProps) => {
                         </h3>
                       </div>
                       <div className="px-4 md:px-6 mt-4">
-                        <div className="grid md:grid-cols-5 items-center gap-y-2">
-                          <label
-                            htmlFor="product-name"
-                            className="uppercase font-semibold text-sm text-gray-800 col-span-2"
-                          >
-                            Part/Product Name:
-                          </label>
-                          <input
-                            type="text"
-                            name="product-name"
-                            id="product-name"
-                            className={`block mt-2 md:mt-0 w-full col-span-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
-                            placeholder="Enter product name"
-                            defaultValue={"48x8 CL3 T&G RCP"}
-                          />
-                          <label
-                            htmlFor="weight"
-                            className="uppercase font-semibold text-sm text-gray-800 col-span-2"
-                          >
-                            Weight (LBS):
-                          </label>
-                          <input
-                            type="number"
-                            name="weight"
-                            id="weight"
-                            className={`block mt-2 md:mt-0 w-full col-span-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
-                            placeholder="Enter weight"
-                            defaultValue={"7079"}
-                          />
-                          <label
-                            htmlFor="production-time"
-                            className="uppercase font-semibold text-sm text-gray-800 col-span-2"
-                          >
-                            Production Time:
-                          </label>
-                          <input
-                            type="text"
-                            name="production-time"
-                            id="production-time"
-                            className={`block mt-2 md:mt-0 w-full col-span-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
-                            placeholder="Enter production time"
-                            defaultValue={"198 s"}
-                          />
-                          <label
-                            htmlFor="operator-name"
-                            className="uppercase font-semibold text-sm text-gray-800 col-span-2"
-                          >
-                            Operator Name:
-                          </label>
-                          <input
-                            type="text"
-                            name="operator-name"
-                            id="operator-name"
-                            className={`block mt-2 md:mt-0 w-full col-span-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
-                          />
+                        <div className="lg:flex justify-between">
+                          <div className="w-[350px]">
+                            <div className="grid grid-cols-4 items-center gap-y-2">
+                              <label
+                                htmlFor="product-name"
+                                className="uppercase font-semibold text-sm text-gray-800 col-span-2"
+                              >
+                                Part/Product Name:
+                              </label>
+                              <input
+                                type="text"
+                                name="product-name"
+                                id="product-name"
+                                className={`block mt-2 md:mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                                placeholder="Enter product name"
+                                defaultValue={"48x8 CL3 T&G RCP"}
+                              />
+                              <label
+                                htmlFor="weight"
+                                className="uppercase font-semibold text-sm text-gray-800 col-span-2"
+                              >
+                                Weight (LBS):
+                              </label>
+                              <input
+                                type="number"
+                                name="weight"
+                                id="weight"
+                                className={`block mt-2 md:mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                                placeholder="Enter weight"
+                                defaultValue={"7079"}
+                              />
+                              <label
+                                htmlFor="production-time"
+                                className="uppercase font-semibold text-sm text-gray-800 col-span-2"
+                              >
+                                Production Time:
+                              </label>
+                              <input
+                                type="text"
+                                name="production-time"
+                                id="production-time"
+                                className={`block mt-2 md:mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                                placeholder="Enter production time"
+                                defaultValue={"198 s"}
+                              />
+                              <label
+                                htmlFor="operator-name"
+                                className="uppercase font-semibold text-sm text-gray-800 col-span-2"
+                              >
+                                Operator Name:
+                              </label>
+                              <input
+                                type="text"
+                                name="operator-name"
+                                id="operator-name"
+                                className={`block mt-2 md:mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                              />
+                              <label
+                                htmlFor="finish-good-weight"
+                                className="uppercase font-semibold text-sm text-gray-800 col-span-2"
+                              >
+                                Finish Good Weight:
+                              </label>
+                              <input
+                                type="number"
+                                name="finish-good-weight"
+                                id="finish-good-weight"
+                                className={`block mt-2 md:mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                              />
+                              <label
+                                htmlFor="cage-weight-scrap"
+                                className="uppercase font-semibold text-sm text-gray-800 col-span-2"
+                              >
+                                Cage Weight Scrap:
+                              </label>
+                              <input
+                                type="number"
+                                name="cage-weight-scrap"
+                                id="cage-weight-scrap"
+                                className={`block mt-2 md:mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                              />
+                              <label
+                                htmlFor="cage-weight-actuals"
+                                className="uppercase font-semibold text-sm text-gray-800 col-span-2"
+                              >
+                                Cage Weight Actuals:
+                              </label>
+                              <input
+                                type="number"
+                                name="cage-weight-actuals"
+                                id="cage-weight-actuals"
+                                className={`block mt-2 md:mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                              />
+                            </div>
+                          </div>
+                          <div className="w-[400px]">
+                            <div className="w-full">
+                              <div className="text-gray-400 text-sm border-2 border-gray-300 text-center rounded rounded-md h-52 p-5"></div>
+                              <div className="border-2 border-gray-300 p-2 mt-2 h-28">
+                                <div className="grid grid-cols-5">
+                                  <div className="col-span-3 text-xs text-gray-600">
+                                    File Name
+                                  </div>
+                                  <div className="col-span-2 text-xs text-gray-600">
+                                    File Type
+                                  </div>
+                                  <div className="col-span-3 text-sm font-light text-gray-400 mt-2">
+                                    No Media Previews
+                                  </div>
+                                </div>
+                              </div>
+                              <button className="uppercase float-right mt-2 bg-blue-800 hover:bg-blue-700 text-white text-sm py-1 px-4 rounded-md">
+                                Upload
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className="bg-gray-100 mt-7 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
