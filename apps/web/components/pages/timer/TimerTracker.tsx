@@ -35,7 +35,7 @@ const TimerTracker = () => {
     window.open(
       "http://localhost:3000/production/timer/tracker",
       "Timer Tracker",
-      "location,status,scrollbars,resizable,width=1280, height=720"
+      "location,status,scrollbars,resizable,width=1024, height=800"
     )
   }
 
