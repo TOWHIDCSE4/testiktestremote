@@ -21,7 +21,7 @@ const isRoleAllowed = (roles: string[]) => {
         } else {
           res.json({
             error: true,
-            message: "You are now allowed to access this endpoint",
+            message: "Unauthorized access",
           })
         }
       }
