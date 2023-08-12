@@ -5,6 +5,9 @@ import {
   UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUE_EMPTY,
   ACCOUNT_ALREADY_EXISTS,
+  ADD_SUCCESS_MESSAGE,
+  UPDATE_SUCCESS_MESSAGE,
+  DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import CryptoJS from "crypto-js"
 import { keys } from "../../config/keys"
@@ -16,12 +19,19 @@ export const getAllUsers = async (req: Request, res: Response) => {
     const usersCounts = await Users.find().countDocuments()
     const getAllUsers = await Users.find().sort({ createdAt: -1 })
     res.json({
+      error: false,
       items: getAllUsers,
-      count: usersCounts,
+      itemCount: usersCounts,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -32,11 +42,19 @@ export const getUser = async (req: Request, res: Response) => {
       deletedAt: null,
     })
     res.json({
+      error: false,
       item: getUser,
+      itemCount: 1,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -49,6 +67,8 @@ export const getUserByEmail = async (req: Request, res: Response) => {
     res.json({
       error: false,
       item: getUser,
+      itemCount: 1,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
@@ -84,7 +104,12 @@ export const addUser = async (req: Request, res: Response) => {
         const validateUserInput = UsersZodSchema.safeParse(newUser)
         if (validateUserInput.success) {
           const createUser = await newUser.save()
-          res.json({ data: createUser })
+          res.json({
+            error: false,
+            item: createUser,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
         } else {
           res.json({ error: true, message: validateUserInput.error })
         }
@@ -93,10 +118,20 @@ export const addUser = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json(message)
+      res.status(500).json({
+        error: true,
+        message: message,
+        items: null,
+        itemCount: null,
+      })
     }
   } else {
-    res.status(400).json(REQUIRED_VALUE_EMPTY)
+    res.status(400).json({
+      error: true,
+      message: REQUIRED_VALUE_EMPTY,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -120,9 +155,9 @@ export const updateUser = async (req: Request, res: Response) => {
         )
         res.json({
           error: false,
-          message: null,
           item: updateUser,
-          itemCount: null,
+          itemCount: 1,
+          message: UPDATE_SUCCESS_MESSAGE,
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
@@ -157,12 +192,22 @@ export const deleteUser = async (req: Request, res: Response) => {
           deletedAt: Date.now(),
         },
       })
-      res.json(deleteUser)
+      res.json({
+        error: false,
+        item: deleteUser,
+        itemCount: 1,
+        message: DELETE_SUCCESS_MESSAGE,
+      })
     } else {
       throw new Error("User is already deleted")
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }

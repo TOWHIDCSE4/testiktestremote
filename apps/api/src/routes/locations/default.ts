@@ -3,8 +3,10 @@ import Locations from "../../models/location"
 import {
   UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUE_EMPTY,
-  ACCOUNT_ALREADY_EXISTS,
   LOCATION_ALREADY_EXISTS,
+  ADD_SUCCESS_MESSAGE,
+  UPDATE_SUCCESS_MESSAGE,
+  DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 
@@ -13,12 +15,19 @@ export const getAllLocations = async (req: Request, res: Response) => {
     const locationsCount = await Locations.find().countDocuments()
     const getAllLocations = await Locations.find().sort({ createdAt: -1 })
     res.json({
+      error: false,
       items: getAllLocations,
-      count: locationsCount,
+      itemCount: locationsCount,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -33,7 +42,12 @@ export const getLocation = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -53,13 +67,28 @@ export const addLocation = async (req: Request, res: Response) => {
       })
       if (getExostingLocation.length === 0) {
         const createLocation = await newLocation.save()
-        res.json({ data: createLocation })
+        res.json({
+          error: false,
+          item: createLocation,
+          itemCount: 1,
+          message: ADD_SUCCESS_MESSAGE,
+        })
       } else {
-        res.status(400).json(LOCATION_ALREADY_EXISTS)
+        res.status(400).json({
+          error: true,
+          message: LOCATION_ALREADY_EXISTS,
+          items: null,
+          itemCount: null,
+        })
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json(message)
+      res.status(500).json({
+        error: true,
+        message: message,
+        items: null,
+        itemCount: null,
+      })
     }
   } else {
     res.status(400).json(REQUIRED_VALUE_EMPTY)
@@ -83,16 +112,36 @@ export const updateLocation = async (req: Request, res: Response) => {
           },
           { new: true }
         )
-        res.json(updateLocation)
+        res.json({
+          error: false,
+          item: updateLocation,
+          itemCount: 1,
+          message: UPDATE_SUCCESS_MESSAGE,
+        })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json(message)
+        res.status(500).json({
+          error: true,
+          message: message,
+          items: null,
+          itemCount: null,
+        })
       }
     } else {
-      res.status(500).json("Location cannot be found")
+      res.status(500).json({
+        error: true,
+        message: "Location cannot be found",
+        items: null,
+        itemCount: null,
+      })
     }
   } else {
-    res.status(400).json("Location does not exist")
+    res.status(400).json({
+      error: true,
+      message: "Location does not exist",
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -111,12 +160,22 @@ export const deleteLocation = async (req: Request, res: Response) => {
       const deletedLocation = await Locations.findById({
         _id: req.params.id,
       })
-      res.json(deletedLocation)
+      res.json({
+        error: false,
+        item: deletedLocation,
+        itemCount: 1,
+        message: DELETE_SUCCESS_MESSAGE,
+      })
     } else {
       throw new Error("Location is already deleted")
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }

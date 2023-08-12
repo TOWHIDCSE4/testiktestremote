@@ -34,18 +34,24 @@ export const verify = async (req: Request, res: Response) => {
         res.json({
           error: true,
           message: "Authentication is expired or invalid",
+          items: null,
+          itemCount: null,
         })
       }
     } catch (error) {
       res.json({
         error: true,
         message: String(error),
+        items: null,
+        itemCount: null,
       })
     }
   } else {
     res.json({
       error: true,
       message: REQUIRED_VALUES_MISSING,
+      items: null,
+      itemCount: null,
     })
   }
 }

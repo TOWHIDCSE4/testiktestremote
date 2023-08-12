@@ -4,6 +4,9 @@ import {
   UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUE_EMPTY,
   PART_ALREADY_EXISTS,
+  ADD_SUCCESS_MESSAGE,
+  UPDATE_SUCCESS_MESSAGE,
+  DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZPart } from "custom-validator"
@@ -17,12 +20,17 @@ export const getAllParts = async (req: Request, res: Response) => {
     res.json({
       error: false,
       items: getAllParts,
-      count: partsCount,
-      errMessage: null,
+      itemCount: partsCount,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -35,11 +43,17 @@ export const getPart = async (req: Request, res: Response) => {
     res.json({
       error: false,
       item: getPart,
-      errMessage: null,
+      itemCount: 1,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -77,26 +91,35 @@ export const addPart = async (req: Request, res: Response) => {
         const createPart = await newPart.save()
         res.json({
           error: false,
-          message: null,
           item: createPart,
+          itemCount: 1,
+          message: ADD_SUCCESS_MESSAGE,
         })
       } else {
-        res.json({
+        res.status(400).json({
           error: true,
           message: PART_ALREADY_EXISTS,
+          items: null,
+          itemCount: null,
+
         })
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+
       res.json({
         error: true,
         message: message,
+      items: null,
+      itemCount: null,
       })
     }
   } else {
     res.json({
       error: true,
       message: "Data is not valid",
+      items: null,
+      itemCount: null,
     })
   }
 }
@@ -118,16 +141,36 @@ export const updatePart = async (req: Request, res: Response) => {
           },
           { new: true }
         )
-        res.json(updatePart)
+        res.json({
+          error: false,
+          item: updatePart,
+          itemCount: 1,
+          message: UPDATE_SUCCESS_MESSAGE,
+        })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json(message)
+        res.status(500).json({
+          error: true,
+          message: message,
+          items: null,
+          itemCount: null,
+        })
       }
     } else {
-      res.status(500).json("Part cannot be found")
+      res.status(500).json({
+        error: true,
+        message: "Part cannot be found",
+        items: null,
+        itemCount: null,
+      })
     }
   } else {
-    res.status(400).json("Part does not exist")
+    res.status(400).json({
+      error: true,
+      message: "Part does not exist",
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -146,12 +189,22 @@ export const deletePart = async (req: Request, res: Response) => {
       const deletedPart = await Parts.findById({
         _id: req.params.id,
       })
-      res.json(deletedPart)
+      res.json({
+        error: false,
+        item: deletedPart,
+        itemCount: 1,
+        message: DELETE_SUCCESS_MESSAGE,
+      })
     } else {
       throw new Error("Part is already deleted")
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }

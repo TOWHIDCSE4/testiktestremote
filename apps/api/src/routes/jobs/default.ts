@@ -4,6 +4,9 @@ import {
   UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUE_EMPTY,
   JOB_ALREADY_EXISTS,
+  ADD_SUCCESS_MESSAGE,
+  UPDATE_SUCCESS_MESSAGE,
+  DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { JobsZodSchema } from "custom-validator"
@@ -17,12 +20,17 @@ export const getAllJobs = async (req: Request, res: Response) => {
     res.json({
       error: false,
       items: getAllJobs,
-      count: jobsCount,
-      errMessage: null,
+      itemCount: jobsCount,
+      message: null,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -34,12 +42,18 @@ export const getJob = async (req: Request, res: Response) => {
     })
     res.json({
       error: false,
+      message: null,
       item: getJob,
-      errMessage: null,
+      itemCount: 1,
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -64,22 +78,42 @@ export const addJob = async (req: Request, res: Response) => {
         })
         if (getExistingJob.length === 0) {
           const createJob = await newJob.save()
-          res.json({ error: false, data: createJob, errMessage: null })
+          res.json({
+            error: false,
+            message: ADD_SUCCESS_MESSAGE,
+            item: createJob,
+            itemCount: 1,
+          })
         } else {
-          res.status(400).json(JOB_ALREADY_EXISTS)
+          res.status(400).json({
+            error: true,
+            message: JOB_ALREADY_EXISTS,
+            items: null,
+            itemCount: null,
+          })
         }
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json(message)
+        res.status(500).json({
+          error: true,
+          message: message,
+          items: null,
+          itemCount: null,
+        })
       }
     } else {
       res.json({
         error: true,
-        errorMessage: JSON.parse(validateJobInput.error.message),
+        message: JSON.parse(validateJobInput.error.message),
       })
     }
   } else {
-    res.status(400).json(REQUIRED_VALUE_EMPTY)
+    res.status(400).json({
+      error: true,
+      message: REQUIRED_VALUE_EMPTY,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -100,16 +134,36 @@ export const updateJob = async (req: Request, res: Response) => {
           },
           { new: true }
         )
-        res.json(updateJob)
+        res.json({
+          error: false,
+          item: updateJob,
+          message: UPDATE_SUCCESS_MESSAGE,
+          itemCount: 1,
+        })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json(message)
+        res.status(500).json({
+          error: true,
+          message: message,
+          items: null,
+          itemCount: null,
+        })
       }
     } else {
-      res.status(500).json("Job cannot be found")
+      res.status(500).json({
+        error: true,
+        message: "Job cannot be found",
+        items: null,
+        itemCount: null,
+      })
     }
   } else {
-    res.status(400).json("Job does not exist")
+    res.status(400).json({
+      error: true,
+      message: "Job does not exist",
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -128,12 +182,22 @@ export const deleteJob = async (req: Request, res: Response) => {
       const deletedJob = await Jobs.findById({
         _id: req.params.id,
       })
-      res.json(deletedJob)
+      res.json({
+        error: false,
+        message: DELETE_SUCCESS_MESSAGE,
+        item: deletedJob,
+        itemCount: 1,
+      })
     } else {
       throw new Error("Job is already deleted")
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json(message)
+    res.status(500).json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
   }
 }
