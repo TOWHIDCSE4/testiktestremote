@@ -1,23 +1,20 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline"
+import { TrashIcon } from "@heroicons/react/24/outline"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
-import NewModal from "./modals/NewModal"
 import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
 import DetailsModal from "./modals/DetailsModal"
-import useSession from "../../../hooks/users/useSession"
-import useGetAllFactories from "../../../hooks/factories/useFactories"
 import NewPartModal from "./modals/NewPartModal"
+import useLocations from "../../../hooks/locations/useLocations"
 
 const products = [
   {
     id: 1,
     name: "Product Name",
     href: "#",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
+    imageSrc: "/no-image.png",
     imageAlt: "Front of men's Basic Tee in black.",
     price: "$35",
     color: "Black",
@@ -26,8 +23,7 @@ const products = [
     id: 2,
     name: "Product Name",
     href: "#",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-02.jpg",
+    imageSrc: "/no-image.png",
     imageAlt: "Front of men's Basic Tee in black.",
     price: "$35",
     color: "Black",
@@ -36,8 +32,7 @@ const products = [
     id: 3,
     name: "Product Name",
     href: "#",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-03.jpg",
+    imageSrc: "/no-image.png",
     imageAlt: "Front of men's Basic Tee in black.",
     price: "$35",
     color: "Black",
@@ -49,34 +44,43 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
 }
 
+type T_LocationTabs = {
+  _id: string
+  name: string
+}
+
 const Content = () => {
+  const { data: locations, isLoading: isLocationLoading } = useLocations()
   const [openNewModal, setOpenNewModal] = useState(false)
+  const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
+  const [currentLocationTab, setCurrentLocationTab] = useState<string>("")
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
-
   const [typeState, setTypeState] = useState("Part")
-  const [locationState, setLocationState] = useState("Seguin")
 
   const tabs = [
     { name: "Part", current: typeState === "Part" },
     { name: "Machine", current: typeState === "Machine" },
   ]
 
-  const locationTabs = [
-    {
-      name: "Seguin",
-      current: locationState === "Seguin",
-    },
-    {
-      name: "Conroe",
-      current: locationState === "Conroe",
-    },
-    {
-      name: "Gunter",
-      current: locationState === "Gunter",
-    },
-  ]
+  useEffect(() => {
+    if (locationTabs.length === 0) {
+      if (locations) {
+        setLocationTabs(
+          locations.items.map((location: T_LocationTabs) => ({
+            _id: location._id,
+            name: location.name,
+          }))
+        )
+      }
+      setCurrentLocationTab(locations?.items[0]._id)
+    }
+  }, [locations])
+
+  const locationName = locationTabs.find(
+    (tab) => tab._id === currentLocationTab
+  )?.name
 
   return (
     <div className={`mt-20 my-10`}>
@@ -141,12 +145,12 @@ const Content = () => {
               <button
                 type="button"
                 className={classNames(
-                  tab.current
+                  tab._id === currentLocationTab
                     ? "bg-blue-950 text-white"
                     : "bg-white text-gray-700 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
-                onClick={() => setLocationState(tab.name)}
+                onClick={() => setCurrentLocationTab(tab._id)}
               >
                 {tab.name}
               </button>
@@ -171,6 +175,19 @@ const Content = () => {
               </div>
             </div>
           ))}
+          {isLocationLoading && (
+            <>
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-14 w-full rounded bg-slate-200"></div>
+              </div>
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-14 w-full rounded bg-slate-200"></div>
+              </div>
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-14 w-full rounded bg-slate-200"></div>
+              </div>
+            </>
+          )}
         </div>
         <div className="w-full h-[1.5px] bg-gray-200 mt-5"></div>
         {/* Other sub items */}
@@ -247,12 +264,12 @@ const Content = () => {
                   className="group relative bg-white rounded-md border border-gray-200 drop-shadow-lg cursor-pointer"
                   onClick={() => setOpenDetailsModal(true)}
                 >
-                  <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md lg:aspect-none group-hover:opacity-75 h-72">
+                  <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 h-72">
                     <div className="h-full w-full lg:h-full lg:w-full relative">
                       <Image
                         src={product.imageSrc}
                         alt={product.imageAlt}
-                        className="h-full w-full object-contain object-center "
+                        className="h-full w-full object-center"
                         width={400}
                         height={400}
                       />
@@ -265,7 +282,7 @@ const Content = () => {
                       </h3>
                     </div>
                     <p className="font-bold uppercase text-green-600">
-                      {locationState}
+                      {locationName ? locationName : "Loading..."}
                     </p>
                   </div>
                   <div className="px-4">
@@ -384,7 +401,8 @@ const Content = () => {
       </div>
       <NewPartModal
         isOpen={openNewModal}
-        locationState={locationState}
+        locationState={locationName ? locationName : "Loading..."}
+        locationId={currentLocationTab}
         onClose={() => setOpenNewModal(false)}
       />
       <EditModal
@@ -398,7 +416,7 @@ const Content = () => {
       />
       <DetailsModal
         isOpen={openDetailsModal}
-        locationState={locationState}
+        locationState={locationName ? locationName : "Loading..."}
         typeState={typeState}
         onClose={() => setOpenDetailsModal(false)}
       />

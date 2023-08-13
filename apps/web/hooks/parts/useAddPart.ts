@@ -13,6 +13,7 @@ export async function addPart({
   cageWeightActual,
   cageWeightScrap,
   locationId,
+  files,
 }: T_Part) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_PARTS}`, {
@@ -23,6 +24,7 @@ export async function addPart({
       machineClassId,
       lbs,
       time,
+      files,
       finishGoodWeight,
       cageWeightActual,
       cageWeightScrap,
@@ -44,6 +46,7 @@ function useAddPart() {
       machineClassId,
       lbs,
       time,
+      files,
       finishGoodWeight,
       cageWeightActual,
       cageWeightScrap,
@@ -55,7 +58,7 @@ function useAddPart() {
         machineClassId,
         lbs,
         time,
-        files: null,
+        files,
         finishGoodWeight,
         cageWeightActual,
         cageWeightScrap,

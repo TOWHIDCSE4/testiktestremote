@@ -63,6 +63,7 @@ export const addPart = async (req: Request, res: Response) => {
     factoryId,
     machineClassId,
     pounds,
+    files,
     finishGoodWeight,
     cageWeightActual,
     cageWeightScrap,
@@ -75,6 +76,7 @@ export const addPart = async (req: Request, res: Response) => {
       factoryId,
       machineClassId,
       pounds,
+      files,
       finishGoodWeight,
       cageWeightActual,
       cageWeightScrap,
@@ -101,7 +103,6 @@ export const addPart = async (req: Request, res: Response) => {
           message: PART_ALREADY_EXISTS,
           items: null,
           itemCount: null,
-
         })
       }
     } catch (err: any) {
@@ -110,8 +111,8 @@ export const addPart = async (req: Request, res: Response) => {
       res.json({
         error: true,
         message: message,
-      items: null,
-      itemCount: null,
+        items: null,
+        itemCount: null,
       })
     }
   } else {

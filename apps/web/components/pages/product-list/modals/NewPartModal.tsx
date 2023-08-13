@@ -13,6 +13,9 @@ import {
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import useAddPart from "../../../../hooks/parts/useAddPart"
+import MultipleImageUpload from "../../../MultipleImageUpload"
+import { FileWithPath } from "react-dropzone"
+import useUploadMediaFiles from "../../../../hooks/parts/useUploadMediaFiles"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -22,13 +25,22 @@ const roboto = Roboto({
 
 interface NewModalProps {
   isOpen: boolean
-  locationState: string
+  locationState: string | null
+  locationId: string | null
   onClose: () => void
 }
 
-const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
+const NewPartModal = ({
+  isOpen,
+  locationState,
+  locationId,
+  onClose,
+}: NewModalProps) => {
   const cancelButtonRef = useRef(null)
-  const { register, handleSubmit, setValue } = useForm<T_Part>()
+  const [files, setFiles] = useState<FileWithPath[]>([])
+  const { register, handleSubmit, setValue, reset } = useForm<T_Part>()
+  const { mutate: uploadMediaFiles, isLoading: isUploadMediaFilesLoading } =
+    useUploadMediaFiles()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const {
     data: machineClasses,
@@ -42,20 +54,56 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
 
   const onSubmit = (data: T_Part) => {
     const callBackReq = {
-      onSuccess: (data: T_BackendResponse) => {
-        if (!data.error) {
-          if (data.item) {
-            toast.success("Part created successfully")
+      onSuccess: (returnData: T_BackendResponse) => {
+        if (!returnData.error) {
+          if (returnData.item) {
+            onClose()
+            reset()
+            setSelectedFactory("")
+            setFiles([])
+            toast.success("New part was added")
           }
         } else {
-          toast.error(data.message as string)
+          toast.error(returnData.message as string)
         }
       },
       onError: (err: any) => {
         toast.error(String(err))
       },
     }
-    mutate(data, callBackReq)
+    const uploadFilesCallBackReq = {
+      onSuccess: (returnData: T_BackendResponse[]) => {
+        const imagesUploadStatus = returnData.map((item) => {
+          return item.error
+        })
+        if (imagesUploadStatus.some((status) => status)) {
+          toast.error("Some media files failed to upload")
+        }
+        const uploadedNames = returnData.map((item) => {
+          return item.item?.name
+        })
+        mutate(
+          {
+            ...data,
+            locationId: locationId ? locationId : "",
+            files: uploadedNames,
+          },
+          callBackReq
+        )
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+        mutate(
+          { ...data, locationId: locationId ? locationId : "", files: [] },
+          callBackReq
+        )
+      },
+    }
+    if (files.length > 0) {
+      uploadMediaFiles(files, uploadFilesCallBackReq)
+    } else {
+      toast.error("Please upload at least one media file")
+    }
   }
 
   return (
@@ -106,7 +154,7 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
                         type="text"
                         id="nameId"
                         required
-                        disabled={isAddPartLoading}
+                        disabled={isAddPartLoading || isUploadMediaFilesLoading}
                         className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                         placeholder="Part"
                         {...register("name", { required: true })}
@@ -120,7 +168,11 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
                         Factory
                       </label>
                       <select
-                        disabled={isFactoriesLoading || isAddPartLoading}
+                        disabled={
+                          isFactoriesLoading ||
+                          isAddPartLoading ||
+                          isUploadMediaFilesLoading
+                        }
                         id="factory"
                         required
                         {...register("factoryId", { required: true })}
@@ -190,7 +242,9 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
                           type="number"
                           id="weight"
                           required
-                          disabled={isAddPartLoading}
+                          disabled={
+                            isAddPartLoading || isUploadMediaFilesLoading
+                          }
                           className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                           placeholder="Pounds"
                           {...register("lbs", {
@@ -210,7 +264,9 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
                           type="number"
                           id="time"
                           required
-                          disabled={isAddPartLoading}
+                          disabled={
+                            isAddPartLoading || isUploadMediaFilesLoading
+                          }
                           className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                           placeholder="Avg Time"
                           {...register("time", {
@@ -220,34 +276,11 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
                         />
                       </div>
                     </div>
-                    <div className="mt-4">
-                      <label
-                        htmlFor="file-upload"
-                        className="uppercase font-semibold text-gray-800"
-                      >
-                        Assign Photos And Video Previews
-                      </label>
-                      <div className="text-gray-400 text-sm border-2 border-gray-300 border-dashed text-center p-5 rounded mt-2">
-                        Drop files here or click to upload.
-                      </div>
-                      <p className="text-xs mt-1 text-gray-600">
-                        photos will be resized under 1mb and videos compressed
-                        to 1min at 720p
-                      </p>
-                      <div className="border-2 border-gray-300 p-2 h-20 mt-4 rounded-md">
-                        <div className="grid grid-cols-5">
-                          <div className="col-span-3 text-xs text-gray-600">
-                            File Name
-                          </div>
-                          <div className="col-span-2 text-xs text-gray-600">
-                            File Type
-                          </div>
-                          <div className="col-span-3 text-sm font-light text-gray-400 mt-2">
-                            No Media Previews
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <MultipleImageUpload
+                      files={files}
+                      setFiles={setFiles}
+                      isLoading={isAddPartLoading || isUploadMediaFilesLoading}
+                    />
                     <div className="mt-4 grid md:grid-cols-3 gap-x-8 gap-y-4 md:gap-y-0">
                       <div>
                         <label
@@ -260,7 +293,9 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
                           type="number"
                           required
                           id="finishGoodWeight"
-                          disabled={isAddPartLoading}
+                          disabled={
+                            isAddPartLoading || isUploadMediaFilesLoading
+                          }
                           className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                           {...register("finishGoodWeight", {
                             required: true,
@@ -279,7 +314,9 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
                           type="number"
                           required
                           id="cageWeightScrap"
-                          disabled={isAddPartLoading}
+                          disabled={
+                            isAddPartLoading || isUploadMediaFilesLoading
+                          }
                           className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                           {...register("cageWeightScrap", {
                             required: true,
@@ -298,7 +335,9 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
                           type="number"
                           required
                           id="cageWeightActual"
-                          disabled={isAddPartLoading}
+                          disabled={
+                            isAddPartLoading || isUploadMediaFilesLoading
+                          }
                           className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                           {...register("cageWeightActual", {
                             required: true,
@@ -311,10 +350,10 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
                       type="submit"
-                      disabled={isAddPartLoading}
+                      disabled={isAddPartLoading || isUploadMediaFilesLoading}
                       className="uppercase inline-flex w-full items-center justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3  disabled:opacity-70 sm:w-auto"
                     >
-                      {isAddPartLoading ? (
+                      {isAddPartLoading || isUploadMediaFilesLoading ? (
                         <div
                           className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full"
                           role="status"
@@ -329,7 +368,7 @@ const NewPartModal = ({ isOpen, locationState, onClose }: NewModalProps) => {
                     <button
                       type="button"
                       className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
-                      disabled={isAddPartLoading}
+                      disabled={isAddPartLoading || isUploadMediaFilesLoading}
                       onClick={onClose}
                       ref={cancelButtonRef}
                     >

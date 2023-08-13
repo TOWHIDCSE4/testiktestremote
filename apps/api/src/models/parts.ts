@@ -20,7 +20,10 @@ const parts = new Schema({
   finishGoodWeight: Number,
   cageWeightActual: Number,
   cageWeightScrap: Number,
-  locationId: String, //to change
+  locationId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Location",
+  },
   createdAt: {
     type: Date,
     default: Date.now,

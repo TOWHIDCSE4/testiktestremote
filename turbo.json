@@ -11,7 +11,10 @@
         "MONGO_URL",
         "REDIS_URL",
         "ORIGINS",
-        "PORT"
+        "PORT",
+        "API_URL",
+        "WEB_URL",
+        "MEDIA_URL"
       ]
     },
     "lint": {},
