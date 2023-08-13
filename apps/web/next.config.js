@@ -11,6 +11,10 @@ module.exports = {
         destination: `${process.env.MEDIA_URL}/api/files/:path*`,
       },
       {
+        source: "/files/:path*",
+        destination: `${process.env.MEDIA_URL}/files/:path*`,
+      },
+      {
         source: "/api/:path*",
         destination: `${process.env.API_URL}/api/:path*`,
       },

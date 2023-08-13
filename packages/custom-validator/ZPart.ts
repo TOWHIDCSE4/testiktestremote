@@ -6,7 +6,7 @@ export const ZPart = z.object({
   factoryId: z.string().min(23),
   machineClassId: z.string().min(23),
   files: z.string().array().nullable(),
-  lbs: z.number(),
+  pounds: z.number(),
   time: z.number(),
   finishGoodWeight: z.number(),
   cageWeightActual: z.number(),

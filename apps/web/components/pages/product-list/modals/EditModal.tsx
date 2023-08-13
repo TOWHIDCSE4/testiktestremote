@@ -10,12 +10,12 @@ const roboto = Roboto({
 
 interface EditModalProps {
   isOpen: boolean
-  typeState: string
   onClose: () => void
 }
 
-const EditModal = ({ isOpen, typeState, onClose }: EditModalProps) => {
+const EditModal = ({ isOpen, onClose }: EditModalProps) => {
   const cancelButtonRef = useRef(null)
+  const typeState = "Machine"
 
   const machineSets = [
     ["Radial Press", "Variant", "Wire Cage (BMK)"],

@@ -13,18 +13,17 @@ const roboto = Roboto({
 interface DetailsModalProps {
   isOpen: boolean
   locationState: string
-  typeState: string
   onClose: () => void
 }
 
 const DetailsModal = ({
   isOpen,
   locationState,
-  typeState,
   onClose,
 }: DetailsModalProps) => {
   const closeButtonRef = useRef(null)
   const [openEditModal, setOpenEditModal] = useState(false)
+  const typeState = "Machine"
 
   const machineSets = [
     ["Radial Press", "Variant", "Wire Cage (BMK)"],
@@ -457,7 +456,6 @@ const DetailsModal = ({
       </Transition.Root>
       <EditModal
         isOpen={openEditModal}
-        typeState={typeState}
         onClose={() => setOpenEditModal(false)}
       />
     </>

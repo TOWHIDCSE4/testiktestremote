@@ -4,18 +4,13 @@ import { Roboto } from "next/font/google"
 import useFactories from "../../../../hooks/factories/useFactories"
 import { I_FACTORY } from "../../../../types/global"
 import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
-import {
-  T_BackendResponse,
-  T_MachineClasses,
-  T_Part,
-  ZPart,
-} from "custom-validator"
+import { T_BackendResponse, T_MachineClasses, T_Part } from "custom-validator"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import useAddPart from "../../../../hooks/parts/useAddPart"
 import MultipleImageUpload from "../../../MultipleImageUpload"
 import { FileWithPath } from "react-dropzone"
-import useUploadMediaFiles from "../../../../hooks/parts/useUploadMediaFiles"
+import useUploadMediaFiles from "../../../../hooks/media/useUploadMediaFiles"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -247,7 +242,7 @@ const NewPartModal = ({
                           }
                           className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                           placeholder="Pounds"
-                          {...register("lbs", {
+                          {...register("pounds", {
                             required: true,
                             valueAsNumber: true,
                           })}

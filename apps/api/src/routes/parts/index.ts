@@ -8,6 +8,10 @@ import {
   updatePart,
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
+import { paginated } from "./paginated"
+
+//custom
+router.get("/paginated", isUserLoggedIn, paginated)
 
 //default
 router.get("/", isUserLoggedIn, getAllParts)
