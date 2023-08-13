@@ -26,7 +26,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -49,7 +49,7 @@ export const getUser = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -114,11 +114,16 @@ export const addUser = async (req: Request, res: Response) => {
           res.json({ error: true, message: validateUserInput.error })
         }
       } else {
-        res.status(400).json({ error: true, message: ACCOUNT_ALREADY_EXISTS })
+        res.json({
+          error: true,
+          message: ACCOUNT_ALREADY_EXISTS,
+          items: null,
+          itemCount: null,
+        })
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+      res.json({
         error: true,
         message: message,
         items: null,
@@ -126,7 +131,7 @@ export const addUser = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: REQUIRED_VALUE_EMPTY,
       items: null,
@@ -203,7 +208,7 @@ export const deleteUser = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,

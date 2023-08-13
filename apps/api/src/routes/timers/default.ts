@@ -24,7 +24,7 @@ export const getAllTimers = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -47,7 +47,7 @@ export const getTimer = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -81,7 +81,7 @@ export const addTimer = async (req: Request, res: Response) => {
           message: ADD_SUCCESS_MESSAGE,
         })
       } else {
-        res.status(400).json({
+        res.json({
           error: true,
           message: TIMER__ALREADY_EXISTS,
           items: null,
@@ -90,7 +90,7 @@ export const addTimer = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+      res.json({
         error: true,
         message: message,
         items: null,
@@ -98,7 +98,7 @@ export const addTimer = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: REQUIRED_VALUE_EMPTY,
       items: null,
@@ -132,7 +132,7 @@ export const updateTimer = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json({
+        res.json({
           error: true,
           message: message,
           items: null,
@@ -140,7 +140,7 @@ export const updateTimer = async (req: Request, res: Response) => {
         })
       }
     } else {
-      res.status(500).json({
+      res.json({
         error: true,
         message: "Timer cannot be found",
         items: null,
@@ -148,7 +148,7 @@ export const updateTimer = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: "Timer does not exist",
       items: null,
@@ -183,7 +183,7 @@ export const deleteTimer = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
