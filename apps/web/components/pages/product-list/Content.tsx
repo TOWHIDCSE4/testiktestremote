@@ -90,12 +90,12 @@ const Content = () => {
               <button
                 key={tab.name}
                 className={combineClasses(
-                  tab.current
-                    ? "text-blue-950"
-                    : "text-gray-500 hover:text-gray-700",
+                  tab.name === typeState
+                    ? "text-blue-950 bg-gray-200"
+                    : "text-gray-500 hover:text-gray-700 bg-white",
                   tabIdx === 0 ? "rounded-l-md" : "",
                   tabIdx === tabs.length - 1 ? "rounded-r-md" : "",
-                  "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center font-extrabold hover:bg-gray-50 focus:z-10"
+                  "group relative min-w-0 flex-1 overflow-hidden py-4 px-4 text-center font-extrabold hover:bg-gray-300 focus:z-10 text-xl"
                 )}
                 aria-current={tab.current ? "page" : undefined}
                 onClick={() => setTypeState(tab.name)}

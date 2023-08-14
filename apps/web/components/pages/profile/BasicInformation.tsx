@@ -5,17 +5,20 @@ import toast from "react-hot-toast"
 import useUpdateBasicInfo from "../../../hooks/users/useUpdateBasicInfo"
 import useStoreSession from "../../../store/useStoreSession"
 import { T_BackendResponse, T_UserBasic } from "custom-validator"
+import useLocation from "../../../hooks/locations/useLocation"
+import { useEffect } from "react"
 
 const BasicInformation = () => {
   const queryClient = useQueryClient()
   const storeSession = useStoreSession((state) => state)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const { data: location, setSelectedLocationId } = useLocation()
   const { register, handleSubmit } = useForm<T_UserBasic>({
     values: {
       firstName: userProfile?.item.firstName as string,
       lastName: userProfile?.item.lastName as string,
       email: userProfile?.item.email as string,
-      location: userProfile?.item.location as string,
+      location: location?.item.name as string,
     },
   })
   const { mutate, isLoading: updateInfoLoading } = useUpdateBasicInfo()
@@ -40,11 +43,16 @@ const BasicInformation = () => {
       {
         _id: userProfile?.item._id,
         ...data,
-        location: "64d5814fb996589a945a6402",
+        location: userProfile?.item.location as string,
       },
       callBackReq
     )
   }
+  useEffect(() => {
+    if (userProfile?.item.location) {
+      setSelectedLocationId(userProfile?.item.location)
+    }
+  }, [userProfile])
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
@@ -132,9 +140,10 @@ const BasicInformation = () => {
               </label>
               <input
                 type="text"
-                disabled={updateInfoLoading || isProfileLoading}
+                disabled
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                 placeholder="Your factory name..."
+                {...register("location", { required: true })}
               />
             </div>
           </div>
