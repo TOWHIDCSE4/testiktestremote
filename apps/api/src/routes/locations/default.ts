@@ -53,10 +53,11 @@ export const getLocation = async (req: Request, res: Response) => {
 }
 
 export const addLocation = async (req: Request, res: Response) => {
-  const { name } = req.body
-  if (name) {
+  const { name, productionTime } = req.body
+  if (name && productionTime) {
     const newLocation = new Locations({
       name,
+      productionTime,
       updatedAt: null,
       deletedAt: null,
     })
