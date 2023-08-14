@@ -23,7 +23,7 @@ export const getAllMachines = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -46,7 +46,7 @@ export const getMachine = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -77,7 +77,7 @@ export const addMachine = async (req: Request, res: Response) => {
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+      res.json({
         error: true,
         message: message,
         items: null,
@@ -85,7 +85,7 @@ export const addMachine = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: REQUIRED_VALUE_EMPTY,
       items: null,
@@ -119,7 +119,7 @@ export const updateMachine = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json({
+        res.json({
           error: true,
           message: message,
           items: null,
@@ -127,7 +127,7 @@ export const updateMachine = async (req: Request, res: Response) => {
         })
       }
     } else {
-      res.status(500).json({
+      res.json({
         error: true,
         message: "Machine cannot be found",
         items: null,
@@ -135,7 +135,7 @@ export const updateMachine = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: "Machine does not exist",
       items: null,
@@ -170,7 +170,7 @@ export const deleteMachine = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,

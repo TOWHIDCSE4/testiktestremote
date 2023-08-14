@@ -23,7 +23,7 @@ export const getAllFactories = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       item: null,
@@ -46,7 +46,7 @@ export const getFactory = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       item: null,
@@ -78,7 +78,7 @@ export const addFactory = async (req: Request, res: Response) => {
           message: ADD_SUCCESS_MESSAGE,
         })
       } else {
-        res.status(400).json({
+        res.json({
           error: true,
           message: FACTORY_ALREADY_EXISTS,
           item: null,
@@ -87,7 +87,7 @@ export const addFactory = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+      res.json({
         error: true,
         message: message,
         item: null,
@@ -95,14 +95,12 @@ export const addFactory = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res
-      .status(400)
-      .json({
-        error: true,
-        message: REQUIRED_VALUE_EMPTY,
-        item: null,
-        itemCount: null,
-      })
+    res.json({
+      error: true,
+      message: REQUIRED_VALUE_EMPTY,
+      item: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -131,7 +129,7 @@ export const updateFactory = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json({
+        res.json({
           error: true,
           message: message,
           item: null,
@@ -139,7 +137,7 @@ export const updateFactory = async (req: Request, res: Response) => {
         })
       }
     } else {
-      res.status(500).json({
+      res.json({
         error: true,
         message: "Factory cannot be found",
         item: null,
@@ -147,7 +145,7 @@ export const updateFactory = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: "Factory does not exist",
       item: null,
@@ -179,7 +177,7 @@ export const delteFactory = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       item: null,

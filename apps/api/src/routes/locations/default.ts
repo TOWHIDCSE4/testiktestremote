@@ -22,7 +22,7 @@ export const getAllLocations = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -42,7 +42,7 @@ export const getLocation = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -74,7 +74,7 @@ export const addLocation = async (req: Request, res: Response) => {
           message: ADD_SUCCESS_MESSAGE,
         })
       } else {
-        res.status(400).json({
+        res.json({
           error: true,
           message: LOCATION_ALREADY_EXISTS,
           items: null,
@@ -83,7 +83,7 @@ export const addLocation = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+      res.json({
         error: true,
         message: message,
         items: null,
@@ -91,7 +91,12 @@ export const addLocation = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json(REQUIRED_VALUE_EMPTY)
+    res.json({
+      error: true,
+      message: REQUIRED_VALUE_EMPTY,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -120,7 +125,7 @@ export const updateLocation = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json({
+        res.json({
           error: true,
           message: message,
           items: null,
@@ -128,7 +133,7 @@ export const updateLocation = async (req: Request, res: Response) => {
         })
       }
     } else {
-      res.status(500).json({
+      res.json({
         error: true,
         message: "Location cannot be found",
         items: null,
@@ -136,7 +141,7 @@ export const updateLocation = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: "Location does not exist",
       items: null,
@@ -171,7 +176,7 @@ export const deleteLocation = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,

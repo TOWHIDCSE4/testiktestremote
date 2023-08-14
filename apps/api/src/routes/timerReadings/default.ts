@@ -24,7 +24,7 @@ export const getAllTimerReadings = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -47,7 +47,7 @@ export const getTimerReading = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -80,7 +80,7 @@ export const addTimerReading = async (req: Request, res: Response) => {
           message: ADD_SUCCESS_MESSAGE,
         })
       } else {
-        res.status(400).json({
+        res.json({
           error: true,
           message: TIMER_READING_ALREADY_EXISTS,
           items: null,
@@ -89,7 +89,7 @@ export const addTimerReading = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+      res.json({
         error: true,
         message: message,
         items: null,
@@ -97,7 +97,7 @@ export const addTimerReading = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: REQUIRED_VALUE_EMPTY,
       items: null,
@@ -131,7 +131,7 @@ export const updateTimerReading = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json({
+        res.json({
           error: true,
           message: message,
           items: null,
@@ -139,7 +139,7 @@ export const updateTimerReading = async (req: Request, res: Response) => {
         })
       }
     } else {
-      res.status(500).json({
+      res.json({
         error: true,
         message: "Timer reading cannot be found",
         items: null,
@@ -147,7 +147,7 @@ export const updateTimerReading = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: "Timer reading does not exist",
       items: null,
@@ -185,7 +185,7 @@ export const deleteTimerReading = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
