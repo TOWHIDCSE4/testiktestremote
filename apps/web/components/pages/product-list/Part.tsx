@@ -60,7 +60,7 @@ const Part = ({
                 )}
                 onClick={() => setCurrentLocationTab(tab?._id as string)}
               >
-                {tab.name}
+                {tab.name} (23)
               </button>
               <div className="flex mt-1">
                 <div className="flex h-6 items-center">
@@ -180,7 +180,7 @@ const Part = ({
                     className="group relative bg-white rounded-md border border-gray-200 drop-shadow-lg cursor-pointer"
                     onClick={() => {
                       setOpenDetailsModal(true)
-                      setSelectedPartId(product._id)
+                      setSelectedPartId(product._id as string)
                     }}
                   >
                     <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 rounded-t-md">

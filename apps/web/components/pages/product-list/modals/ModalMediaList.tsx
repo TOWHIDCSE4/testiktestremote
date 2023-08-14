@@ -12,7 +12,7 @@ const ModalMediaList = ({
   const filesArray = files?.map((filename) => ({ name: filename }))
   const [fileName, setFileName] = useState("")
   return (
-    <div className="my-4">
+    <div className="flex-1">
       <div className="w-full">
         <div className="text-gray-400 justify-center text-sm border-2 border-gray-300 text-center rounded-md h-[250px] p-5">
           {fileName ? (
@@ -23,7 +23,7 @@ const ModalMediaList = ({
         </div>
       </div>
       <div
-        className={`border-2 border-gray-300 py-2 px-3 mt-4 rounded-md ${
+        className={`border-2 border-gray-300 py-2 px-3 mt-2 rounded-md ${
           isLoading && "opacity-70"
         }`}
       >
@@ -53,7 +53,7 @@ const ModalMediaList = ({
             </div>
           ) : (
             <div className="col-span-3 text-sm font-light text-gray-400 mt-1">
-              No Media Previews
+              No Media
             </div>
           )}
         </div>

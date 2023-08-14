@@ -4,15 +4,15 @@ import { Dialog, Transition } from "@headlessui/react"
 import EditModal from "./EditModal"
 import usePart from "../../../../hooks/parts/useGetPart"
 import useFactories from "../../../../hooks/factories/useFactories"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   I_FACTORY,
-  I_Part,
   I_PartUpdate,
   T_BACKEND_RESPONSE,
 } from "../../../../types/global"
-import { useForm, SubmitHandler } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
-import { T_MachineClass, T_Part } from "custom-validator"
+import { T_BackendResponse, T_MachineClass, T_Part } from "custom-validator"
 import useLocations from "../../../../hooks/locations/useLocations"
 import useUpdatePart from "../../../../hooks/parts/useUpdatePart"
 import useSession from "../../../../hooks/users/useSession"
@@ -32,11 +32,11 @@ const PartDetailsModal = ({
   onClose,
   id,
 }: DetailsModalProps) => {
+  const queryClient = useQueryClient()
   const session = useSession()
   const token = session.data.item.token
   const closeButtonRef = useRef(null)
   const [openEditModal, setOpenEditModal] = useState(false)
-  const typeState = "Machine"
 
   const { data: partDetails, isLoading: isPartDetailsLoading } = usePart(id)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
@@ -46,24 +46,19 @@ const PartDetailsModal = ({
     setSelectedFactoryId,
   } = useFactoryMachineClasses()
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
-  const [selectedFactory, setSelectedFactory] = useState("Factory")
-  const [selectedLocation, setSelectedLocation] = useState(locationState)
-  const [selectedMachineClass, setSelectedMachineClass] = useState("")
+  const { mutate, isLoading: isUpdatePartLoading } = useUpdatePart()
 
-  const { mutate, isLoading: isUpdatePartLoading } = useUpdatePart(token)
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<I_PartUpdate>({ values: partDetails?.item })
-  const onSubmit = (data: I_PartUpdate) => {
+  const { register, handleSubmit } = useForm<T_Part>({
+    values: partDetails?.item,
+  })
+  const onSubmit = (data: T_Part) => {
     const callBackReq = {
-      onSuccess: (data: T_BACKEND_RESPONSE) => {
+      onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
-          toast.success("Part details has been updated.")
-          console.log("Part details has been updated.")
+          queryClient.invalidateQueries({
+            queryKey: ["parts"],
+          })
+          toast.success("Part details has been updated")
         } else {
           toast.error(String(data.message))
         }
@@ -73,7 +68,7 @@ const PartDetailsModal = ({
       },
     }
 
-    mutate(data, callBackReq)
+    mutate({ _id: partDetails?.item?._id as string, ...data }, callBackReq)
   }
 
   useEffect(() => {
@@ -85,13 +80,6 @@ const PartDetailsModal = ({
   const partSection = () => {
     return (
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/*  */}
-        <input
-          type="hidden"
-          {...register("id", { required: true })}
-          defaultValue={partDetails?.item?._id}
-        />
-        {/*  */}
         <div className="bg-white">
           <div className="flex justify-between border-b border-gray-300 px-4 md:px-6 py-3">
             <h3 className="text-gray-800 font-semibold text-2xl">Details</h3>
@@ -99,10 +87,10 @@ const PartDetailsModal = ({
               {locationState}
             </h4>
           </div>
-          <div className="flex justify-between items-center px-4 md:px-6 py-1 mt-3">
+          <div className="flex justify-between gap-4 items-center px-4 md:px-6 py-1 mt-3">
             <input
               type="text"
-              className="text-gray-800 pl-0 font-bold text-xl uppercase py-1 mt-1 mb-1 rounded-md border-0 focus:ring-1 focus:ring-blue-950 focus:pl-3 cursor-pointer focus:cursor-text disabled:opacity-70"
+              className="text-gray-800 pl-0 font-bold text-xl uppercase py-1 mt-1 mb-1 rounded-md border-0 focus:ring-1 focus:ring-blue-950 focus:pl-3 cursor-pointer focus:cursor-text disabled:opacity-70 w-full"
               defaultValue={partDetails?.item?.name}
               disabled={
                 isUpdatePartLoading ||
@@ -111,13 +99,16 @@ const PartDetailsModal = ({
                 isFactoriesLoading
               }
             />
-            <button className="uppercase bg-blue-950 hover:bg-blue-900 text-white text-sm py-1 px-4 rounded-md disabled:opacity-70">
+            <button
+              type="button"
+              className="uppercase bg-blue-950 hover:bg-blue-900 text-white text-sm py-2 px-4 rounded-md disabled:opacity-70"
+            >
               Logs
             </button>
           </div>
-          <div className="px-4 md:px-6">
-            <div className="lg:flex justify-between">
-              <div className="w-[350px]">
+          <div className="px-4 md:px-6 mt-4">
+            <div className="lg:flex gap-4">
+              <div>
                 <div className="grid grid-cols-4 items-center gap-y-2">
                   <label
                     htmlFor="factory"
@@ -136,9 +127,7 @@ const PartDetailsModal = ({
                     }
                     {...register("factoryId", { required: true })}
                     onChange={(e) => {
-                      setSelectedFactory(e.target.value)
                       setSelectedFactoryId(e.target.value)
-                      setSelectedMachineClass("")
                     }}
                   >
                     <option disabled>Factory</option>
@@ -167,7 +156,8 @@ const PartDetailsModal = ({
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isLocationsLoading ||
-                      isFactoriesLoading
+                      isFactoriesLoading ||
+                      isMachineClassesRefetching
                     }
                     {...register("machineClassId", { required: true })}
                   >
@@ -288,9 +278,6 @@ const PartDetailsModal = ({
                     id="location"
                     {...register("locationId", { required: true })}
                     className={`block col-span-2 md:mt-0 w-full text-sm rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:leading-6 disabled:opacity-70`}
-                    onChange={(e) => {
-                      setSelectedLocation(e.currentTarget.value)
-                    }}
                     disabled={
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
@@ -324,7 +311,7 @@ const PartDetailsModal = ({
           <div className="bg-gray-100 mt-7 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
             <button
               type="submit"
-              className="uppercase inline-flex w-full justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 sm:w-auto disabled:opacity-70"
+              className="ml-3 uppercase flex items-center rounded-md bg-green-700 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
               disabled={
                 isUpdatePartLoading ||
                 isPartDetailsLoading ||
@@ -332,7 +319,17 @@ const PartDetailsModal = ({
                 isFactoriesLoading
               }
             >
-              Save
+              {isUpdatePartLoading ? (
+                <div
+                  className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
+                  role="status"
+                  aria-label="loading"
+                >
+                  <span className="sr-only">Loading...</span>
+                </div>
+              ) : (
+                "Save"
+              )}
             </button>
             <button
               type="button"

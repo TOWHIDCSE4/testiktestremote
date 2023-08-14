@@ -1,23 +1,23 @@
-import { I_PartUpdate } from "../../types/global"
+import { T_Part } from "custom-validator"
 import { API_URL_PARTS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
+import Cookies from "js-cookie"
 
-export async function updatePart(
-  {
-    id,
-    name,
-    factoryId,
-    machineClassId,
-    pounds,
-    time,
-    finishGoodWeight,
-    cageWeightActual,
-    cageWeightScrap,
-    locationId,
-  }: I_PartUpdate,
-  token: string
-) {
-  const res = await fetch(`${API_URL_PARTS}/${id}`, {
+export async function updatePart({
+  _id,
+  name,
+  factoryId,
+  machineClassId,
+  pounds,
+  time,
+  files,
+  finishGoodWeight,
+  cageWeightActual,
+  cageWeightScrap,
+  locationId,
+}: T_Part) {
+  const token = Cookies.get("tfl")
+  const res = await fetch(`${API_URL_PARTS}/${_id}`, {
     method: "PATCH",
     body: JSON.stringify({
       name,
@@ -25,6 +25,7 @@ export async function updatePart(
       machineClassId,
       pounds,
       time,
+      files,
       finishGoodWeight,
       cageWeightActual,
       cageWeightScrap,
@@ -38,7 +39,7 @@ export async function updatePart(
   return await res.json()
 }
 
-function useUpdatePart(token: string) {
+function useUpdatePart() {
   const query = useMutation(
     ({
       name,
@@ -46,27 +47,26 @@ function useUpdatePart(token: string) {
       machineClassId,
       pounds,
       time,
+      files,
       finishGoodWeight,
       cageWeightActual,
       cageWeightScrap,
       locationId,
-      id,
-    }: I_PartUpdate) =>
-      updatePart(
-        {
-          name,
-          factoryId,
-          machineClassId,
-          pounds,
-          time,
-          finishGoodWeight,
-          cageWeightActual,
-          cageWeightScrap,
-          locationId,
-          id,
-        },
-        token
-      )
+      _id,
+    }: T_Part) =>
+      updatePart({
+        name,
+        factoryId,
+        machineClassId,
+        pounds,
+        time,
+        files,
+        finishGoodWeight,
+        cageWeightActual,
+        cageWeightScrap,
+        locationId,
+        _id,
+      })
   )
 
   return query
