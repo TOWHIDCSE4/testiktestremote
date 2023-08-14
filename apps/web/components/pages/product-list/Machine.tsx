@@ -5,7 +5,7 @@ import { TrashIcon } from "@heroicons/react/24/outline"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
-import DetailsModal from "./modals/DetailsModal"
+import DetailsModal from "./modals/PartDetailsModal"
 import NewPartModal from "./modals/NewPartModal"
 import useLocations from "../../../hooks/locations/useLocations"
 
@@ -45,7 +45,7 @@ function classNames(...classes) {
 }
 
 type T_LocationTabs = {
-  _id: string
+  _id?: string
   name: string
 }
 
@@ -82,7 +82,7 @@ const Machine = (props: T_Machine_Page) => {
           }))
         )
       }
-      setCurrentLocationTab(locations?.items[0]._id)
+      setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
 
@@ -105,7 +105,7 @@ const Machine = (props: T_Machine_Page) => {
                     : "bg-white text-gray-700 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
-                onClick={() => setCurrentLocationTab(tab._id)}
+                onClick={() => setCurrentLocationTab(tab?._id as string)}
               >
                 {tab.name}
               </button>

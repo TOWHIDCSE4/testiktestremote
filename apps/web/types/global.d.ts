@@ -42,6 +42,19 @@ export interface I_Part {
   locationId: string
 }
 
+export interface I_PartUpdate {
+  id?: string
+  name?: string
+  factoryId?: string
+  machineClassId?: string
+  pounds?: number
+  time?: number
+  finishGoodWeight?: number
+  cageWeightActual?: number
+  cageWeightScrap?: number
+  locationId?: string
+}
+
 export interface I_FACTORY {
   _id: string
   name: string

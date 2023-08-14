@@ -30,6 +30,8 @@ export type { T_MachineClass } from "./ZMachineClass"
 
 export { ZPart } from "./ZPart"
 export type { T_Part } from "./ZPart"
+export { ZLocations } from "./ZLocations"
+export type { T_Locations } from "./ZLocations"
 
 export { ZFactory } from "./ZFactory"
 export type { T_Factory } from "./ZFactory"
