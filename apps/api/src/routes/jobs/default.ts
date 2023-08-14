@@ -9,7 +9,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
-import { JobsZodSchema } from "custom-validator"
+import { ZJobs } from "custom-validator"
 
 export const getAllJobs = async (req: Request, res: Response) => {
   try {
@@ -69,8 +69,8 @@ export const addJob = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-    const validateJobInput = JobsZodSchema.safeParse(newJob)
-    if (validateJobInput.success) {
+    const parsedJob = ZJobs.safeParse(req.body)
+    if (parsedJob.success) {
       try {
         const getExistingJob = await Jobs.find({
           $or: [{ name, description }],
@@ -104,7 +104,7 @@ export const addJob = async (req: Request, res: Response) => {
     } else {
       res.json({
         error: true,
-        message: JSON.parse(validateJobInput.error.message),
+        message: JSON.parse(parsedJob.error.message),
       })
     }
   } else {

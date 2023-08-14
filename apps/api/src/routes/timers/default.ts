@@ -9,6 +9,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZTimers } from "custom-validator"
 
 export const getAllTimers = async (req: Request, res: Response) => {
   try {
@@ -66,33 +67,42 @@ export const addTimer = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-
-    try {
-      const getExistingTimer = await Timers.find({
-        $or: [{ factoryId, machineId, partId }],
-        deletedAt: { $exists: false },
-      })
-      if (getExistingTimer.length === 0) {
-        const createTimer = await newTimer.save()
-        res.json({
-          error: false,
-          item: createTimer,
-          itemCount: 1,
-          message: ADD_SUCCESS_MESSAGE,
+    const parsedTimer = ZTimers.safeParse(req.body)
+    if (parsedTimer.success) {
+      try {
+        const getExistingTimer = await Timers.find({
+          $or: [{ factoryId, machineId, partId }],
+          deletedAt: { $exists: false },
         })
-      } else {
+        if (getExistingTimer.length === 0) {
+          const createTimer = await newTimer.save()
+          res.json({
+            error: false,
+            item: createTimer,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
+        } else {
+          res.json({
+            error: true,
+            message: TIMER__ALREADY_EXISTS,
+            items: null,
+            itemCount: null,
+          })
+        }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
         res.json({
           error: true,
-          message: TIMER__ALREADY_EXISTS,
+          message: message,
           items: null,
           itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    } else {
       res.json({
         error: true,
-        message: message,
+        message: parsedTimer.error.issues,
         items: null,
         itemCount: null,
       })

@@ -12,7 +12,7 @@ import {
 import CryptoJS from "crypto-js"
 import { keys } from "../../config/keys"
 import isEmpty from "lodash/isEmpty"
-import { UsersZodSchema } from "custom-validator"
+import { ZUsers } from "custom-validator"
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -101,7 +101,7 @@ export const addUser = async (req: Request, res: Response) => {
         deletedAt: { $exists: true },
       })
       if (getExistingUser.length === 0) {
-        const validateUserInput = UsersZodSchema.safeParse(newUser)
+        const validateUserInput = ZUsers.safeParse(newUser)
         if (validateUserInput.success) {
           const createUser = await newUser.save()
           res.json({

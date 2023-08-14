@@ -8,6 +8,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZMachines } from "custom-validator"
 
 export const getAllMachines = async (req: Request, res: Response) => {
   try {
@@ -56,30 +57,40 @@ export const getMachine = async (req: Request, res: Response) => {
 }
 
 export const addMachine = async (req: Request, res: Response) => {
-  const { name, description, factoryId, machineClassId } = req.body
-  if (name && description && factoryId && machineClassId) {
+  const { name, description, factoryId, machineClassId, locationId } = req.body
+  if (name && description && factoryId && machineClassId && locationId) {
     const newMachine = new Machines({
       name,
       description,
       factoryId,
       machineClassId,
-      locationId: null,
+      locationId,
       updatedAt: null,
       deletedAt: null,
     })
-    try {
-      const createMachine = await newMachine.save()
-      res.json({
-        error: false,
-        item: createMachine,
-        itemCount: 1,
-        message: ADD_SUCCESS_MESSAGE,
-      })
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    const parsedMachine = ZMachines.safeParse(req.body)
+    if (parsedMachine.success) {
+      try {
+        const createMachine = await newMachine.save()
+        res.json({
+          error: false,
+          item: createMachine,
+          itemCount: 1,
+          message: ADD_SUCCESS_MESSAGE,
+        })
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        res.json({
+          error: true,
+          message: message,
+          items: null,
+          itemCount: null,
+        })
+      }
+    } else {
       res.json({
         error: true,
-        message: message,
+        message: parsedMachine.error.issues,
         items: null,
         itemCount: null,
       })
