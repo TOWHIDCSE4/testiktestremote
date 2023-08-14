@@ -7,7 +7,7 @@ import combineClasses from "../../../helpers/combineClasses"
 import Part from "./Part"
 
 type T_LocationTabs = {
-  _id: string
+  _id?: string
   name: string
 }
 
@@ -27,13 +27,13 @@ const Content = () => {
     if (locationTabs.length === 0) {
       if (locations) {
         setLocationTabs(
-          locations.items.map((location: T_LocationTabs) => ({
+          locations.items.map((location) => ({
             _id: location._id,
             name: location.name,
           }))
         )
       }
-      setCurrentLocationTab(locations?.items[0]._id)
+      setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
 

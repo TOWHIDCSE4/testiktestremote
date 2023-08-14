@@ -4,7 +4,12 @@ import {
   TWELVE_HOURS,
 } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
+import { T_BackendResponse, T_Locations } from "custom-validator"
 import Cookies from "js-cookie"
+
+type T_DBReturn = Omit<T_BackendResponse, "items"> & {
+  items: T_Locations[]
+}
 
 export async function getAllLocations() {
   const token = Cookies.get("tfl")
@@ -15,7 +20,7 @@ export async function getAllLocations() {
       Authorization: `Bearer ${token}`,
     },
   })
-  return await res.json()
+  return (await res.json()) as T_DBReturn
 }
 
 function useLocations() {

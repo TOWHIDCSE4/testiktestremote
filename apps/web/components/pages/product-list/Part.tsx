@@ -5,7 +5,7 @@ import { TrashIcon } from "@heroicons/react/24/outline"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
-import DetailsModal from "./modals/DetailsModal"
+import PartDetailsModal from "./modals/PartDetailsModal"
 import combineClasses from "../../../helpers/combineClasses"
 import usePaginatedParts from "../../../hooks/parts/usePaginatedParts"
 import { T_Part } from "custom-validator"
@@ -41,7 +41,7 @@ const products = [
 ]
 
 type T_LocationTabs = {
-  _id: string
+  _id?: string
   name: string
 }
 
@@ -64,10 +64,12 @@ const Part = ({
     data: allParts,
     isLoading: isGetAllPartsLoading,
     setLocationId,
+    setPage,
   } = usePaginatedParts()
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [selectedPartId, setSelectedPartId] = useState<string | undefined>("")
   useEffect(() => {
     setLocationId(currentLocationTab)
   }, [currentLocationTab, setLocationId])
@@ -86,7 +88,7 @@ const Part = ({
                     : "bg-white text-gray-700 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
-                onClick={() => setCurrentLocationTab(tab._id)}
+                onClick={() => setCurrentLocationTab(tab?._id as string)}
               >
                 {tab.name}
               </button>
@@ -206,7 +208,10 @@ const Part = ({
                   <div
                     key={product._id}
                     className="group relative bg-white rounded-md border border-gray-200 drop-shadow-lg cursor-pointer"
-                    onClick={() => setOpenDetailsModal(true)}
+                    onClick={() => {
+                      setOpenDetailsModal(true)
+                      setSelectedPartId(product._id)
+                    }}
                   >
                     <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 h-72 rounded-t-md">
                       <div className="h-full w-full lg:h-full lg:w-full relative">
@@ -354,12 +359,13 @@ const Part = ({
         isOpen={openDeleteModal}
         onClose={() => setOpenDeleteModal(false)}
       />
-      <DetailsModal
+      <PartDetailsModal
         isOpen={openDetailsModal}
         locationState={
           currentLocationTabName ? currentLocationTabName : "Loading..."
         }
         onClose={() => setOpenDetailsModal(false)}
+        id={selectedPartId}
       />
     </div>
   )

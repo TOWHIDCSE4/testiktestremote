@@ -9,6 +9,8 @@ export { ZMachineClasses } from "./ZMachineClasses"
 export type { T_MachineClasses } from "./ZMachineClasses"
 export { ZPart } from "./ZPart"
 export type { T_Part } from "./ZPart"
+export { ZLocations } from "./ZLocations"
+export type { T_Locations } from "./ZLocations"
 
 export {
   UsersZodSchema,
