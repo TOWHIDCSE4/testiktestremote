@@ -9,6 +9,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZMachineClasses } from "custom-validator"
 
 export const getAllMachineClasses = async (req: Request, res: Response) => {
   try {
@@ -63,33 +64,42 @@ export const addMachineClass = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-
-    try {
-      const getExistingMachineClass = await MachineClasses.find({
-        $or: [{ name }],
-        deletedAt: { $exists: false },
-      })
-      if (getExistingMachineClass.length === 0) {
-        const createMachineClass = await newMachineClass.save()
-        res.json({
-          error: false,
-          item: createMachineClass,
-          itemCount: 1,
-          message: ADD_SUCCESS_MESSAGE,
+    const parsedMachineClass = ZMachineClasses.safeParse(req.body)
+    if (parsedMachineClass.success) {
+      try {
+        const getExistingMachineClass = await MachineClasses.find({
+          $or: [{ name }],
+          deletedAt: { $exists: false },
         })
-      } else {
+        if (getExistingMachineClass.length === 0) {
+          const createMachineClass = await newMachineClass.save()
+          res.json({
+            error: false,
+            item: createMachineClass,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
+        } else {
+          res.json({
+            error: true,
+            message: MACHINE_CLASS__ALREADY_EXISTS,
+            items: null,
+            itemCount: null,
+          })
+        }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
         res.json({
           error: true,
-          message: MACHINE_CLASS__ALREADY_EXISTS,
+          message: message,
           items: null,
           itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    } else {
       res.json({
         error: true,
-        message: message,
+        message: parsedMachineClass.error.issues,
         items: null,
         itemCount: null,
       })

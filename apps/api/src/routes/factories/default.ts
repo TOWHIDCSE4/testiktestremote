@@ -3,13 +3,13 @@ import Factories from "../../models/factories"
 import {
   UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUE_EMPTY,
-  ACCOUNT_ALREADY_EXISTS,
   FACTORY_ALREADY_EXISTS,
   ADD_SUCCESS_MESSAGE,
   UPDATE_SUCCESS_MESSAGE,
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZFactories } from "custom-validator"
 
 export const getAllFactories = async (req: Request, res: Response) => {
   try {
@@ -63,33 +63,42 @@ export const addFactory = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-
-    try {
-      const getExistingFactory = await Factories.find({
-        $or: [{ name }],
-        deletedAt: { $exists: false },
-      })
-      if (getExistingFactory.length === 0) {
-        const createFactory = await newFactory.save()
-        res.json({
-          error: false,
-          item: createFactory,
-          itemCount: 1,
-          message: ADD_SUCCESS_MESSAGE,
+    const parsedFactory = ZFactories.safeParse(req.body)
+    if (parsedFactory.success) {
+      try {
+        const getExistingFactory = await Factories.find({
+          $or: [{ name }],
+          deletedAt: { $exists: false },
         })
-      } else {
+        if (getExistingFactory.length === 0) {
+          const createFactory = await newFactory.save()
+          res.json({
+            error: false,
+            item: createFactory,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
+        } else {
+          res.json({
+            error: true,
+            message: FACTORY_ALREADY_EXISTS,
+            item: null,
+            itemCount: null,
+          })
+        }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
         res.json({
           error: true,
-          message: FACTORY_ALREADY_EXISTS,
+          message: message,
           item: null,
           itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    } else {
       res.json({
         error: true,
-        message: message,
+        message: parsedFactory.error.issues,
         item: null,
         itemCount: null,
       })

@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-const SessionZodSchema = z.object({
+export const ZSession = z.object({
   token: z.nullable(z.string()),
   role: z.enum([
     "Administrator",
@@ -12,4 +12,4 @@ const SessionZodSchema = z.object({
   email: z.string(),
 })
 
-export default SessionZodSchema
+export type T_Session = z.infer<typeof ZSession>

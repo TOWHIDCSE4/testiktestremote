@@ -1,6 +1,7 @@
 import { z } from "zod"
 
-const UserZodSchema = z.object({
+export const ZUsers = z.object({
+  _id: z.object({}).optional(),
   firstName: z.string(),
   lastName: z.string(),
   role: z.enum(["Administrator", "Corporate", "Production", "Personnel"]),
@@ -19,6 +20,9 @@ const UserZodSchema = z.object({
       .nullable(),
     z.string(),
   ]),
+  createdAt: z.date().nullable().optional(),
+  updatedAt: z.date().nullable().optional(),
+  deletedAt: z.date().nullable().optional(),
 })
 
-export default UserZodSchema
+export type T_Users = z.infer<typeof ZUsers>

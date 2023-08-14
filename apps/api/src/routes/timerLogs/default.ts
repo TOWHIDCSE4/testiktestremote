@@ -11,6 +11,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZTimerLogs } from "custom-validator"
 
 export const getAllTimeLogs = async (req: Request, res: Response) => {
   try {
@@ -71,33 +72,42 @@ export const addTimeLog = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-
-    try {
-      const getExistingTimerLog = await TimerLogs.find({
-        $and: [{ partId }, { timerId }],
-        deletedAt: { $exists: false },
-      })
-      if (getExistingTimerLog.length === 0) {
-        const createTimerLog = await newTomerLog.save()
-        res.json({
-          error: false,
-          item: createTimerLog,
-          itemCount: 1,
-          message: ADD_SUCCESS_MESSAGE,
+    const parsedTimerLog = ZTimerLogs.safeParse(req.body)
+    if (parsedTimerLog.success) {
+      try {
+        const getExistingTimerLog = await TimerLogs.find({
+          $and: [{ partId }, { timerId }],
+          deletedAt: { $exists: false },
         })
-      } else {
+        if (getExistingTimerLog.length === 0) {
+          const createTimerLog = await newTomerLog.save()
+          res.json({
+            error: false,
+            item: createTimerLog,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
+        } else {
+          res.json({
+            error: true,
+            message: TIMER_LOG_ALREADY_EXISTS,
+            items: null,
+            itemCount: null,
+          })
+        }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
         res.json({
           error: true,
-          message: TIMER_LOG_ALREADY_EXISTS,
+          message: message,
           items: null,
           itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    } else {
       res.json({
         error: true,
-        message: message,
+        message: parsedTimerLog.error.issues,
         items: null,
         itemCount: null,
       })

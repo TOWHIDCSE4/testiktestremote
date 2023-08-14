@@ -9,6 +9,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZLocations } from "custom-validator"
 
 export const getAllLocations = async (req: Request, res: Response) => {
   try {
@@ -59,34 +60,43 @@ export const addLocation = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-
-    try {
-      const getExostingLocation = await Locations.find({
-        $or: [{ name }],
-        deletedAt: { $exists: false },
-      })
-      if (getExostingLocation.length === 0) {
-        const createLocation = await newLocation.save()
-        res.json({
-          error: false,
-          item: createLocation,
-          itemCount: 1,
-          message: ADD_SUCCESS_MESSAGE,
+    const parsedLocation = ZLocations.safeParse(req.body)
+    if (parsedLocation.success) {
+      try {
+        const getExostingLocation = await Locations.find({
+          $or: [{ name }],
+          deletedAt: { $exists: false },
         })
-      } else {
+        if (getExostingLocation.length === 0) {
+          const createLocation = await newLocation.save()
+          res.json({
+            error: false,
+            item: createLocation,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
+        } else {
+          res.json({
+            error: true,
+            message: LOCATION_ALREADY_EXISTS,
+            items: null,
+            itemCount: null,
+          })
+        }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
         res.json({
           error: true,
-          message: LOCATION_ALREADY_EXISTS,
+          message: message,
           items: null,
           itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    } else {
       res.json({
         error: true,
-        message: message,
-        items: null,
+        message: parsedLocation.error.issues,
+        item: null,
         itemCount: null,
       })
     }
