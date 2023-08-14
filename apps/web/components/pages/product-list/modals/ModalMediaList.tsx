@@ -6,22 +6,20 @@ const ModalMediaList = ({
   files,
   isLoading,
 }: {
-  files: FileWithPath[]
+  files: string[]
   isLoading: boolean
 }) => {
   const filesArray = files?.map((filename) => ({ name: filename }))
   const [fileName, setFileName] = useState("")
   return (
     <div className="my-4">
-      <div className="w-[400px]">
-        <div className="w-full">
-          <div className="text-gray-400 justify-center text-sm border-2 border-gray-300 text-center rounded-md h-[250px] p-5">
-            {fileName ? (
-              <div className="mx-auto">
-                <Image src={fileName} alt="logo" width={200} height={100} />
-              </div>
-            ) : null}
-          </div>
+      <div className="w-full">
+        <div className="text-gray-400 justify-center text-sm border-2 border-gray-300 text-center rounded-md h-[250px] p-5">
+          {fileName ? (
+            <div className="mx-auto">
+              <Image src={fileName} alt="logo" width={200} height={100} />
+            </div>
+          ) : null}
         </div>
       </div>
       <div
@@ -45,7 +43,7 @@ const ModalMediaList = ({
                     onClick={() => setFileName("/files/" + filename.name)}
                     className="truncate cursor-pointer hover:underline col-span-2 text-gray-900"
                   >
-                    {filename.name}
+                    {filename.name as string}
                   </div>
                   <div className="truncate col-span-2 text-gray-900">
                     image/png
