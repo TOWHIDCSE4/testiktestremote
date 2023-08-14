@@ -5,6 +5,7 @@ import useLocations from "../../../hooks/locations/useLocations"
 import Machine from "./Machine"
 import combineClasses from "../../../helpers/combineClasses"
 import Part from "./Part"
+import NewMachineModal from "./modals/NewMachineModal"
 
 type T_LocationTabs = {
   _id?: string
@@ -13,7 +14,8 @@ type T_LocationTabs = {
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
-  const [openNewModal, setOpenNewModal] = useState(false)
+  const [openNewPartModal, setOpenNewPartModal] = useState(false)
+  const [openNewMachineModal, setOpenNewMachineModal] = useState(false)
   const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
   const [currentLocationTab, setCurrentLocationTab] = useState<string>("")
   const [typeState, setTypeState] = useState("Part")
@@ -51,19 +53,30 @@ const Content = () => {
             </h2>
             <h4 className="uppercase text-sm text-gray-500 font-medium tracking-widest mt-2">
               Production<span className="text-black mx-2">&gt;</span>Product
-              List<span className="text-black mx-2">&gt;</span>Part
+              List<span className="text-black mx-2">&gt;</span>
+              {typeState}
               <span className="text-black mx-2">&gt;</span>
               <span className="text-red-500">{currentLocationTabName}</span>
             </h4>
           </div>
           <div>
-            <button
-              type="button"
-              className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-              onClick={() => setOpenNewModal(true)}
-            >
-              New {typeState}
-            </button>
+            {typeState === "Part" ? (
+              <button
+                type="button"
+                className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+                onClick={() => setOpenNewPartModal(true)}
+              >
+                New Part
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+                onClick={() => setOpenNewMachineModal(true)}
+              >
+                New Machine
+              </button>
+            )}
           </div>
         </div>
         <div className="w-full h-0.5 bg-gray-200 mt-5"></div>
@@ -77,12 +90,12 @@ const Content = () => {
               <button
                 key={tab.name}
                 className={combineClasses(
-                  tab.current
-                    ? "text-blue-950"
-                    : "text-gray-500 hover:text-gray-700",
+                  tab.name === typeState
+                    ? "text-blue-950 bg-gray-200"
+                    : "text-gray-500 hover:text-gray-700 bg-white",
                   tabIdx === 0 ? "rounded-l-md" : "",
                   tabIdx === tabs.length - 1 ? "rounded-r-md" : "",
-                  "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center font-extrabold hover:bg-gray-50 focus:z-10"
+                  "group relative min-w-0 flex-1 overflow-hidden py-4 px-4 text-center font-extrabold hover:bg-gray-300 focus:z-10 text-xl"
                 )}
                 aria-current={tab.current ? "page" : undefined}
                 onClick={() => setTypeState(tab.name)}
@@ -118,12 +131,19 @@ const Content = () => {
         )}
       </div>
       <NewPartModal
-        isOpen={openNewModal}
+        isOpen={openNewPartModal}
         locationState={
           currentLocationTabName ? currentLocationTabName : "Loading..."
         }
         locationId={currentLocationTab}
-        onClose={() => setOpenNewModal(false)}
+        onClose={() => setOpenNewPartModal(false)}
+      />
+      <NewMachineModal
+        isOpen={openNewMachineModal}
+        locationState={
+          currentLocationTabName ? currentLocationTabName : "Loading..."
+        }
+        onClose={() => setOpenNewMachineModal(false)}
       />
     </div>
   )

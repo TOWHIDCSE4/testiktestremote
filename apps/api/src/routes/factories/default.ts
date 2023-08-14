@@ -3,13 +3,13 @@ import Factories from "../../models/factories"
 import {
   UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUE_EMPTY,
-  ACCOUNT_ALREADY_EXISTS,
   FACTORY_ALREADY_EXISTS,
   ADD_SUCCESS_MESSAGE,
   UPDATE_SUCCESS_MESSAGE,
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZFactory } from "custom-validator"
 
 export const getAllFactories = async (req: Request, res: Response) => {
   try {
@@ -23,7 +23,7 @@ export const getAllFactories = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       item: null,
@@ -46,7 +46,7 @@ export const getFactory = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       item: null,
@@ -63,46 +63,53 @@ export const addFactory = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-
-    try {
-      const getExistingFactory = await Factories.find({
-        $or: [{ name }],
-        deletedAt: { $exists: false },
-      })
-      if (getExistingFactory.length === 0) {
-        const createFactory = await newFactory.save()
-        res.json({
-          error: false,
-          item: createFactory,
-          itemCount: 1,
-          message: ADD_SUCCESS_MESSAGE,
+    const parsedFactory = ZFactory.safeParse(req.body)
+    if (parsedFactory.success) {
+      try {
+        const getExistingFactory = await Factories.find({
+          $or: [{ name }],
+          deletedAt: { $exists: false },
         })
-      } else {
-        res.status(400).json({
+        if (getExistingFactory.length === 0) {
+          const createFactory = await newFactory.save()
+          res.json({
+            error: false,
+            item: createFactory,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
+        } else {
+          res.json({
+            error: true,
+            message: FACTORY_ALREADY_EXISTS,
+            item: null,
+            itemCount: null,
+          })
+        }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        res.json({
           error: true,
-          message: FACTORY_ALREADY_EXISTS,
+          message: message,
           item: null,
           itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+    } else {
+      res.json({
         error: true,
-        message: message,
+        message: parsedFactory.error.issues,
         item: null,
         itemCount: null,
       })
     }
   } else {
-    res
-      .status(400)
-      .json({
-        error: true,
-        message: REQUIRED_VALUE_EMPTY,
-        item: null,
-        itemCount: null,
-      })
+    res.json({
+      error: true,
+      message: REQUIRED_VALUE_EMPTY,
+      item: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -131,7 +138,7 @@ export const updateFactory = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json({
+        res.json({
           error: true,
           message: message,
           item: null,
@@ -139,7 +146,7 @@ export const updateFactory = async (req: Request, res: Response) => {
         })
       }
     } else {
-      res.status(500).json({
+      res.json({
         error: true,
         message: "Factory cannot be found",
         item: null,
@@ -147,7 +154,7 @@ export const updateFactory = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: "Factory does not exist",
       item: null,
@@ -179,7 +186,7 @@ export const delteFactory = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       item: null,

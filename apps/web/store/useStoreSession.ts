@@ -1,15 +1,13 @@
-import { SessionZodSchema } from "custom-validator"
+import { T_Session } from "custom-validator"
 import { T_SESSION_ACTIONS } from "../types/global"
 import { create } from "zustand"
 import z from "zod"
 
-type T_SESSION = z.input<typeof SessionZodSchema>
-
-const useStoreSession = create<T_SESSION & T_SESSION_ACTIONS>((set) => ({
+const useStoreSession = create<T_Session & T_SESSION_ACTIONS>((set) => ({
   token: null,
   role: "Personnel",
   email: "",
-  update: (session: T_SESSION) => set(() => ({ ...session })),
+  update: (session: T_Session) => set(() => ({ ...session })),
   reset: () =>
     set((session) => ({
       ...session,

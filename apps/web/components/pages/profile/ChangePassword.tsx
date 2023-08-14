@@ -6,6 +6,7 @@ import { I_UserUpdate, T_BACKEND_RESPONSE } from "../../../types/global"
 import toast from "react-hot-toast"
 import useUpdatePassword from "../../../hooks/users/useUpdatePassword"
 import { useState } from "react"
+import { T_BackendResponse, T_UserPassword } from "custom-validator"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -14,36 +15,34 @@ const roboto = Roboto({
 })
 
 const ChangePassword = () => {
-  const session = useSession()
-  const emailToken = session.data.item.email
-  const token = session.data.item.token
-  const { data, isLoading: basicInfoLoading } = useProfile(emailToken, token)
+  const { data, isLoading: basicInfoLoading } = useProfile()
 
-  const { register, handleSubmit, reset, control } = useForm<I_UserUpdate>()
-  const { mutate, isLoading: updateInfoLoading } = useUpdatePassword(token)
+  const { register, handleSubmit, reset } = useForm<T_UserPassword>({
+    values: { _id: data?.item._id, password: "" },
+  })
+  const { mutate, isLoading: updateInfoLoading } = useUpdatePassword()
 
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
 
-  const onSubmit = (data: I_UserUpdate) => {
+  const onSubmit = (data: T_UserPassword) => {
     if (password === confirmPassword) {
       const callBackReq = {
-        onSuccess: (data: T_BACKEND_RESPONSE) => {
+        onSuccess: (data: T_BackendResponse) => {
           if (!data.error) {
             toast.success("New password has been saved.")
-            console.log("New password has been saved.")
+            reset()
           } else {
-            toast.error(data.message)
+            toast.error(String(data.message))
           }
         },
         onError: (err: any) => {
           toast.error(String(err))
         },
       }
-
       mutate(data, callBackReq)
     } else {
-      console.log("Password doesn't match")
+      toast.error("Password doesn't match")
     }
   }
 
@@ -51,13 +50,6 @@ const ChangePassword = () => {
     <>
       {!basicInfoLoading ? (
         <form onSubmit={handleSubmit(onSubmit)} className="mt-7">
-          {/*  */}
-          <input
-            type="hidden"
-            {...register("id", { required: true })}
-            defaultValue={data.item._id}
-          />
-          {/*  */}
           <h2 className="text-gray-800 text-[23px] font-semibold">
             Change Password
           </h2>
@@ -75,11 +67,11 @@ const ChangePassword = () => {
                   </label>
                   <input
                     type="password"
+                    required
                     {...register("password", { required: true })}
                     disabled={updateInfoLoading}
                     className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                     placeholder="Enter new password"
-                    value={password}
                     onChange={(e) => setPassword(e.currentTarget.value)}
                     minLength={8}
                   />
@@ -99,10 +91,10 @@ const ChangePassword = () => {
                   </label>
                   <input
                     type="password"
+                    required
                     disabled={updateInfoLoading}
                     className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                     placeholder="Confirm new password"
-                    value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.currentTarget.value)}
                     minLength={8}
                   />
@@ -112,11 +104,11 @@ const ChangePassword = () => {
             <div className="flex justify-end bg-light-blue py-4 px-6">
               <button
                 type="submit"
-                className="rounded-md w-full md:w-auto bg-cyan-500 mt-0 px-[38.5px] py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                className="uppercase flex items-center rounded-md bg-cyan-500 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-70"
               >
                 {updateInfoLoading ? (
                   <div
-                    className="animate-spin inline-block w-[10px] h-[10px] border-[2px] border-current border-t-transparent text-white rounded-full"
+                    className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
                     role="status"
                     aria-label="loading"
                   >

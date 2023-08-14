@@ -9,6 +9,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZTimer } from "custom-validator"
 
 export const getAllTimers = async (req: Request, res: Response) => {
   try {
@@ -24,7 +25,7 @@ export const getAllTimers = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -47,7 +48,7 @@ export const getTimer = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -66,39 +67,48 @@ export const addTimer = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-
-    try {
-      const getExistingTimer = await Timers.find({
-        $or: [{ factoryId, machineId, partId }],
-        deletedAt: { $exists: false },
-      })
-      if (getExistingTimer.length === 0) {
-        const createTimer = await newTimer.save()
-        res.json({
-          error: false,
-          item: createTimer,
-          itemCount: 1,
-          message: ADD_SUCCESS_MESSAGE,
+    const parsedTimer = ZTimer.safeParse(req.body)
+    if (parsedTimer.success) {
+      try {
+        const getExistingTimer = await Timers.find({
+          $or: [{ factoryId, machineId, partId }],
+          deletedAt: { $exists: false },
         })
-      } else {
-        res.status(400).json({
+        if (getExistingTimer.length === 0) {
+          const createTimer = await newTimer.save()
+          res.json({
+            error: false,
+            item: createTimer,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
+        } else {
+          res.json({
+            error: true,
+            message: TIMER__ALREADY_EXISTS,
+            items: null,
+            itemCount: null,
+          })
+        }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        res.json({
           error: true,
-          message: TIMER__ALREADY_EXISTS,
+          message: message,
           items: null,
           itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+    } else {
+      res.json({
         error: true,
-        message: message,
+        message: parsedTimer.error.issues,
         items: null,
         itemCount: null,
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: REQUIRED_VALUE_EMPTY,
       items: null,
@@ -132,7 +142,7 @@ export const updateTimer = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json({
+        res.json({
           error: true,
           message: message,
           items: null,
@@ -140,7 +150,7 @@ export const updateTimer = async (req: Request, res: Response) => {
         })
       }
     } else {
-      res.status(500).json({
+      res.json({
         error: true,
         message: "Timer cannot be found",
         items: null,
@@ -148,7 +158,7 @@ export const updateTimer = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: "Timer does not exist",
       items: null,
@@ -183,7 +193,7 @@ export const deleteTimer = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,

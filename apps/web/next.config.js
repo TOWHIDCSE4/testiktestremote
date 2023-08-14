@@ -30,4 +30,7 @@ module.exports = {
       },
     ],
   },
+  env: {
+    MEDIA_KEY: process.env.MEDIA_KEY,
+  },
 }

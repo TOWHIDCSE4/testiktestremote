@@ -8,6 +8,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZMachine } from "custom-validator"
 
 export const getAllMachines = async (req: Request, res: Response) => {
   try {
@@ -23,7 +24,7 @@ export const getAllMachines = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -46,7 +47,7 @@ export const getMachine = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -56,36 +57,46 @@ export const getMachine = async (req: Request, res: Response) => {
 }
 
 export const addMachine = async (req: Request, res: Response) => {
-  const { name, description, factoryId, machineClassId } = req.body
-  if (name && description && factoryId && machineClassId) {
+  const { name, description, factoryId, machineClassId, locationId } = req.body
+  if (name && description && factoryId && machineClassId && locationId) {
     const newMachine = new Machines({
       name,
       description,
       factoryId,
       machineClassId,
-      locationId: null,
+      locationId,
       updatedAt: null,
       deletedAt: null,
     })
-    try {
-      const createMachine = await newMachine.save()
+    const parsedMachine = ZMachine.safeParse(req.body)
+    if (parsedMachine.success) {
+      try {
+        const createMachine = await newMachine.save()
+        res.json({
+          error: false,
+          item: createMachine,
+          itemCount: 1,
+          message: ADD_SUCCESS_MESSAGE,
+        })
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        res.json({
+          error: true,
+          message: message,
+          items: null,
+          itemCount: null,
+        })
+      }
+    } else {
       res.json({
-        error: false,
-        item: createMachine,
-        itemCount: 1,
-        message: ADD_SUCCESS_MESSAGE,
-      })
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
         error: true,
-        message: message,
+        message: parsedMachine.error.issues,
         items: null,
         itemCount: null,
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: REQUIRED_VALUE_EMPTY,
       items: null,
@@ -119,7 +130,7 @@ export const updateMachine = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json({
+        res.json({
           error: true,
           message: message,
           items: null,
@@ -127,7 +138,7 @@ export const updateMachine = async (req: Request, res: Response) => {
         })
       }
     } else {
-      res.status(500).json({
+      res.json({
         error: true,
         message: "Machine cannot be found",
         items: null,
@@ -135,7 +146,7 @@ export const updateMachine = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: "Machine does not exist",
       items: null,
@@ -170,7 +181,7 @@ export const deleteMachine = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,

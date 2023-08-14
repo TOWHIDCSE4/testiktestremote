@@ -9,6 +9,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZTimerReading } from "custom-validator"
 
 export const getAllTimerReadings = async (req: Request, res: Response) => {
   try {
@@ -24,7 +25,7 @@ export const getAllTimerReadings = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -47,7 +48,7 @@ export const getTimerReading = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -65,39 +66,48 @@ export const addTimerReading = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-
-    try {
-      const getExistingTimerReading = await TimerReadings.find({
-        $or: [{ action, timerId }],
-        deletedAt: { $exists: false },
-      })
-      if (getExistingTimerReading.length === 0) {
-        const createTimerReading = await newTimerReading.save()
-        res.json({
-          error: false,
-          item: createTimerReading,
-          itemCount: 1,
-          message: ADD_SUCCESS_MESSAGE,
+    const parsedTimerReading = ZTimerReading.safeParse(req.body)
+    if (parsedTimerReading.success) {
+      try {
+        const getExistingTimerReading = await TimerReadings.find({
+          $or: [{ action, timerId }],
+          deletedAt: { $exists: false },
         })
-      } else {
-        res.status(400).json({
+        if (getExistingTimerReading.length === 0) {
+          const createTimerReading = await newTimerReading.save()
+          res.json({
+            error: false,
+            item: createTimerReading,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
+        } else {
+          res.json({
+            error: true,
+            message: TIMER_READING_ALREADY_EXISTS,
+            items: null,
+            itemCount: null,
+          })
+        }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        res.json({
           error: true,
-          message: TIMER_READING_ALREADY_EXISTS,
+          message: message,
           items: null,
           itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+    } else {
+      res.json({
         error: true,
-        message: message,
+        message: parsedTimerReading.error.issues,
         items: null,
         itemCount: null,
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: REQUIRED_VALUE_EMPTY,
       items: null,
@@ -131,7 +141,7 @@ export const updateTimerReading = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json({
+        res.json({
           error: true,
           message: message,
           items: null,
@@ -139,7 +149,7 @@ export const updateTimerReading = async (req: Request, res: Response) => {
         })
       }
     } else {
-      res.status(500).json({
+      res.json({
         error: true,
         message: "Timer reading cannot be found",
         items: null,
@@ -147,7 +157,7 @@ export const updateTimerReading = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: "Timer reading does not exist",
       items: null,
@@ -185,7 +195,7 @@ export const deleteTimerReading = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,

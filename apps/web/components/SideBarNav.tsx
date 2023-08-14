@@ -6,8 +6,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline"
 import Image from "next/image"
-import React, { Fragment, useEffect, useRef, useState } from "react"
-import { Roboto } from "next/font/google"
+import React, { Fragment } from "react"
 import Link from "next/link"
 import useLogout from "../hooks/users/useLogout"
 import { T_BACKEND_RESPONSE } from "../types/global"
@@ -17,14 +16,9 @@ import toast from "react-hot-toast"
 import { usePathname } from "next/navigation"
 import combineClasses from "../helpers/combineClasses"
 import Accordion from "./Accordion"
-import useStoreSession from "../store/useStoreSession"
 import useProfile from "../hooks/users/useProfile"
-
-const roboto = Roboto({
-  weight: ["100", "300", "400", "500", "700"],
-  style: ["normal", "italic"],
-  subsets: ["cyrillic"],
-})
+import { ROLES } from "../helpers/constants"
+import useStoreSession from "../store/useStoreSession"
 
 const navigation = [
   { name: "Profile Home", slug: "profile-home", href: "/profile-home" },
@@ -94,7 +88,12 @@ const navigation = [
     slug: "sales",
     children: [{ name: "Sales Dashboard", href: "/sales/sales-dashboard" }],
   },
-  { name: "Team Members", slug: "team-members", href: "/team-members" },
+  {
+    name: "Team Members",
+    slug: "team-members",
+    href: "/team-members",
+    showOnlyFor: [ROLES.Administrator, ROLES.Corporate, ROLES.Production],
+  },
 ]
 
 const SideBarNav = () => {
@@ -102,9 +101,7 @@ const SideBarNav = () => {
   const queryClient = useQueryClient()
   const router = useRouter()
   const storeSession = useStoreSession((state) => state)
-  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile(
-    storeSession.email
-  )
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const { mutate } = useLogout()
   const logoutUser = () => {
     const callBackReq = {
@@ -116,7 +113,7 @@ const SideBarNav = () => {
           Cookies.remove("tfl")
           router.push(`/`)
         } else {
-          toast.error(data.message)
+          toast.error(String(data.message))
         }
       },
       onError: (err: any) => {
@@ -217,7 +214,7 @@ const SideBarNav = () => {
           <label htmlFor="search" className="sr-only">
             Search
           </label>
-          <div className={`relative ${roboto.className}`}>
+          <div className={`relative`}>
             <input
               id="search"
               name="search"
@@ -234,36 +231,44 @@ const SideBarNav = () => {
           </div>
         </div>
       </div>
-      <nav className={`flex flex-1 flex-col lg:mt-7 ${roboto.className}`}>
+      <nav className={`flex flex-1 flex-col lg:mt-7`}>
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
             <ul role="list" className="space-y-1">
-              {navigation.map((item, index) => (
-                <li key={item.name}>
-                  {!item.children ? (
-                    <Link
-                      href={item.href}
-                      className={combineClasses(
-                        item.href === pathname
-                          ? "text-white"
-                          : "hover:text-white text-gray-500",
-                        "group flex gap-x-3 rounded-md p-2 leading-6 font-medium uppercase ml-2"
-                      )}
-                    >
-                      {item.href === pathname ? (
-                        <div className="flex items-center">
-                          <div className="h-2.5 w-2.5 bg-red-700 rounded-full ml-1"></div>
-                          <span className="ml-5">{item.name}</span>
-                        </div>
+              {navigation.map((item, index) => {
+                const currentUserRole = storeSession?.role
+                const willShow = item.showOnlyFor?.find(
+                  (item) => item === currentUserRole
+                )
+                if (!item.showOnlyFor || willShow) {
+                  return (
+                    <li key={item.name}>
+                      {!item.children ? (
+                        <Link
+                          href={item.href}
+                          className={combineClasses(
+                            item.href === pathname
+                              ? "text-white"
+                              : "hover:text-white text-gray-500",
+                            "group flex gap-x-3 rounded-md p-2 leading-6 font-medium uppercase ml-2"
+                          )}
+                        >
+                          {item.href === pathname ? (
+                            <div className="flex items-center">
+                              <div className="h-2.5 w-2.5 bg-red-700 rounded-full ml-1"></div>
+                              <span className="ml-5">{item.name}</span>
+                            </div>
+                          ) : (
+                            <span className="ml-8">{item.name}</span>
+                          )}
+                        </Link>
                       ) : (
-                        <span className="ml-8">{item.name}</span>
+                        <Accordion item={item} />
                       )}
-                    </Link>
-                  ) : (
-                    <Accordion item={item} />
-                  )}
-                </li>
-              ))}
+                    </li>
+                  )
+                }
+              })}
             </ul>
           </li>
         </ul>

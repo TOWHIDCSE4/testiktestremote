@@ -10,36 +10,6 @@ import combineClasses from "../../../helpers/combineClasses"
 import usePaginatedParts from "../../../hooks/parts/usePaginatedParts"
 import { T_Part } from "custom-validator"
 
-const products = [
-  {
-    id: 1,
-    name: "Product Name",
-    href: "#",
-    imageSrc: "/no-image.png",
-    imageAlt: "Front of men's Basic Tee in black.",
-    price: "$35",
-    color: "Black",
-  },
-  {
-    id: 2,
-    name: "Product Name",
-    href: "#",
-    imageSrc: "/no-image.png",
-    imageAlt: "Front of men's Basic Tee in black.",
-    price: "$35",
-    color: "Black",
-  },
-  {
-    id: 3,
-    name: "Product Name",
-    href: "#",
-    imageSrc: "/no-image.png",
-    imageAlt: "Front of men's Basic Tee in black.",
-    price: "$35",
-    color: "Black",
-  },
-]
-
 type T_LocationTabs = {
   _id?: string
   name: string
@@ -198,7 +168,7 @@ const Part = ({
         <div>
           <div className="mx-auto">
             <div className="mt-7 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-              {allParts?.items.map((product: T_Part) => {
+              {allParts?.items.map((product: T_Part, index: number) => {
                 const selectedImage = product.files?.find(
                   (file) =>
                     file.toLocaleLowerCase().includes("png") ||
@@ -206,22 +176,36 @@ const Part = ({
                 )
                 return (
                   <div
-                    key={product._id}
+                    key={index}
                     className="group relative bg-white rounded-md border border-gray-200 drop-shadow-lg cursor-pointer"
                     onClick={() => {
                       setOpenDetailsModal(true)
                       setSelectedPartId(product._id)
                     }}
                   >
-                    <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 h-72 rounded-t-md">
-                      <div className="h-full w-full lg:h-full lg:w-full relative">
-                        <Image
-                          src={`/files/${selectedImage}`}
-                          alt={selectedImage as string}
-                          className="h-full w-full object-center"
-                          width={400}
-                          height={400}
-                        />
+                    <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 rounded-t-md">
+                      <div className="relative">
+                        {!isGetAllPartsLoading && selectedImage ? (
+                          <Image
+                            src={`/files/${selectedImage}`}
+                            alt={selectedImage as string}
+                            className="object-center"
+                            width={400}
+                            height={400}
+                          />
+                        ) : !isGetAllPartsLoading && !selectedImage ? (
+                          <Image
+                            className="object-center"
+                            src="/no-image.png"
+                            alt="Part Image"
+                            width={400}
+                            height={400}
+                          />
+                        ) : (
+                          <div className="animate-pulse flex space-x-4">
+                            <div className="h-52 w-full bg-slate-200"></div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="flex justify-between px-4 py-4">

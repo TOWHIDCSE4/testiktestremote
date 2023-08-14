@@ -17,20 +17,12 @@ import Image from "next/image"
 import Link from "next/link"
 import SideBarNav from "./SideBarNav"
 import DarkLogo from "../assets/logo/logo-dark.png"
-import { Roboto } from "next/font/google"
 import { T_BACKEND_RESPONSE, T_LOGOUT } from "../types/global"
 import toast from "react-hot-toast"
 import Cookies from "js-cookie"
 import { useRouter } from "next/navigation"
 import useLogout from "../hooks/users/useLogout"
-import useStoreSession from "../store/useStoreSession"
 import useProfile from "../hooks/users/useProfile"
-
-const roboto = Roboto({
-  weight: ["100", "300", "400", "500", "700"],
-  style: ["normal", "italic"],
-  subsets: ["cyrillic"],
-})
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ")
@@ -41,10 +33,7 @@ const MainNav = () => {
   const queryClient = useQueryClient()
   const [enabled, setEnabled] = useState(true)
   const [showSideNav, setShowSideNav] = useState(false)
-  const storeSession = useStoreSession((state) => state)
-  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile(
-    storeSession.email
-  )
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const { mutate } = useLogout()
   const logoutUser = () => {
     const callBackReq = {
@@ -56,7 +45,7 @@ const MainNav = () => {
           Cookies.remove("tfl")
           router.push(`/`)
         } else {
-          toast.error(data.message)
+          toast.error(String(data.message))
         }
       },
       onError: (err: any) => {
@@ -121,7 +110,7 @@ const MainNav = () => {
                         <input
                           id="search"
                           name="search"
-                          className={`block w-56 rounded-md border-0 bg-alice-blue py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                          className={`block w-56 rounded-md border-0 bg-alice-blue py-1.5 pl-10 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6`}
                           placeholder="Search..."
                           type="search"
                         />
@@ -165,17 +154,26 @@ const MainNav = () => {
                         <span className="sr-only">Open user menu</span>
                         <div className="flex items-center">
                           <div className="relative h-9 w-9">
-                            {isUserProfileLoading ? (
-                              <div className="animate-pulse flex space-x-4">
-                                <div className="h-9 w-9 rounded-full bg-slate-200"></div>
-                              </div>
-                            ) : (
+                            {!isUserProfileLoading &&
+                            userProfile?.item.profile?.photo ? (
+                              <Image
+                                className="rounded-full"
+                                src={`/files/${userProfile?.item.profile?.photo}`}
+                                alt="Profile image"
+                                fill
+                              />
+                            ) : !isUserProfileLoading &&
+                              !userProfile?.item.profile?.photo ? (
                               <Image
                                 className="rounded-full"
                                 src={`https://ui-avatars.com/api/?name=${userProfile?.item?.firstName}+${userProfile?.item?.lastName}`}
                                 alt="Profile image"
                                 fill
                               />
+                            ) : (
+                              <div className="animate-pulse flex space-x-4">
+                                <div className="h-9 w-9 rounded-full bg-slate-200"></div>
+                              </div>
                             )}
                           </div>
                           <div

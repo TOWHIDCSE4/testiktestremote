@@ -9,6 +9,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
+import { ZLocation } from "custom-validator"
 
 export const getAllLocations = async (req: Request, res: Response) => {
   try {
@@ -22,7 +23,7 @@ export const getAllLocations = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -42,7 +43,7 @@ export const getLocation = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,
@@ -52,46 +53,61 @@ export const getLocation = async (req: Request, res: Response) => {
 }
 
 export const addLocation = async (req: Request, res: Response) => {
-  const { name } = req.body
-  if (name) {
+  const { name, productionTime } = req.body
+  if (name && productionTime) {
     const newLocation = new Locations({
       name,
+      productionTime,
       updatedAt: null,
       deletedAt: null,
     })
-
-    try {
-      const getExostingLocation = await Locations.find({
-        $or: [{ name }],
-        deletedAt: { $exists: false },
-      })
-      if (getExostingLocation.length === 0) {
-        const createLocation = await newLocation.save()
-        res.json({
-          error: false,
-          item: createLocation,
-          itemCount: 1,
-          message: ADD_SUCCESS_MESSAGE,
+    const parsedLocation = ZLocation.safeParse(req.body)
+    if (parsedLocation.success) {
+      try {
+        const getExostingLocation = await Locations.find({
+          $or: [{ name }],
+          deletedAt: { $exists: false },
         })
-      } else {
-        res.status(400).json({
+        if (getExostingLocation.length === 0) {
+          const createLocation = await newLocation.save()
+          res.json({
+            error: false,
+            item: createLocation,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
+        } else {
+          res.json({
+            error: true,
+            message: LOCATION_ALREADY_EXISTS,
+            items: null,
+            itemCount: null,
+          })
+        }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        res.json({
           error: true,
-          message: LOCATION_ALREADY_EXISTS,
+          message: message,
           items: null,
           itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      res.status(500).json({
+    } else {
+      res.json({
         error: true,
-        message: message,
-        items: null,
+        message: parsedLocation.error.issues,
+        item: null,
         itemCount: null,
       })
     }
   } else {
-    res.status(400).json(REQUIRED_VALUE_EMPTY)
+    res.json({
+      error: true,
+      message: REQUIRED_VALUE_EMPTY,
+      items: null,
+      itemCount: null,
+    })
   }
 }
 
@@ -120,7 +136,7 @@ export const updateLocation = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.status(500).json({
+        res.json({
           error: true,
           message: message,
           items: null,
@@ -128,7 +144,7 @@ export const updateLocation = async (req: Request, res: Response) => {
         })
       }
     } else {
-      res.status(500).json({
+      res.json({
         error: true,
         message: "Location cannot be found",
         items: null,
@@ -136,7 +152,7 @@ export const updateLocation = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.status(400).json({
+    res.json({
       error: true,
       message: "Location does not exist",
       items: null,
@@ -171,7 +187,7 @@ export const deleteLocation = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    res.status(500).json({
+    res.json({
       error: true,
       message: message,
       items: null,

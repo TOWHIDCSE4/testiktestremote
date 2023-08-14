@@ -1,15 +1,89 @@
-import { Roboto } from "next/font/google"
 import Image from "next/image"
-
-const roboto = Roboto({
-  weight: ["100", "300", "400", "500", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-})
+import SingleImageUpload from "./SingleImageUpload"
+import { useState } from "react"
+import { FileWithPath } from "react-dropzone"
+import useStoreSession from "../../../store/useStoreSession"
+import useUpdateProfile from "../../../hooks/users/useUpdateProfile"
+import { useQueryClient } from "@tanstack/react-query"
+import { useForm } from "react-hook-form"
+import toast from "react-hot-toast"
+import { T_BackendResponse, T_UserProfile } from "custom-validator"
+import useProfile from "../../../hooks/users/useProfile"
+import useUploadMediaFile from "../../../hooks/media/useUploadMediaFile"
 
 const ProfileAndPrivacy = () => {
+  const queryClient = useQueryClient()
+  const [file, setFile] = useState<(FileWithPath & { preview: string }) | null>(
+    null
+  )
+  const storeSession = useStoreSession((state) => state)
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const { mutate: uploadMediaFile, isLoading: isUploadMediaFileLoading } =
+    useUploadMediaFile()
+  const { register, handleSubmit } = useForm<T_UserProfile>({
+    values: {
+      ...(userProfile?.item.profile as T_UserProfile),
+      realNameDisplay: userProfile?.item.profile?.realNameDisplay || false,
+      everyoneSeeProfile:
+        userProfile?.item.profile?.everyoneSeeProfile || false,
+    },
+  })
+  const { mutate, isLoading: updateInfoLoading } = useUpdateProfile()
+  const onSubmit = (data: T_UserProfile) => {
+    const callBackReq = {
+      onSuccess: (data: T_BackendResponse) => {
+        if (!data.error) {
+          queryClient.invalidateQueries({
+            queryKey: ["profile", storeSession.email],
+          })
+          toast.success("Profile information successfully updated")
+          setFile(null)
+        } else {
+          toast.error(String(data.message))
+        }
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+      },
+    }
+    const uploadFilesCallBackReq = {
+      onSuccess: (returnData: T_BackendResponse) => {
+        if (returnData?.item?.error) {
+          toast.error("Some media files failed to upload")
+          mutate(
+            { _id: userProfile?.item._id as string, profile: data },
+            callBackReq
+          )
+        } else {
+          mutate(
+            {
+              _id: userProfile?.item._id as string,
+              profile: { ...data, photo: returnData?.item?.name },
+            },
+            callBackReq
+          )
+        }
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+        mutate(
+          { _id: userProfile?.item._id as string, profile: data },
+          callBackReq
+        )
+      },
+    }
+    if (file) {
+      uploadMediaFile(file, uploadFilesCallBackReq)
+    } else {
+      mutate(
+        { _id: userProfile?.item._id as string, profile: data },
+        callBackReq
+      )
+    }
+  }
+
   return (
-    <form className="mt-7">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-7">
       <h2 className="text-gray-800 text-[23px] font-semibold">
         Profile & Privacy
       </h2>
@@ -20,34 +94,44 @@ const ProfileAndPrivacy = () => {
               Your Photo
             </h4>
           </div>
-          <div className="col-span-4 md:col-span-3 flex items-center space-x-4 mt-2 md:mt-0">
-            <div className="relative h-12 w-16 md:w-14 lg:w-12">
-              <Image
-                className="rounded-full"
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt="Profile image"
-                fill
-              />
+          <div className="col-span-4 md:col-span-3 gap-3 flex items-center md:mt-0">
+            <div className="relative h-16 w-16">
+              {!isProfileLoading && file ? (
+                <Image
+                  className="rounded-md"
+                  src={file?.preview}
+                  alt="Profile image"
+                  fill
+                />
+              ) : !isProfileLoading && userProfile?.item.profile?.photo ? (
+                <Image
+                  className="rounded-md"
+                  src={`/files/${userProfile?.item.profile?.photo}`}
+                  alt="Profile image"
+                  fill
+                />
+              ) : !isProfileLoading && !userProfile?.item.profile?.photo ? (
+                <Image
+                  className="rounded-md"
+                  src={`https://ui-avatars.com/api/?name=${userProfile?.item?.firstName}+${userProfile?.item?.lastName}`}
+                  alt="Profile image"
+                  fill
+                />
+              ) : (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-16 w-16 rounded-md bg-slate-200"></div>
+                </div>
+              )}
             </div>
-            <div className="w-full">
-              <div
-                className={`flex items-center justify-between block w-full rounded-md border-0 pl-3 text-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-              >
-                Choose File
-                <label
-                  htmlFor="profile-photo"
-                  className="cursor-pointer bg-cyan-500 text-white px-3 py-1.5 rounded-r-md"
-                >
-                  Browse
-                </label>
-              </div>
-              <input
-                type="file"
-                name="profile-photo"
-                id="profile-photo"
-                className="sr-only"
-              />
-            </div>
+            <SingleImageUpload
+              file={file}
+              setFile={setFile}
+              isLoading={
+                updateInfoLoading ||
+                isProfileLoading ||
+                isUploadMediaFileLoading
+              }
+            />
           </div>
         </div>
         <div className="grid grid-cols-4 border-t border-gray-200 px-6 py-4 items-center">
@@ -58,23 +142,27 @@ const ProfileAndPrivacy = () => {
           </div>
           <div className="col-span-4 md:col-span-3 mt-2 md:mt-0">
             <div>
-              <label htmlFor="profile-name" className="sr-only">
+              <label htmlFor="profileName" className="sr-only">
                 Ameritex Profile Name
               </label>
               <input
                 type="text"
-                name="profile-name"
-                id="profile-name"
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                required
+                id="profileName"
+                disabled={
+                  updateInfoLoading ||
+                  isProfileLoading ||
+                  isUploadMediaFileLoading
+                }
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                 placeholder="Your profile name..."
+                {...register("profileName", { required: true })}
               />
             </div>
           </div>
           <div className="col-span-1"></div>
           <div className="col-span-4 md:col-span-3">
-            <p
-              className={`text-[13px] text-gray-700 font-light mt-2 ${roboto.className}`}
-            >
+            <p className={`text-[13px] text-gray-700 font-light mt-2`}>
               Your profile name will be used as part of your public profile URL
               address.
             </p>
@@ -90,11 +178,16 @@ const ProfileAndPrivacy = () => {
             <div className="">
               <textarea
                 rows={3}
-                name="about-you"
-                id="about-you"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                id="aboutYou"
+                disabled={
+                  updateInfoLoading ||
+                  isProfileLoading ||
+                  isUploadMediaFileLoading
+                }
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                 placeholder="About you..."
                 defaultValue={""}
+                {...register("aboutYou", { required: true })}
               />
             </div>
           </div>
@@ -103,14 +196,19 @@ const ProfileAndPrivacy = () => {
           <div className="relative flex items-start">
             <div className="flex h-6 items-center">
               <input
-                id="display-real-name"
+                id="realNameDisplay"
                 aria-describedby="display-description"
-                name="display-real-name"
                 type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-600"
+                disabled={
+                  updateInfoLoading ||
+                  isProfileLoading ||
+                  isUploadMediaFileLoading
+                }
+                className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-600 disabled:opacity-70"
+                {...register("realNameDisplay")}
               />
             </div>
-            <div className={`ml-3 text-sm leading-6 ${roboto.className}`}>
+            <div className={`ml-3 text-sm leading-6`}>
               <label
                 htmlFor="display-real-name"
                 className="font-medium text-gray-800"
@@ -131,14 +229,19 @@ const ProfileAndPrivacy = () => {
           <div className="relative flex items-start">
             <div className="flex h-6 items-center">
               <input
-                id="allow-view"
+                id="everyoneSeeProfile"
                 aria-describedby="allow-view-description"
-                name="allow-view"
                 type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-600"
+                disabled={
+                  updateInfoLoading ||
+                  isProfileLoading ||
+                  isUploadMediaFileLoading
+                }
+                className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-600 disabled:opacity-70"
+                {...register("everyoneSeeProfile")}
               />
             </div>
-            <div className={`ml-3 text-sm leading-6 ${roboto.className}`}>
+            <div className={`ml-3 text-sm leading-6`}>
               <label htmlFor="allow-view" className="font-medium text-gray-800">
                 Allow everyone to see your profile
               </label>
@@ -155,9 +258,22 @@ const ProfileAndPrivacy = () => {
         <div className="md:flex justify-end bg-light-blue py-4 px-6">
           <button
             type="submit"
-            className="uppercase rounded-md w-full md:w-auto bg-cyan-500 mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            disabled={
+              updateInfoLoading || isProfileLoading || isUploadMediaFileLoading
+            }
+            className="uppercase flex items-center rounded-md bg-cyan-500 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-70"
           >
-            Save Changes
+            {updateInfoLoading || isUploadMediaFileLoading ? (
+              <div
+                className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
+                role="status"
+                aria-label="loading"
+              >
+                <span className="sr-only">Loading...</span>
+              </div>
+            ) : (
+              "Save Changes"
+            )}
           </button>
         </div>
       </div>

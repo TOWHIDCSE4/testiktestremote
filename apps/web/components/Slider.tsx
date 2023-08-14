@@ -12,7 +12,7 @@ import { Autoplay, Navigation } from "swiper/modules"
 const Slider = () => {
   const images = [sliderImage1, sliderImage2, sliderImage3]
 
-  const slideContainer = (slideIndex) => {
+  const slideContainer = (slideIndex: number) => {
     return (
       <>
         <Image
