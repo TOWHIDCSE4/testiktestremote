@@ -1,60 +1,53 @@
-import { Roboto } from "next/font/google"
 import useProfile from "../../../hooks/users/useProfile"
-import useSession from "../../../hooks/users/useSession"
 import { useForm } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
-import {
-  I_UserUpdate,
-  T_BACKEND_RESPONSE,
-  T_USER_FOR_EDIT,
-} from "../../../types/global"
 import toast from "react-hot-toast"
-import useUpdateBasicInfo from "../../../hooks/users/useUpdateProfile"
+import useUpdateBasicInfo from "../../../hooks/users/useUpdateBasicInfo"
 import useStoreSession from "../../../store/useStoreSession"
-
-const roboto = Roboto({
-  weight: ["100", "300", "400", "500", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-})
+import { T_BackendResponse, T_User_Basic } from "custom-validator"
 
 const BasicInformation = () => {
   const queryClient = useQueryClient()
   const storeSession = useStoreSession((state) => state)
-  const { data: userProfile, isLoading: isProfileLoading } = useProfile(
-    storeSession.email
-  )
-
-  const { register, handleSubmit } = useForm<T_USER_FOR_EDIT>({
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const { register, handleSubmit } = useForm<T_User_Basic>({
     values: {
-      firstName: userProfile?.item.firstName,
-      lastName: userProfile?.item.lastName,
-      email: userProfile?.item.email,
+      firstName: userProfile?.item.firstName as string,
+      lastName: userProfile?.item.lastName as string,
+      email: userProfile?.item.email as string,
+      location: userProfile?.item.location as string,
     },
   })
   const { mutate, isLoading: updateInfoLoading } = useUpdateBasicInfo()
 
-  const onSubmit = (data: T_USER_FOR_EDIT) => {
+  const onSubmit = (data: T_User_Basic) => {
     const callBackReq = {
-      onSuccess: (data: T_BACKEND_RESPONSE) => {
+      onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
           queryClient.invalidateQueries({
             queryKey: ["profile", storeSession.email],
           })
           toast.success("Profile information successfully updated")
         } else {
-          toast.error(data.message)
+          toast.error(String(data.message))
         }
       },
       onError: (err: any) => {
         toast.error(String(err))
       },
     }
-    mutate({ id: userProfile.item._id, ...data }, callBackReq)
+    mutate(
+      {
+        _id: userProfile?.item._id,
+        ...data,
+        location: "64d5814fb996589a945a6402",
+      },
+      callBackReq
+    )
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-12">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
       <h2 className="text-gray-800 text-[23px] font-semibold">
         Basic Information
       </h2>
@@ -74,7 +67,7 @@ const BasicInformation = () => {
                 type="text"
                 {...register("firstName", { required: true })}
                 disabled={updateInfoLoading || isProfileLoading}
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                 defaultValue={userProfile?.item.firstName}
               />
             </div>
@@ -95,7 +88,7 @@ const BasicInformation = () => {
                 type="text"
                 {...register("lastName", { required: true })}
                 disabled={updateInfoLoading || isProfileLoading}
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                 defaultValue={userProfile?.item.lastName}
               />
             </div>
@@ -116,13 +109,11 @@ const BasicInformation = () => {
                 type="email"
                 {...register("email", { required: true })}
                 disabled={updateInfoLoading || isProfileLoading}
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                 defaultValue={userProfile?.item.email}
               />
             </div>
-            <p
-              className={`text-[13px] text-gray-700 font-light mt-4 ${roboto.className}`}
-            >
+            <p className={`text-[13px] text-gray-700 font-light mt-4`}>
               Note that if you change your email, you will have to confirm it
               again.
             </p>
@@ -142,16 +133,16 @@ const BasicInformation = () => {
               <input
                 type="text"
                 disabled={updateInfoLoading || isProfileLoading}
-                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                 placeholder="Your factory name..."
               />
             </div>
           </div>
         </div>
-        <div className="md:flex justify-between bg-light-blue py-4 px-6">
-          <div className="md:ml-3">
+        <div className="md:flex justify-between items-center bg-light-blue py-4 px-6">
+          <div>
             <h4 className="text-lg text-gray-900 text-center md:text-left">
-              <span className={roboto.className}>approved body</span>{" "}
+              <span>Approved by</span>{" "}
               <span className="text-red-500">Rocky Lorenz</span>
             </h4>
           </div>

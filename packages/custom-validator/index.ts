@@ -1,4 +1,3 @@
-import UsersZodSchema from "./UsersZodSchema"
 import LoginZodSchema from "./LoginZodSchema"
 import JobsZodSchema from "./JobsZodSchema"
 export { ZBackendResponse } from "./ZBackendResponse"
@@ -9,11 +8,13 @@ export { ZMachineClasses } from "./ZMachineClasses"
 export type { T_MachineClasses } from "./ZMachineClasses"
 export { ZPart } from "./ZPart"
 export type { T_Part } from "./ZPart"
+export { ZUser } from "./ZUser"
+export type {
+  T_User,
+  T_User_Role,
+  T_User_Basic,
+  T_User_Password,
+  T_User_Profile,
+} from "./ZUser"
 
-export {
-  UsersZodSchema,
-  LoginZodSchema,
-  JobsZodSchema,
-  SessionZodSchema,
-  UserBasicForEdit,
-}
+export { LoginZodSchema, JobsZodSchema, SessionZodSchema, UserBasicForEdit }

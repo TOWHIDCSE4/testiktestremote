@@ -1,14 +1,9 @@
 import { z } from "zod"
+import { ZUserRoles } from "./ZUser"
 
 const SessionZodSchema = z.object({
   token: z.nullable(z.string()),
-  role: z.enum([
-    "Administrator",
-    "Corporate",
-    "Trout",
-    "Production",
-    "Personnel",
-  ]),
+  role: ZUserRoles,
   email: z.string(),
 })
 

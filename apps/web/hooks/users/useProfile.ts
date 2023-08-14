@@ -1,6 +1,12 @@
 import { API_URL_USERS, ONE_DAY } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
+import { T_BackendResponse, T_User } from "custom-validator"
 import Cookies from "js-cookie"
+import useStoreSession from "../../store/useStoreSession"
+
+type T_DBReturn = Omit<T_BackendResponse, "item"> & {
+  item: T_User
+}
 
 export async function getProfile(email: string) {
   const token = Cookies.get("tfl")
@@ -11,16 +17,21 @@ export async function getProfile(email: string) {
       Authorization: `Bearer ${token}`,
     },
   })
-  return await res.json()
+  return (await res.json()) as T_DBReturn
 }
 
-function useProfile(email: string) {
-  const query = useQuery(["profile", email], () => getProfile(email), {
-    cacheTime: ONE_DAY,
-    staleTime: ONE_DAY,
-    refetchOnWindowFocus: false,
-    enabled: !!email,
-  })
+function useProfile() {
+  const storeSession = useStoreSession((state) => state)
+  const query = useQuery(
+    ["profile", storeSession.email],
+    () => getProfile(storeSession.email),
+    {
+      cacheTime: ONE_DAY,
+      staleTime: ONE_DAY,
+      refetchOnWindowFocus: false,
+      enabled: !!storeSession.email,
+    }
+  )
   return query
 }
 export default useProfile

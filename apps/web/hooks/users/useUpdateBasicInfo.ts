@@ -1,20 +1,24 @@
+import { I_UserUpdate } from "../../types/global"
 import { API_URL_USERS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
-import { T_User_Profile } from "custom-validator"
+import { T_User_Basic } from "custom-validator"
 
-export async function updateProfile({
+export async function updateBasicInfo({
+  firstName,
+  lastName,
+  email,
+  location,
   _id,
-  profile,
-}: {
-  _id: string
-  profile: T_User_Profile
-}) {
+}: T_User_Basic) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_USERS}/${_id}`, {
     method: "PATCH",
     body: JSON.stringify({
-      profile,
+      firstName,
+      lastName,
+      location,
+      email,
     }),
     headers: {
       "content-type": "application/json",
@@ -24,15 +28,19 @@ export async function updateProfile({
   return await res.json()
 }
 
-function useUpdateProfile() {
+function useUpdateBasicInfo() {
   const query = useMutation(
-    ({ _id, profile }: { _id: string; profile: T_User_Profile }) =>
-      updateProfile({
+    ({ firstName, lastName, email, location, _id }: T_User_Basic) =>
+      updateBasicInfo({
+        firstName,
+        lastName,
+        email,
+        location,
         _id,
-        profile,
       })
   )
+
   return query
 }
 
-export default useUpdateProfile
+export default useUpdateBasicInfo
