@@ -48,7 +48,7 @@ export const ZUserPassword = ZUser.pick({
 })
 
 export type T_User = z.infer<typeof ZUser>
-export type T_User_Role = z.infer<typeof ZUserRoles>
-export type T_User_Basic = z.infer<typeof ZUserBasic>
-export type T_User_Profile = z.infer<typeof ZUserProfile>
-export type T_User_Password = z.infer<typeof ZUserPassword>
+export type T_UserRole = z.infer<typeof ZUserRoles>
+export type T_UserBasic = z.infer<typeof ZUserBasic>
+export type T_UserProfile = z.infer<typeof ZUserProfile>
+export type T_UserPassword = z.infer<typeof ZUserPassword>

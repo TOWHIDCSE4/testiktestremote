@@ -3,16 +3,16 @@ import useUpdateProfile from "../../../hooks/users/useUpdateProfile"
 import { useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import { T_BackendResponse, T_User_Profile } from "custom-validator"
+import { T_BackendResponse, T_UserProfile } from "custom-validator"
 import useProfile from "../../../hooks/users/useProfile"
 
 const Updates = () => {
   const queryClient = useQueryClient()
   const storeSession = useStoreSession((state) => state)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
-  const { register, handleSubmit } = useForm<T_User_Profile>({
+  const { register, handleSubmit } = useForm<T_UserProfile>({
     values: {
-      ...(userProfile?.item.profile as T_User_Profile),
+      ...(userProfile?.item.profile as T_UserProfile),
       newsletter: userProfile?.item.profile?.newsletter || false,
       newContentReleases:
         userProfile?.item.profile?.newContentReleases || false,
@@ -22,7 +22,7 @@ const Updates = () => {
     },
   })
   const { mutate, isLoading: updateInfoLoading } = useUpdateProfile()
-  const onSubmit = (data: T_User_Profile) => {
+  const onSubmit = (data: T_UserProfile) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {

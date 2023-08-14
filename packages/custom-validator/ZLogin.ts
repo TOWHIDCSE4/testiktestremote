@@ -1,8 +1,8 @@
 import { z } from "zod"
 
-const LoginZodSchema = z.object({
+export const ZLogin = z.object({
   email: z.string().email(),
   password: z.string(),
 })
 
-export default LoginZodSchema
+export type T_Login = z.infer<typeof ZLogin>

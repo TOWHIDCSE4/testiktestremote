@@ -4,13 +4,13 @@ import { useQueryClient } from "@tanstack/react-query"
 import toast from "react-hot-toast"
 import useUpdateBasicInfo from "../../../hooks/users/useUpdateBasicInfo"
 import useStoreSession from "../../../store/useStoreSession"
-import { T_BackendResponse, T_User_Basic } from "custom-validator"
+import { T_BackendResponse, T_UserBasic } from "custom-validator"
 
 const BasicInformation = () => {
   const queryClient = useQueryClient()
   const storeSession = useStoreSession((state) => state)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
-  const { register, handleSubmit } = useForm<T_User_Basic>({
+  const { register, handleSubmit } = useForm<T_UserBasic>({
     values: {
       firstName: userProfile?.item.firstName as string,
       lastName: userProfile?.item.lastName as string,
@@ -20,7 +20,7 @@ const BasicInformation = () => {
   })
   const { mutate, isLoading: updateInfoLoading } = useUpdateBasicInfo()
 
-  const onSubmit = (data: T_User_Basic) => {
+  const onSubmit = (data: T_UserBasic) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {

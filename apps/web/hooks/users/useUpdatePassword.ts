@@ -1,9 +1,9 @@
 import { API_URL_USERS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
-import { T_User_Password } from "custom-validator"
+import { T_UserPassword } from "custom-validator"
 import Cookies from "js-cookie"
 
-export async function updatePassword({ password, _id }: T_User_Password) {
+export async function updatePassword({ password, _id }: T_UserPassword) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_USERS}/password/${_id}`, {
     method: "PATCH",
@@ -19,7 +19,7 @@ export async function updatePassword({ password, _id }: T_User_Password) {
 }
 
 function useUpdatePassword() {
-  const query = useMutation(({ password, _id }: T_User_Password) =>
+  const query = useMutation(({ password, _id }: T_UserPassword) =>
     updatePassword({
       password,
       _id,

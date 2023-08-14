@@ -7,7 +7,7 @@ import useUpdateProfile from "../../../hooks/users/useUpdateProfile"
 import { useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import { T_BackendResponse, T_User_Profile } from "custom-validator"
+import { T_BackendResponse, T_UserProfile } from "custom-validator"
 import useProfile from "../../../hooks/users/useProfile"
 import useUploadMediaFile from "../../../hooks/media/useUploadMediaFile"
 
@@ -20,16 +20,16 @@ const ProfileAndPrivacy = () => {
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const { mutate: uploadMediaFile, isLoading: isUploadMediaFileLoading } =
     useUploadMediaFile()
-  const { register, handleSubmit } = useForm<T_User_Profile>({
+  const { register, handleSubmit } = useForm<T_UserProfile>({
     values: {
-      ...(userProfile?.item.profile as T_User_Profile),
+      ...(userProfile?.item.profile as T_UserProfile),
       realNameDisplay: userProfile?.item.profile?.realNameDisplay || false,
       everyoneSeeProfile:
         userProfile?.item.profile?.everyoneSeeProfile || false,
     },
   })
   const { mutate, isLoading: updateInfoLoading } = useUpdateProfile()
-  const onSubmit = (data: T_User_Profile) => {
+  const onSubmit = (data: T_UserProfile) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {

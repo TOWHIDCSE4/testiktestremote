@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const ZPart = z.object({
-  _id: z.string().optional(),
+  _id: z.object({}).optional(),
   name: z.string().min(3),
   factoryId: z.string().min(23),
   machineClassId: z.string().min(23),
@@ -12,9 +12,9 @@ export const ZPart = z.object({
   cageWeightActual: z.number(),
   cageWeightScrap: z.number(),
   locationId: z.string().min(23),
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
-  deletedAt: z.string().optional(),
+  createdAt: z.date().nullable().optional(),
+  updatedAt: z.date().nullable().optional(),
+  deletedAt: z.date().nullable().optional(),
 })
 
 export type T_Part = z.infer<typeof ZPart>

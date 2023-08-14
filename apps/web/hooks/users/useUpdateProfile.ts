@@ -1,14 +1,14 @@
 import { API_URL_USERS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
-import { T_User_Profile } from "custom-validator"
+import { T_UserProfile } from "custom-validator"
 
 export async function updateProfile({
   _id,
   profile,
 }: {
   _id: string
-  profile: T_User_Profile
+  profile: T_UserProfile
 }) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_USERS}/${_id}`, {
@@ -26,7 +26,7 @@ export async function updateProfile({
 
 function useUpdateProfile() {
   const query = useMutation(
-    ({ _id, profile }: { _id: string; profile: T_User_Profile }) =>
+    ({ _id, profile }: { _id: string; profile: T_UserProfile }) =>
       updateProfile({
         _id,
         profile,

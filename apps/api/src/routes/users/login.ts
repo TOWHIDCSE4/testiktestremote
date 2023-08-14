@@ -7,12 +7,12 @@ import { keys } from "../../config/keys"
 import CryptoJS from "crypto-js"
 import jwt from "jsonwebtoken"
 import { Request, Response } from "express"
-import { LoginZodSchema, SessionZodSchema } from "custom-validator"
+import { ZLogin, ZSession } from "custom-validator"
 import redisClient from "../../utils/redisClient"
 import dayjs from "dayjs"
 
 export const auth = async (req: Request, res: Response) => {
-  const validateUserInput = LoginZodSchema.safeParse(req.body)
+  const validateUserInput = ZLogin.safeParse(req.body)
   if (validateUserInput.success) {
     const { email, password } = req.body
     if (email && password) {
@@ -48,7 +48,7 @@ export const auth = async (req: Request, res: Response) => {
             date.setTime(date.getTime() + hours * 60 * 60 * 1000)
             return date
           }
-          const zodParsedSession = SessionZodSchema.safeParse({
+          const zodParsedSession = ZSession.safeParse({
             token,
             email: user.email,
             role: user.role,

@@ -6,7 +6,7 @@ import { I_UserUpdate, T_BACKEND_RESPONSE } from "../../../types/global"
 import toast from "react-hot-toast"
 import useUpdatePassword from "../../../hooks/users/useUpdatePassword"
 import { useState } from "react"
-import { T_BackendResponse, T_User_Password } from "custom-validator"
+import { T_BackendResponse, T_UserPassword } from "custom-validator"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -17,7 +17,7 @@ const roboto = Roboto({
 const ChangePassword = () => {
   const { data, isLoading: basicInfoLoading } = useProfile()
 
-  const { register, handleSubmit, reset } = useForm<T_User_Password>({
+  const { register, handleSubmit, reset } = useForm<T_UserPassword>({
     values: { _id: data?.item._id, password: "" },
   })
   const { mutate, isLoading: updateInfoLoading } = useUpdatePassword()
@@ -25,7 +25,7 @@ const ChangePassword = () => {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
 
-  const onSubmit = (data: T_User_Password) => {
+  const onSubmit = (data: T_UserPassword) => {
     if (password === confirmPassword) {
       const callBackReq = {
         onSuccess: (data: T_BackendResponse) => {
@@ -72,7 +72,6 @@ const ChangePassword = () => {
                     disabled={updateInfoLoading}
                     className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                     placeholder="Enter new password"
-                    value={password}
                     onChange={(e) => setPassword(e.currentTarget.value)}
                     minLength={8}
                   />
@@ -96,7 +95,6 @@ const ChangePassword = () => {
                     disabled={updateInfoLoading}
                     className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                     placeholder="Confirm new password"
-                    value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.currentTarget.value)}
                     minLength={8}
                   />
