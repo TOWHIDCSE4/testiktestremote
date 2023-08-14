@@ -12,7 +12,7 @@ import {
 } from "../../../../types/global"
 import { useForm, SubmitHandler } from "react-hook-form"
 import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
-import { T_MachineClasses, T_Part } from "custom-validator"
+import { T_MachineClass, T_Part } from "custom-validator"
 import useLocations from "../../../../hooks/locations/useLocations"
 import useUpdatePart from "../../../../hooks/parts/useUpdatePart"
 import useSession from "../../../../hooks/users/useSession"
@@ -65,7 +65,7 @@ const PartDetailsModal = ({
           toast.success("Part details has been updated.")
           console.log("Part details has been updated.")
         } else {
-          toast.error(data.message)
+          toast.error(String(data.message))
         }
       },
       onError: (err: any) => {
@@ -173,11 +173,11 @@ const PartDetailsModal = ({
                   >
                     <option disabled>Machine Class</option>
                     {machineClasses?.items.map(
-                      (machine: T_MachineClasses, index: number) => {
+                      (machine: T_MachineClass, index: number) => {
                         return (
                           <option
                             key={index}
-                            value={machine._id}
+                            value={machine._id as string}
                             selected={
                               machine._id === partDetails?.item?.machineClassId
                             }
