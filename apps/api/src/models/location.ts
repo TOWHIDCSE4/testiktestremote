@@ -3,6 +3,7 @@ const { Schema } = mongoose
 
 const location = new Schema({
   name: String,
+  productionTime: Number,
   createdAt: {
     type: Date,
     default: Date.now,
