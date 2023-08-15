@@ -14,6 +14,10 @@ const timers = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Part",
   },
+  locationId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Location",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
