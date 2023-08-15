@@ -8,11 +8,15 @@ import DeleteModal from "./modals/DeleteModal"
 import PartDetailsModal from "./modals/PartDetailsModal"
 import combineClasses from "../../../helpers/combineClasses"
 import usePaginatedParts from "../../../hooks/parts/usePaginatedParts"
-import { T_Part } from "custom-validator"
+import { T_MachineClass, T_Part } from "custom-validator"
+import useFactories from "../../../hooks/factories/useFactories"
+import useFactoryMachineClasses from "../../../hooks/factories/useFactoryMachineClasses"
+import { I_FACTORY } from "../../../types/global"
 
 type T_LocationTabs = {
   _id?: string
   name: string
+  count?: number
 }
 
 type T_Part_Page = {
@@ -35,16 +39,49 @@ const Part = ({
     isLoading: isGetAllPartsLoading,
     setLocationId,
     setPage,
+    setFactoryId,
+    setMachineClassId,
+    setName,
     page,
   } = usePaginatedParts()
+  const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+  const {
+    data: machineClasses,
+    isRefetching: isMachineClassesRefetching,
+    setSelectedFactoryId,
+  } = useFactoryMachineClasses()
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [selectedPartId, setSelectedPartId] = useState<string | undefined>("")
+  const [factoryIdFilter, setFactoryIdFilter] = useState("")
+  const [machineClassIdFilter, setMachineClassIdFilter] = useState("")
+  const [nameFilter, setNameFilter] = useState("")
+
   useEffect(() => {
     setLocationId(currentLocationTab)
   }, [currentLocationTab, setLocationId])
+
   const numberOfPages = Math.ceil((allParts?.itemCount as number) / 6)
+
+  useEffect(() => {
+    if (factoryIdFilter) {
+      setSelectedFactoryId(factoryIdFilter)
+    }
+  }, [factoryIdFilter, setFactoryId, setSelectedFactoryId])
+
+  useEffect(() => {
+    setFactoryId(factoryIdFilter)
+    setMachineClassId(machineClassIdFilter)
+    setName(nameFilter)
+  }, [
+    factoryIdFilter,
+    machineClassIdFilter,
+    nameFilter,
+    setFactoryId,
+    setMachineClassId,
+    setName,
+  ])
 
   return (
     <div className={`mt-6 my-10`}>
@@ -63,7 +100,7 @@ const Part = ({
                 )}
                 onClick={() => setCurrentLocationTab(tab?._id as string)}
               >
-                {tab.name} (23)
+                {tab.name} ({tab?.count})
               </button>
               <div className="flex mt-1">
                 <div className="flex h-6 items-center">
@@ -114,13 +151,17 @@ const Part = ({
               id="location"
               name="location"
               className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+              onChange={(e) => setFactoryIdFilter(e.target.value)}
             >
-              <option className="uppercase">All</option>
-              <option className="uppercase">Pipe and Box</option>
-              <option className="uppercase">Precast</option>
-              <option className="uppercase">Steel</option>
-              <option className="uppercase">Exterior</option>
-              <option className="uppercase">Not Assigned</option>
+              <option value={""}>All</option>
+              {factories?.items.map((item: I_FACTORY, index: number) => {
+                return (
+                  <option key={index} value={item._id}>
+                    {item.name}
+                  </option>
+                )
+              })}
+              <option>Not Assigned</option>
             </select>
           </div>
           <div>
@@ -133,19 +174,24 @@ const Part = ({
             <select
               id="location"
               name="location"
-              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+              className="mt-2 disabled:opacity-70 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+              onChange={(e) => setMachineClassIdFilter(e.target.value)}
+              disabled={
+                isLocationsLoading ||
+                isFactoriesLoading ||
+                isMachineClassesRefetching
+              }
             >
-              <option></option>
-              <option className="uppercase">All</option>
-              <option className="uppercase">Radial Press</option>
-              <option className="uppercase">Variant</option>
-              <option className="uppercase">Wire Cage (BMK)</option>
-              <option className="uppercase">Blizzard</option>
-              <option className="uppercase">Tornado</option>
-              <option className="uppercase">Perfect System</option>
-              <option className="uppercase">Steel</option>
-              <option className="uppercase">Fittings</option>
-              <option className="uppercase">Misc</option>
+              <option value={""}>All</option>
+              {machineClasses?.items?.map(
+                (machine: T_MachineClass, index: number) => {
+                  return (
+                    <option key={index} value={machine._id as string}>
+                      {machine.name}
+                    </option>
+                  )
+                }
+              )}
             </select>
           </div>
           <div>
@@ -160,6 +206,7 @@ const Part = ({
                 type="text"
                 name="search"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                onChange={(e) => setNameFilter(e.target.value)}
               />
             </div>
           </div>
@@ -169,6 +216,10 @@ const Part = ({
           <div className="animate-pulse flex space-x-4">
             <div className="h-6 w-24 mt-10 bg-slate-200 rounded"></div>
           </div>
+        ) : allParts?.itemCount === 0 ? (
+          <h6 className="font-bold mt-7 text-lg text-gray-800">
+            No parts found
+          </h6>
         ) : (
           <h6 className="font-bold mt-7 text-lg text-gray-800">
             {allParts?.itemCount} Parts
@@ -192,7 +243,7 @@ const Part = ({
                   </div>
                 </>
               ) : (
-                allParts?.items.map((product: T_Part, index: number) => {
+                allParts?.items?.map((product: T_Part, index: number) => {
                   const selectedImage = product.files?.find(
                     (file) =>
                       file.toLocaleLowerCase().includes("png") ||
@@ -297,7 +348,7 @@ const Part = ({
                 <p className="text-sm text-gray-700">
                   Showing{" "}
                   <span className="font-medium">
-                    {allParts?.items.length as number}
+                    {allParts?.items?.length as number}
                   </span>{" "}
                   of <span className="font-medium">{allParts?.itemCount}</span>{" "}
                   results

@@ -6,14 +6,20 @@ import {
 } from "../../utils/constants"
 
 export const paginated = async (req: Request, res: Response) => {
-  const { page, locationId } = req.query
+  const { page, locationId, factoryId, machineClassId, name } = req.query
   if (page && locationId) {
     try {
       const partsCount = await Parts.find({
         locationId: locationId,
+        ...(factoryId && { factoryId: factoryId }),
+        ...(machineClassId && { machineClassId: machineClassId }),
+        ...(name && { name: { $regex: `.*${name}.*` } }),
       }).countDocuments()
       const getAllParts = await Parts.find({
         locationId: locationId,
+        ...(factoryId && { factoryId: factoryId }),
+        ...(machineClassId && { machineClassId: machineClassId }),
+        ...(name && { name: { $regex: `.*${name}.*`, $options: "i" } }),
       })
         .sort({
           createdAt: -1,
