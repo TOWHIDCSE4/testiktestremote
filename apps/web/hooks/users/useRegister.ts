@@ -1,3 +1,4 @@
+import { T_User } from "custom-validator"
 import { I_User } from "../../../web/types/global"
 import { API_URL_USERS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
@@ -10,7 +11,7 @@ export async function registerUser({
   email,
   password,
   profile,
-}: I_User) {
+}: T_User) {
   const res = await fetch(`${API_URL_USERS}`, {
     method: "POST",
     body: JSON.stringify({
@@ -39,7 +40,7 @@ function useRegisterUser() {
       email,
       password,
       profile,
-    }: I_User) =>
+    }: T_User) =>
       registerUser({
         firstName,
         lastName,

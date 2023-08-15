@@ -55,7 +55,7 @@ export const auth = async (req: Request, res: Response) => {
           })
           if (zodParsedSession.success) {
             const now = new Date(Date.now())
-            redisClient.hSet(`${token}`, {
+            await redisClient.hSet(`${token}`, {
               expireIn: `${dayjs(addHours(now, 4)).format()}`,
             })
             res.json({
@@ -73,6 +73,7 @@ export const auth = async (req: Request, res: Response) => {
             })
           }
         }
+        res.end()
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
         res.json({

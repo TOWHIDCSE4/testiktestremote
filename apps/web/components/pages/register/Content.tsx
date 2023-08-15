@@ -1,61 +1,37 @@
 "use client"
 import { HeartIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
-import { Fragment, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
 import Slider from "../../Slider"
-import { I_User, T_BACKEND_RESPONSE } from "../../../types/global"
-import { set, useForm, Controller } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import useRegister from "../../../hooks/users/useRegister"
-import { Listbox, Transition } from "@headlessui/react"
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
-
-const department = [
-  { id: 0, name: "Select..." },
-  { id: 1, name: "Administrator" },
-  { id: 2, name: "Corporate" },
-  { id: 3, name: "Production" },
-  { id: 4, name: "Personnel" },
-]
-
-const location = [
-  { id: 0, name: "Select Location" },
-  { id: 1, name: "Seguin" },
-  { id: 2, name: "Conroe" },
-  { id: 3, name: "Gunter" },
-]
-
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ")
-}
+import { T_BackendResponse, T_User } from "custom-validator"
+import { ROLES } from "../../../helpers/constants"
+import useLocations from "../../../hooks/locations/useLocations"
 
 const Content = () => {
+  const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const [password, setPassword] = useState("")
   const [confirmPass, setConfirmPass] = useState("")
 
-  const { register, handleSubmit, reset, control } = useForm<I_User>()
+  const { register, handleSubmit, reset } = useForm<T_User>()
   const { mutate, isLoading } = useRegister()
-
-  const [selectedDepartment, setSelectedDepartment] = useState(department[0])
-  const [selectedLocation, setSelectedLocation] = useState(location[0])
-
-  const optionsDepartment = department.slice(1)
-  const optionsLocation = location.slice(1)
 
   const router = useRouter()
 
-  const onSubmit = (data: I_User) => {
+  const onSubmit = (data: T_User) => {
     if (password === confirmPass) {
       const callBackReq = {
-        onSuccess: (data: T_BACKEND_RESPONSE) => {
+        onSuccess: (data: T_BackendResponse) => {
           if (!data.error) {
             router.push("/")
             resetForm()
           } else {
-            toast.error(data.message)
+            toast.error(String(data.message))
           }
         },
         onError: (err: any) => {
@@ -71,8 +47,6 @@ const Content = () => {
 
   const resetForm = () => {
     reset()
-    setSelectedDepartment(department[0])
-    setSelectedLocation(department[0])
     setPassword("")
     setConfirmPass("")
   }
@@ -143,205 +117,60 @@ const Content = () => {
                       </div>
                     </div>
                   </div>
-
-                  <Controller
-                    control={control}
-                    name="role"
-                    render={({ field: { onChange } }) => (
-                      <Listbox
-                        as="div"
-                        value={selectedDepartment}
-                        disabled={isLoading}
-                        onChange={(e) => {
-                          onChange(e.name)
-                          setSelectedDepartment(e)
-                        }}
-                      >
-                        {({ open }) => (
-                          <>
-                            <Listbox.Label className="block text-sm font-medium text-gray-900 mt-4">
-                              Department
-                            </Listbox.Label>
-                            <div className="relative mt-2">
-                              <Listbox.Button
-                                className={`${
-                                  selectedDepartment === department[0]
-                                    ? "text-gray-400"
-                                    : "text-gray-900"
-                                } relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                              >
-                                <span className="block truncate">
-                                  {selectedDepartment.name}
-                                </span>
-                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 border-l border-gray-300 my-2">
-                                  <ChevronDownIcon
-                                    className="h-5 w-5 text-gray-900 ml-2"
-                                    aria-hidden="true"
-                                  />
-                                </span>
-                              </Listbox.Button>
-                              <Transition
-                                show={open}
-                                as={Fragment}
-                                leave="transition ease-in duration-100"
-                                leaveFrom="opacity-100"
-                                leaveTo="opacity-0"
-                              >
-                                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm disabled:opacity-70">
-                                  <span className="py-2 pl-3 pr-9 select-none text-xs text-gray-400">
-                                    ROLE
-                                  </span>
-                                  {optionsDepartment.map((department) => (
-                                    <Listbox.Option
-                                      key={department.id}
-                                      className={({ active }) =>
-                                        classNames(
-                                          active
-                                            ? "bg-blue-300 text-white"
-                                            : "text-gray-900",
-                                          "relative cursor-pointer select-none py-2 pl-3 pr-9"
-                                        )
-                                      }
-                                      value={department}
-                                    >
-                                      {({ selected, active }) => (
-                                        <>
-                                          <span
-                                            className={classNames(
-                                              selected
-                                                ? "font-semibold"
-                                                : "font-normal",
-                                              "block truncate"
-                                            )}
-                                          >
-                                            {department.name}
-                                          </span>
-                                          {selected ? (
-                                            <span
-                                              className={classNames(
-                                                active
-                                                  ? "text-white"
-                                                  : "text-blue-950",
-                                                "absolute inset-y-0 right-0 flex items-center pr-4"
-                                              )}
-                                            >
-                                              <CheckIcon
-                                                className="h-5 w-5"
-                                                aria-hidden="true"
-                                              />
-                                            </span>
-                                          ) : null}
-                                        </>
-                                      )}
-                                    </Listbox.Option>
-                                  ))}
-                                </Listbox.Options>
-                              </Transition>
-                            </div>
-                          </>
-                        )}
-                      </Listbox>
-                    )}
-                  />
-                  <Controller
-                    control={control}
-                    name="location"
-                    render={({ field: { onChange } }) => (
-                      <Listbox
-                        value={selectedLocation}
-                        disabled={isLoading}
-                        onChange={(e) => {
-                          onChange(e.name)
-                          setSelectedLocation(e)
-                        }}
-                      >
-                        {({ open }) => (
-                          <>
-                            <Listbox.Label className="block text-sm font-medium text-gray-900 mt-4">
-                              Location
-                            </Listbox.Label>
-                            <div className="relative mt-2">
-                              <Listbox.Button
-                                className={`${
-                                  selectedLocation === location[0]
-                                    ? "text-gray-400"
-                                    : "text-gray-900"
-                                } relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                              >
-                                <span className="block truncate">
-                                  {selectedLocation.name}
-                                </span>
-                                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 border-l border-gray-300 my-2">
-                                  <ChevronDownIcon
-                                    className="h-5 w-5 text-gray-900 ml-2"
-                                    aria-hidden="true"
-                                  />
-                                </span>
-                              </Listbox.Button>
-                              <Transition
-                                show={open}
-                                as={Fragment}
-                                leave="transition ease-in duration-100"
-                                leaveFrom="opacity-100"
-                                leaveTo="opacity-0"
-                              >
-                                <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                  <span className="py-2 pl-3 pr-9 select-none text-xs text-gray-400">
-                                    ROLE
-                                  </span>
-                                  {optionsLocation.map((location) => (
-                                    <Listbox.Option
-                                      key={location.id}
-                                      className={({ active }) =>
-                                        classNames(
-                                          active
-                                            ? "bg-blue-300 text-white"
-                                            : "text-gray-900",
-                                          "relative cursor-pointer select-none py-2 pl-3 pr-9"
-                                        )
-                                      }
-                                      value={location}
-                                    >
-                                      {({ selected, active }) => (
-                                        <>
-                                          <span
-                                            className={classNames(
-                                              selected
-                                                ? "font-semibold"
-                                                : "font-normal",
-                                              "block truncate"
-                                            )}
-                                          >
-                                            {location.name}
-                                          </span>
-                                          {selected ? (
-                                            <span
-                                              className={classNames(
-                                                active
-                                                  ? "text-white"
-                                                  : "text-blue-950",
-                                                "absolute inset-y-0 right-0 flex items-center pr-4"
-                                              )}
-                                            >
-                                              <CheckIcon
-                                                className="h-5 w-5"
-                                                aria-hidden="true"
-                                              />
-                                            </span>
-                                          ) : null}
-                                        </>
-                                      )}
-                                    </Listbox.Option>
-                                  ))}
-                                </Listbox.Options>
-                              </Transition>
-                            </div>
-                          </>
-                        )}
-                      </Listbox>
-                    )}
-                  />
-
+                  <div className="mt-4">
+                    <label
+                      htmlFor="location"
+                      className="block text-sm font-medium text-gray-900"
+                    >
+                      Department
+                    </label>
+                    <select
+                      id="location"
+                      disabled={isLoading}
+                      required
+                      className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                      {...register("role", { required: true })}
+                      defaultValue=""
+                    >
+                      <option className="uppercase" value="">
+                        Select Department
+                      </option>
+                      {Object.keys(ROLES).map((key: string) => (
+                        <option className="uppercase" key={key} value={key}>
+                          {key}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="mt-4">
+                    <label
+                      htmlFor="location"
+                      className="block text-sm font-medium text-gray-900"
+                    >
+                      Location
+                    </label>
+                    <select
+                      id="location"
+                      required
+                      disabled={isLocationsLoading || isLoading}
+                      className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                      {...register("location", { required: true })}
+                      defaultValue=""
+                    >
+                      <option className="uppercase" value="">
+                        Select Location
+                      </option>
+                      {locations?.items.map((key, index) => (
+                        <option
+                          className="uppercase"
+                          key={index}
+                          value={key._id}
+                        >
+                          {key.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div className="mt-4">
                     <label
                       htmlFor="email-add"

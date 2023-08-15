@@ -5,19 +5,16 @@ import {
 } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse, T_Locations } from "custom-validator"
-import Cookies from "js-cookie"
 
 type T_DBReturn = Omit<T_BackendResponse, "items"> & {
   items: T_Locations[]
 }
 
 export async function getAllLocations() {
-  const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_LOCATIONS}`, {
     method: "GET",
     headers: {
       "content-type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
   })
   return (await res.json()) as T_DBReturn

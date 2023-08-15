@@ -10,6 +10,7 @@
   "devDependencies": {
     "@turbo/gen": "^1.9.7",
     "@types/js-cookie": "^3.0.3",
+    "@types/ws": "^8.5.5",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
     "husky": "^8.0.0",
@@ -41,6 +42,7 @@
     "react-hook-form": "^7.45.3",
     "react-hot-toast": "^2.4.1",
     "swiper": "^10.1.0",
+    "ws": "^8.13.0",
     "zustand": "^4.4.0"
   }
 }

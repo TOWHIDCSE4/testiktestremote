@@ -11,7 +11,7 @@ import TimerLogRoute from "./timerLogs"
 import TimerReadingsRoute from "./timerReadings"
 import JobRoute from "./jobs"
 
-export default function (app: Application) {
+const App = (app: Application) => {
   app.use(`${API_ROOT}/users`, UsersRoute)
   app.use(`${API_ROOT}/timers`, TimerRoute)
   app.use(`${API_ROOT}/timer-readings`, TimerReadingsRoute)
@@ -23,3 +23,5 @@ export default function (app: Application) {
   app.use(`${API_ROOT}/factories`, FactoryRoute)
   app.use(`${API_ROOT}/jobs`, JobRoute)
 }
+
+export default App

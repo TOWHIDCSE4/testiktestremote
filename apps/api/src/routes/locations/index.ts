@@ -10,7 +10,7 @@ import {
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 
 //default
-router.get("/", isUserLoggedIn, getAllLocations)
+router.get("/", getAllLocations)
 router.get("/:id", isUserLoggedIn, getLocation)
 router.post("/", isUserLoggedIn, addLocation)
 router.patch("/:id", isUserLoggedIn, updateLocation)

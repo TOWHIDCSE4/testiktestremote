@@ -2,6 +2,7 @@ import { createClient } from "redis"
 
 const redisClient = createClient({
   url: process.env.REDIS_URL,
+  pingInterval: 1000 * 60 * 60,
 })
 
 redisClient.connect()

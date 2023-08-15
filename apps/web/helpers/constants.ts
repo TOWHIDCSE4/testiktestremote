@@ -5,7 +5,7 @@ export const ROLES = {
   Corporate: "Corporate",
   Administrator: "Administrator",
   Personnel: "Personnel",
-} as const
+}
 
 export const ONE_DAY = 1000 * 60 * 60 * 24 // 24 hours
 export const SIXTEEN_HOURS = 1000 * 60 * 60 * 16 // 16 hours
