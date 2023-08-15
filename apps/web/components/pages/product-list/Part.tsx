@@ -8,7 +8,7 @@ import DeleteModal from "./modals/DeleteModal"
 import PartDetailsModal from "./modals/PartDetailsModal"
 import combineClasses from "../../../helpers/combineClasses"
 import usePaginatedParts from "../../../hooks/parts/usePaginatedParts"
-import { T_MachineClass, T_Part } from "custom-validator"
+import { T_Factory, T_MachineClass, T_Part } from "custom-validator"
 import useFactories from "../../../hooks/factories/useFactories"
 import useFactoryMachineClasses from "../../../hooks/factories/useFactoryMachineClasses"
 import { I_FACTORY } from "../../../types/global"
@@ -68,7 +68,7 @@ const Part = ({
     if (factoryIdFilter) {
       setSelectedFactoryId(factoryIdFilter)
     }
-  }, [factoryIdFilter, setFactoryId, setSelectedFactoryId])
+  }, [factoryIdFilter, setSelectedFactoryId])
 
   useEffect(() => {
     setFactoryId(factoryIdFilter)
@@ -100,7 +100,7 @@ const Part = ({
                 )}
                 onClick={() => setCurrentLocationTab(tab?._id as string)}
               >
-                {tab.name} ({tab?.count})
+                {tab.name} {tab?.count ? `(${tab.count})` : null}
               </button>
               <div className="flex mt-1">
                 <div className="flex h-6 items-center">
@@ -154,9 +154,9 @@ const Part = ({
               onChange={(e) => setFactoryIdFilter(e.target.value)}
             >
               <option value={""}>All</option>
-              {factories?.items.map((item: I_FACTORY, index: number) => {
+              {factories?.items.map((item: T_Factory, index: number) => {
                 return (
-                  <option key={index} value={item._id}>
+                  <option key={index} value={item._id as string}>
                     {item.name}
                   </option>
                 )
@@ -252,7 +252,7 @@ const Part = ({
                   return (
                     <div
                       key={index}
-                      className="group relative bg-white rounded-md border border-gray-200 drop-shadow-lg cursor-pointer"
+                      className="group relative bg-white rounded-md border border-gray-200 shadow cursor-pointer"
                       onClick={() => {
                         setOpenDetailsModal(true)
                         setSelectedPartId(product._id as string)
@@ -262,7 +262,7 @@ const Part = ({
                         <div className="relative">
                           {!isGetAllPartsLoading && selectedImage ? (
                             <Image
-                              className="h-[200px]"
+                              className="h-60"
                               src={`/files/${selectedImage}`}
                               alt={selectedImage as string}
                               width={400}
@@ -270,7 +270,7 @@ const Part = ({
                             />
                           ) : !isGetAllPartsLoading && !selectedImage ? (
                             <Image
-                              className="h-[200px]"
+                              className="h-60"
                               src="/no-image.png"
                               alt="Part Image"
                               width={400}
@@ -373,7 +373,6 @@ const Part = ({
                     <span className="sr-only">Previous</span>
                     <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
                   </button>
-                  {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
                   {numberOfPages
                     ? [...Array(numberOfPages)].map((_, index) => (
                         <button

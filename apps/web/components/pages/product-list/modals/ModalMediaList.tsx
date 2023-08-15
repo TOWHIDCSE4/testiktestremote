@@ -14,7 +14,11 @@ const ModalMediaList = ({
   return (
     <div className="flex-1">
       <div className="w-full">
-        <div className="text-gray-400 justify-center text-sm border-2 border-gray-300 text-center rounded-md h-[250px] p-5">
+        <div
+          className={`text-gray-400 justify-center text-sm border-2 border-gray-300 text-center rounded-md ${
+            fileName ? "min-h-fit" : "h-[250px]"
+          } p-5`}
+        >
           {fileName ? (
             <div className="mx-auto">
               <Image src={fileName} alt="logo" width={200} height={100} />

@@ -6,7 +6,8 @@ import Machine from "./Machine"
 import combineClasses from "../../../helpers/combineClasses"
 import Part from "./Part"
 import NewMachineModal from "./modals/NewMachineModal"
-import usePartLocationCount from "../../../hooks/parts/useGetPartLocationCount"
+import useGetPartLocationCount from "../../../hooks/parts/useGetPartLocationCount"
+import useGetMachineLocationCount from "../../../hooks/machines/useGetMachineLocationCount"
 
 type T_LocationTabs = {
   _id?: string
@@ -16,11 +17,10 @@ type T_LocationTabs = {
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
-  const {
-    data: partLocationCount,
-    isLoading: isPartLocationCount,
-    setLocationIds,
-  } = usePartLocationCount()
+  const { data: partLocationCount, setPartLocationIds } =
+    useGetPartLocationCount()
+  const { data: machineLocationCount, setMachineLocationIds } =
+    useGetMachineLocationCount()
   const [openNewPartModal, setOpenNewPartModal] = useState(false)
   const [openNewMachineModal, setOpenNewMachineModal] = useState(false)
   const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
@@ -43,7 +43,7 @@ const Content = () => {
           }))
         )
       }
-      setLocationIds(
+      setPartLocationIds(
         locations?.items?.map((location) => location._id) as string[]
       )
       setCurrentLocationTab(locations?.items[0]?._id as string)
@@ -51,24 +51,47 @@ const Content = () => {
   }, [locations])
 
   useEffect(() => {
-    if (partLocationCount) {
-      if (locations) {
-        const counts = partLocationCount
-          .map((partLocation) => {
-            if (!partLocation.error) {
-              return partLocation.item
-            }
-          })
-          .filter((item) => typeof item === "number")
-        setLocationTabs(
-          locationTabs?.map((tab, index) => ({
-            ...tab,
-            count: counts[index],
-          }))
-        )
-      }
+    if (partLocationCount && locations && typeState === "Part") {
+      const counts = partLocationCount
+        .map((partLocation) => {
+          if (!partLocation.error) {
+            return partLocation.item
+          }
+        })
+        .filter((item) => typeof item === "number")
+      setLocationTabs(
+        locationTabs?.map((tab, index) => ({
+          ...tab,
+          count: counts[index],
+        }))
+      )
+    } else if (machineLocationCount && locations && typeState === "Machine") {
+      const counts = machineLocationCount
+        .map((partLocation) => {
+          if (!partLocation.error) {
+            return partLocation.item
+          }
+        })
+        .filter((item) => typeof item === "number")
+      setLocationTabs(
+        locationTabs?.map((tab, index) => ({
+          ...tab,
+          count: counts[index],
+        }))
+      )
     }
-  }, [partLocationCount])
+  }, [partLocationCount, machineLocationCount, typeState])
+
+  useEffect(() => {
+    if (locationTabs.length > 0) {
+      setCurrentLocationTab(locationTabs[0]._id as string)
+    }
+    if (typeState === "Machine" && locations) {
+      setMachineLocationIds(
+        locations?.items?.map((location) => location._id) as string[]
+      )
+    }
+  }, [typeState])
 
   const currentLocationTabName = locationTabs.find(
     (tab) => tab._id === currentLocationTab
@@ -174,6 +197,7 @@ const Content = () => {
         locationState={
           currentLocationTabName ? currentLocationTabName : "Loading..."
         }
+        locationId={currentLocationTab}
         onClose={() => setOpenNewMachineModal(false)}
       />
     </div>

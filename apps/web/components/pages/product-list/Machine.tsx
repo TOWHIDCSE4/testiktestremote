@@ -5,48 +5,17 @@ import { TrashIcon } from "@heroicons/react/24/outline"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
-import DetailsModal from "./modals/PartDetailsModal"
-import NewPartModal from "./modals/NewPartModal"
-import useLocations from "../../../hooks/locations/useLocations"
-
-const products = [
-  {
-    id: 1,
-    name: "Product Name",
-    href: "#",
-    imageSrc: "/no-image.png",
-    imageAlt: "Front of men's Basic Tee in black.",
-    price: "$35",
-    color: "Black",
-  },
-  {
-    id: 2,
-    name: "Product Name",
-    href: "#",
-    imageSrc: "/no-image.png",
-    imageAlt: "Front of men's Basic Tee in black.",
-    price: "$35",
-    color: "Black",
-  },
-  {
-    id: 3,
-    name: "Product Name",
-    href: "#",
-    imageSrc: "/no-image.png",
-    imageAlt: "Front of men's Basic Tee in black.",
-    price: "$35",
-    color: "Black",
-  },
-]
-
-// @ts-expect-error
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
-}
+import MachineDetailsModal from "./modals/MachineDetailsModal"
+import combineClasses from "../../../helpers/combineClasses"
+import useFactories from "../../../hooks/factories/useFactories"
+import useFactoryMachineClasses from "../../../hooks/factories/useFactoryMachineClasses"
+import { T_Factory, T_Machine, T_MachineClass } from "custom-validator"
+import usePaginatedMachines from "../../../hooks/machines/usePaginatedMachines"
 
 type T_LocationTabs = {
   _id?: string
   name: string
+  count?: number
 }
 
 type T_Machine_Page = {
@@ -57,38 +26,64 @@ type T_Machine_Page = {
   isLocationsLoading: boolean
 }
 
-const Machine = (props: T_Machine_Page) => {
-  const { data: locations, isLoading: isLocationLoading } = useLocations()
+const Machine = ({
+  setCurrentLocationTab,
+  currentLocationTab,
+  currentLocationTabName,
+  locationTabs,
+  isLocationsLoading,
+}: T_Machine_Page) => {
+  const {
+    data: allMachines,
+    isLoading: isGetAllMachinesLoading,
+    setLocationId,
+    setPage,
+    setFactoryId,
+    setMachineClassId,
+    setName,
+    page,
+  } = usePaginatedMachines()
+  const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+  const {
+    data: machineClasses,
+    isRefetching: isMachineClassesRefetching,
+    setSelectedFactoryId,
+  } = useFactoryMachineClasses()
   const [openNewModal, setOpenNewModal] = useState(false)
-  const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
-  const [currentLocationTab, setCurrentLocationTab] = useState<string>("")
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
-  const [typeState, setTypeState] = useState("Part")
-
-  const tabs = [
-    { name: "Part", current: typeState === "Part" },
-    { name: "Machine", current: typeState === "Machine" },
-  ]
+  const [factoryIdFilter, setFactoryIdFilter] = useState("")
+  const [machineClassIdFilter, setMachineClassIdFilter] = useState("")
+  const [nameFilter, setNameFilter] = useState("")
+  const [selectedPartId, setSelectedMachineId] = useState<string | undefined>(
+    ""
+  )
 
   useEffect(() => {
-    if (locationTabs.length === 0) {
-      if (locations) {
-        setLocationTabs(
-          locations.items.map((location: T_LocationTabs) => ({
-            _id: location._id,
-            name: location.name,
-          }))
-        )
-      }
-      setCurrentLocationTab(locations?.items[0]?._id as string)
-    }
-  }, [locations])
+    setLocationId(currentLocationTab)
+  }, [currentLocationTab, setLocationId])
 
-  const locationName = locationTabs.find(
-    (tab) => tab._id === currentLocationTab
-  )?.name
+  const numberOfPages = Math.ceil((allMachines?.itemCount as number) / 6)
+
+  useEffect(() => {
+    if (factoryIdFilter) {
+      setSelectedFactoryId(factoryIdFilter)
+    }
+  }, [factoryIdFilter, setSelectedFactoryId])
+
+  useEffect(() => {
+    setFactoryId(factoryIdFilter)
+    setMachineClassId(machineClassIdFilter)
+    setName(nameFilter)
+  }, [
+    factoryIdFilter,
+    machineClassIdFilter,
+    nameFilter,
+    setFactoryId,
+    setMachineClassId,
+    setName,
+  ])
 
   return (
     <div className={`mt-6 my-10`}>
@@ -99,7 +94,7 @@ const Machine = (props: T_Machine_Page) => {
             <div key={tab.name}>
               <button
                 type="button"
-                className={classNames(
+                className={combineClasses(
                   tab._id === currentLocationTab
                     ? "bg-blue-950 text-white"
                     : "bg-white text-gray-700 hover:bg-gray-50",
@@ -107,7 +102,7 @@ const Machine = (props: T_Machine_Page) => {
                 )}
                 onClick={() => setCurrentLocationTab(tab?._id as string)}
               >
-                {tab.name}
+                {tab.name} {tab?.count ? `(${tab.count})` : null}
               </button>
               <div className="flex mt-1">
                 <div className="flex h-6 items-center">
@@ -130,7 +125,7 @@ const Machine = (props: T_Machine_Page) => {
               </div>
             </div>
           ))}
-          {isLocationLoading && (
+          {isLocationsLoading && (
             <>
               <div className="animate-pulse flex space-x-4">
                 <div className="h-14 w-full rounded bg-slate-200"></div>
@@ -158,13 +153,17 @@ const Machine = (props: T_Machine_Page) => {
               id="location"
               name="location"
               className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+              onChange={(e) => setFactoryIdFilter(e.target.value)}
             >
-              <option className="uppercase">All</option>
-              <option className="uppercase">Pipe and Box</option>
-              <option className="uppercase">Precast</option>
-              <option className="uppercase">Steel</option>
-              <option className="uppercase">Exterior</option>
-              <option className="uppercase">Not Assigned</option>
+              <option value={""}>All</option>
+              {factories?.items.map((item: T_Factory, index: number) => {
+                return (
+                  <option key={index} value={item._id as string}>
+                    {item.name}
+                  </option>
+                )
+              })}
+              <option>Not Assigned</option>
             </select>
           </div>
           <div>
@@ -177,19 +176,24 @@ const Machine = (props: T_Machine_Page) => {
             <select
               id="location"
               name="location"
-              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+              className="mt-2 disabled:opacity-70 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+              onChange={(e) => setMachineClassIdFilter(e.target.value)}
+              disabled={
+                isLocationsLoading ||
+                isFactoriesLoading ||
+                isMachineClassesRefetching
+              }
             >
-              <option></option>
-              <option className="uppercase">All</option>
-              <option className="uppercase">Radial Press</option>
-              <option className="uppercase">Variant</option>
-              <option className="uppercase">Wire Cage (BMK)</option>
-              <option className="uppercase">Blizzard</option>
-              <option className="uppercase">Tornado</option>
-              <option className="uppercase">Perfect System</option>
-              <option className="uppercase">Steel</option>
-              <option className="uppercase">Fittings</option>
-              <option className="uppercase">Misc</option>
+              <option value={""}>All</option>
+              {machineClasses?.items?.map(
+                (machine: T_MachineClass, index: number) => {
+                  return (
+                    <option key={index} value={machine._id as string}>
+                      {machine.name}
+                    </option>
+                  )
+                }
+              )}
             </select>
           </div>
           <div>
@@ -204,65 +208,110 @@ const Machine = (props: T_Machine_Page) => {
                 type="text"
                 name="search"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
+                onChange={(e) => setNameFilter(e.target.value)}
               />
             </div>
           </div>
         </div>
         {/* Product card list container */}
-        <h6 className="font-bold mt-7 text-lg text-gray-800">2716 Parts</h6>
+        {isGetAllMachinesLoading ? (
+          <div className="animate-pulse flex space-x-4">
+            <div className="h-6 w-24 mt-10 bg-slate-200 rounded"></div>
+          </div>
+        ) : allMachines?.itemCount === 0 ? (
+          <h6 className="font-bold mt-7 text-lg text-gray-800">
+            No machines found
+          </h6>
+        ) : (
+          <h6 className="font-bold mt-7 text-lg text-gray-800">
+            {allMachines?.itemCount} Machines
+          </h6>
+        )}
         <div>
           <div className="mx-auto">
             <div className="mt-7 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-              {products.map((product) => (
-                <div
-                  key={product.id}
-                  className="group relative bg-white rounded-md border border-gray-200 drop-shadow-lg cursor-pointer"
-                  onClick={() => setOpenDetailsModal(true)}
-                >
-                  <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 h-72">
-                    <div className="h-full w-full lg:h-full lg:w-full relative">
-                      <Image
-                        src={product.imageSrc}
-                        alt={product.imageAlt}
-                        className="h-full w-full object-center"
-                        width={400}
-                        height={400}
-                      />
-                    </div>
+              {isGetAllMachinesLoading ? (
+                <>
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-80 w-full mt-7 bg-slate-200 rounded"></div>
                   </div>
-                  <div className="flex justify-between px-4 py-4">
-                    <div>
-                      <h3 className="text-gray-700 font-bold uppercase">
-                        {product.name}
-                      </h3>
-                    </div>
-                    <p className="font-bold uppercase text-green-600">
-                      {locationName ? locationName : "Loading..."}
-                    </p>
+
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-80 w-full mt-7 bg-slate-200 rounded"></div>
                   </div>
-                  <div className="px-4">
-                    <div className="flex justify-between text-gray-900">
-                      <span>Pounds:</span>
-                      <span>4520</span>
-                    </div>
-                    <div className="flex justify-between text-gray-900">
-                      <span>Avg Time:</span>
-                      <span>0</span>
-                    </div>
+
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-80 w-full mt-7 bg-slate-200 rounded"></div>
                   </div>
-                  <div className="flex justify-end px-4 space-x-3 my-4">
-                    <button
-                      className="p-1 bg-red-700 rounded-md"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setOpenDeleteModal(true)
+                </>
+              ) : (
+                allMachines?.items?.map((product: T_Machine, index: number) => {
+                  const selectedImage = product.files?.find(
+                    (file) =>
+                      file.toLocaleLowerCase().includes("png") ||
+                      file.toLocaleLowerCase().includes("jpg")
+                  )
+                  return (
+                    <div
+                      key={index}
+                      className="group relative bg-white rounded-md border border-gray-200 shadow cursor-pointer"
+                      onClick={() => {
+                        setOpenDetailsModal(true)
+                        setSelectedMachineId(product._id as string)
                       }}
                     >
-                      <TrashIcon className="h-5 w-5 text-white" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                      <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 rounded-t-md">
+                        <div className="relative">
+                          {!isGetAllMachinesLoading && selectedImage ? (
+                            <Image
+                              className="h-60"
+                              src={`/files/${selectedImage}`}
+                              alt={selectedImage as string}
+                              width={400}
+                              height={400}
+                            />
+                          ) : !isGetAllMachinesLoading && !selectedImage ? (
+                            <Image
+                              className="h-60"
+                              src="/no-image.png"
+                              alt="Part Image"
+                              width={400}
+                              height={400}
+                            />
+                          ) : (
+                            <div className="animate-pulse flex space-x-4">
+                              <div className="h-52 w-full bg-slate-200"></div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-between px-4 py-4">
+                        <div>
+                          <h3 className="text-gray-700 font-bold uppercase">
+                            {product.name}
+                          </h3>
+                        </div>
+                        <p className="font-bold uppercase text-green-600">
+                          {currentLocationTabName
+                            ? currentLocationTabName
+                            : "Loading..."}
+                        </p>
+                      </div>
+                      <div className="flex justify-end px-4 space-x-3 my-4">
+                        <button
+                          className="p-1 bg-red-700 rounded-md"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setOpenDeleteModal(true)
+                          }}
+                        >
+                          <TrashIcon className="h-5 w-5 text-white" />
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })
+              )}
             </div>
           </div>
         </div>
@@ -282,84 +331,70 @@ const Machine = (props: T_Machine_Page) => {
             </a>
           </div>
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            {isGetAllMachinesLoading ? (
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-4 w-48 mt-7 bg-slate-200 rounded"></div>
+              </div>
+            ) : (
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing{" "}
+                  <span className="font-medium">
+                    {allMachines?.items?.length as number}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-medium">{allMachines?.itemCount}</span>{" "}
+                  results
+                </p>
+              </div>
+            )}
             <div>
-              <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">1</span> to{" "}
-                <span className="font-medium">10</span> of{" "}
-                <span className="font-medium">97</span> results
-              </p>
-            </div>
-            <div>
-              <nav
-                className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                aria-label="Pagination"
-              >
-                <a
-                  href="#"
-                  className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              {isGetAllMachinesLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-8 w-36 mt-7 bg-slate-200 rounded"></div>
+                </div>
+              ) : (
+                <nav
+                  className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                  aria-label="Pagination"
                 >
-                  <span className="sr-only">Previous</span>
-                  <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-                </a>
-                {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-                <a
-                  href="#"
-                  aria-current="page"
-                  className="relative z-10 inline-flex items-center bg-blue-950 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  1
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  2
-                </a>
-                <a
-                  href="#"
-                  className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                >
-                  3
-                </a>
-                <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">
-                  ...
-                </span>
-                <a
-                  href="#"
-                  className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                >
-                  8
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  9
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  10
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  <span className="sr-only">Next</span>
-                  <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-                </a>
-              </nav>
+                  <button
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1 || numberOfPages === 0}
+                    className="relative disabled:opacity-70 inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span className="sr-only">Previous</span>
+                    <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                  {numberOfPages
+                    ? [...Array(numberOfPages)].map((_, index) => (
+                        <button
+                          key={index + 1}
+                          onClick={() => setPage(index + 1)}
+                          className={
+                            page === index + 1
+                              ? "relative z-10 inline-flex items-center bg-blue-950 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                              : "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                          }
+                        >
+                          {index + 1}
+                        </button>
+                      ))
+                    : null}
+                  <button
+                    onClick={() => setPage(page + 1)}
+                    className="relative disabled:opacity-70 inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    disabled={page === numberOfPages || numberOfPages === 0}
+                  >
+                    <span className="sr-only">Next</span>
+                    <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </nav>
+              )}
             </div>
           </div>
         </div>
       </div>
-      <NewPartModal
-        isOpen={openNewModal}
-        locationState={locationName ? locationName : "Loading..."}
-        locationId={currentLocationTab}
-        onClose={() => setOpenNewModal(false)}
-      />
       <EditModal
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
@@ -368,10 +403,13 @@ const Machine = (props: T_Machine_Page) => {
         isOpen={openDeleteModal}
         onClose={() => setOpenDeleteModal(false)}
       />
-      <DetailsModal
+      <MachineDetailsModal
         isOpen={openDetailsModal}
-        locationState={locationName ? locationName : "Loading..."}
+        locationState={
+          currentLocationTabName ? currentLocationTabName : "Loading..."
+        }
         onClose={() => setOpenDetailsModal(false)}
+        id={selectedPartId}
       />
     </div>
   )

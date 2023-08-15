@@ -57,13 +57,15 @@ export const getMachine = async (req: Request, res: Response) => {
 }
 
 export const addMachine = async (req: Request, res: Response) => {
-  const { name, description, factoryId, machineClassId, locationId } = req.body
+  const { name, description, factoryId, machineClassId, locationId, files } =
+    req.body
   if (name && description && factoryId && machineClassId && locationId) {
     const newMachine = new Machines({
       name,
       description,
       factoryId,
       machineClassId,
+      files,
       locationId,
       updatedAt: null,
       deletedAt: null,

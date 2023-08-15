@@ -8,6 +8,12 @@ import {
   updateMachine,
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
+import { locationCount } from "./locationCount"
+import { paginated } from "./paginated"
+
+//custom
+router.get("/paginated", isUserLoggedIn, paginated)
+router.get("/location-count/:id", isUserLoggedIn, locationCount)
 
 //default
 router.get("/", isUserLoggedIn, getAllMachines)

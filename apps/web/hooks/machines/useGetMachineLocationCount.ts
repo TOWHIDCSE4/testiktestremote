@@ -1,6 +1,6 @@
-import { API_URL_PARTS, ONE_DAY, THREE_MINUTES } from "../../helpers/constants"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { T_BackendResponse, T_Part } from "custom-validator"
+import { API_URL_MACHINE, THREE_MINUTES } from "../../helpers/constants"
+import { useQuery } from "@tanstack/react-query"
+import { T_BackendResponse } from "custom-validator"
 import Cookies from "js-cookie"
 import { useEffect, useState } from "react"
 
@@ -8,9 +8,9 @@ type T_DBReturn = Omit<T_BackendResponse, "item"> & {
   item: number
 }
 
-export async function getPartLocationCount(locationId: string) {
+export async function getMachineLocationCount(locationId: string) {
   const token = Cookies.get("tfl")
-  const res = await fetch(`${API_URL_PARTS}/location-count/${locationId}`, {
+  const res = await fetch(`${API_URL_MACHINE}/location-count/${locationId}`, {
     method: "GET",
     headers: {
       "content-type": "application/json",
@@ -20,14 +20,14 @@ export async function getPartLocationCount(locationId: string) {
   return (await res.json()) as T_DBReturn
 }
 
-function usePartLocationCount() {
+function useGetMachineLocationCount() {
   const [locationIds, setLocationIds] = useState<string[]>([])
 
   const query = useQuery(
-    ["part-location-counts", locationIds],
+    ["machine-location-counts", locationIds],
     () =>
       Promise.all(
-        locationIds.map((locationId) => getPartLocationCount(locationId))
+        locationIds.map((locationId) => getMachineLocationCount(locationId))
       ),
     {
       staleTime: THREE_MINUTES,
@@ -42,6 +42,6 @@ function usePartLocationCount() {
     }
   }, [locationIds])
 
-  return { ...query, setPartLocationIds: setLocationIds }
+  return { ...query, setMachineLocationIds: setLocationIds }
 }
-export default usePartLocationCount
+export default useGetMachineLocationCount

@@ -1,19 +1,29 @@
 "use client"
 import { Fragment, useRef, useState, useEffect } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import EditModal from "./EditModal"
-import useGetPart from "../../../../hooks/parts/useGetPart"
+import usePart from "../../../../hooks/parts/useGetPart"
 import useFactories from "../../../../hooks/factories/useFactories"
 import { useQueryClient } from "@tanstack/react-query"
-import { I_FACTORY } from "../../../../types/global"
+import {
+  I_FACTORY,
+  I_PartUpdate,
+  T_BACKEND_RESPONSE,
+} from "../../../../types/global"
 import { useForm } from "react-hook-form"
 import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
-import { T_BackendResponse, T_MachineClass, T_Part } from "custom-validator"
+import {
+  T_BackendResponse,
+  T_Machine,
+  T_MachineClass,
+  T_Part,
+} from "custom-validator"
 import useLocations from "../../../../hooks/locations/useLocations"
 import useUpdatePart from "../../../../hooks/parts/useUpdatePart"
 import useSession from "../../../../hooks/users/useSession"
 import toast from "react-hot-toast"
 import ModalMediaList from "./ModalMediaList"
+import useGetMachine from "../../../../hooks/machines/useGetMachine"
+import useUpdateMachine from "../../../../hooks/machines/useUpdateMachine"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -22,39 +32,35 @@ interface DetailsModalProps {
   id?: string
 }
 
-const PartDetailsModal = ({
+const MachineDetailsModal = ({
   isOpen,
   locationState,
   onClose,
   id,
 }: DetailsModalProps) => {
   const queryClient = useQueryClient()
-  const session = useSession()
-  const token = session.data.item.token
   const closeButtonRef = useRef(null)
-  const [openEditModal, setOpenEditModal] = useState(false)
-
-  const { data: partDetails, isLoading: isPartDetailsLoading } = useGetPart(id)
+  const { data: machineDetails, isLoading: isMachineDetailsLoading } =
+    useGetMachine(id)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const {
     data: machineClasses,
     isRefetching: isMachineClassesRefetching,
     setSelectedFactoryId,
   } = useFactoryMachineClasses()
-  const { data: locations, isLoading: isLocationsLoading } = useLocations()
-  const { mutate, isLoading: isUpdatePartLoading } = useUpdatePart()
+  const { mutate, isLoading: isUpdateMachineLoading } = useUpdateMachine()
 
-  const { register, handleSubmit } = useForm<T_Part>({
-    values: partDetails?.item,
+  const { register, handleSubmit } = useForm<T_Machine>({
+    values: machineDetails?.item,
   })
-  const onSubmit = (data: T_Part) => {
+  const onSubmit = (data: T_Machine) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
           queryClient.invalidateQueries({
-            queryKey: ["parts"],
+            queryKey: ["machines"],
           })
-          toast.success("Part details has been updated")
+          toast.success("Machine details has been updated")
         } else {
           toast.error(String(data.message))
         }
@@ -64,14 +70,14 @@ const PartDetailsModal = ({
       },
     }
 
-    mutate({ _id: partDetails?.item?._id as string, ...data }, callBackReq)
+    mutate({ _id: machineDetails?.item?._id as string, ...data }, callBackReq)
   }
 
   useEffect(() => {
-    if (partDetails?.item) {
-      setSelectedFactoryId(partDetails?.item?.factoryId)
+    if (machineDetails?.item) {
+      setSelectedFactoryId(machineDetails?.item?.factoryId)
     }
-  }, [partDetails])
+  }, [machineDetails])
 
   const partSection = () => {
     return (
@@ -87,11 +93,10 @@ const PartDetailsModal = ({
             <input
               type="text"
               className="text-gray-800 pl-0 font-bold text-xl uppercase py-1 mt-1 mb-1 rounded-md border-0 focus:ring-1 focus:ring-blue-950 focus:pl-3 cursor-pointer focus:cursor-text disabled:opacity-70 w-full"
-              defaultValue={partDetails?.item?.name}
+              defaultValue={machineDetails?.item?.name}
               disabled={
-                isUpdatePartLoading ||
-                isPartDetailsLoading ||
-                isLocationsLoading ||
+                isUpdateMachineLoading ||
+                isMachineDetailsLoading ||
                 isFactoriesLoading
               }
               {...register("name", { required: true })}
@@ -105,7 +110,7 @@ const PartDetailsModal = ({
           </div>
           <div className="px-4 md:px-6 mt-4">
             <div className="lg:flex gap-4">
-              <div>
+              <div className="flex-1">
                 <div className="grid grid-cols-4 items-center gap-y-2">
                   <label
                     htmlFor="factory"
@@ -117,9 +122,8 @@ const PartDetailsModal = ({
                     id="factory"
                     className={`block col-span-2 md:mt-0 w-full text-sm rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:leading-6 disabled:opacity-70`}
                     disabled={
-                      isUpdatePartLoading ||
-                      isPartDetailsLoading ||
-                      isLocationsLoading ||
+                      isUpdateMachineLoading ||
+                      isMachineDetailsLoading ||
                       isFactoriesLoading
                     }
                     {...register("factoryId", { required: true })}
@@ -133,7 +137,9 @@ const PartDetailsModal = ({
                         <option
                           key={index}
                           value={item._id}
-                          selected={item._id === partDetails?.item?.factoryId}
+                          selected={
+                            item._id === machineDetails?.item?.factoryId
+                          }
                         >
                           {item.name}
                         </option>
@@ -150,9 +156,8 @@ const PartDetailsModal = ({
                     id="machine-class"
                     className={`block col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     disabled={
-                      isUpdatePartLoading ||
-                      isPartDetailsLoading ||
-                      isLocationsLoading ||
+                      isUpdateMachineLoading ||
+                      isMachineDetailsLoading ||
                       isFactoriesLoading ||
                       isMachineClassesRefetching
                     }
@@ -166,7 +171,8 @@ const PartDetailsModal = ({
                             key={index}
                             value={machine._id as string}
                             selected={
-                              machine._id === partDetails?.item?.machineClassId
+                              machine._id ===
+                              machineDetails?.item?.machineClassId
                             }
                           >
                             {machine.name}
@@ -176,132 +182,30 @@ const PartDetailsModal = ({
                     )}
                   </select>
                   <label
-                    htmlFor="pounds"
+                    htmlFor="description"
                     className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
                   >
-                    Pounds:
+                    Description:
                   </label>
-                  <input
-                    id="pounds"
-                    className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
-                    defaultValue={partDetails?.item?.pounds}
+                  <textarea
+                    rows={3}
+                    required
+                    id="description"
+                    className={`block col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     disabled={
-                      isUpdatePartLoading ||
-                      isPartDetailsLoading ||
-                      isLocationsLoading ||
+                      isUpdateMachineLoading ||
+                      isMachineDetailsLoading ||
                       isFactoriesLoading
                     }
-                    {...register("pounds", { required: true })}
+                    placeholder="Details"
+                    defaultValue={""}
+                    {...register("description", { required: true })}
                   />
-                  <label
-                    htmlFor="time"
-                    className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
-                  >
-                    Time:
-                  </label>
-                  <input
-                    id="time"
-                    {...register("time", { required: true })}
-                    className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
-                    defaultValue={partDetails?.item?.time}
-                    disabled={
-                      isUpdatePartLoading ||
-                      isPartDetailsLoading ||
-                      isLocationsLoading ||
-                      isFactoriesLoading
-                    }
-                  />
-                  <label
-                    htmlFor="finish-good-weight"
-                    className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
-                  >
-                    Finish Good Weigth:
-                  </label>
-                  <input
-                    id="finishGoodWeight"
-                    {...register("finishGoodWeight", { required: true })}
-                    className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
-                    defaultValue={partDetails?.item?.finishGoodWeight}
-                    disabled={
-                      isUpdatePartLoading ||
-                      isPartDetailsLoading ||
-                      isLocationsLoading ||
-                      isFactoriesLoading
-                    }
-                  />
-                  <label
-                    htmlFor="cage-weight-actual"
-                    className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
-                  >
-                    Cage Weight Actual:
-                  </label>
-                  <input
-                    id="cageWeightActual"
-                    {...register("cageWeightActual", { required: true })}
-                    className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
-                    defaultValue={partDetails?.item?.cageWeightActual}
-                    disabled={
-                      isUpdatePartLoading ||
-                      isPartDetailsLoading ||
-                      isLocationsLoading ||
-                      isFactoriesLoading
-                    }
-                  />
-                  <label
-                    htmlFor="cage-weight-scrap"
-                    className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
-                  >
-                    Cage Weight Scrap:
-                  </label>
-                  <input
-                    id="cageWeightScrap"
-                    {...register("cageWeightScrap", { required: true })}
-                    className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
-                    defaultValue={partDetails?.item?.cageWeightScrap}
-                    disabled={
-                      isUpdatePartLoading ||
-                      isPartDetailsLoading ||
-                      isLocationsLoading ||
-                      isFactoriesLoading
-                    }
-                  />
-                  <label
-                    htmlFor="location"
-                    className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
-                  >
-                    Location:
-                  </label>
-                  <select
-                    id="location"
-                    {...register("locationId", { required: true })}
-                    className={`block col-span-2 md:mt-0 w-full text-sm rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:leading-6 disabled:opacity-70`}
-                    disabled={
-                      isUpdatePartLoading ||
-                      isPartDetailsLoading ||
-                      isLocationsLoading ||
-                      isFactoriesLoading
-                    }
-                  >
-                    <option disabled>Location</option>
-                    {locations?.items.map((location, index: number) => {
-                      return (
-                        <option
-                          key={index}
-                          value={location._id}
-                          selected={
-                            location._id === partDetails?.item?.locationId
-                          }
-                        >
-                          {location.name}
-                        </option>
-                      )
-                    })}
-                  </select>
                 </div>
               </div>
               <ModalMediaList
-                files={partDetails?.item?.files}
-                isLoading={isPartDetailsLoading}
+                files={machineDetails?.item?.files}
+                isLoading={isMachineDetailsLoading}
               />
             </div>
           </div>
@@ -310,13 +214,12 @@ const PartDetailsModal = ({
               type="submit"
               className="ml-3 uppercase flex items-center rounded-md bg-green-700 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
               disabled={
-                isUpdatePartLoading ||
-                isPartDetailsLoading ||
-                isLocationsLoading ||
+                isUpdateMachineLoading ||
+                isMachineDetailsLoading ||
                 isFactoriesLoading
               }
             >
-              {isUpdatePartLoading ? (
+              {isUpdateMachineLoading ? (
                 <div
                   className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
                   role="status"
@@ -335,9 +238,8 @@ const PartDetailsModal = ({
               ref={closeButtonRef}
               tabIndex={-1}
               disabled={
-                isUpdatePartLoading ||
-                isPartDetailsLoading ||
-                isLocationsLoading ||
+                isUpdateMachineLoading ||
+                isMachineDetailsLoading ||
                 isFactoriesLoading
               }
             >
@@ -393,11 +295,7 @@ const PartDetailsModal = ({
           </div>
         </Dialog>
       </Transition.Root>
-      <EditModal
-        isOpen={openEditModal}
-        onClose={() => setOpenEditModal(false)}
-      />
     </>
   )
 }
-export default PartDetailsModal
+export default MachineDetailsModal

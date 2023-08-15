@@ -1,10 +1,15 @@
 import { Fragment, useRef, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { Dialog, Transition } from "@headlessui/react"
 import { Roboto } from "next/font/google"
 import useFactories from "../../../../hooks/factories/useFactories"
-import { I_FACTORY } from "../../../../types/global"
 import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
-import { T_BackendResponse, T_MachineClass, T_Part } from "custom-validator"
+import {
+  T_BackendResponse,
+  T_Factory,
+  T_MachineClass,
+  T_Part,
+} from "custom-validator"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import useAddPart from "../../../../hooks/parts/useAddPart"
@@ -31,6 +36,7 @@ const NewPartModal = ({
   locationId,
   onClose,
 }: NewModalProps) => {
+  const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
   const [files, setFiles] = useState<FileWithPath[]>([])
   const { register, handleSubmit, setValue, reset } = useForm<T_Part>()
@@ -52,6 +58,9 @@ const NewPartModal = ({
       onSuccess: (returnData: T_BackendResponse) => {
         if (!returnData.error) {
           if (returnData.item) {
+            queryClient.invalidateQueries({
+              queryKey: ["parts"],
+            })
             onClose()
             reset()
             setSelectedFactory("")
@@ -180,9 +189,9 @@ const NewPartModal = ({
                       >
                         <option value="">Select Factory</option>
                         {factories?.items.map(
-                          (item: I_FACTORY, index: number) => {
+                          (item: T_Factory, index: number) => {
                             return (
-                              <option key={index} value={item._id}>
+                              <option key={index} value={item._id as string}>
                                 {item.name}
                               </option>
                             )
@@ -212,9 +221,9 @@ const NewPartModal = ({
                       >
                         <option value="">Select Machine Class</option>
                         {machineClasses?.items.map(
-                          (machine: T_MachineClasses, index: number) => {
+                          (machine: T_MachineClass, index: number) => {
                             return (
-                              <option key={index} value={machine._id}>
+                              <option key={index} value={machine._id as string}>
                                 {machine.name}
                               </option>
                             )
