@@ -35,6 +35,7 @@ const Part = ({
     isLoading: isGetAllPartsLoading,
     setLocationId,
     setPage,
+    page,
   } = usePaginatedParts()
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
@@ -43,6 +44,8 @@ const Part = ({
   useEffect(() => {
     setLocationId(currentLocationTab)
   }, [currentLocationTab, setLocationId])
+  const numberOfPages = Math.ceil((allParts?.itemCount as number) / 6)
+
   return (
     <div className={`mt-6 my-10`}>
       <div>
@@ -162,88 +165,110 @@ const Part = ({
           </div>
         </div>
         {/* Product card list container */}
-        <h6 className="font-bold mt-7 text-lg text-gray-800">
-          {allParts?.itemCount} Parts
-        </h6>
+        {isGetAllPartsLoading ? (
+          <div className="animate-pulse flex space-x-4">
+            <div className="h-6 w-24 mt-10 bg-slate-200 rounded"></div>
+          </div>
+        ) : (
+          <h6 className="font-bold mt-7 text-lg text-gray-800">
+            {allParts?.itemCount} Parts
+          </h6>
+        )}
         <div>
           <div className="mx-auto">
             <div className="mt-7 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-              {allParts?.items.map((product: T_Part, index: number) => {
-                const selectedImage = product.files?.find(
-                  (file) =>
-                    file.toLocaleLowerCase().includes("png") ||
-                    file.toLocaleLowerCase().includes("jpg")
-                )
-                return (
-                  <div
-                    key={index}
-                    className="group relative bg-white rounded-md border border-gray-200 drop-shadow-lg cursor-pointer"
-                    onClick={() => {
-                      setOpenDetailsModal(true)
-                      setSelectedPartId(product._id as string)
-                    }}
-                  >
-                    <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 rounded-t-md">
-                      <div className="relative">
-                        {!isGetAllPartsLoading && selectedImage ? (
-                          <Image
-                            src={`/files/${selectedImage}`}
-                            alt={selectedImage as string}
-                            className="object-center"
-                            width={400}
-                            height={400}
-                          />
-                        ) : !isGetAllPartsLoading && !selectedImage ? (
-                          <Image
-                            className="object-center"
-                            src="/no-image.png"
-                            alt="Part Image"
-                            width={400}
-                            height={400}
-                          />
-                        ) : (
-                          <div className="animate-pulse flex space-x-4">
-                            <div className="h-52 w-full bg-slate-200"></div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex justify-between px-4 py-4">
-                      <div>
-                        <h3 className="text-gray-700 font-bold uppercase">
-                          {product.name}
-                        </h3>
-                      </div>
-                      <p className="font-bold uppercase text-green-600">
-                        {currentLocationTabName
-                          ? currentLocationTabName
-                          : "Loading..."}
-                      </p>
-                    </div>
-                    <div className="px-4">
-                      <div className="flex justify-between text-gray-900">
-                        <span>Pounds:</span>
-                        <span>{product.pounds}</span>
-                      </div>
-                      <div className="flex justify-between text-gray-900">
-                        <span>Avg Time:</span>
-                        <span>{product.time}</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-end px-4 space-x-3 my-4">
-                      <button
-                        className="p-1 bg-red-700 rounded-md"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setOpenDeleteModal(true)
-                        }}
-                      >
-                        <TrashIcon className="h-5 w-5 text-white" />
-                      </button>
-                    </div>
+              {isGetAllPartsLoading ? (
+                <>
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-80 w-full mt-7 bg-slate-200 rounded"></div>
                   </div>
-                )
-              })}
+
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-80 w-full mt-7 bg-slate-200 rounded"></div>
+                  </div>
+
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-80 w-full mt-7 bg-slate-200 rounded"></div>
+                  </div>
+                </>
+              ) : (
+                allParts?.items.map((product: T_Part, index: number) => {
+                  const selectedImage = product.files?.find(
+                    (file) =>
+                      file.toLocaleLowerCase().includes("png") ||
+                      file.toLocaleLowerCase().includes("jpg")
+                  )
+                  return (
+                    <div
+                      key={index}
+                      className="group relative bg-white rounded-md border border-gray-200 drop-shadow-lg cursor-pointer"
+                      onClick={() => {
+                        setOpenDetailsModal(true)
+                        setSelectedPartId(product._id as string)
+                      }}
+                    >
+                      <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 rounded-t-md">
+                        <div className="relative">
+                          {!isGetAllPartsLoading && selectedImage ? (
+                            <Image
+                              className="h-[200px]"
+                              src={`/files/${selectedImage}`}
+                              alt={selectedImage as string}
+                              width={400}
+                              height={400}
+                            />
+                          ) : !isGetAllPartsLoading && !selectedImage ? (
+                            <Image
+                              className="h-[200px]"
+                              src="/no-image.png"
+                              alt="Part Image"
+                              width={400}
+                              height={400}
+                            />
+                          ) : (
+                            <div className="animate-pulse flex space-x-4">
+                              <div className="h-52 w-full bg-slate-200"></div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-between px-4 py-4">
+                        <div>
+                          <h3 className="text-gray-700 font-bold uppercase">
+                            {product.name}
+                          </h3>
+                        </div>
+                        <p className="font-bold uppercase text-green-600">
+                          {currentLocationTabName
+                            ? currentLocationTabName
+                            : "Loading..."}
+                        </p>
+                      </div>
+                      <div className="px-4">
+                        <div className="flex justify-between text-gray-900">
+                          <span>Pounds:</span>
+                          <span>{product.pounds}</span>
+                        </div>
+                        <div className="flex justify-between text-gray-900">
+                          <span>Avg Time:</span>
+                          <span>{product.time}</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-end px-4 space-x-3 my-4">
+                        <button
+                          className="p-1 bg-red-700 rounded-md"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setOpenDeleteModal(true)
+                          }}
+                        >
+                          <TrashIcon className="h-5 w-5 text-white" />
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })
+              )}
             </div>
           </div>
         </div>
@@ -263,74 +288,66 @@ const Part = ({
             </a>
           </div>
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            {isGetAllPartsLoading ? (
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-4 w-48 mt-7 bg-slate-200 rounded"></div>
+              </div>
+            ) : (
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing{" "}
+                  <span className="font-medium">
+                    {allParts?.items.length as number}
+                  </span>{" "}
+                  of <span className="font-medium">{allParts?.itemCount}</span>{" "}
+                  results
+                </p>
+              </div>
+            )}
             <div>
-              <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">1</span> to{" "}
-                <span className="font-medium">10</span> of{" "}
-                <span className="font-medium">97</span> results
-              </p>
-            </div>
-            <div>
-              <nav
-                className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                aria-label="Pagination"
-              >
-                <a
-                  href="#"
-                  className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+              {isGetAllPartsLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-8 w-36 mt-7 bg-slate-200 rounded"></div>
+                </div>
+              ) : (
+                <nav
+                  className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                  aria-label="Pagination"
                 >
-                  <span className="sr-only">Previous</span>
-                  <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-                </a>
-                {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-                <a
-                  href="#"
-                  aria-current="page"
-                  className="relative z-10 inline-flex items-center bg-blue-950 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  1
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  2
-                </a>
-                <a
-                  href="#"
-                  className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                >
-                  3
-                </a>
-                <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">
-                  ...
-                </span>
-                <a
-                  href="#"
-                  className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-                >
-                  8
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  9
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  10
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  <span className="sr-only">Next</span>
-                  <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-                </a>
-              </nav>
+                  <button
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1 || numberOfPages === 0}
+                    className="relative disabled:opacity-70 inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                  >
+                    <span className="sr-only">Previous</span>
+                    <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                  {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
+                  {numberOfPages
+                    ? new Array(numberOfPages).fill().map((_, index) => (
+                        <button
+                          key={index + 1}
+                          onClick={() => setPage(index + 1)}
+                          className={
+                            page === index + 1
+                              ? "relative z-10 inline-flex items-center bg-blue-950 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                              : "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                          }
+                        >
+                          {index + 1}
+                        </button>
+                      ))
+                    : null}
+                  <button
+                    onClick={() => setPage(page + 1)}
+                    className="relative disabled:opacity-70 inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    disabled={page === numberOfPages || numberOfPages === 0}
+                  >
+                    <span className="sr-only">Next</span>
+                    <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </nav>
+              )}
             </div>
           </div>
         </div>
