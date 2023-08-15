@@ -40,6 +40,8 @@ export const getTimer = async (req: Request, res: Response) => {
       _id: req.params.id,
       deletedAt: null,
     })
+      .populate("partId")
+      .populate("machineId")
     res.json({
       error: false,
       item: getTimer,
