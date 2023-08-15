@@ -11,13 +11,19 @@ type T_DBReturn = Omit<T_BackendResponse, "items"> & {
 export async function getAllParts({
   page,
   locationId,
+  factoryId,
+  machineClassId,
+  name,
 }: {
   page: number
   locationId: string
+  factoryId?: string
+  machineClassId?: string
+  name?: string
 }) {
   const token = Cookies.get("tfl")
   const res = await fetch(
-    `${API_URL_PARTS}/paginated?page=${page}&locationId=${locationId}`,
+    `${API_URL_PARTS}/paginated?page=${page}&locationId=${locationId}&factoryId=${factoryId}&machineClassId=${machineClassId}&name=${name}`,
     {
       method: "GET",
       headers: {
@@ -32,9 +38,12 @@ export async function getAllParts({
 function usePaginatedParts() {
   const [page, setPage] = useState(1)
   const [locationId, setLocationId] = useState("")
+  const [factoryId, setFactoryId] = useState("")
+  const [machineClassId, setMachineClassId] = useState("")
+  const [name, setName] = useState("")
   const query = useQuery(
-    ["parts", page, locationId],
-    () => getAllParts({ page, locationId }),
+    ["parts", page, locationId, factoryId, machineClassId, name],
+    () => getAllParts({ page, locationId, factoryId, machineClassId, name }),
     {
       staleTime: THREE_MINUTES,
       refetchOnWindowFocus: false,
@@ -47,6 +56,18 @@ function usePaginatedParts() {
     }
   }, [page, locationId])
 
-  return { ...query, page, setPage, locationId, setLocationId }
+  return {
+    ...query,
+    page,
+    setPage,
+    locationId,
+    setLocationId,
+    factoryId,
+    setFactoryId,
+    machineClassId,
+    setMachineClassId,
+    name,
+    setName,
+  }
 }
 export default usePaginatedParts
