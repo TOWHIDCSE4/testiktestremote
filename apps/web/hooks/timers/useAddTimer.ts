@@ -3,7 +3,12 @@ import { useMutation } from "@tanstack/react-query"
 import { T_Timer } from "custom-validator"
 import Cookies from "js-cookie"
 
-export async function addTimer({ factoryId, machineId, partId }: T_Timer) {
+export async function addTimer({
+  factoryId,
+  machineId,
+  partId,
+  locationId,
+}: T_Timer) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_TIMER}`, {
     method: "POST",
@@ -11,6 +16,7 @@ export async function addTimer({ factoryId, machineId, partId }: T_Timer) {
       factoryId,
       machineId,
       partId,
+      locationId,
     }),
     headers: {
       "content-type": "application/json",
@@ -21,12 +27,14 @@ export async function addTimer({ factoryId, machineId, partId }: T_Timer) {
 }
 
 function useAddTimer() {
-  const query = useMutation(({ factoryId, machineId, partId }: T_Timer) =>
-    addTimer({
-      factoryId,
-      machineId,
-      partId,
-    })
+  const query = useMutation(
+    ({ factoryId, machineId, partId, locationId }: T_Timer) =>
+      addTimer({
+        factoryId,
+        machineId,
+        partId,
+        locationId,
+      })
   )
 
   return query
