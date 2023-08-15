@@ -211,15 +211,15 @@ const Part = ({
                         <div className="relative">
                           {!isGetAllPartsLoading && selectedImage ? (
                             <Image
+                              className="h-[200px]"
                               src={`/files/${selectedImage}`}
                               alt={selectedImage as string}
-                              className="object-center"
                               width={400}
                               height={400}
                             />
                           ) : !isGetAllPartsLoading && !selectedImage ? (
                             <Image
-                              className="object-center"
+                              className="h-[200px]"
                               src="/no-image.png"
                               alt="Part Image"
                               width={400}
