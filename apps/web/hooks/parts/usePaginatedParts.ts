@@ -1,7 +1,12 @@
 import { API_URL_PARTS, THREE_MINUTES } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
+import { T_BackendResponse, T_Part } from "custom-validator"
 import Cookies from "js-cookie"
 import { useEffect, useState } from "react"
+
+type T_DBReturn = Omit<T_BackendResponse, "items"> & {
+  items: T_Part[]
+}
 
 export async function getAllParts({
   page,
@@ -21,7 +26,7 @@ export async function getAllParts({
       },
     }
   )
-  return await res.json()
+  return (await res.json()) as T_DBReturn
 }
 
 function usePaginatedParts() {
