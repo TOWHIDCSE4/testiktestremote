@@ -39,6 +39,14 @@ const TimerTracker = () => {
     )
   }
 
+  const openReport = () => {
+    window.open(
+      "http://localhost:3000/production/timer/report",
+      "Timer Tracker",
+      "location,status,scrollbars,resizable,width=800, height=800"
+    )
+  }
+
   return (
     <>
       <div
@@ -307,7 +315,10 @@ const TimerTracker = () => {
                 </h6>
               </div>
               <div>
-                <button className="relative mt-3 md:mt-0 inline-flex items-center rounded-md bg-blue-950 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-offset-0">
+                <button
+                  className="relative mt-3 md:mt-0 inline-flex items-center rounded-md bg-blue-950 px-3 py-2 text-sm font-semibold text-white focus-visible:outline-offset-0"
+                  onClick={openReport}
+                >
                   View Report
                 </button>
               </div>

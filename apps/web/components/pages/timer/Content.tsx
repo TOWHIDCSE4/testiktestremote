@@ -5,6 +5,7 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import TimerCard from "./TimerCard"
 import TimerTracker from "./TimerTracker"
 import NewModal from "./modals/NewModal"
+import SetProductionModal from "./modals/SetProductionModal"
 
 // @ts-expect-error
 function classNames(...classes) {
@@ -15,6 +16,7 @@ const Content = () => {
   const [openFilter, setOpenFilter] = useState(false)
   const [openNewModal, setOpenNewModal] = useState(false)
   const [locationState, setLocationState] = useState("Seguin")
+  const [openSetProduction, setOpenProduction] = useState(false)
 
   const locationTabs = [
     {
@@ -292,7 +294,10 @@ const Content = () => {
               In Production
             </h6>
           </div>
-          <div className="rounded-md bg-white shadow p-2 text-center">
+          <div
+            className="rounded-md bg-white shadow p-2 text-center hover:bg-gray-50 cursor-pointer"
+            onClick={() => setOpenProduction(true)}
+          >
             <h5 className="text-lg text-gray-700 uppercase font-bold">
               14 Hours
             </h5>
@@ -350,6 +355,10 @@ const Content = () => {
         </p>
       </div>
       <NewModal isOpen={openNewModal} onClose={() => setOpenNewModal(false)} />
+      <SetProductionModal
+        isOpen={openSetProduction}
+        onClose={() => setOpenProduction(false)}
+      />
     </div>
   )
 }

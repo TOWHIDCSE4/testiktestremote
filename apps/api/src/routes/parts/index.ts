@@ -9,9 +9,11 @@ import {
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { paginated } from "./paginated"
+import { locationCount } from "./locationCount"
 
 //custom
 router.get("/paginated", isUserLoggedIn, paginated)
+router.get("/location-count/:id", isUserLoggedIn, locationCount)
 
 //default
 router.get("/", isUserLoggedIn, getAllParts)

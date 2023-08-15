@@ -8,12 +8,15 @@ import {
   updateTimer,
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
+import { getAllTimersByLocationOrFactory } from "./filterByLocationsOrFactories"
 
 //default
 router.get("/", isUserLoggedIn, getAllTimers)
 router.get("/:id", isUserLoggedIn, getTimer)
-router.post("/", isUserLoggedIn, addTimer)
+router.post("/", addTimer)
 router.patch("/:id", isUserLoggedIn, updateTimer)
 router.delete("/:id", isUserLoggedIn, deleteTimer)
 
+//filter
+router.post("/find/filter", getAllTimersByLocationOrFactory)
 export default router

@@ -40,6 +40,8 @@ export const getTimer = async (req: Request, res: Response) => {
       _id: req.params.id,
       deletedAt: null,
     })
+      .populate("partId")
+      .populate("machineId")
     res.json({
       error: false,
       item: getTimer,
@@ -58,12 +60,13 @@ export const getTimer = async (req: Request, res: Response) => {
 }
 
 export const addTimer = async (req: Request, res: Response) => {
-  const { factoryId, machineId, partId } = req.body
-  if (factoryId && machineId && partId) {
+  const { factoryId, machineId, partId, locationId } = req.body
+  if (factoryId && machineId && partId && locationId) {
     const newTimer = new Timers({
       factoryId,
       machineId,
       partId,
+      locationId,
       updatedAt: null,
       deletedAt: null,
     })

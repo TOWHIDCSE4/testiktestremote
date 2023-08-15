@@ -6,14 +6,21 @@ import Machine from "./Machine"
 import combineClasses from "../../../helpers/combineClasses"
 import Part from "./Part"
 import NewMachineModal from "./modals/NewMachineModal"
+import usePartLocationCount from "../../../hooks/parts/useGetPartLocationCount"
 
 type T_LocationTabs = {
   _id?: string
   name: string
+  count?: number
 }
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
+  const {
+    data: partLocationCount,
+    isLoading: isPartLocationCount,
+    setLocationIds,
+  } = usePartLocationCount()
   const [openNewPartModal, setOpenNewPartModal] = useState(false)
   const [openNewMachineModal, setOpenNewMachineModal] = useState(false)
   const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
@@ -32,12 +39,36 @@ const Content = () => {
           locations.items.map((location) => ({
             _id: location._id,
             name: location.name,
+            count: 0,
           }))
         )
       }
+      setLocationIds(
+        locations?.items?.map((location) => location._id) as string[]
+      )
       setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
+
+  useEffect(() => {
+    if (partLocationCount) {
+      if (locations) {
+        const counts = partLocationCount
+          .map((partLocation) => {
+            if (!partLocation.error) {
+              return partLocation.item
+            }
+          })
+          .filter((item) => typeof item === "number")
+        setLocationTabs(
+          locationTabs?.map((tab, index) => ({
+            ...tab,
+            count: counts[index],
+          }))
+        )
+      }
+    }
+  }, [partLocationCount])
 
   const currentLocationTabName = locationTabs.find(
     (tab) => tab._id === currentLocationTab
