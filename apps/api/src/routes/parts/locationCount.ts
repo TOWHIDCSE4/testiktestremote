@@ -10,6 +10,7 @@ export const locationCount = async (req: Request, res: Response) => {
     try {
       const partLocationCount = await Parts.find({
         locationId: req.params.id,
+        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
       res.json({
         error: false,
