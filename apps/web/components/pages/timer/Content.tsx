@@ -1,37 +1,46 @@
 "use client"
-import { Fragment, useState } from "react"
-import { Menu, Transition } from "@headlessui/react"
-import { ChevronDownIcon } from "@heroicons/react/20/solid"
+import { useEffect, useState } from "react"
 import TimerCard from "./TimerCard"
 import TimerTracker from "./TimerTracker"
 import NewModal from "./modals/NewModal"
 import SetProductionModal from "./modals/SetProductionModal"
+import useLocations from "../../../hooks/locations/useLocations"
+import combineClasses from "../../../helpers/combineClasses"
+import Clocks from "./Clocks"
 
-// @ts-expect-error
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
+type T_LocationTabs = {
+  _id?: string
+  name: string
+  count?: number
 }
 
 const Content = () => {
-  const [openFilter, setOpenFilter] = useState(false)
+  const { data: locations, isLoading: isLocationsLoading } = useLocations()
+  const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
   const [openNewModal, setOpenNewModal] = useState(false)
-  const [locationState, setLocationState] = useState("Seguin")
-  const [openSetProduction, setOpenProduction] = useState(false)
+  const [currentLocationTab, setCurrentLocationTab] = useState<string>("")
 
-  const locationTabs = [
-    {
-      name: "Seguin",
-      current: locationState === "Seguin",
-    },
-    {
-      name: "Conroe",
-      current: locationState === "Conroe",
-    },
-    {
-      name: "Gunter",
-      current: locationState === "Gunter",
-    },
-  ]
+  useEffect(() => {
+    if (locationTabs.length === 0) {
+      if (locations) {
+        setLocationTabs(
+          locations.items.map((location) => ({
+            _id: location._id,
+            name: location.name,
+            count: 0,
+          }))
+        )
+      }
+      // setPartLocationIds(
+      //   locations?.items?.map((location) => location._id) as string[]
+      // )
+      setCurrentLocationTab(locations?.items[0]?._id as string)
+    }
+  }, [locations])
+
+  const currentLocationTabName = locationTabs.find(
+    (tab) => tab._id === currentLocationTab
+  )?.name
 
   return (
     <div className={`my-20`}>
@@ -42,8 +51,9 @@ const Content = () => {
               Timer and Analytics
             </h2>
             <h4 className="uppercase text-sm text-gray-500 font-medium tracking-widest mt-2">
-              Production<span className="text-black mx-2">&gt;</span>
-              <span className="text-red-500">Texas</span>
+              Production<span className="text-black mx-2">&gt;</span>Timer
+              <span className="text-black mx-2">&gt;</span>
+              <span className="text-red-500">{currentLocationTabName}</span>
             </h4>
           </div>
           <div>
@@ -63,13 +73,13 @@ const Content = () => {
             <div key={tab.name}>
               <button
                 type="button"
-                className={classNames(
-                  tab.current
+                className={combineClasses(
+                  tab._id === currentLocationTab
                     ? "bg-blue-950 text-white"
                     : "bg-white text-gray-700 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
-                onClick={() => setLocationState(tab.name)}
+                onClick={() => setCurrentLocationTab(tab._id as string)}
               >
                 {tab.name}
               </button>
@@ -96,216 +106,7 @@ const Content = () => {
           ))}
         </div>
         <div className="w-full h-[1.5px] bg-gray-200 mt-5"></div>
-        <div className="flex justify-between pt-4 pb-3 items-center">
-          <div>
-            <h3 className="text-gray-700 font-bold uppercase">Clocks</h3>
-          </div>
-          <Menu as="div" className="relative inline-block text-left">
-            <div>
-              <Menu.Button
-                className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                onClick={() => setOpenFilter((openFilter) => !openFilter)}
-              >
-                Show Only Filter
-                <ChevronDownIcon
-                  className="-mr-1 h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-              </Menu.Button>
-            </div>
-
-            <Transition
-              show={openFilter}
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Items
-                static
-                className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-              >
-                <div className="py-1">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <div className="relative px-4 py-0.5 flex items-start">
-                        <div className="flex h-6 items-center">
-                          <input
-                            id="all"
-                            aria-describedby="all-description"
-                            name="all"
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                            defaultChecked
-                          />
-                        </div>
-                        <div className="ml-3 text-sm leading-6">
-                          <label htmlFor="all" className="text-gray-700">
-                            All
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <div className="relative px-4 py-0.5 flex items-start">
-                        <div className="flex h-6 items-center">
-                          <input
-                            id="pipe-box"
-                            aria-describedby="pipe-box-description"
-                            name="pipe-box"
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                          />
-                        </div>
-                        <div className="ml-3 text-sm leading-6">
-                          <label htmlFor="pipe-box" className="text-gray-700">
-                            Pipe And Box
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <div className="relative px-4 py-0.5 flex items-start">
-                        <div className="flex h-6 items-center">
-                          <input
-                            id="precast"
-                            aria-describedby="precast-description"
-                            name="precast"
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                          />
-                        </div>
-                        <div className="ml-3 text-sm leading-6">
-                          <label htmlFor="precast" className="text-gray-700">
-                            Precast
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <div className="relative px-4 py-0.5 flex items-start">
-                        <div className="flex h-6 items-center">
-                          <input
-                            id="steel-box"
-                            aria-describedby="steel-box-description"
-                            name="steel-box"
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                          />
-                        </div>
-                        <div className="ml-3 text-sm leading-6">
-                          <label htmlFor="steel-box" className="text-gray-700">
-                            Steel
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <div className="relative px-4 py-0.5 flex items-start">
-                        <div className="flex h-6 items-center">
-                          <input
-                            id="exterior-box"
-                            aria-describedby="exterior-box-description"
-                            name="exterior-box"
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                          />
-                        </div>
-                        <div className="ml-3 text-sm leading-6">
-                          <label
-                            htmlFor="exterior-box"
-                            className="text-gray-700"
-                          >
-                            Exterior
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <div className="relative px-4 py-0.5 flex items-start">
-                        <div className="flex h-6 items-center">
-                          <input
-                            id="not-assigned-box"
-                            aria-describedby="not-assigned-box-description"
-                            name="not-assigned-box"
-                            type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                          />
-                        </div>
-                        <div className="ml-3 text-sm leading-6">
-                          <label
-                            htmlFor="not-assigned-box"
-                            className="text-gray-700"
-                          >
-                            Not Assigned
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </Menu.Item>
-                </div>
-              </Menu.Items>
-            </Transition>
-          </Menu>
-        </div>
-        <div className="grid grid-cols-3 md:grid-cols-5 mb-4 gap-x-5 gap-y-4 md:gap-y-0">
-          <div className="rounded-md bg-white shadow p-2 text-center">
-            <h5 className="text-lg text-gray-700 uppercase font-bold">
-              AUG 07 2023
-            </h5>
-            <h6 className="uppercase text-gray-400 font-medium text-sm">
-              Date
-            </h6>
-          </div>
-          <div className="rounded-md bg-white shadow p-2 text-center">
-            <h5 className="text-lg text-gray-700 uppercase font-bold">
-              00:00:00
-            </h5>
-            <h6 className="uppercase text-gray-400 font-medium text-sm">
-              Local Time
-            </h6>
-          </div>
-          <div className="rounded-md bg-white shadow p-2 text-center">
-            <h5 className="text-lg text-gray-700 uppercase font-bold">
-              00:00:00
-            </h5>
-            <h6 className="uppercase text-gray-400 font-medium text-sm">
-              Last Updated
-            </h6>
-          </div>
-          <div className="rounded-md bg-white shadow p-2 text-center">
-            <h5 className="text-lg text-gray-700 uppercase font-bold">
-              00:00:00
-            </h5>
-            <h6 className="uppercase text-gray-400 font-medium text-sm">
-              In Production
-            </h6>
-          </div>
-          <div
-            className="rounded-md bg-white shadow p-2 text-center hover:bg-gray-50 cursor-pointer"
-            onClick={() => setOpenProduction(true)}
-          >
-            <h5 className="text-lg text-gray-700 uppercase font-bold">
-              14 Hours
-            </h5>
-            <h6 className="uppercase text-gray-400 font-medium text-sm">
-              Production Time
-            </h6>
-          </div>
-        </div>
+        <Clocks locationId={currentLocationTab} />
         <div className="w-full h-[2.2px] bg-gray-200"></div>
         <div className="md:flex justify-between mt-7">
           <h6 className="font-bold text-lg text-gray-800 uppercase">
@@ -355,10 +156,6 @@ const Content = () => {
         </p>
       </div>
       <NewModal isOpen={openNewModal} onClose={() => setOpenNewModal(false)} />
-      <SetProductionModal
-        isOpen={openSetProduction}
-        onClose={() => setOpenProduction(false)}
-      />
     </div>
   )
 }
