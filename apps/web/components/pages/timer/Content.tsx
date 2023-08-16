@@ -1,5 +1,7 @@
 "use client"
-import { useEffect, useState } from "react"
+import { Fragment, useState, useEffect } from "react"
+import { Menu, Transition } from "@headlessui/react"
+import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import TimerCard from "./TimerCard"
 import TimerTracker from "./TimerTracker"
 import NewModal from "./modals/NewModal"
@@ -81,7 +83,7 @@ const Content = () => {
                 )}
                 onClick={() => setCurrentLocationTab(tab._id as string)}
               >
-                {tab.name}
+                {tab.name} {tab?.count ? `(${tab.count})` : null}
               </button>
               <div className="flex mt-1">
                 <div className="flex h-6 items-center">
@@ -104,6 +106,19 @@ const Content = () => {
               </div>
             </div>
           ))}
+          {isLocationsLoading && (
+            <>
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-14 w-full rounded bg-slate-200"></div>
+              </div>
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-14 w-full rounded bg-slate-200"></div>
+              </div>
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-14 w-full rounded bg-slate-200"></div>
+              </div>
+            </>
+          )}
         </div>
         <div className="w-full h-[1.5px] bg-gray-200 mt-5"></div>
         <Clocks locationId={currentLocationTab} />
@@ -155,7 +170,14 @@ const Content = () => {
           No timer with MISC. Please add the timer.
         </p>
       </div>
-      <NewModal isOpen={openNewModal} onClose={() => setOpenNewModal(false)} />
+      <NewModal
+        isOpen={openNewModal}
+        locationState={
+          currentLocationTabName ? currentLocationTabName : "Loading..."
+        }
+        locationId={currentLocationTab}
+        onClose={() => setOpenNewModal(false)}
+      />
     </div>
   )
 }

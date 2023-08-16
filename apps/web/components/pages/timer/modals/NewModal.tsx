@@ -1,6 +1,22 @@
 import { Fragment, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { Roboto } from "next/font/google"
+import useFactories from "../../../../hooks/factories/useFactories"
+import {
+  T_BackendResponse,
+  T_Factory,
+  T_Machine,
+  T_MachineClass,
+  T_Part,
+  T_Timer,
+} from "custom-validator"
+import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
+import { useForm } from "react-hook-form"
+import useGetMachineByClass from "../../../../hooks/machines/useGetMachinesByClass"
+import useGetPartByMachineClass from "../../../../hooks/parts/useGetPartByMachineClass"
+import usePart from "../../../../hooks/parts/useGetPart"
+import toast from "react-hot-toast"
+import useAddTimer from "../../../../hooks/timers/useAddTimer"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -10,49 +26,68 @@ const roboto = Roboto({
 
 interface NewModalProps {
   isOpen: boolean
+  locationState: string | null
+  locationId: string | null
   onClose: () => void
 }
 
-const NewModal = ({ isOpen, onClose }: NewModalProps) => {
+const NewModal = ({
+  isOpen,
+  locationState,
+  locationId,
+  onClose,
+}: NewModalProps) => {
   const cancelButtonRef = useRef(null)
 
-  const machineSets = [
-    ["Radial Press", "Variant", "Wire Cage (BMK)"],
-    ["Blizard", "Tornado", "Perfect System"],
-    ["Steel"],
-    ["Fittings", "Misc"],
-  ]
+  const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+  const [selectedFactory, setSelectedFactory] = useState("")
+  const [selectedMachineClass, setSelectedMachineClass] = useState("")
+  const [activePart, setActivePart] = useState("")
+  const {
+    data: machineClasses,
+    isLoading: isMachineClassesLoading,
+    isRefetching: isMachineClassesRefetching,
+    setSelectedFactoryId,
+  } = useFactoryMachineClasses()
+  const {
+    data: machines,
+    isLoading: isMachinesLoading,
+    isRefetching: isMachinesRefetching,
+    setSelectedMachineClassId: setMachineSelect,
+  } = useGetMachineByClass()
+  const {
+    data: parts,
+    isLoading: isPartsLoading,
+    isRefetching: isPartsRefetching,
+    setSelectedMachineClassId: setPartSelect,
+  } = useGetPartByMachineClass()
+  const { data: specificPart, isLoading: isSpecificPartLoading } =
+    usePart(activePart)
 
-  const machineProcess = ["RP1225", "30 Ton", "MBK875"]
+  const { register, handleSubmit, setValue, reset } = useForm<T_Timer>()
+  const { mutate, isLoading: isMutateLoading } = useAddTimer()
 
-  const [selectedFactory, setSelectedFactory] = useState("Factory")
-  const [selectedMachine, setSelectedMachine] = useState("Machine Class")
-  const [selectedProcess, setSelectedProcess] = useState(machineProcess[0])
-  const [machineSet, setMachineSet] = useState(machineSets[0])
+  const onSubmit = (data: T_Timer) => {
+    const callBackReq = {
+      onSuccess: (data: T_BackendResponse) => {
+        if (!data.error) {
+          toast.success(data.message)
+          closeModal()
+        } else {
+          toast.error(String(data.message))
+        }
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+      },
+    }
+    mutate({ ...data, locationId: locationId ? locationId : "" }, callBackReq)
+  }
 
   const closeModal = () => {
     onClose()
-    setSelectedFactory("Factory")
-    setMachineSet(machineSets[0])
-    setSelectedMachine("Machine Class")
-    setSelectedProcess(machineProcess[0])
-  }
-
-  // handle event when machine/process input is disabled or not
-  const processInputState = () => {
-    let value
-
-    if (
-      selectedMachine === "Radial Press" ||
-      selectedMachine === "Variant" ||
-      selectedMachine === "Wire Cage (BMK)"
-    ) {
-      value = false
-    } else {
-      value = true
-    }
-
-    return value
+    setSelectedFactory("")
+    setSelectedMachineClass("")
   }
 
   return (
@@ -87,10 +122,10 @@ const NewModal = ({ isOpen, onClose }: NewModalProps) => {
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full sm:max-w-lg">
-                <form>
+                <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <h3 className="text-gray-800 font-semibold text-2xl">
-                      New Timer/Process
+                      {locationState} &gt; New Timer/Process
                     </h3>
 
                     <div className="md:flex items-center mt-4">
@@ -102,28 +137,27 @@ const NewModal = ({ isOpen, onClose }: NewModalProps) => {
                       </label>
                       <select
                         id="factory"
-                        name="factory"
+                        {...register("factoryId")}
                         className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-                        value={selectedFactory}
+                        disabled={isFactoriesLoading}
+                        defaultValue={""}
                         onChange={(e) => {
-                          setSelectedFactory(e.currentTarget.value)
-                          setSelectedMachine("Machine Class")
-                          {
-                            e.currentTarget.value === "Precast"
-                              ? setMachineSet(machineSets[1])
-                              : e.currentTarget.value === "Steel"
-                              ? setMachineSet(machineSets[2])
-                              : e.currentTarget.value === "Exterior"
-                              ? setMachineSet(machineSets[3])
-                              : setMachineSet(machineSets[0])
-                          }
+                          setSelectedFactory(e.target.value)
+                          setSelectedFactoryId(e.target.value)
                         }}
                       >
-                        <option disabled>Factory</option>
-                        <option>Pipe And Box</option>
-                        <option>Precast</option>
-                        <option>Steel</option>
-                        <option>Exterior</option>
+                        <option disabled value="">
+                          Select Factory
+                        </option>
+                        {factories?.items.map(
+                          (item: T_Factory, index: number) => {
+                            return (
+                              <option key={index} value={item._id as string}>
+                                {item.name}
+                              </option>
+                            )
+                          }
+                        )}
                       </select>
                     </div>
                     <div className="md:flex items-center mt-4">
@@ -135,29 +169,27 @@ const NewModal = ({ isOpen, onClose }: NewModalProps) => {
                       </label>
                       <select
                         id="machine-class"
-                        name="machine-class"
                         className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-                        value={selectedMachine}
+                        defaultValue={""}
+                        disabled={selectedFactory === ""}
                         onChange={(e) => {
-                          setSelectedMachine(e.currentTarget.value)
-                          {
-                            e.currentTarget.value === "Variant"
-                              ? setSelectedProcess(machineProcess[1])
-                              : e.currentTarget.value === "Wire Cage (BMK)"
-                              ? setSelectedProcess(machineProcess[2])
-                              : setSelectedProcess(machineProcess[0])
-                          }
+                          setSelectedMachineClass(e.target.value)
+                          setMachineSelect(e.target.value)
+                          setPartSelect(e.target.value)
                         }}
-                        disabled={selectedFactory === "Factory"}
                       >
-                        <option disabled>Machine Class</option>
-                        {machineSet.map((machine) => {
-                          return (
-                            <option key={machine} value={machine}>
-                              {machine}
-                            </option>
-                          )
-                        })}
+                        <option disabled value="">
+                          Select Machine Class
+                        </option>
+                        {machineClasses?.items.map(
+                          (machine: T_MachineClass, index: number) => {
+                            return (
+                              <option key={index} value={machine._id as string}>
+                                {machine.name}
+                              </option>
+                            )
+                          }
+                        )}
                       </select>
                     </div>
                     <div className="md:flex items-center mt-4">
@@ -165,18 +197,25 @@ const NewModal = ({ isOpen, onClose }: NewModalProps) => {
                         htmlFor="machine-process"
                         className="uppercase font-semibold text-gray-800 md:w-[20%]"
                       >
-                        Machine Process
+                        Machine / Process
                       </label>
                       <select
                         id="machine-process"
-                        name="machine-process"
+                        {...register("machineId")}
                         className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
                         defaultValue="Machine"
-                        disabled={processInputState()}
+                        disabled={selectedMachineClass === ""}
                       >
                         <option disabled>Machine</option>
-
-                        <option>{selectedProcess}</option>
+                        {machines?.items.map(
+                          (item: T_Machine, index: number) => {
+                            return (
+                              <option key={index} value={item._id as string}>
+                                {item.name}
+                              </option>
+                            )
+                          }
+                        )}
                       </select>
                     </div>
                     <div className="md:flex items-center mt-4">
@@ -184,19 +223,24 @@ const NewModal = ({ isOpen, onClose }: NewModalProps) => {
                         htmlFor="machine-part"
                         className="uppercase font-semibold text-gray-800 md:w-[20%]"
                       >
-                        Machine Process
+                        Part
                       </label>
                       <select
                         id="machine-part"
-                        name="machine-part"
+                        {...register("partId")}
                         className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
                         defaultValue=""
-                        disabled={processInputState()}
+                        disabled={selectedMachineClass === ""}
+                        onChange={(e) => setActivePart(e.currentTarget.value)}
                       >
                         <option disabled></option>
-                        <option>AR36X8XCL5</option>
-                        <option>AR36X8XCL4</option>
-                        <option>AR36X8XCL3</option>
+                        {parts?.items.map((part: T_Part, index: number) => {
+                          return (
+                            <option key={index} value={part._id as string}>
+                              {part.name}
+                            </option>
+                          )
+                        })}
                       </select>
                     </div>
                     <h6 className="uppercase font-semibold text-gray-400 mt-4">
@@ -215,6 +259,10 @@ const NewModal = ({ isOpen, onClose }: NewModalProps) => {
                           name="average-cycle"
                           id="average-cycle"
                           className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                          disabled
+                          value={
+                            !isSpecificPartLoading ? specificPart.item.time : ""
+                          }
                         />
                       </div>
                       <div>
@@ -229,16 +277,32 @@ const NewModal = ({ isOpen, onClose }: NewModalProps) => {
                           name="weight"
                           id="weight"
                           className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                          disabled
+                          value={
+                            !isSpecificPartLoading
+                              ? specificPart.item.pounds
+                              : ""
+                          }
                         />
                       </div>
                     </div>
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
-                      type="button"
+                      type="submit"
                       className="uppercase inline-flex w-full justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 sm:w-auto"
                     >
-                      Add
+                      {isMutateLoading ? (
+                        <div
+                          className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full"
+                          role="status"
+                          aria-label="loading"
+                        >
+                          <span className="sr-only">Loading...</span>
+                        </div>
+                      ) : (
+                        "Add"
+                      )}
                     </button>
                     <button
                       type="button"
