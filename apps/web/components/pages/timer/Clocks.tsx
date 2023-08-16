@@ -3,10 +3,29 @@ import { Fragment, useEffect, useState } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import SetProductionModal from "./modals/SetProductionModal"
+import useGetLocation from "../../../hooks/locations/useGetLocation"
+import dayjs from "dayjs"
+import * as timezone from "dayjs/plugin/timezone"
+import * as utc from "dayjs/plugin/utc"
 
 const Clocks = ({ locationId }: { locationId: string }) => {
+  dayjs.extend(utc.default)
+  dayjs.extend(timezone.default)
+
   const [openFilter, setOpenFilter] = useState(false)
   const [openSetProduction, setOpenProduction] = useState(false)
+
+  const { data: location, isLoading: isLocationsLoading } =
+    useGetLocation(locationId)
+
+  const currentDate = dayjs
+    .tz(dayjs(), !isLocationsLoading ? location.item.timeZone : "")
+    .format("MMM DD YYYY")
+
+  const localeTime = dayjs
+    .tz(dayjs(), !isLocationsLoading ? location.item.timeZone : "")
+    .format("hh:mm:ss")
+
   // locationId will update automatically when location changes in the parent
   console.log("locationId", locationId)
   return (
@@ -176,13 +195,13 @@ const Clocks = ({ locationId }: { locationId: string }) => {
       <div className="grid grid-cols-3 md:grid-cols-5 mb-4 gap-x-5 gap-y-4 md:gap-y-0">
         <div className="rounded-md bg-white shadow p-2 text-center">
           <h5 className="text-lg text-gray-700 uppercase font-bold">
-            AUG 07 2023
+            {currentDate}
           </h5>
           <h6 className="uppercase text-gray-400 font-medium text-sm">Date</h6>
         </div>
         <div className="rounded-md bg-white shadow p-2 text-center">
           <h5 className="text-lg text-gray-700 uppercase font-bold">
-            00:00:00
+            {localeTime}
           </h5>
           <h6 className="uppercase text-gray-400 font-medium text-sm">
             Local Time
@@ -209,7 +228,7 @@ const Clocks = ({ locationId }: { locationId: string }) => {
           onClick={() => setOpenProduction(true)}
         >
           <h5 className="text-lg text-gray-700 uppercase font-bold">
-            14 Hours
+            {!isLocationsLoading ? location.item.productionTime : "0"} Hours
           </h5>
           <h6 className="uppercase text-gray-400 font-medium text-sm">
             Production Time
@@ -218,6 +237,7 @@ const Clocks = ({ locationId }: { locationId: string }) => {
       </div>
       <SetProductionModal
         isOpen={openSetProduction}
+        locationId={locationId}
         onClose={() => setOpenProduction(false)}
       />
     </>
