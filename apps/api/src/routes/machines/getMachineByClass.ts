@@ -10,7 +10,7 @@ export const getMachinesByClass = async (req: Request, res: Response) => {
     })
     res.json({
       error: false,
-      item: getMachinesByClass,
+      items: getMachinesByClass,
       itemCount: 1,
       message: null,
     })

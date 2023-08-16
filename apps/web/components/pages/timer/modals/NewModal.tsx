@@ -158,6 +158,7 @@ const NewModal = ({
                         onChange={(e) => {
                           setSelectedMachine(e.target.value)
                           setSelectedMachineClassId(e.target.value)
+                          console.log(machines)
                           setValue("_id", "")
                         }}
                       >
