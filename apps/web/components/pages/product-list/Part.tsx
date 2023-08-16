@@ -4,14 +4,13 @@ import Image from "next/image"
 import { TrashIcon } from "@heroicons/react/24/outline"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import EditModal from "./modals/EditModal"
-import DeleteModal from "./modals/DeleteModal"
 import PartDetailsModal from "./modals/PartDetailsModal"
 import combineClasses from "../../../helpers/combineClasses"
 import usePaginatedParts from "../../../hooks/parts/usePaginatedParts"
 import { T_Factory, T_MachineClass, T_Part } from "custom-validator"
 import useFactories from "../../../hooks/factories/useFactories"
 import useFactoryMachineClasses from "../../../hooks/factories/useFactoryMachineClasses"
-import { I_FACTORY } from "../../../types/global"
+import DeletePartModal from "./modals/DeletePartModal"
 
 type T_LocationTabs = {
   _id?: string
@@ -311,6 +310,7 @@ const Part = ({
                           onClick={(e) => {
                             e.stopPropagation()
                             setOpenDeleteModal(true)
+                            setSelectedPartId(product._id as string)
                           }}
                         >
                           <TrashIcon className="h-5 w-5 text-white" />
@@ -406,9 +406,10 @@ const Part = ({
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
       />
-      <DeleteModal
+      <DeletePartModal
         isOpen={openDeleteModal}
         onClose={() => setOpenDeleteModal(false)}
+        _id={selectedPartId}
       />
       <PartDetailsModal
         isOpen={openDetailsModal}

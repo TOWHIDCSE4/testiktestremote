@@ -13,7 +13,9 @@ import { ZMachine } from "custom-validator"
 export const getAllMachines = async (req: Request, res: Response) => {
   try {
     const machinesCount = await Machines.find().countDocuments()
-    const getAllMachines = await Machines.find().sort({
+    const getAllMachines = await Machines.find({
+      $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+    }).sort({
       createdAt: -1,
     })
     res.json({
@@ -37,7 +39,7 @@ export const getMachine = async (req: Request, res: Response) => {
   try {
     const getMachine = await Machines.findOne({
       _id: req.params.id,
-      deletedAt: null,
+      $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
     })
     res.json({
       error: false,
@@ -161,7 +163,7 @@ export const deleteMachine = async (req: Request, res: Response) => {
   try {
     const getMachine = await Machines.find({
       _id: req.params.id,
-      deletedAt: null,
+      $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
     })
     if (getMachine.length > 0) {
       const deleteMachine = await Machines.findByIdAndUpdate(req.params.id, {
@@ -169,12 +171,9 @@ export const deleteMachine = async (req: Request, res: Response) => {
           deletedAt: Date.now(),
         },
       })
-      const deletedMachine = await Machines.findById({
-        _id: req.params.id,
-      })
       res.json({
         error: false,
-        item: deletedMachine,
+        item: deleteMachine,
         itemCount: 1,
         message: DELETE_SUCCESS_MESSAGE,
       })

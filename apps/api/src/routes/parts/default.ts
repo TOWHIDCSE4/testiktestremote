@@ -14,7 +14,9 @@ import { ZPart } from "custom-validator"
 export const getAllParts = async (req: Request, res: Response) => {
   try {
     const partsCount = await Parts.find().countDocuments()
-    const getAllParts = await Parts.find().sort({
+    const getAllParts = await Parts.find({
+      $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+    }).sort({
       createdAt: -1,
     })
     res.json({
@@ -38,7 +40,7 @@ export const getPart = async (req: Request, res: Response) => {
   try {
     const getPart = await Parts.findOne({
       _id: req.params.id,
-      deletedAt: null,
+      $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
     })
     res.json({
       error: false,
@@ -181,7 +183,7 @@ export const deletePart = async (req: Request, res: Response) => {
   try {
     const getPart = await Parts.find({
       _id: req.params.id,
-      deletedAt: null,
+      $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
     })
     if (getPart.length > 0) {
       const deletePart = await Parts.findByIdAndUpdate(req.params.id, {
@@ -189,12 +191,9 @@ export const deletePart = async (req: Request, res: Response) => {
           deletedAt: Date.now(),
         },
       })
-      const deletedPart = await Parts.findById({
-        _id: req.params.id,
-      })
       res.json({
         error: false,
-        item: deletedPart,
+        item: deletePart,
         itemCount: 1,
         message: DELETE_SUCCESS_MESSAGE,
       })

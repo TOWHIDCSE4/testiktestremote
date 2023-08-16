@@ -4,7 +4,7 @@ import Image from "next/image"
 import { TrashIcon } from "@heroicons/react/24/outline"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import EditModal from "./modals/EditModal"
-import DeleteModal from "./modals/DeleteModal"
+import DeleteMachineModal from "./modals/DeleteMachineModal"
 import MachineDetailsModal from "./modals/MachineDetailsModal"
 import combineClasses from "../../../helpers/combineClasses"
 import useFactories from "../../../hooks/factories/useFactories"
@@ -303,6 +303,7 @@ const Machine = ({
                           onClick={(e) => {
                             e.stopPropagation()
                             setOpenDeleteModal(true)
+                            setSelectedMachineId(product._id as string)
                           }}
                         >
                           <TrashIcon className="h-5 w-5 text-white" />
@@ -399,9 +400,10 @@ const Machine = ({
         isOpen={openEditModal}
         onClose={() => setOpenEditModal(false)}
       />
-      <DeleteModal
+      <DeleteMachineModal
         isOpen={openDeleteModal}
         onClose={() => setOpenDeleteModal(false)}
+        _id={selectedPartId}
       />
       <MachineDetailsModal
         isOpen={openDetailsModal}

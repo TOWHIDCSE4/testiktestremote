@@ -11,9 +11,10 @@ import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMach
 import { T_BackendResponse, T_MachineClass, T_Part } from "custom-validator"
 import useLocations from "../../../../hooks/locations/useLocations"
 import useUpdatePart from "../../../../hooks/parts/useUpdatePart"
-import useSession from "../../../../hooks/users/useSession"
 import toast from "react-hot-toast"
 import ModalMediaList from "./ModalMediaList"
+import { FileWithPath } from "react-dropzone"
+import useUploadMediaFiles from "../../../../hooks/media/useUploadMediaFiles"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -29,9 +30,12 @@ const PartDetailsModal = ({
   id,
 }: DetailsModalProps) => {
   const queryClient = useQueryClient()
-  const session = useSession()
-  const token = session.data.item.token
   const closeButtonRef = useRef(null)
+  const { mutate: uploadMediaFiles, isLoading: isUploadMediaFilesLoading } =
+    useUploadMediaFiles()
+  const [filesToUpload, setFilesToUpload] = useState<
+    (FileWithPath & { preview: string })[]
+  >([])
   const [openEditModal, setOpenEditModal] = useState(false)
 
   const { data: partDetails, isLoading: isPartDetailsLoading } = useGetPart(id)
@@ -54,6 +58,12 @@ const PartDetailsModal = ({
           queryClient.invalidateQueries({
             queryKey: ["parts"],
           })
+          queryClient.invalidateQueries({
+            queryKey: ["part", partDetails?.item?._id],
+          })
+          queryClient.invalidateQueries({
+            queryKey: ["part-location-counts"],
+          })
           toast.success("Part details has been updated")
         } else {
           toast.error(String(data.message))
@@ -63,8 +73,37 @@ const PartDetailsModal = ({
         toast.error(String(err))
       },
     }
-
-    mutate({ _id: partDetails?.item?._id as string, ...data }, callBackReq)
+    const uploadFilesCallBackReq = {
+      onSuccess: (returnData: T_BackendResponse[]) => {
+        const imagesUploadStatus = returnData.map((item) => {
+          return item.error
+        })
+        if (imagesUploadStatus.some((status) => status)) {
+          toast.error("Some media files failed to upload")
+        }
+        const uploadedNames = returnData.map((item) => {
+          return item.item?.name
+        })
+        setFilesToUpload([])
+        mutate(
+          {
+            ...data,
+            _id: partDetails?.item?._id as string,
+            files: [...partDetails?.item?.files, ...uploadedNames],
+          },
+          callBackReq
+        )
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+        mutate({ ...data, _id: partDetails?.item?._id as string }, callBackReq)
+      },
+    }
+    if (filesToUpload.length > 0) {
+      uploadMediaFiles(filesToUpload, uploadFilesCallBackReq)
+    } else {
+      mutate({ ...data, _id: partDetails?.item?._id as string }, callBackReq)
+    }
   }
 
   useEffect(() => {
@@ -92,7 +131,8 @@ const PartDetailsModal = ({
                 isUpdatePartLoading ||
                 isPartDetailsLoading ||
                 isLocationsLoading ||
-                isFactoriesLoading
+                isFactoriesLoading ||
+                isUploadMediaFilesLoading
               }
               {...register("name", { required: true })}
             />
@@ -120,7 +160,8 @@ const PartDetailsModal = ({
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isLocationsLoading ||
-                      isFactoriesLoading
+                      isFactoriesLoading ||
+                      isUploadMediaFilesLoading
                     }
                     {...register("factoryId", { required: true })}
                     onChange={(e) => {
@@ -154,7 +195,8 @@ const PartDetailsModal = ({
                       isPartDetailsLoading ||
                       isLocationsLoading ||
                       isFactoriesLoading ||
-                      isMachineClassesRefetching
+                      isMachineClassesRefetching ||
+                      isUploadMediaFilesLoading
                     }
                     {...register("machineClassId", { required: true })}
                   >
@@ -189,7 +231,8 @@ const PartDetailsModal = ({
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isLocationsLoading ||
-                      isFactoriesLoading
+                      isFactoriesLoading ||
+                      isUploadMediaFilesLoading
                     }
                     {...register("pounds", { required: true })}
                   />
@@ -208,7 +251,8 @@ const PartDetailsModal = ({
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isLocationsLoading ||
-                      isFactoriesLoading
+                      isFactoriesLoading ||
+                      isUploadMediaFilesLoading
                     }
                   />
                   <label
@@ -226,7 +270,8 @@ const PartDetailsModal = ({
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isLocationsLoading ||
-                      isFactoriesLoading
+                      isFactoriesLoading ||
+                      isUploadMediaFilesLoading
                     }
                   />
                   <label
@@ -244,7 +289,8 @@ const PartDetailsModal = ({
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isLocationsLoading ||
-                      isFactoriesLoading
+                      isFactoriesLoading ||
+                      isUploadMediaFilesLoading
                     }
                   />
                   <label
@@ -262,7 +308,8 @@ const PartDetailsModal = ({
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isLocationsLoading ||
-                      isFactoriesLoading
+                      isFactoriesLoading ||
+                      isUploadMediaFilesLoading
                     }
                   />
                   <label
@@ -279,7 +326,8 @@ const PartDetailsModal = ({
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isLocationsLoading ||
-                      isFactoriesLoading
+                      isFactoriesLoading ||
+                      isUploadMediaFilesLoading
                     }
                   >
                     <option disabled>Location</option>
@@ -302,6 +350,8 @@ const PartDetailsModal = ({
               <ModalMediaList
                 files={partDetails?.item?.files}
                 isLoading={isPartDetailsLoading}
+                filesToUpload={filesToUpload}
+                setFilesToUpload={setFilesToUpload}
               />
             </div>
           </div>
@@ -313,7 +363,8 @@ const PartDetailsModal = ({
                 isUpdatePartLoading ||
                 isPartDetailsLoading ||
                 isLocationsLoading ||
-                isFactoriesLoading
+                isFactoriesLoading ||
+                isUploadMediaFilesLoading
               }
             >
               {isUpdatePartLoading ? (
@@ -331,14 +382,18 @@ const PartDetailsModal = ({
             <button
               type="button"
               className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
-              onClick={onClose}
+              onClick={() => {
+                onClose()
+                setFilesToUpload([])
+              }}
               ref={closeButtonRef}
               tabIndex={-1}
               disabled={
                 isUpdatePartLoading ||
                 isPartDetailsLoading ||
                 isLocationsLoading ||
-                isFactoriesLoading
+                isFactoriesLoading ||
+                isUploadMediaFilesLoading
               }
             >
               Close

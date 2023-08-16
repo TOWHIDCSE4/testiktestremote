@@ -14,12 +14,14 @@ export const paginated = async (req: Request, res: Response) => {
         ...(factoryId && { factoryId: factoryId }),
         ...(machineClassId && { machineClassId: machineClassId }),
         ...(name && { name: { $regex: `.*${name}.*` } }),
+        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
       const getAllParts = await Machines.find({
         locationId: locationId,
         ...(factoryId && { factoryId: factoryId }),
         ...(machineClassId && { machineClassId: machineClassId }),
         ...(name && { name: { $regex: `.*${name}.*`, $options: "i" } }),
+        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       })
         .sort({
           createdAt: -1,
