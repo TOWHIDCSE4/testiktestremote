@@ -1,15 +1,18 @@
 "use client"
-import { Fragment, useState } from "react"
+import { Fragment, useState, useEffect } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import TimerCard from "./TimerCard"
 import TimerTracker from "./TimerTracker"
 import NewModal from "./modals/NewModal"
 import SetProductionModal from "./modals/SetProductionModal"
+import useLocations from "../../../hooks/locations/useLocations"
+import combineClasses from "../../../helpers/combineClasses"
 
-// @ts-expect-error
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
+type T_LocationTabs = {
+  _id?: string
+  name: string
+  count?: number
 }
 
 const Content = () => {
@@ -18,20 +21,28 @@ const Content = () => {
   const [locationState, setLocationState] = useState("Seguin")
   const [openSetProduction, setOpenProduction] = useState(false)
 
-  const locationTabs = [
-    {
-      name: "Seguin",
-      current: locationState === "Seguin",
-    },
-    {
-      name: "Conroe",
-      current: locationState === "Conroe",
-    },
-    {
-      name: "Gunter",
-      current: locationState === "Gunter",
-    },
-  ]
+  const { data: locations, isLoading: isLocationsLoading } = useLocations()
+  const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
+  const [currentLocationTab, setCurrentLocationTab] = useState<string>("")
+
+  useEffect(() => {
+    if (locationTabs.length === 0) {
+      if (locations) {
+        setLocationTabs(
+          locations.items.map((location) => ({
+            _id: location._id,
+            name: location.name,
+            count: 0,
+          }))
+        )
+      }
+      setCurrentLocationTab(locations?.items[0]?._id as string)
+    }
+  }, [locations])
+
+  const currentLocationTabName = locationTabs.find(
+    (tab) => tab._id === currentLocationTab
+  )?.name
 
   return (
     <div className={`my-20`}>
@@ -63,15 +74,15 @@ const Content = () => {
             <div key={tab.name}>
               <button
                 type="button"
-                className={classNames(
-                  tab.current
+                className={combineClasses(
+                  tab._id === currentLocationTab
                     ? "bg-blue-950 text-white"
                     : "bg-white text-gray-700 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
-                onClick={() => setLocationState(tab.name)}
+                onClick={() => setCurrentLocationTab(tab?._id as string)}
               >
-                {tab.name}
+                {tab.name} {tab?.count ? `(${tab.count})` : null}
               </button>
               <div className="flex mt-1">
                 <div className="flex h-6 items-center">
@@ -94,6 +105,19 @@ const Content = () => {
               </div>
             </div>
           ))}
+          {isLocationsLoading && (
+            <>
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-14 w-full rounded bg-slate-200"></div>
+              </div>
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-14 w-full rounded bg-slate-200"></div>
+              </div>
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-14 w-full rounded bg-slate-200"></div>
+              </div>
+            </>
+          )}
         </div>
         <div className="w-full h-[1.5px] bg-gray-200 mt-5"></div>
         <div className="flex justify-between pt-4 pb-3 items-center">
@@ -354,7 +378,14 @@ const Content = () => {
           No timer with MISC. Please add the timer.
         </p>
       </div>
-      <NewModal isOpen={openNewModal} onClose={() => setOpenNewModal(false)} />
+      <NewModal
+        isOpen={openNewModal}
+        locationState={
+          currentLocationTabName ? currentLocationTabName : "Loading..."
+        }
+        locationId={currentLocationTab}
+        onClose={() => setOpenNewModal(false)}
+      />
       <SetProductionModal
         isOpen={openSetProduction}
         onClose={() => setOpenProduction(false)}
