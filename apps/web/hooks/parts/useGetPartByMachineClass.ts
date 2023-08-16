@@ -22,7 +22,7 @@ export async function getPartByMachineClass(id: string | undefined) {
 function useGetPartByMachineClass() {
   const [selectedMachineClassId, setSelectedMachineClassId] = useState("")
   const query = useQuery(
-    ["machine", selectedMachineClassId],
+    ["parts", selectedMachineClassId],
     () => getPartByMachineClass(selectedMachineClassId),
     {
       staleTime: THREE_MINUTES,
