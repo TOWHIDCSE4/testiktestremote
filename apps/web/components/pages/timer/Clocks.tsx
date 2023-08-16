@@ -237,6 +237,7 @@ const Clocks = ({ locationId }: { locationId: string }) => {
       </div>
       <SetProductionModal
         isOpen={openSetProduction}
+        locationId={locationId}
         onClose={() => setOpenProduction(false)}
       />
     </>

@@ -1,6 +1,11 @@
 import { Fragment, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { Roboto } from "next/font/google"
+import useUpdateLocation from "../../../../hooks/locations/useUpdateLocation"
+import { T_BackendResponse, T_Location, T_Part } from "custom-validator"
+import toast from "react-hot-toast"
+import { useForm } from "react-hook-form"
+import { useQueryClient } from "@tanstack/react-query"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -11,10 +16,40 @@ const roboto = Roboto({
 interface SetProductionModalProps {
   isOpen: boolean
   onClose: () => void
+  locationId: string
 }
 
-const SetProductionModal = ({ isOpen, onClose }: SetProductionModalProps) => {
+const SetProductionModal = ({
+  isOpen,
+  locationId,
+  onClose,
+}: SetProductionModalProps) => {
   const cancelButtonRef = useRef(null)
+  const queryClient = useQueryClient()
+  const { register, handleSubmit, reset } = useForm<T_Location>()
+  const { mutate, isLoading } = useUpdateLocation()
+
+  const onSubmit = (data: T_Location) => {
+    const callBackReq = {
+      onSuccess: (data: T_BackendResponse) => {
+        if (!data.error) {
+          queryClient.invalidateQueries({
+            queryKey: ["location", locationId],
+          })
+          closeModal()
+          reset()
+          toast.success(String(data.message))
+        } else {
+          toast.error(String(data.message))
+        }
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+      },
+    }
+
+    mutate({ ...data, _id: locationId }, callBackReq)
+  }
 
   const closeModal = () => {
     onClose()
@@ -52,7 +87,7 @@ const SetProductionModal = ({ isOpen, onClose }: SetProductionModalProps) => {
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full sm:max-w-lg">
-                <form>
+                <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="bg-white">
                     <h3 className="text-gray-800 font-semibold text-lg px-4 py-3 sm:px-6">
                       Set Production Time Of Seguin
@@ -61,7 +96,7 @@ const SetProductionModal = ({ isOpen, onClose }: SetProductionModalProps) => {
                     <div className="px-4 py-4 sm:px-6">
                       <input
                         type="number"
-                        name="production-time"
+                        {...register("productionTime")}
                         id="production-time"
                         className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
                       />
@@ -70,10 +105,20 @@ const SetProductionModal = ({ isOpen, onClose }: SetProductionModalProps) => {
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
-                      type="button"
+                      type="submit"
                       className="uppercase inline-flex w-full justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 sm:w-auto"
                     >
-                      Save
+                      {isLoading ? (
+                        <div
+                          className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
+                          role="status"
+                          aria-label="loading"
+                        >
+                          <span className="sr-only">Loading...</span>
+                        </div>
+                      ) : (
+                        "Save"
+                      )}
                     </button>
                     <button
                       type="button"
