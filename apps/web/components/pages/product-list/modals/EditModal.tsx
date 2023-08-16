@@ -146,8 +146,8 @@ const EditModal = ({ isOpen, onClose }: EditModalProps) => {
             >
               Assign Photos And Video Previews
             </label>
-            <div className="text-gray-400 text-sm border-2 border-gray-300 border-dashed text-center p-5 rounded rounded-md mt-2">
-              Drop files here or click to upload.
+            <div className="text-gray-400 text-sm border-2 border-gray-300 border-dashed text-center p-5 rounded mt-2">
+              Drop files here or click to upload
             </div>
             <p className="text-xs mt-1 text-gray-600">
               photos will be resized under 1mb and videos compressed to 1min at
@@ -337,8 +337,8 @@ const EditModal = ({ isOpen, onClose }: EditModalProps) => {
             >
               Assign Photos And Video Previews
             </label>
-            <div className="text-gray-400 text-sm border-2 border-gray-300 border-dashed text-center p-5 rounded rounded-md mt-2">
-              Drop files here or click to upload.
+            <div className="text-gray-400 text-sm border-2 border-gray-300 border-dashed text-center p-5 rounded mt-2">
+              Drop files here or click to upload
             </div>
             <p className="text-xs mt-1 text-gray-600">
               photos will be resized under 1mb and videos compressed to 1min at

@@ -53,7 +53,7 @@ const MultipleImageUpload = ({
             !isLoading && "hover:bg-gray-100"
           } ${isFocused && "bg-gray-100"} transition`}
         >
-          Drop files here or click to upload.
+          Drop files here or click to upload
         </div>
         <em className="text-xs mt-1 text-gray-600">
           photos will be resized under 1mb and videos compressed to 1min at 720p

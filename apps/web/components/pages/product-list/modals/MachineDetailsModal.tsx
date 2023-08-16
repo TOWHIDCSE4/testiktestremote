@@ -1,29 +1,18 @@
 "use client"
 import { Fragment, useRef, useState, useEffect } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import usePart from "../../../../hooks/parts/useGetPart"
 import useFactories from "../../../../hooks/factories/useFactories"
 import { useQueryClient } from "@tanstack/react-query"
-import {
-  I_FACTORY,
-  I_PartUpdate,
-  T_BACKEND_RESPONSE,
-} from "../../../../types/global"
+import { I_FACTORY } from "../../../../types/global"
 import { useForm } from "react-hook-form"
 import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
-import {
-  T_BackendResponse,
-  T_Machine,
-  T_MachineClass,
-  T_Part,
-} from "custom-validator"
-import useLocations from "../../../../hooks/locations/useLocations"
-import useUpdatePart from "../../../../hooks/parts/useUpdatePart"
-import useSession from "../../../../hooks/users/useSession"
+import { T_BackendResponse, T_Machine, T_MachineClass } from "custom-validator"
 import toast from "react-hot-toast"
 import ModalMediaList from "./ModalMediaList"
 import useGetMachine from "../../../../hooks/machines/useGetMachine"
 import useUpdateMachine from "../../../../hooks/machines/useUpdateMachine"
+import { FileWithPath } from "react-dropzone"
+import useUploadMediaFiles from "../../../../hooks/media/useUploadMediaFiles"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -38,6 +27,11 @@ const MachineDetailsModal = ({
   onClose,
   id,
 }: DetailsModalProps) => {
+  const { mutate: uploadMediaFiles, isLoading: isUploadMediaFilesLoading } =
+    useUploadMediaFiles()
+  const [filesToUpload, setFilesToUpload] = useState<
+    (FileWithPath & { preview: string })[]
+  >([])
   const queryClient = useQueryClient()
   const closeButtonRef = useRef(null)
   const { data: machineDetails, isLoading: isMachineDetailsLoading } =
@@ -60,6 +54,12 @@ const MachineDetailsModal = ({
           queryClient.invalidateQueries({
             queryKey: ["machines"],
           })
+          queryClient.invalidateQueries({
+            queryKey: ["machine", machineDetails?.item?._id],
+          })
+          queryClient.invalidateQueries({
+            queryKey: ["machine-location-counts"],
+          })
           toast.success("Machine details has been updated")
         } else {
           toast.error(String(data.message))
@@ -69,8 +69,40 @@ const MachineDetailsModal = ({
         toast.error(String(err))
       },
     }
-
-    mutate({ _id: machineDetails?.item?._id as string, ...data }, callBackReq)
+    const uploadFilesCallBackReq = {
+      onSuccess: (returnData: T_BackendResponse[]) => {
+        const imagesUploadStatus = returnData.map((item) => {
+          return item.error
+        })
+        if (imagesUploadStatus.some((status) => status)) {
+          toast.error("Some media files failed to upload")
+        }
+        const uploadedNames = returnData.map((item) => {
+          return item.item?.name
+        })
+        setFilesToUpload([])
+        mutate(
+          {
+            ...data,
+            _id: machineDetails?.item?._id as string,
+            files: [...machineDetails?.item?.files, ...uploadedNames],
+          },
+          callBackReq
+        )
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+        mutate(
+          { ...data, _id: machineDetails?.item?._id as string },
+          callBackReq
+        )
+      },
+    }
+    if (filesToUpload.length > 0) {
+      uploadMediaFiles(filesToUpload, uploadFilesCallBackReq)
+    } else {
+      mutate({ ...data, _id: machineDetails?.item?._id as string }, callBackReq)
+    }
   }
 
   useEffect(() => {
@@ -97,7 +129,8 @@ const MachineDetailsModal = ({
               disabled={
                 isUpdateMachineLoading ||
                 isMachineDetailsLoading ||
-                isFactoriesLoading
+                isFactoriesLoading ||
+                isUploadMediaFilesLoading
               }
               {...register("name", { required: true })}
             />
@@ -124,7 +157,8 @@ const MachineDetailsModal = ({
                     disabled={
                       isUpdateMachineLoading ||
                       isMachineDetailsLoading ||
-                      isFactoriesLoading
+                      isFactoriesLoading ||
+                      isUploadMediaFilesLoading
                     }
                     {...register("factoryId", { required: true })}
                     onChange={(e) => {
@@ -159,7 +193,8 @@ const MachineDetailsModal = ({
                       isUpdateMachineLoading ||
                       isMachineDetailsLoading ||
                       isFactoriesLoading ||
-                      isMachineClassesRefetching
+                      isMachineClassesRefetching ||
+                      isUploadMediaFilesLoading
                     }
                     {...register("machineClassId", { required: true })}
                   >
@@ -195,7 +230,8 @@ const MachineDetailsModal = ({
                     disabled={
                       isUpdateMachineLoading ||
                       isMachineDetailsLoading ||
-                      isFactoriesLoading
+                      isFactoriesLoading ||
+                      isUploadMediaFilesLoading
                     }
                     placeholder="Details"
                     defaultValue={""}
@@ -206,6 +242,8 @@ const MachineDetailsModal = ({
               <ModalMediaList
                 files={machineDetails?.item?.files}
                 isLoading={isMachineDetailsLoading}
+                filesToUpload={filesToUpload}
+                setFilesToUpload={setFilesToUpload}
               />
             </div>
           </div>
@@ -216,7 +254,8 @@ const MachineDetailsModal = ({
               disabled={
                 isUpdateMachineLoading ||
                 isMachineDetailsLoading ||
-                isFactoriesLoading
+                isFactoriesLoading ||
+                isUploadMediaFilesLoading
               }
             >
               {isUpdateMachineLoading ? (
@@ -234,13 +273,17 @@ const MachineDetailsModal = ({
             <button
               type="button"
               className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
-              onClick={onClose}
+              onClick={() => {
+                onClose()
+                setFilesToUpload([])
+              }}
               ref={closeButtonRef}
               tabIndex={-1}
               disabled={
                 isUpdateMachineLoading ||
                 isMachineDetailsLoading ||
-                isFactoriesLoading
+                isFactoriesLoading ||
+                isUploadMediaFilesLoading
               }
             >
               Close

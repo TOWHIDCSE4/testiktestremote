@@ -54,6 +54,9 @@ const NewMachineModal = ({
             queryClient.invalidateQueries({
               queryKey: ["parts"],
             })
+            queryClient.invalidateQueries({
+              queryKey: ["machine-location-counts"],
+            })
             onClose()
             reset()
             setSelectedFactory("")
@@ -99,7 +102,10 @@ const NewMachineModal = ({
     if (files.length > 0) {
       uploadMediaFiles(files, uploadFilesCallBackReq)
     } else {
-      toast.error("Please upload at least one media file")
+      mutate(
+        { ...data, locationId: locationId ? locationId : "", files: [] },
+        callBackReq
+      )
     }
   }
 
