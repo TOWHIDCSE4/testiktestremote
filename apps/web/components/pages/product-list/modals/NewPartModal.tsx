@@ -1,7 +1,6 @@
 import { Fragment, useRef, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { Dialog, Transition } from "@headlessui/react"
-import { Roboto } from "next/font/google"
 import useFactories from "../../../../hooks/factories/useFactories"
 import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
 import {
@@ -16,12 +15,6 @@ import useAddPart from "../../../../hooks/parts/useAddPart"
 import MultipleImageUpload from "../../../MultipleImageUpload"
 import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../hooks/media/useUploadMediaFiles"
-
-const roboto = Roboto({
-  weight: ["100", "300", "400", "500", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-})
 
 interface NewModalProps {
   isOpen: boolean
@@ -165,7 +158,7 @@ const NewPartModal = ({
                         id="nameId"
                         required
                         disabled={isAddPartLoading || isUploadMediaFilesLoading}
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         placeholder="Part"
                         {...register("name", { required: true })}
                       />
@@ -186,7 +179,7 @@ const NewPartModal = ({
                         id="factory"
                         required
                         {...register("factoryId", { required: true })}
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className} disabled:opacity-70`}
+                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         onChange={(e) => {
                           setSelectedFactory(e.target.value)
                           setSelectedFactoryId(e.target.value)
@@ -215,7 +208,7 @@ const NewPartModal = ({
                       <select
                         id="machineClass"
                         required
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         disabled={
                           selectedFactory === "" ||
                           isMachineClassesRefetching ||
@@ -255,7 +248,7 @@ const NewPartModal = ({
                           disabled={
                             isAddPartLoading || isUploadMediaFilesLoading
                           }
-                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                           placeholder="Pounds"
                           {...register("pounds", {
                             required: true,
@@ -277,7 +270,7 @@ const NewPartModal = ({
                           disabled={
                             isAddPartLoading || isUploadMediaFilesLoading
                           }
-                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
+                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                           placeholder="Avg Time"
                           {...register("time", {
                             required: true,
@@ -291,71 +284,6 @@ const NewPartModal = ({
                       setFiles={setFiles}
                       isLoading={isAddPartLoading || isUploadMediaFilesLoading}
                     />
-                    <div className="mt-4 grid md:grid-cols-3 gap-x-8 gap-y-4 md:gap-y-0">
-                      <div>
-                        <label
-                          htmlFor="finishGoodWeight"
-                          className="uppercase font-semibold text-gray-800"
-                        >
-                          Finish Good Weight
-                        </label>
-                        <input
-                          type="number"
-                          required
-                          id="finishGoodWeight"
-                          disabled={
-                            isAddPartLoading || isUploadMediaFilesLoading
-                          }
-                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
-                          {...register("finishGoodWeight", {
-                            required: true,
-                            valueAsNumber: true,
-                          })}
-                        />
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="cageWeightScrap"
-                          className="uppercase font-semibold text-gray-800"
-                        >
-                          Cage Weight Scrap
-                        </label>
-                        <input
-                          type="number"
-                          required
-                          id="cageWeightScrap"
-                          disabled={
-                            isAddPartLoading || isUploadMediaFilesLoading
-                          }
-                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
-                          {...register("cageWeightScrap", {
-                            required: true,
-                            valueAsNumber: true,
-                          })}
-                        />
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="cageWeightActual"
-                          className="uppercase font-semibold text-gray-800"
-                        >
-                          Cage Weight Actuals
-                        </label>
-                        <input
-                          type="number"
-                          required
-                          id="cageWeightActual"
-                          disabled={
-                            isAddPartLoading || isUploadMediaFilesLoading
-                          }
-                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
-                          {...register("cageWeightActual", {
-                            required: true,
-                            valueAsNumber: true,
-                          })}
-                        />
-                      </div>
-                    </div>
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
