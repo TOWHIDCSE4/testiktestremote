@@ -121,7 +121,10 @@ const Content = () => {
           )}
         </div>
         <div className="w-full h-[1.5px] bg-gray-200 mt-5"></div>
-        <Clocks locationId={currentLocationTab} />
+        <Clocks
+          locationId={currentLocationTab}
+          currentLocationTabName={currentLocationTabName as string}
+        />
         <div className="w-full h-[2.2px] bg-gray-200"></div>
         <div className="md:flex justify-between mt-7">
           <h6 className="font-bold text-lg text-gray-800 uppercase">

@@ -1,35 +1,39 @@
-import { Fragment, useRef, useState } from "react"
+import { Fragment, useRef } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import { Roboto } from "next/font/google"
 import useUpdateLocation from "../../../../hooks/locations/useUpdateLocation"
 import { T_BackendResponse, T_Location, T_Part } from "custom-validator"
 import toast from "react-hot-toast"
 import { useForm } from "react-hook-form"
 import { useQueryClient } from "@tanstack/react-query"
 
-const roboto = Roboto({
-  weight: ["100", "300", "400", "500", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-})
-
 interface SetProductionModalProps {
   isOpen: boolean
   onClose: () => void
   locationId: string
+  currentLocationTabName: string
+  locationProductionTime: string
+}
+
+type T_LocationProductionTime = {
+  _id: string
+  productionTime: number
 }
 
 const SetProductionModal = ({
   isOpen,
   locationId,
   onClose,
+  currentLocationTabName,
+  locationProductionTime,
 }: SetProductionModalProps) => {
   const cancelButtonRef = useRef(null)
   const queryClient = useQueryClient()
-  const { register, handleSubmit, reset } = useForm<T_Location>()
+  const { register, handleSubmit, reset } = useForm<T_LocationProductionTime>({
+    values: { _id: locationId, productionTime: Number(locationProductionTime) },
+  })
   const { mutate, isLoading } = useUpdateLocation()
 
-  const onSubmit = (data: T_Location) => {
+  const onSubmit = (data: T_LocationProductionTime) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
@@ -47,8 +51,11 @@ const SetProductionModal = ({
         toast.error(String(err))
       },
     }
-
-    mutate({ ...data, _id: locationId }, callBackReq)
+    if (data.productionTime > 24 || data.productionTime < 1) {
+      toast.error("Production time must be between 1 and 24 hours")
+    } else {
+      mutate(data, callBackReq)
+    }
   }
 
   const closeModal = () => {
@@ -89,24 +96,26 @@ const SetProductionModal = ({
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full sm:max-w-lg">
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="bg-white">
-                    <h3 className="text-gray-800 font-semibold text-lg px-4 py-3 sm:px-6">
-                      Set Production Time Of Seguin
+                    <h3 className="text-gray-800 font-semibold text-lg px-4 py-3">
+                      {currentLocationTabName} Production Time
                     </h3>
                     <hr />
-                    <div className="px-4 py-4 sm:px-6">
+                    <div className="px-4 py-4">
                       <input
                         type="number"
                         {...register("productionTime")}
                         id="production-time"
-                        className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                        className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6`}
+                        max={24}
+                        min={1}
                       />
                     </div>
                     <hr />
                   </div>
-                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse">
                     <button
                       type="submit"
-                      className="uppercase inline-flex w-full justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 sm:w-auto"
+                      className="ml-3 uppercase flex items-center rounded-md bg-green-700 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
                     >
                       {isLoading ? (
                         <div
@@ -122,7 +131,7 @@ const SetProductionModal = ({
                     </button>
                     <button
                       type="button"
-                      className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
                       onClick={closeModal}
                       ref={cancelButtonRef}
                     >

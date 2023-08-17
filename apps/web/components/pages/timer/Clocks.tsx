@@ -8,22 +8,28 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 
-const Clocks = ({ locationId }: { locationId: string }) => {
+const Clocks = ({
+  locationId,
+  currentLocationTabName,
+}: {
+  locationId: string
+  currentLocationTabName: string
+}) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
 
   const [openFilter, setOpenFilter] = useState(false)
   const [openSetProduction, setOpenProduction] = useState(false)
 
-  const { data: location, isLoading: isLocationsLoading } =
+  const { data: location, isLoading: isLocationLoading } =
     useGetLocation(locationId)
 
   const currentDate = dayjs
-    .tz(dayjs(), !isLocationsLoading ? location.item.timeZone : "")
+    .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "")
     .format("MMM DD YYYY")
 
   const localeTime = dayjs
-    .tz(dayjs(), !isLocationsLoading ? location.item.timeZone : "")
+    .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "")
     .format("hh:mm:ss")
 
   // locationId will update automatically when location changes in the parent
@@ -228,7 +234,7 @@ const Clocks = ({ locationId }: { locationId: string }) => {
           onClick={() => setOpenProduction(true)}
         >
           <h5 className="text-lg text-gray-700 uppercase font-bold">
-            {!isLocationsLoading ? location.item.productionTime : "0"} Hours
+            {!isLocationLoading ? location.item.productionTime : "0"} Hours
           </h5>
           <h6 className="uppercase text-gray-400 font-medium text-sm">
             Production Time
@@ -239,6 +245,10 @@ const Clocks = ({ locationId }: { locationId: string }) => {
         isOpen={openSetProduction}
         locationId={locationId}
         onClose={() => setOpenProduction(false)}
+        currentLocationTabName={currentLocationTabName}
+        locationProductionTime={
+          !isLocationLoading ? location.item.productionTime : "0"
+        }
       />
     </>
   )

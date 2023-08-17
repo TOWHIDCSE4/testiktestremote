@@ -1,6 +1,5 @@
 import { Fragment, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import { Roboto } from "next/font/google"
 import useFactories from "../../../../hooks/factories/useFactories"
 import {
   T_BackendResponse,
@@ -17,12 +16,6 @@ import useGetPartByMachineClass from "../../../../hooks/parts/useGetPartByMachin
 import usePart from "../../../../hooks/parts/useGetPart"
 import toast from "react-hot-toast"
 import useAddTimer from "../../../../hooks/timers/useAddTimer"
-
-const roboto = Roboto({
-  weight: ["100", "300", "400", "500", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-})
 
 interface NewModalProps {
   isOpen: boolean
@@ -46,33 +39,31 @@ const NewModal = ({
   const {
     data: machineClasses,
     isLoading: isMachineClassesLoading,
-    isRefetching: isMachineClassesRefetching,
     setSelectedFactoryId,
   } = useFactoryMachineClasses()
   const {
     data: machines,
     isLoading: isMachinesLoading,
-    isRefetching: isMachinesRefetching,
     setSelectedMachineClassId: setMachineSelect,
   } = useGetMachineByClass()
   const {
     data: parts,
     isLoading: isPartsLoading,
-    isRefetching: isPartsRefetching,
     setSelectedMachineClassId: setPartSelect,
   } = useGetPartByMachineClass()
   const { data: specificPart, isLoading: isSpecificPartLoading } =
     usePart(activePart)
 
-  const { register, handleSubmit, setValue, reset } = useForm<T_Timer>()
+  const { register, handleSubmit, reset } = useForm<T_Timer>()
   const { mutate, isLoading: isMutateLoading } = useAddTimer()
 
   const onSubmit = (data: T_Timer) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
-          toast.success(data.message)
+          toast.success(String(data.message))
           closeModal()
+          reset()
         } else {
           toast.error(String(data.message))
         }
@@ -128,7 +119,7 @@ const NewModal = ({
                       {locationState} &gt; New Timer/Process
                     </h3>
 
-                    <div className="md:flex items-center mt-4">
+                    <div className="md:flex items-center mt-6">
                       <label
                         htmlFor="factory"
                         className="uppercase font-semibold text-gray-800 md:w-[20%]"
@@ -138,8 +129,8 @@ const NewModal = ({
                       <select
                         id="factory"
                         {...register("factoryId")}
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-                        disabled={isFactoriesLoading}
+                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                        disabled={isFactoriesLoading || isMutateLoading}
                         defaultValue={""}
                         onChange={(e) => {
                           setSelectedFactory(e.target.value)
@@ -169,9 +160,13 @@ const NewModal = ({
                       </label>
                       <select
                         id="machine-class"
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         defaultValue={""}
-                        disabled={selectedFactory === ""}
+                        disabled={
+                          selectedFactory === "" ||
+                          isMutateLoading ||
+                          isMachineClassesLoading
+                        }
                         onChange={(e) => {
                           setSelectedMachineClass(e.target.value)
                           setMachineSelect(e.target.value)
@@ -202,11 +197,15 @@ const NewModal = ({
                       <select
                         id="machine-process"
                         {...register("machineId")}
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-                        defaultValue="Machine"
-                        disabled={selectedMachineClass === ""}
+                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                        defaultValue="Select Machine"
+                        disabled={
+                          selectedMachineClass === "" ||
+                          isMutateLoading ||
+                          isMachinesLoading
+                        }
                       >
-                        <option disabled>Machine</option>
+                        <option disabled>Select Machine</option>
                         {machines?.items.map(
                           (item: T_Machine, index: number) => {
                             return (
@@ -228,12 +227,16 @@ const NewModal = ({
                       <select
                         id="machine-part"
                         {...register("partId")}
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
-                        defaultValue=""
-                        disabled={selectedMachineClass === ""}
+                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                        defaultValue="Select Part"
+                        disabled={
+                          selectedMachineClass === "" ||
+                          isMutateLoading ||
+                          isPartsLoading
+                        }
                         onChange={(e) => setActivePart(e.currentTarget.value)}
                       >
-                        <option disabled></option>
+                        <option disabled>Select Part</option>
                         {parts?.items.map((part: T_Part, index: number) => {
                           return (
                             <option key={index} value={part._id as string}>
@@ -258,7 +261,7 @@ const NewModal = ({
                           type="number"
                           name="average-cycle"
                           id="average-cycle"
-                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 cursor-not-allowed`}
                           disabled
                           value={
                             !isSpecificPartLoading ? specificPart.item.time : ""
@@ -276,7 +279,7 @@ const NewModal = ({
                           type="number"
                           name="weight"
                           id="weight"
-                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 ${roboto.className}`}
+                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 cursor-not-allowed`}
                           disabled
                           value={
                             !isSpecificPartLoading
@@ -290,11 +293,11 @@ const NewModal = ({
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
                       type="submit"
-                      className="uppercase inline-flex w-full justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 sm:w-auto"
+                      className="ml-3 uppercase flex items-center rounded-md bg-green-700 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
                     >
                       {isMutateLoading ? (
                         <div
-                          className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full"
+                          className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
                           role="status"
                           aria-label="loading"
                         >
@@ -306,8 +309,11 @@ const NewModal = ({
                     </button>
                     <button
                       type="button"
-                      className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                      onClick={closeModal}
+                      className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
+                      onClick={() => {
+                        closeModal()
+                        reset()
+                      }}
                       ref={cancelButtonRef}
                     >
                       Cancel
