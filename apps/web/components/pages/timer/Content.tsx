@@ -2,8 +2,7 @@
 import { Fragment, useState, useEffect } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { ChevronDownIcon } from "@heroicons/react/20/solid"
-import TimerCard from "./TimerCard"
-import TimerTracker from "./TimerTracker"
+import Timers from "./Timers"
 import NewModal from "./modals/NewModal"
 import SetProductionModal from "./modals/SetProductionModal"
 import useLocations from "../../../hooks/locations/useLocations"
@@ -123,17 +122,10 @@ const Content = () => {
         <div className="w-full h-[1.5px] bg-gray-200 mt-5"></div>
         <Clocks locationId={currentLocationTab} />
         <div className="w-full h-[2.2px] bg-gray-200"></div>
-        <div className="md:flex justify-between mt-7">
-          <h6 className="font-bold text-lg text-gray-800 uppercase">
-            Radial Press And Variants - Timers
-          </h6>
-          <h6 className="font-bold text-lg text-gray-500">3 Timers</h6>
-        </div>
-        <TimerCard />
+        <Timers />
         <h6 className="font-bold text-lg text-gray-800 uppercase mt-7">
           Timer Tracker - Radial Press And Variants
         </h6>
-        <TimerTracker />
         <div className="w-full h-[2.2px] bg-gray-200 mt-10"></div>
         <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
           Wire Cage (MBK) - Timers
