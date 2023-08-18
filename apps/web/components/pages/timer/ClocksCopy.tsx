@@ -271,6 +271,9 @@ const Clocks = ({ locationId }: { locationId: string }) => {
       <SetProductionModal
         isOpen={openSetProduction}
         onClose={() => setOpenProduction(false)}
+        locationId="1234"
+        currentLocationTabName="Pipe and Box"
+        locationProductionTime="14 Hours"
       />
     </>
   )

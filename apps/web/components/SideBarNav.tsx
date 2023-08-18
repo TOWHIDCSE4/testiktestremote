@@ -30,7 +30,7 @@ const navigation = [
       { name: "Projects", href: "#" },
       { name: "Drafting", href: "#" },
       { name: "Inventory", href: "#" },
-      { name: "Production Tracker", href: "#" },
+      { name: "Production Tracker", href: "/order-flow/production-tracker" },
       { name: "Load out", href: "#" },
       { name: "Project Close", href: "#" },
     ],

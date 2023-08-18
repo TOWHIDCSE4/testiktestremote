@@ -17,9 +17,14 @@ type AccordionProps = {
 const Accordion = (props: { item: AccordionProps }) => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+
   useEffect(() => {
-    setIsOpen(pathname.includes(props.item.slug))
+    const firstPath = pathname.split("/")[1]
+    setIsOpen(firstPath === props.item.slug)
   }, [pathname, props.item.slug])
+
+  const firstPath = pathname.split("/")[1]
+  const isPageSelected = firstPath === props.item.slug
 
   return (
     <div
@@ -32,13 +37,13 @@ const Accordion = (props: { item: AccordionProps }) => {
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center">
-          {pathname.includes(props.item.slug) && (
+          {isPageSelected && (
             <div className="h-2.5 w-2.5 bg-red-700 rounded-full ml-1"></div>
           )}
           <span
-            className={`uppercase font-medium ${
-              pathname.includes(props.item.slug) ? "text-white ml-5" : "ml-8"
-            } ${isOpen && "text-white"}`}
+            className={`uppercase font-medium ${isOpen ? "text-white" : ""} ${
+              isPageSelected ? "ml-5" : "ml-8"
+            }`}
           >
             {props.item.name}
           </span>

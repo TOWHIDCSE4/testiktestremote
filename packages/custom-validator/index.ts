@@ -16,8 +16,8 @@ export type {
 export { ZLogin } from "./ZLogin"
 export type { T_Login } from "./ZLogin"
 
-export { ZJob } from "./ZJob"
-export type { T_Job } from "./ZJob"
+export { ZJob, ZJobStatus, ZJobPriorityStatus } from "./ZJob"
+export type { T_Job, T_JobPriorityStatus, T_JobStatus } from "./ZJob"
 
 export { ZBackendResponse } from "./ZBackendResponse"
 export type { T_BackendResponse } from "./ZBackendResponse"
