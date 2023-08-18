@@ -6,8 +6,6 @@ import { T_BackendResponse, T_Part } from "custom-validator"
 import { useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import usePart from "../../../../hooks/parts/useGetPart"
-import toast from "react-hot-toast"
-import useUpdatePart from "../../../../hooks/parts/useUpdatePart"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -92,10 +90,10 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                               <input
                                 type="text"
                                 id="product-name"
-                                className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                                className={`block bg-slate-100 mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
                                 placeholder="Enter product name"
                                 disabled
-                                defaultValue={partDetailData?.item.name}
+                                defaultValue={partDetailData?.item?.name}
                                 {...register("name", { required: true })}
                               />
                               <label
@@ -107,10 +105,10 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                               <input
                                 type="number"
                                 id="weight"
-                                className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                                className={`block bg-slate-100 mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
                                 placeholder="Enter weight"
                                 disabled
-                                defaultValue={partDetailData?.item.pounds}
+                                defaultValue={partDetailData?.item?.pounds}
                                 {...register("pounds", { required: true })}
                               />
                               <label
@@ -122,10 +120,10 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                               <input
                                 type="text"
                                 id="production-time"
-                                className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                                className={`block bg-slate-100 mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
                                 placeholder="Enter production time"
                                 disabled
-                                defaultValue={partDetailData?.item.time}
+                                defaultValue={partDetailData?.item?.time}
                                 {...register("time", { required: true })}
                               />
                               <label

@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import factories from "../../models/factories"
 import machines from "../../models/machines"
 import Timers from "../../models/timers"
@@ -8,26 +9,45 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
   if (locationId) {
     try {
       const timersCount = await Timers.find({
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        $and: [
+          { locationId: locationId },
+          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
+        ],
       }).countDocuments()
       const getTimerByLocation = await Timers.find({
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        $and: [
+          { locationId: locationId },
+          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
+        ],
       })
       const timers = await Timers.aggregate([
         {
           $match: {
-            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+            $and: [
+              { locationId: new mongoose.Types.ObjectId(locationId as string) },
+              {
+                $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+              },
+            ],
           },
         },
         {
           $lookup: {
             from: "parts",
-            localField: "locationId",
-            foreignField: "locationId",
+            let: { locId: "$locationId" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ["$locationId", "$$locId"] },
+                  $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+                },
+              },
+            ],
             as: "parts",
           },
         },
       ])
+
       res.json({
         error: false,
         items: timers,

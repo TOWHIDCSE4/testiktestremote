@@ -38,7 +38,6 @@ const Content = () => {
       setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
-
   const currentLocationTabName = locationTabs.find(
     (tab) => tab._id === currentLocationTab
   )?.name
@@ -122,42 +121,7 @@ const Content = () => {
         <div className="w-full h-[1.5px] bg-gray-200 mt-5"></div>
         <Clocks locationId={currentLocationTab} />
         <div className="w-full h-[2.2px] bg-gray-200"></div>
-        <Timers />
-        <div className="w-full h-[2.2px] bg-gray-200 mt-10"></div>
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
-          Wire Cage (MBK) - Timers
-        </h6>
-        <p className="text-gray-500 mt-4">
-          No timer with Wire Cage (MBK). Please add the timer.
-        </p>
-        <div className="w-full h-[2.2px] bg-gray-200 mt-7"></div>
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
-          Precast - Timers
-        </h6>
-        <p className="text-gray-500 mt-4">
-          No timer with Precast. Please add the timer.
-        </p>
-        <div className="w-full h-[2.2px] bg-gray-200 mt-7"></div>
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
-          Steel - Timers
-        </h6>
-        <p className="text-gray-500 mt-4">
-          No timer with Steel. Please add the timer.
-        </p>
-        <div className="w-full h-[2.2px] bg-gray-200 mt-7"></div>
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
-          Fittings - Timers
-        </h6>
-        <p className="text-gray-500 mt-4">
-          No timer with Fittings. Please add the timer.
-        </p>
-        <div className="w-full h-[2.2px] bg-gray-200 mt-7"></div>
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
-          Misc - Timers
-        </h6>
-        <p className="text-gray-500 mt-4">
-          No timer with MISC. Please add the timer.
-        </p>
+        <Timers locationId={currentLocationTab} />
       </div>
       <NewModal
         isOpen={openNewModal}

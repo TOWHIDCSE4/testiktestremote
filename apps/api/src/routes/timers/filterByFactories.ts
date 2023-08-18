@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import factories from "../../models/factories"
 import machines from "../../models/machines"
 import Timers from "../../models/timers"
@@ -8,7 +9,10 @@ export const getAllTimersByFactory = async (req: Request, res: Response) => {
   if (factoryId) {
     try {
       const timersCount = await Timers.find({
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        $and: [
+          { factoryId: factoryId },
+          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
+        ],
       }).countDocuments()
       const getTimerByFactory = await Timers.find({
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
@@ -16,7 +20,12 @@ export const getAllTimersByFactory = async (req: Request, res: Response) => {
       const timers = await Timers.aggregate([
         {
           $match: {
-            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+            $and: [
+              {
+                $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+              },
+              { locationId: new mongoose.Types.ObjectId(factoryId as string) },
+            ],
           },
         },
         {
