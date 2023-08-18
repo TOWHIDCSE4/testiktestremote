@@ -123,9 +123,6 @@ const Content = () => {
         <Clocks locationId={currentLocationTab} />
         <div className="w-full h-[2.2px] bg-gray-200"></div>
         <Timers />
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-7">
-          Timer Tracker - Radial Press And Variants
-        </h6>
         <div className="w-full h-[2.2px] bg-gray-200 mt-10"></div>
         <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
           Wire Cage (MBK) - Timers

@@ -60,11 +60,12 @@ export const getTimer = async (req: Request, res: Response) => {
 }
 
 export const addTimer = async (req: Request, res: Response) => {
-  const { factoryId, machineId, partId, locationId } = req.body
-  if (factoryId && machineId && partId && locationId) {
+  const { factoryId, machineId, machineClassId, partId, locationId } = req.body
+  if (factoryId && machineId && machineClassId && partId && locationId) {
     const newTimer = new Timers({
       factoryId,
       machineId,
+      machineClassId,
       partId,
       locationId,
       updatedAt: null,
