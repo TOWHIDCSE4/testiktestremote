@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
-import LogoGreen from "../../../assets/logo/logo-green.png"
-import LogoRed from "../../../assets/logo/logo-red.png"
+import LogoGreen from "../../../../assets/logo/logo-green.png"
+import LogoRed from "../../../../assets/logo/logo-red.png"
 import {
   ChevronDoubleUpIcon,
   ChevronDoubleDownIcon,
