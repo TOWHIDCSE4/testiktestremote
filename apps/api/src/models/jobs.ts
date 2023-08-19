@@ -3,16 +3,34 @@ const { Schema } = mongoose
 
 const jobs = new Schema({
   name: String,
-  description: String,
+  locationId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Location",
+  },
+  userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
+  partId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Part",
+  },
   factoryId: {
     type: mongoose.Schema.ObjectId,
     ref: "Factory",
   },
-  isActive: Boolean,
-  machineId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Machine",
+  drawingNumber: String,
+  count: Number,
+  priorityStatus: {
+    type: String,
+    enum: ["High", "Medium", "Low"],
   },
+  status: {
+    type: String,
+    enum: ["Pending", "Active", "Testing", "Archived", "Deleted"],
+  },
+  isStock: Boolean,
+  dueDate: Date,
   createdAt: {
     type: Date,
     default: Date.now,

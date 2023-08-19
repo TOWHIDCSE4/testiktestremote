@@ -3,19 +3,20 @@ import { API_URL_LOCATIONS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 
+type T_LocationProductionTime = {
+  _id: string
+  productionTime: number
+}
+
 export async function updateLocation({
   _id,
-  name,
   productionTime,
-  timeZone,
-}: T_Location) {
+}: T_LocationProductionTime) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_LOCATIONS}/${_id}`, {
     method: "PATCH",
     body: JSON.stringify({
-      name,
       productionTime,
-      timeZone,
     }),
     headers: {
       "content-type": "application/json",
@@ -27,11 +28,9 @@ export async function updateLocation({
 
 function useUpdateLocation() {
   const query = useMutation(
-    ({ name, productionTime, timeZone, _id }: T_Location) =>
+    ({ productionTime, _id }: T_LocationProductionTime) =>
       updateLocation({
-        name,
         productionTime,
-        timeZone,
         _id,
       })
   )

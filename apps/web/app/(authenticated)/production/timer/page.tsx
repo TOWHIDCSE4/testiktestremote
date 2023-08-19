@@ -1,4 +1,4 @@
-import Content from "../../../../components/pages/timer/Content"
+import Content from "../../../../components/pages/production/timer/Content"
 
 export const metadata = {
   title: "APMS - Production / Timer",

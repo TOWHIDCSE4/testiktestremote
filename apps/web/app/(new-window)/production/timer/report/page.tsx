@@ -1,4 +1,4 @@
-import Report from "../../../../../components/pages/timer/Report"
+import Report from "../../../../../components/pages/production/timer/Report"
 
 const PageReport = () => {
   return <Report />

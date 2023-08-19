@@ -1,4 +1,4 @@
-import Controller from "../../../../../components/pages/timer/Controller"
+import Controller from "../../../../../components/pages/production/timer/Controller"
 
 const FullScreenController = () => {
   return <Controller />

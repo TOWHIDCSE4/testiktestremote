@@ -1,4 +1,4 @@
-import Content from "../../../../components/pages/product-list/Content"
+import Content from "../../../../components/pages/production/product-list/Content"
 
 export const metadata = {
   title: "APMS - Production / Product List",

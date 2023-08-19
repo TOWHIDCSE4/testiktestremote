@@ -1,4 +1,4 @@
-import TimerTracker from "../../../../../components/pages/timer/TimerTracker"
+import TimerTracker from "../../../../../components/pages/production/timer/TimerTracker"
 
 const FullScreen = () => {
   return (
