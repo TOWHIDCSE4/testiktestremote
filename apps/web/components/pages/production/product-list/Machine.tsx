@@ -1,5 +1,5 @@
 "use client"
-import { Dispatch, useEffect, useState } from "react"
+import { Dispatch, EventHandler, useEffect, useState } from "react"
 import Image from "next/image"
 import { TrashIcon } from "@heroicons/react/24/outline"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
@@ -11,6 +11,7 @@ import useFactories from "../../../../hooks/factories/useFactories"
 import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
 import { T_Factory, T_Machine, T_MachineClass } from "custom-validator"
 import usePaginatedMachines from "../../../../hooks/machines/usePaginatedMachines"
+import DropDownMenu from "./DropDownMenu"
 
 type T_LocationTabs = {
   _id?: string
@@ -254,17 +255,35 @@ const Machine = ({
                   return (
                     <div
                       key={index}
-                      className="group relative bg-white rounded-md border border-gray-200 shadow cursor-pointer"
+                      className="group bg-white rounded-md border border-gray-200 shadow cursor-pointer relative"
                       onClick={() => {
                         setOpenDetailsModal(true)
                         setSelectedMachineId(product._id as string)
                       }}
                     >
+                      <div className="absolute z-10 right-1 top-1">
+                        <DropDownMenu
+                          setOpenEditModal={(
+                            e: React.MouseEvent<HTMLElement>
+                          ) => {
+                            e.stopPropagation()
+                            setOpenDetailsModal(true)
+                            setSelectedMachineId(product._id as string)
+                          }}
+                          setOpenDeleteModal={(
+                            e: React.MouseEvent<HTMLElement>
+                          ) => {
+                            e.stopPropagation()
+                            setOpenDeleteModal(true)
+                            setSelectedMachineId(product._id as string)
+                          }}
+                        />
+                      </div>
                       <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 rounded-t-md">
                         <div className="relative">
                           {!isGetAllMachinesLoading && selectedImage ? (
                             <Image
-                              className="h-60"
+                              className="h-60 object-none object-center"
                               src={`/files/${selectedImage}`}
                               alt={selectedImage as string}
                               width={400}
@@ -296,18 +315,6 @@ const Machine = ({
                             ? currentLocationTabName
                             : "Loading..."}
                         </p>
-                      </div>
-                      <div className="flex justify-end px-4 space-x-3 my-4">
-                        <button
-                          className="p-1 bg-red-700 rounded-md"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setOpenDeleteModal(true)
-                            setSelectedMachineId(product._id as string)
-                          }}
-                        >
-                          <TrashIcon className="h-5 w-5 text-white" />
-                        </button>
                       </div>
                     </div>
                   )

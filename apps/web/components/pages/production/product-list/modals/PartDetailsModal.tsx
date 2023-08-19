@@ -313,38 +313,71 @@ const PartDetailsModal = ({
                     }
                   />
                   <label
-                    htmlFor="location"
+                    htmlFor="cage-weight-scrap"
                     className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
                   >
-                    Location:
+                    In Inventory:
                   </label>
-                  <select
-                    id="location"
-                    {...register("locationId", { required: true })}
-                    className={`block col-span-2 md:mt-0 w-full text-sm rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:leading-6 disabled:opacity-70`}
-                    disabled={
-                      isUpdatePartLoading ||
-                      isPartDetailsLoading ||
-                      isLocationsLoading ||
-                      isFactoriesLoading ||
-                      isUploadMediaFilesLoading
-                    }
+                  <input
+                    id="inInventory"
+                    className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
+                    defaultValue={0}
+                    disabled={true}
+                  />
+                  <label
+                    htmlFor="cage-weight-scrap"
+                    className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
                   >
-                    <option disabled>Location</option>
-                    {locations?.items.map((location, index: number) => {
-                      return (
-                        <option
-                          key={index}
-                          value={location._id}
-                          selected={
-                            location._id === partDetails?.item?.locationId
-                          }
-                        >
-                          {location.name}
-                        </option>
-                      )
-                    })}
-                  </select>
+                    Manufacture Cost:
+                  </label>
+                  <div className="relative rounded-md shadow-sm col-span-2">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <span className="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input
+                      type="text"
+                      id="topSellPrice"
+                      disabled
+                      className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                      placeholder="0.00"
+                      aria-describedby="price-currency"
+                    />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                      <span
+                        className="text-gray-500 sm:text-sm"
+                        id="price-currency"
+                      >
+                        USD
+                      </span>
+                    </div>
+                  </div>
+                  <label
+                    htmlFor="cage-weight-scrap"
+                    className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
+                  >
+                    Top Sell Price:
+                  </label>
+                  <div className="relative rounded-md shadow-sm col-span-2">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                      <span className="text-gray-500 sm:text-sm">$</span>
+                    </div>
+                    <input
+                      type="text"
+                      id="topSellPrice"
+                      disabled
+                      className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                      placeholder="0.00"
+                      aria-describedby="price-currency"
+                    />
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                      <span
+                        className="text-gray-500 sm:text-sm"
+                        id="price-currency"
+                      >
+                        USD
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <ModalMediaList
@@ -367,7 +400,7 @@ const PartDetailsModal = ({
                 isUploadMediaFilesLoading
               }
             >
-              {isUpdatePartLoading ? (
+              {isUpdatePartLoading || isUploadMediaFilesLoading ? (
                 <div
                   className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
                   role="status"

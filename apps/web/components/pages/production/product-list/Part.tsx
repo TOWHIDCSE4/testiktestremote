@@ -11,6 +11,7 @@ import { T_Factory, T_MachineClass, T_Part } from "custom-validator"
 import useFactories from "../../../../hooks/factories/useFactories"
 import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
 import DeletePartModal from "./modals/DeletePartModal"
+import DropDownMenu from "./DropDownMenu"
 
 type T_LocationTabs = {
   _id?: string
@@ -251,17 +252,35 @@ const Part = ({
                   return (
                     <div
                       key={index}
-                      className="group relative bg-white rounded-md border border-gray-200 shadow cursor-pointer"
+                      className="group bg-white rounded-md border border-gray-200 shadow cursor-pointer relative"
                       onClick={() => {
                         setOpenDetailsModal(true)
                         setSelectedPartId(product._id as string)
                       }}
                     >
+                      <div className="absolute z-10 right-1 top-1">
+                        <DropDownMenu
+                          setOpenEditModal={(
+                            e: React.MouseEvent<HTMLElement>
+                          ) => {
+                            e.stopPropagation()
+                            setOpenDetailsModal(true)
+                            setSelectedPartId(product._id as string)
+                          }}
+                          setOpenDeleteModal={(
+                            e: React.MouseEvent<HTMLElement>
+                          ) => {
+                            e.stopPropagation()
+                            setOpenDeleteModal(true)
+                            setSelectedPartId(product._id as string)
+                          }}
+                        />
+                      </div>
                       <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden lg:aspect-none group-hover:opacity-75 rounded-t-md">
                         <div className="relative">
                           {!isGetAllPartsLoading && selectedImage ? (
                             <Image
-                              className="h-60"
+                              className="h-60 object-none object-center"
                               src={`/files/${selectedImage}`}
                               alt={selectedImage as string}
                               width={400}
@@ -294,7 +313,7 @@ const Part = ({
                             : "Loading..."}
                         </p>
                       </div>
-                      <div className="px-4">
+                      <div className="px-4 pb-4">
                         <div className="flex justify-between text-gray-900">
                           <span>Pounds:</span>
                           <span>{product.pounds}</span>
@@ -303,18 +322,6 @@ const Part = ({
                           <span>Avg Time:</span>
                           <span>{product.time}</span>
                         </div>
-                      </div>
-                      <div className="flex justify-end px-4 space-x-3 my-4">
-                        <button
-                          className="p-1 bg-red-700 rounded-md"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setOpenDeleteModal(true)
-                            setSelectedPartId(product._id as string)
-                          }}
-                        >
-                          <TrashIcon className="h-5 w-5 text-white" />
-                        </button>
                       </div>
                     </div>
                   )
