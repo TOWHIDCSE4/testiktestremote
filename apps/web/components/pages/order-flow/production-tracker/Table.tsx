@@ -106,8 +106,10 @@ const Table = () => {
                   <tr>
                     <th
                       scope="col"
-                      className="py-3.5 text-left text-sm font-semibold text-gray-900 w-16 uppercase"
-                    ></th>
+                      className="py-3.5 pl-5 md:pl-7 lg:pl-9 text-left text-sm font-semibold text-gray-900 w-16 uppercase"
+                    >
+                      User
+                    </th>
                     <th
                       scope="col"
                       className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase pl-4"

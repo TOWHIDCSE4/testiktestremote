@@ -347,43 +347,6 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                         "Update"
                       )}
                     </button>
-                    {currentTab === "Active" ? (
-                      <button
-                        type="submit"
-                        className="sm:ml-3 uppercase flex items-center justify-center rounded-md bg-blue-500 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
-                      >
-                        {isMutateLoading ? (
-                          <div
-                            className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
-                            role="status"
-                            aria-label="loading"
-                          >
-                            <span className="sr-only">Loading...</span>
-                          </div>
-                        ) : (
-                          "Test"
-                        )}
-                      </button>
-                    ) : currentTab === "Testing" ? (
-                      <button
-                        type="submit"
-                        className="sm:ml-3 uppercase flex items-center justify-center rounded-md bg-blue-500 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
-                      >
-                        {isMutateLoading ? (
-                          <div
-                            className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
-                            role="status"
-                            aria-label="loading"
-                          >
-                            <span className="sr-only">Loading...</span>
-                          </div>
-                        ) : (
-                          "Archive"
-                        )}
-                      </button>
-                    ) : (
-                      ""
-                    )}
                     <button
                       type="button"
                       className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
