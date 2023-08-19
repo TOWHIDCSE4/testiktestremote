@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import {
   T_BackendResponse,
@@ -6,16 +6,16 @@ import {
   T_Job,
   T_Machine,
   T_Part,
+  T_User,
 } from "custom-validator"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import useFactoryMachineClasses from "../../../../../hooks/factories/useFactoryMachineClasses"
-import useGetMachineByClass from "../../../../../hooks/machines/useGetMachinesByClass"
-import useGetPartByMachineClass from "../../../../../hooks/parts/useGetPartByMachineClass"
-import usePart from "../../../../../hooks/parts/useGetPart"
-import useAddTimer from "../../../../../hooks/timers/useAddTimer"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import useLocations from "../../../../../hooks/locations/useLocations"
+import useAddJob from "../../../../../hooks/jobs/useAddJob"
+import useUsers from "../../../../../hooks/users/useUsers"
+import useGetPartsByFactoryLocation from "../../../../../hooks/parts/useGetPartsByFactoryLocation"
+import dayjs from "dayjs"
 
 interface NewModalProps {
   isOpen: boolean
@@ -33,29 +33,20 @@ const NewModal = ({
   const cancelButtonRef = useRef(null)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+  const { data: users, isLoading: isUsersLoading } = useUsers()
+  const [isStock, setIsStock] = useState(false)
   const [selectedFactory, setSelectedFactory] = useState("")
   const [selectedMachineClass, setSelectedMachineClass] = useState("")
   const [activePart, setActivePart] = useState("")
   const {
-    data: machineClasses,
-    isLoading: isMachineClassesLoading,
-    setSelectedFactoryId,
-  } = useFactoryMachineClasses()
-  const {
-    data: machines,
-    isLoading: isMachinesLoading,
-    setSelectedMachineClassId: setMachineSelect,
-  } = useGetMachineByClass()
-  const {
     data: parts,
     isLoading: isPartsLoading,
-    setSelectedMachineClassId: setPartSelect,
-  } = useGetPartByMachineClass()
-  const { data: specificPart, isLoading: isSpecificPartLoading } =
-    usePart(activePart)
+    setLocationId,
+    setFactoryId,
+  } = useGetPartsByFactoryLocation()
 
-  const { register, handleSubmit, reset, watch } = useForm<T_Job>()
-  const { mutate, isLoading: isMutateLoading } = useAddTimer()
+  const { register, handleSubmit, reset, watch, setValue } = useForm<T_Job>()
+  const { mutate, isLoading: isMutateLoading } = useAddJob()
 
   const onSubmit = (data: T_Job) => {
     const callBackReq = {
@@ -64,6 +55,7 @@ const NewModal = ({
           toast.success(String(data.message))
           closeModal()
           reset()
+          setIsStock(false)
         } else {
           toast.error(String(data.message))
         }
@@ -72,7 +64,17 @@ const NewModal = ({
         toast.error(String(err))
       },
     }
-    // mutate({ ...data, locationId: locationId ? locationId : "" }, callBackReq)
+    mutate(
+      {
+        ...data,
+        isStock:
+          typeof data.isStock === "string"
+            ? Boolean(data.isStock)
+            : data.isStock,
+        status: "Pending",
+      },
+      callBackReq
+    )
   }
 
   const closeModal = () => {
@@ -80,6 +82,12 @@ const NewModal = ({
     setSelectedFactory("")
     setSelectedMachineClass("")
   }
+
+  useEffect(() => {
+    setValue("locationId", locationId as string)
+    setLocationId(locationId as string)
+  }, [locationId])
+
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
@@ -146,7 +154,9 @@ const NewModal = ({
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                         required
                         {...register("locationId", { required: true })}
-                        defaultValue=""
+                        onChange={(e) => {
+                          setLocationId(e.target.value)
+                        }}
                       >
                         <option className="uppercase" value="">
                           Select Location
@@ -171,21 +181,19 @@ const NewModal = ({
                       </label>
                       <select
                         id="user"
-                        {...register("userId")}
+                        {...register("userId", { required: true })}
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                         defaultValue="Select User"
                         required
                       >
-                        <option disabled>Select User</option>
-                        {machines?.items.map(
-                          (item: T_Machine, index: number) => {
-                            return (
-                              <option key={index} value={item._id as string}>
-                                {item.name}
-                              </option>
-                            )
-                          }
-                        )}
+                        <option value="">Select User</option>
+                        {users?.items.map((item: T_User, index: number) => {
+                          return (
+                            <option key={index} value={item._id as string}>
+                              {item.firstName} {item.lastName}
+                            </option>
+                          )
+                        })}
                       </select>
                     </div>
                     <div className="md:flex items-center mt-3">
@@ -200,7 +208,11 @@ const NewModal = ({
                         id="factory"
                         required
                         {...register("factoryId", { required: true })}
+                        defaultValue="Select Factory"
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                        onChange={(e) => {
+                          setFactoryId(e.target.value)
+                        }}
                       >
                         <option value="">Select Factory</option>
                         {factories?.items.map(
@@ -216,25 +228,26 @@ const NewModal = ({
                     </div>
                     <div className="md:flex items-center mt-3">
                       <label
-                        htmlFor="machine-part"
+                        htmlFor="partId"
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
                         Part
                       </label>
                       <select
-                        id="machine-part"
+                        id="partId"
                         required
-                        {...register("partId")}
+                        {...register("partId", { required: true })}
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                         defaultValue="Select Part"
                         disabled={
-                          selectedMachineClass === "" ||
+                          !parts ||
+                          parts?.items.length === 0 ||
                           isMutateLoading ||
                           isPartsLoading
                         }
                         onChange={(e) => setActivePart(e.currentTarget.value)}
                       >
-                        <option disabled>Select Part</option>
+                        <option value="">Select Part</option>
                         {parts?.items.map((part: T_Part, index: number) => {
                           return (
                             <option key={index} value={part._id as string}>
@@ -272,13 +285,20 @@ const NewModal = ({
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                         defaultValue="No"
                         required
+                        onChange={(e) => {
+                          if (e.target.value === "true") {
+                            setValue("count", undefined)
+                            setValue("dueDate", null)
+                            setValue("priorityStatus", undefined)
+                          }
+                          setIsStock(e.target.value === "true")
+                        }}
                       >
                         <option value="false">No</option>
                         <option value="true">Yes</option>
                       </select>
                     </div>
-                    {String(watch("isStock")) === "false" ||
-                    !watch("isStock") ? (
+                    {!isStock ? (
                       <>
                         <div className="md:flex items-center mt-3">
                           <label
@@ -289,7 +309,10 @@ const NewModal = ({
                           </label>
                           <input
                             type="number"
-                            {...register("count", { required: true })}
+                            {...register("count", {
+                              required: true,
+                              valueAsNumber: true,
+                            })}
                             id="drawingNumber"
                             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             required
@@ -304,7 +327,10 @@ const NewModal = ({
                           </label>
                           <input
                             type="date"
-                            {...register("dueDate", { required: true })}
+                            {...register("dueDate", {
+                              required: true,
+                              valueAsDate: true,
+                            })}
                             id="dueDate"
                             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             required

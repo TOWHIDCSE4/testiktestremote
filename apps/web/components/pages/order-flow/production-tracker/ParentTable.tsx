@@ -9,21 +9,19 @@ import { Menu, Transition } from "@headlessui/react"
 import Image from "next/image"
 import DeleteModal from "./modals/DeleteModal"
 import EditModal from "./modals/EditModal"
+import combineClasses from "../../../../helpers/combineClasses"
+import TabTable from "./TabTable"
+import { T_JobStatus } from "custom-validator"
 
-// @ts-expect-error
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
-}
-
-const Table = () => {
-  const [currentTab, setCurrentTab] = useState("Active")
+const ParentTable = ({ locationId }: { locationId: string }) => {
+  const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [deleteModal, setDeleteModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
 
   const tabs = [
+    { name: "Pending", count: 0, current: currentTab === "Pending" },
     { name: "Active", count: 2, current: currentTab === "Active" },
     { name: "Testing", count: 1, current: currentTab === "Testing" },
-    { name: "Pending", count: 0, current: currentTab === "Pending" },
     { name: "Archived", count: 0, current: currentTab === "Archived" },
     { name: "Deleted", count: 0, current: currentTab === "Deleted" },
   ]
@@ -54,7 +52,7 @@ const Table = () => {
                       tabs.find((tab) => tab.current).name
                     }
                     onChange={(e) => {
-                      setCurrentTab(e.currentTarget.value)
+                      setCurrentTab(e.currentTarget.value as T_JobStatus)
                     }}
                   >
                     {tabs.map((tab) => (
@@ -72,7 +70,7 @@ const Table = () => {
                     {tabs.map((tab, tabIdx) => (
                       <button
                         key={tab.name}
-                        className={classNames(
+                        className={combineClasses(
                           tab.current
                             ? "text-gray-900"
                             : "text-gray-500 hover:text-gray-700",
@@ -81,14 +79,14 @@ const Table = () => {
                           "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center text-sm font-bold hover:bg-gray-50 focus:z-10"
                         )}
                         aria-current={tab.current ? "page" : undefined}
-                        onClick={() => setCurrentTab(tab.name)}
+                        onClick={() => setCurrentTab(tab.name as T_JobStatus)}
                       >
                         <span>
                           {tab.name} ({tab.count})
                         </span>
                         <span
                           aria-hidden="true"
-                          className={classNames(
+                          className={combineClasses(
                             tab.current ? "bg-blue-950" : "bg-transparent",
                             "absolute inset-x-0 bottom-0 h-1"
                           )}
@@ -101,7 +99,7 @@ const Table = () => {
             </div>
             {/* Table */}
             <div className="w-full overflow-x-auto">
-              <table className="w-full divide-y divide-gray-300">
+              {/* <table className="w-full divide-y divide-gray-300">
                 <thead>
                   <tr>
                     <th
@@ -411,7 +409,8 @@ const Table = () => {
                     <tr className="h-10 border-b border-gray-200 w-full"></tr>
                   )}
                 </tbody>
-              </table>
+              </table> */}
+              <TabTable tab={currentTab} locationId={locationId} />
               <div className="">
                 <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
                   <div className="h-10 z-[-1] sm:hidden">
@@ -510,4 +509,4 @@ const Table = () => {
   )
 }
 
-export default Table
+export default ParentTable

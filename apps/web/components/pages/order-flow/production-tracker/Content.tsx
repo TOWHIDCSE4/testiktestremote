@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import useLocations from "../../../../hooks/locations/useLocations"
 import combineClasses from "../../../../helpers/combineClasses"
 import NewModal from "./modals/NewModal"
-import Table from "./Table"
+import ParentTable from "./ParentTable"
 
 type T_LocationTabs = {
   _id?: string
@@ -34,6 +34,7 @@ const Content = () => {
   const currentLocationTabName = locationTabs.find(
     (tab) => tab._id === currentLocationTab
   )?.name
+
   return (
     <>
       <div className={`my-20`}>
@@ -47,7 +48,7 @@ const Content = () => {
                 Order Flow<span className="text-black mx-2">&gt;</span>
                 Production Tracker
                 <span className="text-black mx-2">&gt;</span>
-                <span className="text-red-500">Conroe</span>
+                <span className="text-red-500">{currentLocationTabName}</span>
               </h4>
             </div>
             <div>
@@ -93,7 +94,7 @@ const Content = () => {
               </>
             )}
           </div>
-          <Table />
+          <ParentTable locationId={currentLocationTab} />
         </div>
       </div>
       <NewModal

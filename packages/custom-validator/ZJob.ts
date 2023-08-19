@@ -1,5 +1,9 @@
 import { z } from "zod"
 import { ZMachine } from "./ZMachine"
+import { ZUser } from "./ZUser"
+import { ZLocation } from "./ZLocation"
+import { ZFactory } from "./ZFactory"
+import { ZPart } from "./ZPart"
 
 export const ZJobStatus = z.enum([
   "Pending",
@@ -13,16 +17,16 @@ export const ZJobPriorityStatus = z.enum(["High", "Medium", "Low"])
 
 export const ZJob = z.object({
   _id: z.string().optional(),
-  userId: z.string(),
+  userId: z.union([z.string(), ZUser]),
   name: z.string().min(2),
-  locationId: z.string(),
-  factoryId: z.string(),
-  partId: z.string(),
-  machine: ZMachine,
+  locationId: z.union([z.string(), ZLocation]),
+  factoryId: z.union([z.string(), ZFactory]),
+  partId: z.union([ZPart, z.string()]),
+  machine: ZMachine.optional(),
   status: ZJobStatus,
   drawingNumber: z.string(),
   count: z.number().int().positive().optional(),
-  dueDate: z.date().nullable(),
+  dueDate: z.union([z.string(), z.date()]).nullable(),
   isStock: z.boolean().optional(),
   priorityStatus: ZJobPriorityStatus.optional(),
   createdAt: z.date().nullable().optional(),

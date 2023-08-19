@@ -2,6 +2,10 @@ import express from "express"
 const router = express.Router()
 import { addJob, deleteJob, getAllJobs, getJob, updateJob } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
+import { paginated } from "./paginated"
+
+//custom
+router.get("/paginated", isUserLoggedIn, paginated)
 
 //default
 router.get("/", isUserLoggedIn, getAllJobs)

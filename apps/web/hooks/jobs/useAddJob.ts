@@ -1,11 +1,11 @@
-import { API_URL_MACHINE } from "../../helpers/constants"
+import { API_URL_JOBS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
-import { T_Machine } from "custom-validator"
+import { T_Job } from "custom-validator"
 import Cookies from "js-cookie"
 
-export async function addMachine(props: T_Machine) {
+export async function addJob(props: T_Job) {
   const token = Cookies.get("tfl")
-  const res = await fetch(`${API_URL_MACHINE}`, {
+  const res = await fetch(`${API_URL_JOBS}`, {
     method: "POST",
     body: JSON.stringify(props),
     headers: {
@@ -16,9 +16,9 @@ export async function addMachine(props: T_Machine) {
   return await res.json()
 }
 
-function useAddMachine() {
-  const query = useMutation((props: T_Machine) => addMachine(props))
+function useAddJob() {
+  const query = useMutation((props: T_Job) => addJob(props))
   return query
 }
 
-export default useAddMachine
+export default useAddJob
