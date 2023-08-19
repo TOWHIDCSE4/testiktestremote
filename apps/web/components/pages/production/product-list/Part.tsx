@@ -12,11 +12,11 @@ import useFactories from "../../../../hooks/factories/useFactories"
 import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMachineClasses"
 import DeletePartModal from "./modals/DeletePartModal"
 import DropDownMenu from "./DropDownMenu"
+import useGetPartLocationCount from "../../../../hooks/parts/useGetPartLocationCount"
 
 type T_LocationTabs = {
   _id?: string
   name: string
-  count?: number
 }
 
 type T_Part_Page = {
@@ -50,6 +50,8 @@ const Part = ({
     isRefetching: isMachineClassesRefetching,
     setSelectedFactoryId,
   } = useFactoryMachineClasses()
+  const { data: partLocationCount, setPartLocationIds } =
+    useGetPartLocationCount()
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
@@ -83,12 +85,24 @@ const Part = ({
     setName,
   ])
 
+  useEffect(() => {
+    setPartLocationIds(locationTabs.map((tab) => tab._id) as string[])
+  }, [locationTabs])
+
+  const locationsCount = partLocationCount
+    ? partLocationCount?.map((partLocation) => {
+        if (!partLocation.error) {
+          return partLocation.item
+        }
+      })
+    : []
+
   return (
     <div className={`mt-6 my-10`}>
       <div>
         {/* Location */}
         <div className="grid grid-cols-3 gap-x-6 md:gap-x-8 2xl:gap-x-24 mt-5">
-          {locationTabs.map((tab) => (
+          {locationTabs.map((tab, index) => (
             <div key={tab.name}>
               <button
                 type="button"
@@ -100,7 +114,8 @@ const Part = ({
                 )}
                 onClick={() => setCurrentLocationTab(tab?._id as string)}
               >
-                {tab.name} {tab?.count ? `(${tab.count})` : null}
+                {tab.name}{" "}
+                {locationsCount[index] ? `(${locationsCount[index]})` : null}
               </button>
               <div className="flex mt-1">
                 <div className="flex h-6 items-center">

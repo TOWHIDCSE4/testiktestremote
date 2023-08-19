@@ -32,8 +32,6 @@ const Clocks = ({
     .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "")
     .format("hh:mm:ss")
 
-  // locationId will update automatically when location changes in the parent
-  console.log("locationId", locationId)
   return (
     <>
       <div className="flex justify-between pt-4 pb-3 items-center">

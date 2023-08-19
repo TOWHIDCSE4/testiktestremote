@@ -12,11 +12,11 @@ import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMach
 import { T_Factory, T_Machine, T_MachineClass } from "custom-validator"
 import usePaginatedMachines from "../../../../hooks/machines/usePaginatedMachines"
 import DropDownMenu from "./DropDownMenu"
+import useGetMachineLocationCount from "../../../../hooks/machines/useGetMachineLocationCount"
 
 type T_LocationTabs = {
   _id?: string
   name: string
-  count?: number
 }
 
 type T_Machine_Page = {
@@ -50,6 +50,8 @@ const Machine = ({
     isRefetching: isMachineClassesRefetching,
     setSelectedFactoryId,
   } = useFactoryMachineClasses()
+  const { data: machineLocationCount, setMachineLocationIds } =
+    useGetMachineLocationCount()
   const [openNewModal, setOpenNewModal] = useState(false)
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
@@ -86,12 +88,24 @@ const Machine = ({
     setName,
   ])
 
+  useEffect(() => {
+    setMachineLocationIds(locationTabs.map((tab) => tab._id) as string[])
+  }, [locationTabs])
+
+  const locationsCount = machineLocationCount
+    ? machineLocationCount?.map((machineLocation) => {
+        if (!machineLocation.error) {
+          return machineLocation.item
+        }
+      })
+    : []
+
   return (
     <div className={`mt-6 my-10`}>
       <div>
         {/* Location */}
         <div className="grid grid-cols-3 gap-x-6 md:gap-x-8 2xl:gap-x-24 mt-5">
-          {locationTabs.map((tab) => (
+          {locationTabs.map((tab, index) => (
             <div key={tab.name}>
               <button
                 type="button"
@@ -103,7 +117,8 @@ const Machine = ({
                 )}
                 onClick={() => setCurrentLocationTab(tab?._id as string)}
               >
-                {tab.name} {tab?.count ? `(${tab.count})` : null}
+                {tab.name}{" "}
+                {locationsCount[index] ? `(${locationsCount[index]})` : null}
               </button>
               <div className="flex mt-1">
                 <div className="flex h-6 items-center">

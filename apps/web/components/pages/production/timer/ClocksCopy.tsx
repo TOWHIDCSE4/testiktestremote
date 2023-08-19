@@ -28,8 +28,6 @@ function calculateTimeInSeconds(timeInSeconds: number): (number | string)[] {
 const Clocks = ({ locationId }: { locationId: string }) => {
   const [openFilter, setOpenFilter] = useState(false)
   const [openSetProduction, setOpenProduction] = useState(false)
-  // locationId will update automatically when location changes in the parent
-  console.log("locationId", locationId)
 
   const [timeInSeconds, setTimeInSeconds] = useState(2553)
   const [timeArray, setTimeArray] = useState<Array<number | string>>([])

@@ -6,8 +6,6 @@ import Machine from "./Machine"
 import combineClasses from "../../../../helpers/combineClasses"
 import Part from "./Part"
 import NewMachineModal from "./modals/NewMachineModal"
-import useGetPartLocationCount from "../../../../hooks/parts/useGetPartLocationCount"
-import useGetMachineLocationCount from "../../../../hooks/machines/useGetMachineLocationCount"
 
 type T_LocationTabs = {
   _id?: string
@@ -17,20 +15,13 @@ type T_LocationTabs = {
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
-  const { data: partLocationCount, setPartLocationIds } =
-    useGetPartLocationCount()
-  const { data: machineLocationCount, setMachineLocationIds } =
-    useGetMachineLocationCount()
   const [openNewPartModal, setOpenNewPartModal] = useState(false)
   const [openNewMachineModal, setOpenNewMachineModal] = useState(false)
   const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
   const [currentLocationTab, setCurrentLocationTab] = useState<string>("")
   const [typeState, setTypeState] = useState("Part")
 
-  const tabs = [
-    { name: "Part", current: typeState === "Part" },
-    { name: "Machine", current: typeState === "Machine" },
-  ]
+  const tabs = [{ name: "Part" }, { name: "Machine" }]
 
   useEffect(() => {
     if (locationTabs.length === 0) {
@@ -43,53 +34,13 @@ const Content = () => {
           }))
         )
       }
-      setPartLocationIds(
-        locations?.items?.map((location) => location._id) as string[]
-      )
       setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
 
   useEffect(() => {
-    if (partLocationCount && locations && typeState === "Part") {
-      const counts = partLocationCount
-        .map((partLocation) => {
-          if (!partLocation.error) {
-            return partLocation.item
-          }
-        })
-        .filter((item) => typeof item === "number")
-      setLocationTabs(
-        locationTabs?.map((tab, index) => ({
-          ...tab,
-          count: counts[index],
-        }))
-      )
-    } else if (machineLocationCount && locations && typeState === "Machine") {
-      const counts = machineLocationCount
-        .map((partLocation) => {
-          if (!partLocation.error) {
-            return partLocation.item
-          }
-        })
-        .filter((item) => typeof item === "number")
-      setLocationTabs(
-        locationTabs?.map((tab, index) => ({
-          ...tab,
-          count: counts[index],
-        }))
-      )
-    }
-  }, [partLocationCount, machineLocationCount, typeState])
-
-  useEffect(() => {
     if (locationTabs.length > 0) {
       setCurrentLocationTab(locationTabs[0]._id as string)
-    }
-    if (typeState === "Machine" && locations) {
-      setMachineLocationIds(
-        locations?.items?.map((location) => location._id) as string[]
-      )
     }
   }, [typeState])
 
@@ -151,14 +102,13 @@ const Content = () => {
                   tabIdx === tabs.length - 1 ? "rounded-r-md" : "",
                   "group relative min-w-0 flex-1 overflow-hidden py-4 px-4 text-center font-extrabold hover:bg-gray-300 focus:z-10 text-xl"
                 )}
-                aria-current={tab.current ? "page" : undefined}
                 onClick={() => setTypeState(tab.name)}
               >
                 <span>{tab.name}</span>
                 <span
                   aria-hidden="true"
                   className={combineClasses(
-                    tab.current ? "bg-blue-950" : "bg-transparent",
+                    tab.name === typeState ? "bg-blue-950" : "bg-transparent",
                     "absolute inset-x-0 bottom-0 h-1"
                   )}
                 />
