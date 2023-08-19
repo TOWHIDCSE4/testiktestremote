@@ -2,14 +2,17 @@ import { Fragment, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { CheckIcon } from "@heroicons/react/24/outline"
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid"
+import useRemoveTimer from "../../../../../hooks/timers/useRemoveTimer"
 
 interface DeleteModalProps {
   isOpen: boolean
   onClose: () => void
+  id?: string
 }
 
-const DeleteModal = ({ isOpen, onClose }: DeleteModalProps) => {
+const DeleteModal = ({ isOpen, onClose, id }: DeleteModalProps) => {
   const [isDeleted, setIsDeleted] = useState(false)
+  const { mutate: removeTimer } = useRemoveTimer()
 
   const renderDeleted = () => {
     return (
@@ -73,7 +76,11 @@ const DeleteModal = ({ isOpen, onClose }: DeleteModalProps) => {
           <button
             type="button"
             className="inline-flex w-full justify-center rounded-md bg-blue-950 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={() => setIsDeleted(true)}
+            onClick={() => {
+              setIsDeleted(true)
+              console.log(id)
+              removeTimer(id as string)
+            }}
           >
             Yes
           </button>

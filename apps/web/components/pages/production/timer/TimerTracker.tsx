@@ -49,6 +49,9 @@ const TimerTracker = () => {
 
   return (
     <>
+      <h6 className="font-bold text-lg text-gray-800 uppercase mt-7">
+        Timer Tracker - Radial Press And Variants
+      </h6>
       <div
         className={`drop-shadow-lg border border-gray-200 bg-white rounded-md ${
           pathName === "/production/timer/tracker" ? "mt-0 h-screen" : "mt-7"

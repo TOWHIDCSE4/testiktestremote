@@ -2,6 +2,10 @@
 import { Fragment, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { Roboto } from "next/font/google"
+import { T_BackendResponse, T_Part } from "custom-validator"
+import { useQueryClient } from "@tanstack/react-query"
+import { useForm } from "react-hook-form"
+import usePart from "../../../../../hooks/parts/useGetPart"
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700"],
@@ -12,21 +16,18 @@ const roboto = Roboto({
 interface DetailsModalProps {
   isOpen: boolean
   onClose: () => void
+  id?: string
 }
 
-const DetailsModal = ({ isOpen, onClose }: DetailsModalProps) => {
+const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
+  const queryClient = useQueryClient()
   const closeButtonRef = useRef(null)
   const [openEditModal, setOpenEditModal] = useState(false)
-
-  const machineSets = [
-    ["Radial Press", "Variant", "Wire Cage (BMK)"],
-    ["Blizzard", "Tornado", "Perfect System"],
-    ["Steel"],
-    ["Fittings", "Misc"],
-  ]
-
-  const [selectedFactory, setSelectedFactory] = useState("Factory")
-  const [machineSet, setMachineSet] = useState(machineSets[0])
+  const { data: partDetailData, isLoading: isPartDetailDataLoading } =
+    usePart(id)
+  const { register, handleSubmit } = useForm<T_Part>({
+    values: partDetailData?.item,
+  })
 
   return (
     <>
@@ -76,7 +77,7 @@ const DetailsModal = ({ isOpen, onClose }: DetailsModalProps) => {
                           </span>
                         </h3>
                       </div>
-                      <div className="px-4 md:px-6 mt-4">
+                      <div className="px-4 md:px-6 mt-8">
                         <div className="lg:flex justify-between">
                           <div className="lg:w-[350px]">
                             <div className="grid md:grid-cols-4 items-center gap-y-2">
@@ -88,11 +89,12 @@ const DetailsModal = ({ isOpen, onClose }: DetailsModalProps) => {
                               </label>
                               <input
                                 type="text"
-                                name="product-name"
                                 id="product-name"
-                                className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                                className={`block bg-slate-100 mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
                                 placeholder="Enter product name"
-                                defaultValue={"48x8 CL3 T&G RCP"}
+                                disabled
+                                defaultValue={partDetailData?.item?.name}
+                                {...register("name", { required: true })}
                               />
                               <label
                                 htmlFor="weight"
@@ -102,11 +104,12 @@ const DetailsModal = ({ isOpen, onClose }: DetailsModalProps) => {
                               </label>
                               <input
                                 type="number"
-                                name="weight"
                                 id="weight"
-                                className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                                className={`block bg-slate-100 mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
                                 placeholder="Enter weight"
-                                defaultValue={"7079"}
+                                disabled
+                                defaultValue={partDetailData?.item?.pounds}
+                                {...register("pounds", { required: true })}
                               />
                               <label
                                 htmlFor="production-time"
@@ -116,11 +119,12 @@ const DetailsModal = ({ isOpen, onClose }: DetailsModalProps) => {
                               </label>
                               <input
                                 type="text"
-                                name="production-time"
                                 id="production-time"
-                                className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
+                                className={`block bg-slate-100 mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
                                 placeholder="Enter production time"
-                                defaultValue={"198 s"}
+                                disabled
+                                defaultValue={partDetailData?.item?.time}
+                                {...register("time", { required: true })}
                               />
                               <label
                                 htmlFor="operator-name"
@@ -128,54 +132,21 @@ const DetailsModal = ({ isOpen, onClose }: DetailsModalProps) => {
                               >
                                 Operator Name:
                               </label>
-                              <input
-                                type="text"
-                                name="operator-name"
+                              <select
                                 id="operator-name"
+                                name="operator-name"
                                 className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
-                              />
-                              <label
-                                htmlFor="finish-good-weight"
-                                className="uppercase font-semibold text-sm text-gray-800 col-span-2"
+                                disabled={isPartDetailDataLoading}
                               >
-                                Finish Good Weight:
-                              </label>
-                              <input
-                                type="number"
-                                name="finish-good-weight"
-                                id="finish-good-weight"
-                                className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
-                              />
-                              <label
-                                htmlFor="cage-weight-scrap"
-                                className="uppercase font-semibold text-sm text-gray-800 col-span-2"
-                              >
-                                Cage Weight Scrap:
-                              </label>
-                              <input
-                                type="number"
-                                name="cage-weight-scrap"
-                                id="cage-weight-scrap"
-                                className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
-                              />
-                              <label
-                                htmlFor="cage-weight-actuals"
-                                className="uppercase font-semibold text-sm text-gray-800 col-span-2"
-                              >
-                                Cage Weight Actuals:
-                              </label>
-                              <input
-                                type="number"
-                                name="cage-weight-actuals"
-                                id="cage-weight-actuals"
-                                className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${roboto.className}`}
-                              />
+                                <option>John Doe</option>
+                                <option>Jane Doe</option>
+                              </select>
                             </div>
                           </div>
                           <div className="lg:w-[400px] mt-5 lg:mt-0">
                             <div className="w-full">
                               <div className="text-gray-400 text-sm border-2 border-gray-300 text-center rounded rounded-md h-52 p-5"></div>
-                              <div className="border-2 border-gray-300 p-2 mt-2 h-28">
+                              <div className="border-2 border-gray-300 rounded-md p-2 mt-2 h-28">
                                 <div className="grid grid-cols-5">
                                   <div className="col-span-3 text-xs text-gray-600">
                                     File Name
@@ -188,7 +159,10 @@ const DetailsModal = ({ isOpen, onClose }: DetailsModalProps) => {
                                   </div>
                                 </div>
                               </div>
-                              <button className="uppercase float-right mt-2 bg-blue-800 hover:bg-blue-700 text-white text-sm py-1 px-4 rounded-md">
+                              <button
+                                disabled={isPartDetailDataLoading}
+                                className="uppercase dsiabled:opacity-70 float-right mt-2 bg-blue-800 hover:bg-blue-700 text-white text-sm py-1 px-4 rounded-md"
+                              >
                                 Upload
                               </button>
                             </div>
@@ -197,17 +171,26 @@ const DetailsModal = ({ isOpen, onClose }: DetailsModalProps) => {
                       </div>
                       <div className="w-full bg-gray-100 mt-16 lg:mt-7 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                         <button
-                          type="button"
-                          className="uppercase inline-flex w-full justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 sm:w-auto"
+                          type="submit"
+                          className="uppercase inline-flex w-full items-center justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3  disabled:opacity-70 sm:w-auto"
                         >
+                          {/* {isUpdatePartLoading ? (
+                            <div
+                              className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full"
+                              role="status"
+                              aria-label="loading"
+                            >
+                              <span className="sr-only">Loading...</span>
+                            </div>
+                          ) : (
+                            "Save"
+                          )} */}
                           Save
                         </button>
                         <button
                           type="button"
-                          className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                          className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
                           onClick={onClose}
-                          ref={closeButtonRef}
-                          tabIndex={-1}
                         >
                           Close
                         </button>

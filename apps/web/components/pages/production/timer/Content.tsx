@@ -2,8 +2,7 @@
 import { Fragment, useState, useEffect } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { ChevronDownIcon } from "@heroicons/react/20/solid"
-import TimerCard from "./TimerCard"
-import TimerTracker from "./TimerTracker"
+import Timers from "./Timers"
 import NewModal from "./modals/NewModal"
 import SetProductionModal from "./modals/SetProductionModal"
 import useLocations from "../../../../hooks/locations/useLocations"
@@ -39,7 +38,6 @@ const Content = () => {
       setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
-
   const currentLocationTabName = locationTabs.find(
     (tab) => tab._id === currentLocationTab
   )?.name
@@ -126,52 +124,7 @@ const Content = () => {
           currentLocationTabName={currentLocationTabName as string}
         />
         <div className="w-full h-[2.2px] bg-gray-200"></div>
-        <div className="md:flex justify-between mt-7">
-          <h6 className="font-bold text-lg text-gray-800 uppercase">
-            Radial Press And Variants - Timers
-          </h6>
-          <h6 className="font-bold text-lg text-gray-500">3 Timers</h6>
-        </div>
-        <TimerCard />
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-7">
-          Timer Tracker - Radial Press And Variants
-        </h6>
-        <TimerTracker />
-        <div className="w-full h-[2.2px] bg-gray-200 mt-10"></div>
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
-          Wire Cage (MBK) - Timers
-        </h6>
-        <p className="text-gray-500 mt-4">
-          No timer with Wire Cage (MBK). Please add the timer.
-        </p>
-        <div className="w-full h-[2.2px] bg-gray-200 mt-7"></div>
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
-          Precast - Timers
-        </h6>
-        <p className="text-gray-500 mt-4">
-          No timer with Precast. Please add the timer.
-        </p>
-        <div className="w-full h-[2.2px] bg-gray-200 mt-7"></div>
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
-          Steel - Timers
-        </h6>
-        <p className="text-gray-500 mt-4">
-          No timer with Steel. Please add the timer.
-        </p>
-        <div className="w-full h-[2.2px] bg-gray-200 mt-7"></div>
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
-          Fittings - Timers
-        </h6>
-        <p className="text-gray-500 mt-4">
-          No timer with Fittings. Please add the timer.
-        </p>
-        <div className="w-full h-[2.2px] bg-gray-200 mt-7"></div>
-        <h6 className="font-bold text-lg text-gray-800 uppercase mt-4">
-          Misc - Timers
-        </h6>
-        <p className="text-gray-500 mt-4">
-          No timer with MISC. Please add the timer.
-        </p>
+        <Timers locationId={currentLocationTab} />
       </div>
       <NewModal
         isOpen={openNewModal}

@@ -10,6 +10,10 @@ const timers = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Machine",
   },
+  machineClassId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "MachineClass",
+  },
   partId: {
     type: mongoose.Schema.ObjectId,
     ref: "Part",
