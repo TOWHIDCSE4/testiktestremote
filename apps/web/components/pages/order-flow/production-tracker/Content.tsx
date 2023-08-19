@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import useLocations from "../../../../hooks/locations/useLocations"
 import combineClasses from "../../../../helpers/combineClasses"
 import NewModal from "./modals/NewModal"
+import Table from "./Table"
 
 type T_LocationTabs = {
   _id?: string
@@ -92,6 +93,7 @@ const Content = () => {
               </>
             )}
           </div>
+          <Table />
         </div>
       </div>
       <NewModal
