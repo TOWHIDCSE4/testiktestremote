@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import {
   T_BackendResponse,
@@ -16,15 +16,23 @@ import usePart from "../../../../../hooks/parts/useGetPart"
 import useAddTimer from "../../../../../hooks/timers/useAddTimer"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import useLocations from "../../../../../hooks/locations/useLocations"
+import useGetJob from "../../../../../hooks/jobs/useGetJob"
+import useGetUser from "../../../../../hooks/users/useGetUser"
+import useUsers from "../../../../../hooks/users/useUsers"
+import useGetPartsByFactoryLocation from "../../../../../hooks/parts/useGetPartsByFactoryLocation"
+import useUpdatePart from "../../../../../hooks/parts/useUpdatePart"
+import useUpdateJob from "../../../../../hooks/jobs/useUpdateJob"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface EditModalProps {
   isOpen: boolean
-
+  jobId: string
   currentTab: string
   onClose: () => void
 }
 
-const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
+const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
+  const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
@@ -49,14 +57,34 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
   const { data: specificPart, isLoading: isSpecificPartLoading } =
     usePart(activePart)
 
-  const { register, handleSubmit, reset, watch } = useForm<T_Job>()
-  const { mutate, isLoading: isMutateLoading } = useAddTimer()
+  const { data: jobData, isLoading: jobIsLoading } = useGetJob(jobId)
+  const { mutate, isLoading: isMutateLoading } = useUpdateJob()
+  const { data: usersData, isLoading: usersIsLoading } = useUsers()
+
+  const {
+    data: partsData,
+    isLoading: partsIsLoading,
+    setFactoryId,
+    setLocationId,
+  } = useGetPartsByFactoryLocation()
+  useEffect(() => {
+    if (jobData && !jobIsLoading) {
+      setLocationId(jobData.item.locationId)
+      setFactoryId(jobData.item.factoryId)
+    }
+  }, [jobData])
+  const { register, handleSubmit, reset, watch } = useForm<T_Job>({
+    values: jobData?.item,
+  })
 
   const onSubmit = (data: T_Job) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
           toast.success(String(data.message))
+          queryClient.invalidateQueries({
+            queryKey: ["jobs"],
+          })
           closeModal()
           reset()
         } else {
@@ -67,7 +95,7 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
         toast.error(String(err))
       },
     }
-    // mutate({ ...data, locationId: locationId ? locationId : "" }, callBackReq)
+    mutate(data, callBackReq)
   }
 
   const closeModal = () => {
@@ -75,6 +103,7 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
     setSelectedFactory("")
     setSelectedMachineClass("")
   }
+
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
@@ -126,12 +155,12 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                         {...register("name", { required: true })}
                         className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         required
-                        defaultValue="LANGDON UNITS 6-10"
+                        disabled={jobIsLoading}
                       />
                     </div>
                     <div className="md:flex items-center mt-3">
                       <label
-                        htmlFor="machine-class"
+                        htmlFor="location"
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
                         Location
@@ -142,17 +171,12 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                         required
                         {...register("locationId", { required: true })}
-                        defaultValue="Seguin"
                       >
-                        <option className="uppercase" value="">
+                        <option className="" value="">
                           Select Location
                         </option>
                         {locations?.items.map((key, index) => (
-                          <option
-                            className="uppercase"
-                            key={index}
-                            value={key._id}
-                          >
+                          <option className="" key={index} value={key._id}>
                             {key.name}
                           </option>
                         ))}
@@ -166,22 +190,20 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                         User
                       </label>
                       <select
-                        id="user"
-                        {...register("userId")}
+                        id="userId"
+                        disabled={isLocationsLoading}
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                        defaultValue="Select User"
                         required
+                        {...register("userId", { required: true })}
                       >
-                        <option disabled>Select User</option>
-                        {machines?.items.map(
-                          (item: T_Machine, index: number) => {
-                            return (
-                              <option key={index} value={item._id as string}>
-                                {item.name}
-                              </option>
-                            )
-                          }
-                        )}
+                        <option className="" value="">
+                          Select User
+                        </option>
+                        {usersData?.items.map((key, index) => (
+                          <option className="" key={index} value={key._id}>
+                            {key.firstName + " " + key.lastName}
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div className="md:flex items-center mt-3">
@@ -219,25 +241,16 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                       </label>
                       <select
                         id="machine-part"
-                        required
-                        {...register("partId")}
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                        defaultValue="Select Part"
-                        disabled={
-                          selectedMachineClass === "" ||
-                          isMutateLoading ||
-                          isPartsLoading
-                        }
-                        onChange={(e) => setActivePart(e.currentTarget.value)}
+                        required
+                        {...register("partId", { required: true })}
                       >
-                        <option disabled>Select Part</option>
-                        {parts?.items.map((part: T_Part, index: number) => {
-                          return (
-                            <option key={index} value={part._id as string}>
-                              {part.name}
-                            </option>
-                          )
-                        })}
+                        <option value="">Select Part</option>
+                        {partsData?.items.map((key, index) => (
+                          <option key={index} value={key._id as string}>
+                            {key.name}
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div className="md:flex items-center mt-3">
@@ -251,9 +264,9 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                         type="text"
                         {...register("drawingNumber")}
                         id="drawingNumber"
+                        disabled={jobIsLoading}
                         required
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                        defaultValue="4'X2'X8' - W/ Ø24 OPENING TOP / 3'X2' REDUCER 0-2 4X2-3"
                       />
                     </div>
                     <div className="md:flex items-center mt-3">
@@ -269,6 +282,7 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                         defaultValue="No"
                         required
+                        disabled={jobIsLoading}
                       >
                         <option value="false">No</option>
                         <option value="true">Yes</option>
@@ -290,7 +304,7 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                             id="drawingNumber"
                             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             required
-                            defaultValue={0}
+                            disabled={jobIsLoading}
                           />
                         </div>
                         <div className="md:flex items-center mt-3">
@@ -306,6 +320,7 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                             id="dueDate"
                             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             required
+                            disabled={jobIsLoading}
                           />
                         </div>
                         <div className="md:flex items-center mt-3">
@@ -321,6 +336,7 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                             className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             defaultValue="High"
                             required
+                            disabled={jobIsLoading}
                           >
                             <option>High</option>
                             <option>Medium</option>
@@ -332,6 +348,7 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
+                      disabled={jobIsLoading}
                       type="submit"
                       className="sm:ml-3 uppercase flex items-center justify-center rounded-md bg-green-700 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
                     >

@@ -411,100 +411,10 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                 </tbody>
               </table> */}
               <TabTable tab={currentTab} locationId={locationId} />
-              <div className="">
-                <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
-                  <div className="h-10 z-[-1] sm:hidden">
-                    <a
-                      href="#"
-                      className="absolute left-4 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
-                      Previous
-                    </a>
-                    <a
-                      href="#"
-                      className="absolute right-4 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
-                      Next
-                    </a>
-                  </div>
-                  <div className="hidden h-12 sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                    <div className="absolute">
-                      <p className="text-sm text-gray-700">
-                        Showing <span className="font-medium">1</span> to{" "}
-                        <span className="font-medium">10</span> of{" "}
-                        <span className="font-medium">97</span> results
-                      </p>
-                    </div>
-                    <div className="absolute z-[-1] right-7">
-                      <nav
-                        className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                        aria-label="Pagination"
-                      >
-                        <a
-                          href="#"
-                          className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
-                        >
-                          <span className="sr-only">Previous</span>
-                          <ChevronLeftIcon
-                            className="h-5 w-5"
-                            aria-hidden="true"
-                          />
-                        </a>
-                        {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-                        <a
-                          href="#"
-                          aria-current="page"
-                          className="relative inline-flex items-center bg-blue-950 px-4 py-2 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        >
-                          1
-                        </a>
-                        <a
-                          href="#"
-                          className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
-                        >
-                          2
-                        </a>
-                        <a
-                          href="#"
-                          className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0 md:inline-flex"
-                        >
-                          3
-                        </a>
-                        <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">
-                          ...
-                        </span>
-                        <a
-                          href="#"
-                          className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0 md:inline-flex"
-                        >
-                          8
-                        </a>
-
-                        <a
-                          href="#"
-                          className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
-                        >
-                          <span className="sr-only">Next</span>
-                          <ChevronRightIcon
-                            className="h-5 w-5"
-                            aria-hidden="true"
-                          />
-                        </a>
-                      </nav>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </div>
-      <DeleteModal isOpen={deleteModal} onClose={() => setDeleteModal(false)} />
-      <EditModal
-        isOpen={editModal}
-        currentTab={currentTab}
-        onClose={() => setEditModal(false)}
-      />
     </>
   )
 }

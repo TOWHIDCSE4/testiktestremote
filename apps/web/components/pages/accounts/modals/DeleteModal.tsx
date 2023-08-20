@@ -2,44 +2,18 @@ import { Fragment, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { CheckIcon } from "@heroicons/react/24/outline"
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid"
-import toast from "react-hot-toast"
-import { useQueryClient } from "@tanstack/react-query"
-import { T_BackendResponse } from "custom-validator"
-import useDeleteJob from "../../../../../hooks/jobs/useDeleteJob"
+
 interface DeleteModalProps {
   isOpen: boolean
-  jobId: string
   onClose: () => void
 }
 
-const DeleteModal = ({ isOpen, onClose, jobId }: DeleteModalProps) => {
-  const queryClient = useQueryClient()
+const DeleteModal = ({ isOpen, onClose }: DeleteModalProps) => {
   const [isDeleted, setIsDeleted] = useState(false)
 
   const close = () => {
     onClose()
     setIsDeleted(false)
-  }
-
-  const { mutate, isLoading: isDeleteJobLoading } = useDeleteJob()
-
-  const callBackReq = {
-    onSuccess: (returnData: T_BackendResponse) => {
-      if (!returnData.error) {
-        if (returnData.item) {
-          queryClient.invalidateQueries({
-            queryKey: ["job"],
-          })
-          onClose()
-          toast.success("Part was deleted")
-        }
-      } else {
-        toast.error(returnData.message as string)
-      }
-    },
-    onError: (err: any) => {
-      toast.error(String(err))
-    },
   }
 
   const renderDeleted = () => {
@@ -104,10 +78,7 @@ const DeleteModal = ({ isOpen, onClose, jobId }: DeleteModalProps) => {
           <button
             type="button"
             className="inline-flex w-full justify-center rounded-md bg-blue-950 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={() => {
-              setIsDeleted(true)
-              mutate({ _id: jobId })
-            }}
+            onClick={() => setIsDeleted(true)}
           >
             Yes
           </button>
