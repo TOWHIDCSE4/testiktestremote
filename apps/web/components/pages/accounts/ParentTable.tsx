@@ -92,11 +92,10 @@ const ParentTable = () => {
               </div>
             </div>
             {/* Table */}
-            <div className="w-full overflow-x-auto">
-              <TabTable tab={currentTab} />
+            <div className="w-full flex flex-col-reverse overflow-x-auto">
               <div className="">
                 <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
-                  <div className="h-10 z-[-1] sm:hidden">
+                  <div className="h-10 sm:hidden">
                     <a
                       href="#"
                       className="absolute left-4 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -118,7 +117,7 @@ const ParentTable = () => {
                         <span className="font-medium">97</span> results
                       </p>
                     </div>
-                    <div className="absolute z-[-1] right-7">
+                    <div className="absolute z-0 right-7">
                       <nav
                         className="isolate inline-flex -space-x-px rounded-md shadow-sm"
                         aria-label="Pagination"
@@ -137,19 +136,19 @@ const ParentTable = () => {
                         <a
                           href="#"
                           aria-current="page"
-                          className="relative inline-flex items-center bg-blue-950 px-4 py-2 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                          className="relative inline-flex items-center bg-blue-950 px-4 py-2 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 z-0"
                         >
                           1
                         </a>
                         <a
                           href="#"
-                          className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
+                          className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0 z-0"
                         >
                           2
                         </a>
                         <a
                           href="#"
-                          className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0 md:inline-flex"
+                          className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0 md:inline-flex z-0"
                         >
                           3
                         </a>
@@ -158,14 +157,14 @@ const ParentTable = () => {
                         </span>
                         <a
                           href="#"
-                          className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0 md:inline-flex"
+                          className="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0 md:inline-flex z-0"
                         >
                           8
                         </a>
 
                         <a
                           href="#"
-                          className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
+                          className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0 z-0"
                         >
                           <span className="sr-only">Next</span>
                           <ChevronRightIcon
@@ -178,16 +177,11 @@ const ParentTable = () => {
                   </div>
                 </div>
               </div>
+              <TabTable tab={currentTab} />
             </div>
           </div>
         </div>
       </div>
-      {/* <DeleteModal isOpen={deleteModal} onClose={() => setDeleteModal(false)} />
-        <EditModal
-          isOpen={editModal}
-          currentTab={currentTab}
-          onClose={() => setEditModal(false)}
-        /> */}
     </>
   )
 }

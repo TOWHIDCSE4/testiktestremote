@@ -63,7 +63,7 @@ const TabTable = ({ tab }: { tab: T_UserRole }) => {
             </td>
             <td className="py-4 text-sm text-gray-800 pl-4">Oliver</td>
             <td className="py-4 pl-6 text-sm text-green-500">Approved</td>
-            <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
+            <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8 z-10">
               <Menu as="div">
                 <Menu.Button>
                   <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
@@ -78,7 +78,7 @@ const TabTable = ({ tab }: { tab: T_UserRole }) => {
                   leaveTo="transform opacity-0 scale-95"
                 >
                   <Menu.Items>
-                    <div className="rounded-md border border-gray-300 absolute py-3 px-6 right-0 -translate-x-[10px] z-10 bg-white">
+                    <div className="rounded-md border border-gray-300 absolute py-3 px-6 right-0 -translate-x-[10px] bg-white">
                       <Menu.Item>
                         {({ active }) => (
                           <div
@@ -112,7 +112,7 @@ const TabTable = ({ tab }: { tab: T_UserRole }) => {
             </td>
             <td className="py-4 text-sm text-gray-800 pl-4">Howard</td>
             <td className="py-4 pl-6 text-sm text-yellow-600">Pending</td>
-            <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
+            <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8 z-10">
               <Menu as="div">
                 <Menu.Button>
                   <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
@@ -127,7 +127,7 @@ const TabTable = ({ tab }: { tab: T_UserRole }) => {
                   leaveTo="transform opacity-0 scale-95"
                 >
                   <Menu.Items>
-                    <div className="rounded-md border border-gray-300 absolute py-3 px-6 right-0 -translate-x-[10px] z-10 bg-white">
+                    <div className="rounded-md border border-gray-300 absolute py-3 px-6 right-0 -translate-x-[10px] bg-white">
                       <Menu.Item>
                         {({ active }) => (
                           <div
