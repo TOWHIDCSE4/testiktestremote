@@ -38,7 +38,7 @@ function TimerCards({
 
   const openController = () => {
     window.open(
-      "http://localhost:3000/production/timer/controller",
+      `/production/timer/controller`,
       "Timer Controller",
       "location,status,scrollbars,resizable,width=1024, height=800"
     )
