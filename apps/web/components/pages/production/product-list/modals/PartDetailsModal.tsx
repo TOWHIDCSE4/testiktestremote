@@ -169,7 +169,7 @@ const PartDetailsModal = ({
                     }}
                   >
                     <option disabled>Factory</option>
-                    {factories?.items.map((item: I_FACTORY, index: number) => {
+                    {factories?.items?.map((item: I_FACTORY, index: number) => {
                       return (
                         <option
                           key={index}

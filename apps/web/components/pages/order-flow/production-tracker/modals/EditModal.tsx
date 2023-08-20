@@ -199,7 +199,7 @@ const EditModal = ({ isOpen, currentTab, onClose }: EditModalProps) => {
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                       >
                         <option value="">Select Factory</option>
-                        {factories?.items.map(
+                        {factories?.items?.map(
                           (item: T_Factory, index: number) => {
                             return (
                               <option key={index} value={item._id as string}>

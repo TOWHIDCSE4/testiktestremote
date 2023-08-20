@@ -187,7 +187,7 @@ const NewMachineModal = ({
                         }}
                       >
                         <option value="">Select Factory</option>
-                        {factories?.items.map(
+                        {factories?.items?.map(
                           (item: T_Factory, index: number) => {
                             return (
                               <option key={index} value={item._id as string}>

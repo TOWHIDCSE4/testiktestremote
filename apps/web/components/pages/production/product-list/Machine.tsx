@@ -172,7 +172,7 @@ const Machine = ({
               onChange={(e) => setFactoryIdFilter(e.target.value)}
             >
               <option value={""}>All</option>
-              {factories?.items.map((item: T_Factory, index: number) => {
+              {factories?.items?.map((item: T_Factory, index: number) => {
                 return (
                   <option key={index} value={item._id as string}>
                     {item.name}
