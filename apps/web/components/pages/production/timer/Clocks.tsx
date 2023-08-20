@@ -1,5 +1,5 @@
 "use client"
-import { Fragment, useEffect, useState } from "react"
+import { Dispatch, Fragment, useEffect, useState } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { ChevronDownIcon } from "@heroicons/react/20/solid"
 import SetProductionModal from "./modals/SetProductionModal"
@@ -7,17 +7,27 @@ import useGetLocation from "../../../../hooks/locations/useGetLocation"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
+import { T_MachineClass } from "custom-validator"
+import FilterCheckbox from "./FilterCheckbox"
 
 const Clocks = ({
   locationId,
   currentLocationTabName,
+  machineClasses,
+  setSelectedMachineClasses,
+  selectedMachineClasses,
 }: {
   locationId: string
   currentLocationTabName: string
+  machineClasses: T_MachineClass[]
+  setSelectedMachineClasses: Dispatch<
+    (T_MachineClass & { isSelected: boolean })[]
+  >
+  selectedMachineClasses: (T_MachineClass & { isSelected: boolean })[]
 }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
-
+  const [isAllFilterSelected, setIsAllFilterSelected] = useState(true)
   const [openFilter, setOpenFilter] = useState(false)
   const [openSetProduction, setOpenProduction] = useState(false)
 
@@ -31,6 +41,17 @@ const Clocks = ({
   const localeTime = dayjs
     .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "")
     .format("hh:mm:ss")
+
+  const handleOnChange = () => {
+    const updatedMachineClasses = selectedMachineClasses.map(
+      (machineClass: T_MachineClass) => ({
+        ...machineClass,
+        isSelected: !isAllFilterSelected,
+      })
+    )
+    setSelectedMachineClasses(updatedMachineClasses)
+    setIsAllFilterSelected(!isAllFilterSelected)
+  }
 
   return (
     <>
@@ -78,6 +99,7 @@ const Clocks = ({
                           type="checkbox"
                           className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
                           defaultChecked
+                          onChange={handleOnChange}
                         />
                       </div>
                       <div className="ml-3 text-sm leading-6">
@@ -88,109 +110,20 @@ const Clocks = ({
                     </div>
                   )}
                 </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <div className="relative px-4 py-0.5 flex items-start">
-                      <div className="flex h-6 items-center">
-                        <input
-                          id="pipe-box"
-                          aria-describedby="pipe-box-description"
-                          name="pipe-box"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                {machineClasses?.map((machineClass, index) => {
+                  return (
+                    <Menu.Item key={index}>
+                      {({ active }) => (
+                        <FilterCheckbox
+                          machineClass={machineClass}
+                          isAllSelected={isAllFilterSelected}
+                          setSelectedMachineClasses={setSelectedMachineClasses}
+                          selectedMachineClasses={selectedMachineClasses}
                         />
-                      </div>
-                      <div className="ml-3 text-sm leading-6">
-                        <label htmlFor="pipe-box" className="text-gray-700">
-                          Pipe And Box
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <div className="relative px-4 py-0.5 flex items-start">
-                      <div className="flex h-6 items-center">
-                        <input
-                          id="precast"
-                          aria-describedby="precast-description"
-                          name="precast"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                        />
-                      </div>
-                      <div className="ml-3 text-sm leading-6">
-                        <label htmlFor="precast" className="text-gray-700">
-                          Precast
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <div className="relative px-4 py-0.5 flex items-start">
-                      <div className="flex h-6 items-center">
-                        <input
-                          id="steel-box"
-                          aria-describedby="steel-box-description"
-                          name="steel-box"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                        />
-                      </div>
-                      <div className="ml-3 text-sm leading-6">
-                        <label htmlFor="steel-box" className="text-gray-700">
-                          Steel
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <div className="relative px-4 py-0.5 flex items-start">
-                      <div className="flex h-6 items-center">
-                        <input
-                          id="exterior-box"
-                          aria-describedby="exterior-box-description"
-                          name="exterior-box"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                        />
-                      </div>
-                      <div className="ml-3 text-sm leading-6">
-                        <label htmlFor="exterior-box" className="text-gray-700">
-                          Exterior
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <div className="relative px-4 py-0.5 flex items-start">
-                      <div className="flex h-6 items-center">
-                        <input
-                          id="not-assigned-box"
-                          aria-describedby="not-assigned-box-description"
-                          name="not-assigned-box"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                        />
-                      </div>
-                      <div className="ml-3 text-sm leading-6">
-                        <label
-                          htmlFor="not-assigned-box"
-                          className="text-gray-700"
-                        >
-                          Not Assigned
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
+                      )}
+                    </Menu.Item>
+                  )
+                })}
               </div>
             </Menu.Items>
           </Transition>

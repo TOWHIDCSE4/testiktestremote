@@ -71,7 +71,6 @@ const NewModal = ({
           closeModal()
           reset()
         } else {
-          console.log("dsds", data.message)
           toast.error(String(data.message))
         }
       },

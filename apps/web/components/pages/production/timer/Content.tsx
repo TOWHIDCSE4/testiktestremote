@@ -8,6 +8,8 @@ import SetProductionModal from "./modals/SetProductionModal"
 import useLocations from "../../../../hooks/locations/useLocations"
 import combineClasses from "../../../../helpers/combineClasses"
 import Clocks from "./Clocks"
+import useMachineClasses from "../../../../hooks/machineClasses/useMachineClasses"
+import { T_MachineClass } from "custom-validator"
 
 type T_LocationTabs = {
   _id?: string
@@ -20,6 +22,11 @@ const Content = () => {
   const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
   const [openNewModal, setOpenNewModal] = useState(false)
   const [currentLocationTab, setCurrentLocationTab] = useState<string>("")
+  const [selectedMachineClasses, setSelectedMachineClasses] = useState<
+    (T_MachineClass & { isSelected: boolean })[]
+  >([])
+  const { data: machineClasses, isLoading: isMachineClassesLoading } =
+    useMachineClasses()
 
   useEffect(() => {
     if (locationTabs.length === 0) {
@@ -38,6 +45,23 @@ const Content = () => {
       setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
+
+  useEffect(() => {
+    if (
+      !isMachineClassesLoading &&
+      machineClasses?.items &&
+      machineClasses?.items.length > 0
+    ) {
+      const updatedMachineClasses = machineClasses?.items?.map(
+        (machineClass: T_MachineClass) => ({
+          ...machineClass,
+          isSelected: true,
+        })
+      )
+      setSelectedMachineClasses(updatedMachineClasses)
+    }
+  }, [machineClasses])
+
   const currentLocationTabName = locationTabs.find(
     (tab) => tab._id === currentLocationTab
   )?.name
@@ -122,9 +146,15 @@ const Content = () => {
         <Clocks
           locationId={currentLocationTab}
           currentLocationTabName={currentLocationTabName as string}
+          machineClasses={machineClasses?.items}
+          setSelectedMachineClasses={setSelectedMachineClasses}
+          selectedMachineClasses={selectedMachineClasses}
         />
         <div className="w-full h-[2.2px] bg-gray-200"></div>
-        <Timers locationId={currentLocationTab} />
+        <Timers
+          locationId={currentLocationTab}
+          machineClasses={selectedMachineClasses}
+        />
       </div>
       <NewModal
         isOpen={openNewModal}
