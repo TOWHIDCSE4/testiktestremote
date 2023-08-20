@@ -87,13 +87,13 @@ export const addJob = async (req: Request, res: Response) => {
 }
 
 export const updateJob = async (req: Request, res: Response) => {
-  if (!req.params.id) {
+  if (req.params.id) {
     try {
       const getJob = await Jobs.find({
         _id: req.params.id,
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       })
-      if (getJob.length === 0) {
+      if (getJob.length > 0) {
         const updateJob = await Jobs.findByIdAndUpdate(
           req.params.id,
           {
@@ -144,7 +144,7 @@ export const deleteJob = async (req: Request, res: Response) => {
     if (getJob.length > 0) {
       const deleteJob = await Jobs.findByIdAndUpdate(req.params.id, {
         $set: {
-          deletedAt: Date.now(),
+          status: "Deleted",
         },
       })
       res.json({

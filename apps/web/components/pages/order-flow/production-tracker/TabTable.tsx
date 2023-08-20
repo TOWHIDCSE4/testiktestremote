@@ -1,9 +1,15 @@
-import React, { Fragment, useEffect } from "react"
+import React, { Fragment, useEffect, useState } from "react"
 import { Menu, Transition } from "@headlessui/react"
-import { EllipsisVerticalIcon } from "@heroicons/react/24/solid"
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  EllipsisVerticalIcon,
+} from "@heroicons/react/24/solid"
 import { T_Job, T_JobStatus } from "custom-validator"
 import usePaginatedJobs from "../../../../hooks/jobs/usePaginatedJobs"
 import dayjs from "dayjs"
+import EditModal from "./modals/EditModal"
+import DeleteModal from "./modals/DeleteModal"
 
 const TabTable = ({
   tab,
@@ -18,7 +24,14 @@ const TabTable = ({
     setLocationId,
     setStatus,
     setPage,
+    page,
   } = usePaginatedJobs()
+
+  const [editModal, setEditModal] = useState(false)
+  const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
+  const [jobId, setJobId] = useState("")
+  const [deleteModal, setDeleteModal] = useState(false)
+
   useEffect(() => {
     if (tab) {
       setStatus(tab)
@@ -28,7 +41,7 @@ const TabTable = ({
     }
   }, [tab, locationId])
 
-  console.log("jobs", jobs)
+  const numberOfPages = Math.ceil((jobs?.itemCount as number) / 10)
 
   return (
     <>
@@ -188,12 +201,15 @@ const TabTable = ({
                         leaveTo="transform opacity-0 scale-95"
                       >
                         <Menu.Items>
-                          <div className="rounded-md border border-gray-300 absolute py-3 px-6 -translate-x-[78px] z-10 bg-white">
+                          <div className="rounded-md border border-gray-300 absolute py-1 -translate-x-[78px] z-10 bg-white">
                             <Menu.Item>
                               {({ active }) => (
                                 <div
-                                  className="text-left text-gray-800 cursor-pointer"
-                                  // onClick={() => setEditModal(true)}
+                                  className="text-left text-gray-800 cursor-pointer hover:bg-gray-100 px-6 py-1"
+                                  onClick={() => {
+                                    setEditModal(true)
+                                    setJobId(job._id as string)
+                                  }}
                                 >
                                   Edit
                                 </div>
@@ -202,8 +218,11 @@ const TabTable = ({
                             <Menu.Item>
                               {({ active }) => (
                                 <div
-                                  className="text-left text-gray-800 mt-2 cursor-pointer"
-                                  // onClick={() => setDeleteModal(true)}
+                                  className="text-left text-gray-800  cursor-pointer hover:bg-gray-100  px-6 py-1"
+                                  onClick={() => {
+                                    setDeleteModal(true)
+                                    setJobId(job._id as string)
+                                  }}
                                 >
                                   Delete
                                 </div>
@@ -227,6 +246,100 @@ const TabTable = ({
           </div>
         </div>
       )}
+      <div className="">
+        <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
+          <div className="h-10 z-[-1] sm:hidden">
+            <a
+              href="#"
+              className="absolute left-4 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Previous
+            </a>
+            <a
+              href="#"
+              className="absolute right-4 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Next
+            </a>
+          </div>
+          <div className="hidden h-12 sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <div className="absolute">
+              <p className="text-sm text-gray-700">
+                Showing{" "}
+                <span className="font-medium">
+                  {jobs?.items?.length as number}
+                </span>{" "}
+                of{" "}
+                <span className="font-medium">{jobs?.itemCount as number}</span>{" "}
+                results
+              </p>
+            </div>
+            <div className="absolute z-[-1] right-7">
+              <div>
+                {isJobsLoading ? (
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-8 w-36 mt-7 bg-slate-200 rounded"></div>
+                  </div>
+                ) : (
+                  <nav
+                    className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                    aria-label="Pagination"
+                  >
+                    <button
+                      onClick={() => setPage(page - 1)}
+                      disabled={page === 1 || numberOfPages === 0}
+                      className="relative disabled:opacity-70 inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    >
+                      <span className="sr-only">Previous</span>
+                      <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                    {numberOfPages
+                      ? [...Array(numberOfPages)].map((_, index) => (
+                          <button
+                            key={index + 1}
+                            onClick={() => setPage(index + 1)}
+                            className={
+                              page === index + 1
+                                ? "relative z-10 inline-flex items-center bg-blue-950 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                : "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                            }
+                          >
+                            {index + 1}
+                          </button>
+                        ))
+                      : null}
+                    <button
+                      onClick={() => setPage(page + 1)}
+                      className="relative disabled:opacity-70 inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                      disabled={page === numberOfPages || numberOfPages === 0}
+                    >
+                      <span className="sr-only">Next</span>
+                      <ChevronRightIcon
+                        className="h-5 w-5"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </nav>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <DeleteModal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        jobId={jobId}
+      />
+      <EditModal
+        isOpen={editModal}
+        jobId={jobId}
+        currentTab={currentTab}
+        onClose={() => {
+          setEditModal(false)
+        }}
+      />
     </>
   )
 }
