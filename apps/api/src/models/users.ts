@@ -32,6 +32,10 @@ const users = new Schema({
     ref: "Part",
     default: null,
   },
+  approveBy: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
   blockedAt: Date,
   createdAt: {
     type: Date,

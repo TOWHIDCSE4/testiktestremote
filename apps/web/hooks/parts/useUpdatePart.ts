@@ -3,34 +3,11 @@ import { API_URL_PARTS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 
-export async function updatePart({
-  _id,
-  name,
-  factoryId,
-  machineClassId,
-  pounds,
-  time,
-  files,
-  finishGoodWeight,
-  cageWeightActual,
-  cageWeightScrap,
-  locationId,
-}: T_Part) {
+export async function updatePart(props: T_Part) {
   const token = Cookies.get("tfl")
-  const res = await fetch(`${API_URL_PARTS}/${_id}`, {
+  const res = await fetch(`${API_URL_PARTS}/${props._id}`, {
     method: "PATCH",
-    body: JSON.stringify({
-      name,
-      factoryId,
-      machineClassId,
-      pounds,
-      time,
-      files,
-      finishGoodWeight,
-      cageWeightActual,
-      cageWeightScrap,
-      locationId,
-    }),
+    body: JSON.stringify(props),
     headers: {
       "content-type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -40,35 +17,7 @@ export async function updatePart({
 }
 
 function useUpdatePart() {
-  const query = useMutation(
-    ({
-      name,
-      factoryId,
-      machineClassId,
-      pounds,
-      time,
-      files,
-      finishGoodWeight,
-      cageWeightActual,
-      cageWeightScrap,
-      locationId,
-      _id,
-    }: T_Part) =>
-      updatePart({
-        name,
-        factoryId,
-        machineClassId,
-        pounds,
-        time,
-        files,
-        finishGoodWeight,
-        cageWeightActual,
-        cageWeightScrap,
-        locationId,
-        _id,
-      })
-  )
-
+  const query = useMutation((props: T_Part) => updatePart(props))
   return query
 }
 

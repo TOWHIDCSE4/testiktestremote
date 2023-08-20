@@ -42,6 +42,7 @@ export const getTimer = async (req: Request, res: Response) => {
     })
       .populate("partId")
       .populate("machineId")
+      .populate("createdBy")
     res.json({
       error: false,
       item: getTimer,
@@ -62,15 +63,6 @@ export const getTimer = async (req: Request, res: Response) => {
 export const addTimer = async (req: Request, res: Response) => {
   const { factoryId, machineId, machineClassId, partId, locationId } = req.body
   if (factoryId && machineId && machineClassId && partId && locationId) {
-    const newTimer = new Timers({
-      factoryId,
-      machineId,
-      machineClassId,
-      partId,
-      locationId,
-      updatedAt: null,
-      deletedAt: null,
-    })
     const parsedTimer = ZTimer.safeParse(req.body)
     if (parsedTimer.success) {
       try {
@@ -79,6 +71,7 @@ export const addTimer = async (req: Request, res: Response) => {
           deletedAt: { $exists: false },
         })
         if (getExistingTimer.length === 0) {
+          const newTimer = new Timers(req.body)
           const createTimer = await newTimer.save()
           res.json({
             error: false,
@@ -124,10 +117,10 @@ export const addTimer = async (req: Request, res: Response) => {
 export const updateTimer = async (req: Request, res: Response) => {
   const getTimer = await Timers.find({
     _id: req.params.id,
-    deletedAt: { $exists: false },
+    $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
   })
   const condition = req.body
-  if (getTimer.length === 0) {
+  if (getTimer.length > 0) {
     if (!isEmpty(condition)) {
       try {
         const updateTimer = await Timers.findByIdAndUpdate(

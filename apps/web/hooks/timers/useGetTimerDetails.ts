@@ -15,7 +15,7 @@ export async function getTimerDetails(id: string | undefined) {
 }
 
 function useGetTimerDetails(id: string | undefined) {
-  const query = useQuery(["part", id], () => getTimerDetails(id), {
+  const query = useQuery(["timer", id], () => getTimerDetails(id), {
     cacheTime: ONE_DAY,
     staleTime: ONE_DAY,
     refetchOnWindowFocus: false,

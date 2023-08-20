@@ -29,6 +29,7 @@ export const ZUser = z.object({
   password: z.string().min(8),
   location: z.string(),
   profile: ZUserProfile.nullable(),
+  approvedBy: z.string().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
   deletedAt: z.string().optional(),

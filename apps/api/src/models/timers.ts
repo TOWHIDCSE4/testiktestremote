@@ -22,6 +22,14 @@ const timers = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Location",
   },
+  operator: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
+  createdBy: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
   createdAt: {
     type: Date,
     default: Date.now,

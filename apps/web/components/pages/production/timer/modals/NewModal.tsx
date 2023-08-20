@@ -16,6 +16,8 @@ import useGetPartByMachineClass from "../../../../../hooks/parts/useGetPartByMac
 import usePart from "../../../../../hooks/parts/useGetPart"
 import toast from "react-hot-toast"
 import useAddTimer from "../../../../../hooks/timers/useAddTimer"
+import useProfile from "../../../../../hooks/users/useProfile"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface NewModalProps {
   isOpen: boolean
@@ -30,8 +32,9 @@ const NewModal = ({
   locationId,
   onClose,
 }: NewModalProps) => {
+  const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
-
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const [selectedFactory, setSelectedFactory] = useState("")
   const [selectedMachineClass, setSelectedMachineClass] = useState("")
@@ -61,10 +64,14 @@ const NewModal = ({
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
+          queryClient.invalidateQueries({
+            queryKey: ["timers-location"],
+          })
           toast.success(String(data.message))
           closeModal()
           reset()
         } else {
+          console.log("dsds", data.message)
           toast.error(String(data.message))
         }
       },
@@ -72,7 +79,15 @@ const NewModal = ({
         toast.error(String(err))
       },
     }
-    mutate({ ...data, locationId: locationId ? locationId : "" }, callBackReq)
+    mutate(
+      {
+        ...data,
+        locationId: locationId ? locationId : "",
+        createdBy: userProfile?.item._id as string,
+        machineClassId: selectedMachineClass,
+      },
+      callBackReq
+    )
   }
 
   const closeModal = () => {

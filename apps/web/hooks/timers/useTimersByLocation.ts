@@ -30,7 +30,7 @@ export async function getTimerByLocation(locationId: string) {
 function useTimersByLocation() {
   const [locationId, setLocationId] = useState("")
   const query = useQuery(
-    ["timersByLocation", locationId],
+    ["timers-location", locationId],
     () => getTimerByLocation(locationId),
     {
       cacheTime: SIXTEEN_HOURS,
