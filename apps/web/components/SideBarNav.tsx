@@ -89,6 +89,12 @@ const navigation = [
     children: [{ name: "Sales Dashboard", href: "/sales/sales-dashboard" }],
   },
   {
+    name: "Accounts",
+    slug: "accounts",
+    href: "/accounts",
+    showOnlyFor: [ROLES.Administrator, ROLES.Corporate, ROLES.Production],
+  },
+  {
     name: "Team Members",
     slug: "team-members",
     href: "/team-members",
