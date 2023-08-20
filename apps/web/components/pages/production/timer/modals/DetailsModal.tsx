@@ -52,6 +52,14 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
     mutate(
       {
         ...data,
+        factoryId:
+          typeof data.factoryId === "object"
+            ? (data.factoryId?._id as string)
+            : data.factoryId,
+        locationId:
+          typeof data.locationId === "object"
+            ? (data.locationId?._id as string)
+            : data.locationId,
         partId:
           typeof data.partId === "object"
             ? (data.partId?._id as string)

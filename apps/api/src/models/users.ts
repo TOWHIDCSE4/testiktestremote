@@ -10,28 +10,16 @@ const users = new Schema({
   },
   email: String,
   password: String,
-  location: String,
+  locationId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Location",
+  },
   profile: {
     type: Object,
     default: null,
   },
   lastLoggedIn: Date,
   lastLoggedOut: Date,
-  machineId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Machine",
-    default: null,
-  },
-  timerId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Timer",
-    default: null,
-  },
-  partsId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Part",
-    default: null,
-  },
   approveBy: {
     type: mongoose.Schema.ObjectId,
     ref: "User",

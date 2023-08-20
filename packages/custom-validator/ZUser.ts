@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { ZLocation } from "./ZLocation"
 
 export const ZUserRoles = z.enum([
   "Administrator",
@@ -27,7 +28,7 @@ export const ZUser = z.object({
   role: ZUserRoles,
   email: z.string().email(),
   password: z.string().min(8),
-  location: z.string(),
+  locationId: z.union([z.string(), ZLocation]),
   profile: ZUserProfile.nullable(),
   approvedBy: z.string().optional(),
   createdAt: z.string().optional(),
@@ -40,7 +41,7 @@ export const ZUserBasic = ZUser.pick({
   firstName: true,
   lastName: true,
   email: true,
-  location: true,
+  locationId: true,
 })
 
 export const ZUserPassword = ZUser.pick({

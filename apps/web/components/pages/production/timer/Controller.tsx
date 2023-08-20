@@ -8,13 +8,22 @@ import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/solid"
-import { Fragment, useState, useEffect } from "react"
-import { Dialog, Transition } from "@headlessui/react"
+import { useState, useEffect } from "react"
+import useGetTimerDetails from "../../../../hooks/timers/useGetTimerDetails"
+import useUsers from "../../../../hooks/users/useUsers"
+import { T_BackendResponse, T_User } from "custom-validator"
+import useUpdateTimer from "../../../../hooks/timers/useUpdateTimer"
+import toast from "react-hot-toast"
+import { useQueryClient } from "@tanstack/react-query"
 
-const Controller = () => {
+const Controller = ({ timerId }: { timerId: string }) => {
+  const queryClient = useQueryClient()
+  const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
+    useGetTimerDetails(timerId)
+  const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
+  const { data: users, isLoading: isUsersLoading } = useUsers()
   const [stopMenu, setStopMenu] = useState(false)
   const [endMenu, setEndMenu] = useState(false)
-
   const [progress, setProgress] = useState(50)
   const [progressLoading, setProgressLoading] = useState(false)
 
@@ -38,6 +47,22 @@ const Controller = () => {
     setProgressLoading((progressLoading) => !progressLoading)
   }
 
+  const callBackReq = {
+    onSuccess: (data: T_BackendResponse) => {
+      if (!data.error) {
+        queryClient.invalidateQueries({
+          queryKey: ["timer", timerId],
+        })
+        toast.success("Timer has been updated")
+      } else {
+        toast.error(String(data.message))
+      }
+    },
+    onError: (err: any) => {
+      toast.error(String(err))
+    },
+  }
+
   return (
     <div>
       <div className="flex flex-col md:flex-row justify-center md:justify-between bg-dark-blue py-3 md:py-0 px-4 md:px-12 md:h-20 items-center">
@@ -48,7 +73,13 @@ const Controller = () => {
         )}
         <div className="mt-3 md:mt-0">
           <h2 className="uppercase text-2xl md:text-4xl text-white font-semibold text-center">
-            Seguin
+            {isTimerDetailDataLoading ? (
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-7 w-36 bg-slate-200 rounded"></div>
+              </div>
+            ) : (
+              <>{timerDetailData?.item?.locationId.name}</>
+            )}
           </h2>
           <h3 className="uppercase text-lg md:text-2xl text-gray-300 leading-none font-medium text-center">
             Controller
@@ -60,45 +91,97 @@ const Controller = () => {
           <h4 className="uppercase font-semibold text-sm text-gray-800 xl:text-lg 2xl:text-3xl">
             Details
           </h4>
-          <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 xl:text-lg 2xl:text-3xl">
+          <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 xl:text-lg 2xl:text-3xl flex items-center gap-1">
             Factory:{" "}
             <span className="uppercase text-sm font-semibold text-gray-500 xl:text-lg 2xl:text-3xl">
-              Pipe And Box
+              {isTimerDetailDataLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                </div>
+              ) : (
+                <>{timerDetailData?.item?.factoryId.name}</>
+              )}
             </span>
           </h5>
-          <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 xl:text-lg 2xl:text-3xl">
+          <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 xl:text-lg 2xl:text-3xl flex items-center gap-1">
             Machine:{" "}
             <span className="uppercase text-sm font-semibold text-gray-500 xl:text-lg 2xl:text-3xl">
-              RP1635
+              {isTimerDetailDataLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                </div>
+              ) : (
+                <>{timerDetailData?.item?.machineId.name}</>
+              )}
             </span>
           </h5>
-          <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 xl:text-lg 2xl:text-3xl">
+          <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 xl:text-lg 2xl:text-3xl flex items-center gap-1">
             Part/Product:{" "}
             <span className="uppercase text-sm font-semibold text-gray-500 xl:text-lg 2xl:text-3xl">
-              7X3X6.75 C1577 BOX CULVERT &lt; 2
+              {isTimerDetailDataLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                </div>
+              ) : (
+                <>{timerDetailData?.item?.partId.name}</>
+              )}
             </span>
           </h5>
-          <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 xl:text-lg 2xl:text-3xl">
+          <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 xl:text-lg 2xl:text-3xl flex items-center gap-1">
             Average Time:{" "}
             <span className="uppercase text-sm font-semibold text-gray-500 xl:text-lg 2xl:text-3xl">
-              0
+              {isTimerDetailDataLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                </div>
+              ) : (
+                <>{timerDetailData?.item?.partId.time} seconds</>
+              )}
             </span>
           </h5>
-          <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 xl:text-lg 2xl:text-3xl">
+          <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 xl:text-lg 2xl:text-3xl flex items-center gap-1">
             Weight:{" "}
             <span className="uppercase text-sm font-semibold text-gray-500 xl:text-lg 2xl:text-3xl">
-              8.660
+              {isTimerDetailDataLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                </div>
+              ) : (
+                <>{timerDetailData?.item?.partId.pounds} lbs</>
+              )}
             </span>
           </h5>
           <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 xl:text-lg 2xl:text-3xl">
             Operator
           </h4>
-          <input
-            type="text"
-            name="product-name"
-            id="product-name"
-            className={`block mt-2 w-full md:w-60 xl:w-80 2xl:w-[420px] col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm xl:text-lg 2xl:text-3xl sm:leading-6`}
-          />
+          <select
+            id="user"
+            name="user"
+            disabled={
+              isTimerDetailDataLoading || isUsersLoading || isUpdateTimerLoading
+            }
+            className="block mt-2 md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+            defaultValue="Select User"
+            required
+            onChange={(e) => {
+              if (e.target.value !== timerDetailData?.item?.operator) {
+                mutate(
+                  { ...timerDetailData?.item, operator: e.target.value },
+                  callBackReq
+                )
+              }
+            }}
+            value={timerDetailData?.item?.operator}
+          >
+            <option value="">Select User</option>
+            {users?.items.map((item: T_User, index: number) => {
+              return (
+                <option key={index} value={item._id as string}>
+                  {item.firstName} {item.lastName}
+                </option>
+              )
+            })}
+          </select>
           <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 xl:text-lg 2xl:text-3xl">
             Job
           </h4>
