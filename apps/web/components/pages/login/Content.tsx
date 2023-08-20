@@ -24,7 +24,7 @@ const Content = () => {
             router.push(`/profile-home`)
           }
         } else {
-          toast.error(data.message)
+          toast.error(String(data.message))
         }
       },
       onError: (err: any) => {

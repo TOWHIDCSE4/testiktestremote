@@ -1,6 +1,6 @@
 import { ArrowDownTrayIcon } from "@heroicons/react/24/outline"
 import { PrinterIcon } from "@heroicons/react/24/solid"
-import DarkLogo from "../../../assets/logo/logo-dark.png"
+import DarkLogo from "../../../../assets/logo/logo-dark.png"
 import Image from "next/image"
 
 const Report = () => {

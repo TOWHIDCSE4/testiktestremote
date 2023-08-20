@@ -32,6 +32,7 @@ const Slider = () => {
   return (
     <>
       <Swiper
+        //@ts-ignore
         navigation={true}
         modules={[Autoplay, Navigation]}
         autoplay={{

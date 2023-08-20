@@ -20,6 +20,7 @@ const AuthWrapper = ({ children }: Props) => {
 
   if (!isLoading && data.error) {
     router.push("/")
+    return <>{children}</>
   } else if (isLoading) {
     return (
       <div
