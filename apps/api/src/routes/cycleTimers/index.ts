@@ -11,7 +11,7 @@ import isRoleAllowed from "../../helpers/isRoleAllowed"
 import { ALLOWED_ALL_ROLES } from "../../utils/constants"
 
 //default
-router.get("/", getAllCycleTimers)
+router.get("/", isUserLoggedIn, getAllCycleTimers)
 router.get("/:id", isUserLoggedIn, getCycleTimer)
 router.post("/", isUserLoggedIn, addCycleTimer)
 router.patch("/:id", isUserLoggedIn, updateCycleTimer)
