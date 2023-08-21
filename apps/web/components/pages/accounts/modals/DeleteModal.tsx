@@ -2,18 +2,47 @@ import { Fragment, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { CheckIcon } from "@heroicons/react/24/outline"
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid"
+import useDeleteUser from "../../../../hooks/users/useDeleteUser"
+import { useQueryClient } from "@tanstack/react-query"
+import { T_BackendResponse } from "custom-validator"
+import toast from "react-hot-toast"
 
 interface DeleteModalProps {
   isOpen: boolean
   onClose: () => void
+  id?: string
 }
 
-const DeleteModal = ({ isOpen, onClose }: DeleteModalProps) => {
+const DeleteModal = ({ isOpen, onClose, id }: DeleteModalProps) => {
+  const queryClient = useQueryClient()
   const [isDeleted, setIsDeleted] = useState(false)
+  const { mutate, isLoading: isDeleteUserLoading } = useDeleteUser()
 
   const close = () => {
     onClose()
     setIsDeleted(false)
+  }
+
+  const callBackReq = {
+    onSuccess: (returnData: T_BackendResponse) => {
+      if (!returnData.error) {
+        if (returnData.item) {
+          queryClient.invalidateQueries({
+            queryKey: ["parts"],
+          })
+          queryClient.invalidateQueries({
+            queryKey: ["user-role-count"],
+          })
+          onClose()
+          toast.success("User deleted")
+        }
+      } else {
+        toast.error(returnData.message as string)
+      }
+    },
+    onError: (err: any) => {
+      toast.error(String(err))
+    },
   }
 
   const renderDeleted = () => {
@@ -78,7 +107,10 @@ const DeleteModal = ({ isOpen, onClose }: DeleteModalProps) => {
           <button
             type="button"
             className="inline-flex w-full justify-center rounded-md bg-blue-950 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={() => setIsDeleted(true)}
+            onClick={() => {
+              setIsDeleted(true)
+              mutate(id as string, callBackReq)
+            }}
           >
             Yes
           </button>

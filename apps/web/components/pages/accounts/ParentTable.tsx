@@ -1,15 +1,15 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid"
 import { useEffect, useState } from "react"
 import combineClasses from "../../../helpers/combineClasses"
-import { T_BackendResponse, T_UserRole } from "custom-validator"
+import { T_BackendResponse, T_User, T_UserRole } from "custom-validator"
 import TabTable from "./TabTable"
 import useGetUserRoleCount from "../../../hooks/users/useGetUserRoleCount"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
+import useProfile from "../../../hooks/users/useProfile"
 
 const ParentTable = () => {
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const [currentTab, setCurrentTab] = useState<T_UserRole>("Personnel")
-  // const [deleteModal, setDeleteModal] = useState(false)
-  // const [editModal, setEditModal] = useState(false)
   const roles = ["Personnel", "Production", "Corporate", "Administrator"]
   const {
     data: userRoleCount,
@@ -38,10 +38,9 @@ const ParentTable = () => {
     setRole(currentTab)
   }, [currentTab, setRole])
 
-  const tabResults = tabs?.filter((tab) => currentTab === tab.name)
+  const tabResults = tabs?.filter((tab) => currentTab === tab?.name)
 
   const numberOfPages = Math.ceil((users?.itemCount as number) / 10)
-  console.log("numberOfPages", numberOfPages)
 
   return (
     <>
@@ -214,7 +213,11 @@ const ParentTable = () => {
                     </div>
                   </div>
                 </div>
-                <TabTable tab={currentTab} data={users as T_BackendResponse} />
+                <TabTable
+                  tab={currentTab}
+                  data={users as T_BackendResponse}
+                  userId={userProfile?.item?._id as string}
+                />
               </div>
             </div>
           )}

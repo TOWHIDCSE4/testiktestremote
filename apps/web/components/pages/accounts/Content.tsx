@@ -1,4 +1,7 @@
 "use client"
+import { T_User } from "custom-validator"
+import useProfile from "../../../hooks/users/useProfile"
+import useStoreSession from "../../../store/useStoreSession"
 import ParentTable from "./ParentTable"
 
 const Content = () => {

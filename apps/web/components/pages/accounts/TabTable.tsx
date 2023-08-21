@@ -4,17 +4,19 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/solid"
 import { T_BackendResponse, T_User, T_UserRole } from "custom-validator"
 import DeleteModal from "./modals/DeleteModal"
 import ConfirmationModal from "./modals/ConfirmationModal"
-import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
 
 const TabTable = ({
   tab,
   data,
+  userId,
 }: {
   tab: T_UserRole
   data: T_BackendResponse
+  userId: string
 }) => {
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
+  const [selectedRowId, setSelectedRowId] = useState("")
 
   return (
     <>
@@ -98,7 +100,10 @@ const TabTable = ({
                           {({ active }) => (
                             <div
                               className="text-left text-gray-800 cursor-pointer"
-                              onClick={() => setConfirmationModal(true)}
+                              onClick={() => {
+                                setConfirmationModal(true)
+                                setSelectedRowId(user._id as string)
+                              }}
                             >
                               Accept
                             </div>
@@ -108,7 +113,10 @@ const TabTable = ({
                           {({ active }) => (
                             <div
                               className="text-left text-gray-800 mt-2 cursor-pointer"
-                              onClick={() => setDeleteModal(true)}
+                              onClick={() => {
+                                setDeleteModal(true)
+                                setSelectedRowId(user._id as string)
+                              }}
                             >
                               Delete
                             </div>
@@ -134,8 +142,14 @@ const TabTable = ({
       <ConfirmationModal
         isOpen={confirmationModal}
         onClose={() => setConfirmationModal(false)}
+        id={selectedRowId}
+        userId={userId}
       />
-      <DeleteModal isOpen={deleteModal} onClose={() => setDeleteModal(false)} />
+      <DeleteModal
+        isOpen={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        id={selectedRowId}
+      />
     </>
   )
 }
