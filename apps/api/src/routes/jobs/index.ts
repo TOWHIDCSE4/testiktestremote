@@ -7,7 +7,7 @@ import { getAllJobsPerStatus } from "./countJobStatus"
 
 //custom
 router.get("/paginated", isUserLoggedIn, paginated)
-router.get("/status/counts/:locationId", isUserLoggedIn, getAllJobsPerStatus)
+router.get("/status-counts", isUserLoggedIn, getAllJobsPerStatus)
 
 //default
 router.get("/", isUserLoggedIn, getAllJobs)
