@@ -10,6 +10,7 @@ import PartRoute from "./parts"
 import TimerLogRoute from "./timerLogs"
 import TimerReadingsRoute from "./timerReadings"
 import JobRoute from "./jobs"
+import CycleTimerRoute from "./cycleTimers"
 
 const App = (app: Application) => {
   app.use(`${API_ROOT}/users`, UsersRoute)
@@ -22,6 +23,7 @@ const App = (app: Application) => {
   app.use(`${API_ROOT}/locations`, LocationRoute)
   app.use(`${API_ROOT}/factories`, FactoryRoute)
   app.use(`${API_ROOT}/jobs`, JobRoute)
+  app.use(`${API_ROOT}/cycle-timers`, CycleTimerRoute)
 }
 
 export default App

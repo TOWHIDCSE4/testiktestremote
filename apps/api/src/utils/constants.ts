@@ -16,6 +16,7 @@ export const TIMER_READING_ALREADY_EXISTS = "Timer reading already exists"
 export const PART_ALREADY_EXISTS = "Part already exists"
 export const TIMER_LOG_ALREADY_EXISTS = "Timer logs already exists"
 export const JOB_ALREADY_EXISTS = "Job already exists"
+export const CYCLE_TIMER_ALREADY_EXISTS = "Cycle Timer already exists"
 export const REQUIRED_VALUES_MISSING = "Required values are missing"
 
 //Roles
