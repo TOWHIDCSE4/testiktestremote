@@ -4,12 +4,15 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   EllipsisVerticalIcon,
+  ChartBarIcon,
 } from "@heroicons/react/24/solid"
 import { T_Job, T_JobStatus } from "custom-validator"
 import usePaginatedJobs from "../../../../hooks/jobs/usePaginatedJobs"
 import dayjs from "dayjs"
 import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
+import useProfile from "../../../../hooks/users/useProfile"
+import Image from "next/image"
 
 const TabTable = ({
   tab,
@@ -26,6 +29,8 @@ const TabTable = ({
     setPage,
     page,
   } = usePaginatedJobs()
+
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
 
   const [editModal, setEditModal] = useState(false)
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
@@ -142,15 +147,31 @@ const TabTable = ({
               return (
                 <tr className="border-b border-gray-200" key={index}>
                   <td className="py-4 pl-4 text-sm sm:pl-6 lg:pl-8">
-                    <div className="h-11 w-11 bg-stone-500 rounded-full text-white flex items-center justify-center">
-                      UA
+                    <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
+                      {!isUserProfileLoading &&
+                      userProfile?.item.profile?.photo ? (
+                        <Image
+                          className="rounded-full"
+                          src={`/files/${userProfile?.item.profile?.photo}`}
+                          alt="Profile image"
+                          fill
+                        />
+                      ) : !isUserProfileLoading &&
+                        !userProfile?.item.profile?.photo ? (
+                        <Image
+                          className="rounded-full"
+                          src={`https://ui-avatars.com/api/?name=${userProfile?.item?.firstName}+${userProfile?.item?.lastName}`}
+                          alt="Profile image"
+                          fill
+                        />
+                      ) : (
+                        <div className="animate-pulse flex space-x-4">
+                          <div className="h-11 w-11 rounded-full bg-slate-200"></div>
+                        </div>
+                      )}
                     </div>
                   </td>
-                  <td className="py-4 text-sm text-gray-500 pl-5">
-                    <div className="h-11 w-11 bg-blue-500 rounded-full uppercase text-white flex items-center justify-center">
-                      Pipe
-                    </div>
-                  </td>
+                  <td className="py-4 text-sm text-gray-800 pl-4">Pipe</td>
                   <td className="py-4 pl-6 text-sm text-gray-800">
                     {job?.name}
                   </td>
@@ -174,8 +195,47 @@ const TabTable = ({
                     </div>
                   </td>
                   <td className="py-4 pl-6 text-sm text-gray-800">
-                    {job?.priorityStatus} <br />
-                    <span className="text-red-500 hidden">Overdue</span>
+                    {/* <ChartBarIcon
+                      className={`h-5 w-5 ${
+                        job?.priorityStatus === "High"
+                          ? "text-red-500"
+                          : job?.priorityStatus === "Medium"
+                          ? "text-orange-500"
+                          : job?.priorityStatus === "Low"
+                          ? "text-yellow-500"
+                          : "text-gray-400"
+                      }`}
+                    /> */}
+
+                    <div className="flex bars mt-2">
+                      <div
+                        className={`h-3 rounded-t-full rounded-b-full w-1 first-bar ${
+                          job?.priorityStatus === "High"
+                            ? "bg-red-500"
+                            : job?.priorityStatus === "Medium"
+                            ? "bg-orange-500"
+                            : job?.priorityStatus === "Low"
+                            ? "bg-yellow-500"
+                            : "bg-gray-400"
+                        }`}
+                      ></div>
+                      <div
+                        className={`h-4 rounded-t-full rounded-b-full w-1 second-bar ml-0.5 -translate-y-1 ${
+                          job?.priorityStatus === "High"
+                            ? "bg-red-500"
+                            : job?.priorityStatus === "Medium"
+                            ? "bg-orange-500"
+                            : "bg-gray-400"
+                        }`}
+                      ></div>
+                      <div
+                        className={`h-5 rounded-t-full rounded-b-full w-1 bg-gray-400 third-bar ml-0.5 -translate-y-2 ${
+                          job?.priorityStatus === "High"
+                            ? "bg-red-500"
+                            : "bg-gray-400"
+                        }`}
+                      ></div>
+                    </div>
                   </td>
                   <td className="py-4 pl-6 text-sm text-gray-800">
                     {job?.dueDate ? (
@@ -186,7 +246,7 @@ const TabTable = ({
                     <br />
                     <span className="text-red-500 hidden">Overdue</span>
                   </td>
-                  <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
+                  <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
                     <Menu as="div">
                       <Menu.Button>
                         <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
