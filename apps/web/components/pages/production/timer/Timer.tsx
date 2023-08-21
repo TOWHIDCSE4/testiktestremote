@@ -1,5 +1,6 @@
 import {
   T_BackendResponse,
+  T_Machine,
   T_MachineClass,
   T_Part,
   T_Timer,
@@ -16,6 +17,7 @@ type T_Props = {
   setSelectedTimerId: Dispatch<string>
   setOpenDetailsModal: Dispatch<boolean>
   setOpenDeleteModal: Dispatch<boolean>
+  machine: T_Machine
 }
 
 const Timer = ({
@@ -25,6 +27,7 @@ const Timer = ({
   setSelectedTimerId,
   setOpenDetailsModal,
   setOpenDeleteModal,
+  machine,
 }: T_Props) => {
   const queryClient = useQueryClient()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
@@ -90,7 +93,9 @@ const Timer = ({
         </select>
       </div>
       <div className="px-4 py-4 text-center space-y-2">
-        <h3 className="text-gray-700 font-bold uppercase text-xl">RP 1225</h3>
+        <h3 className="text-gray-700 font-bold uppercase text-xl">
+          {machine.name}
+        </h3>
         <h1 className="font-bold text-stone-400 text-5xl">00:00:00</h1>
         <p className="text-amber-600">Please set Operator</p>
         <div>

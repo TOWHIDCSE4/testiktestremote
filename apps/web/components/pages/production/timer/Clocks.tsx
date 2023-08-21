@@ -9,6 +9,8 @@ import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import { T_MachineClass } from "custom-validator"
 import FilterCheckbox from "./FilterCheckbox"
+import { hourMinuteSecond } from "../../../../helpers/timeConverter"
+import LocalTime from "./LocalTime"
 
 const Clocks = ({
   locationId,
@@ -38,9 +40,18 @@ const Clocks = ({
     .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "")
     .format("MMM DD YYYY")
 
-  const localeTime = dayjs
-    .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "")
-    .format("hh:mm:ss")
+  // const localeTime = dayjs
+  //   .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "")
+  //   .format("hh:mm:ss")
+
+  // const localeTimeInSeconds = dayjs
+  //   .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "").format();
+
+  // const localeTimeStartOfDay = dayjs
+  //   .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "").startOf('day').format();
+
+  // const totalSecondsPass = dayjs(localeTimeInSeconds).diff(localeTimeStartOfDay, 'second');
+  // const localTimeArray = hourMinuteSecond(totalSecondsPass);
 
   const handleOnChange = () => {
     const updatedMachineClasses = selectedMachineClasses.map(
@@ -136,14 +147,10 @@ const Clocks = ({
           </h5>
           <h6 className="uppercase text-gray-400 font-medium text-sm">Date</h6>
         </div>
-        <div className="rounded-md bg-white shadow p-2 text-center">
-          <h5 className="text-lg text-gray-700 uppercase font-bold">
-            {localeTime}
-          </h5>
-          <h6 className="uppercase text-gray-400 font-medium text-sm">
-            Local Time
-          </h6>
-        </div>
+        <LocalTime
+          timeZone={location?.item.timeZone ? location?.item.timeZone : ""}
+          isLoading={isLocationLoading}
+        />
         <div className="rounded-md bg-white shadow p-2 text-center">
           <h5 className="text-lg text-gray-700 uppercase font-bold">
             00:00:00

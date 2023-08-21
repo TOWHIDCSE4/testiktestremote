@@ -42,8 +42,12 @@ export type { T_Location } from "./ZLocation"
 export { ZMachine } from "./ZMachine"
 export type { T_Machine } from "./ZMachine"
 
-export { ZTimerLog } from "./ZTimerLog"
-export type { T_TimerLog } from "./ZTimerLog"
+export { ZTimerLog, ZTimerLogStatus, ZTimerStopReason } from "./ZTimerLog"
+export type {
+  T_TimerLog,
+  T_TimerLogStatus,
+  T_TimerStopReason,
+} from "./ZTimerLog"
 
 export { ZTimerReading } from "./ZTimerReading"
 export type { T_TimerReading } from "./ZTimerReading"

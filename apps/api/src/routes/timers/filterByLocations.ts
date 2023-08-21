@@ -14,12 +14,6 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
           { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
         ],
       }).countDocuments()
-      const getTimerByLocation = await Timers.find({
-        $and: [
-          { locationId: locationId },
-          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
-        ],
-      })
       const timers = await Timers.aggregate([
         {
           $match: {
@@ -46,6 +40,15 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
             as: "parts",
           },
         },
+        {
+          $lookup: {
+            from: "machines",
+            localField: "machineId",
+            foreignField: "_id",
+            as: "machine",
+          },
+        },
+        { $unwind: "$machine" },
       ])
 
       res.json({

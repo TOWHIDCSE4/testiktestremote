@@ -15,8 +15,20 @@ import { T_BackendResponse, T_User } from "custom-validator"
 import useUpdateTimer from "../../../../hooks/timers/useUpdateTimer"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
+import dayjs from "dayjs"
+import * as timezone from "dayjs/plugin/timezone"
+import * as utc from "dayjs/plugin/utc"
+import ControllerDateTime from "./ControllerDateTime"
+import CycleClock from "./CycleClock"
+import {
+  hourMinuteSecond,
+  hourMinuteSecondMilli,
+} from "../../../../helpers/timeConverter"
+import getPercentage from "../../../../helpers/getPercentage"
 
 const Controller = ({ timerId }: { timerId: string }) => {
+  dayjs.extend(utc.default)
+  dayjs.extend(timezone.default)
   const queryClient = useQueryClient()
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
@@ -24,24 +36,35 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const { data: users, isLoading: isUsersLoading } = useUsers()
   const [stopMenu, setStopMenu] = useState(false)
   const [endMenu, setEndMenu] = useState(false)
-  const [progress, setProgress] = useState(50)
+  const [progress, setProgress] = useState(0)
   const [progressLoading, setProgressLoading] = useState(false)
+  const [unitsCreated, setUnitsCreated] = useState(0)
+
+  const [isTimerClockRunning, setIsTimerClockRunning] = useState(false)
+  const [timerClockInSeconds, setTimerClockInSeconds] = useState(0)
+  const [timerClockTimeArray, setTimerClockTimeArray] = useState<
+    Array<number | string>
+  >([])
+  const [timerClockIntervalId, setTimerClockIntervalId] = useState<number>(0)
+
+  const [isCycleClockStarting, setIsCycleClockStarting] = useState(false)
+  const [isCycleClockStopping, setIsCycleClockStopping] = useState(false)
+  const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
+  const [cycleClockInSeconds, setCycleClockInSeconds] = useState(0)
+  const [cycleClockTimeArray, setCycleCockTimeArray] = useState<
+    Array<number | string>
+  >([])
+  const [cycleClockIntervalId, setCycleClockIntervalId] = useState<number>(0)
 
   useEffect(() => {
-    if (progressLoading) {
-      const interval = setInterval(() => {
-        if (progress < 100) {
-          setProgress(progress + 1)
-        }
-      }, 5000 / 50)
-
-      return () => {
-        clearInterval(interval)
-      }
-    } else {
-      setProgress(50)
+    if (cycleClockInSeconds > 0 && progress < 101) {
+      const percent = getPercentage(
+        cycleClockInSeconds,
+        timerDetailData?.item?.partId.time as number
+      )
+      setProgress(percent)
     }
-  }, [progressLoading, progress])
+  }, [cycleClockInSeconds])
 
   const startProgress = () => {
     setProgressLoading((progressLoading) => !progressLoading)
@@ -63,10 +86,64 @@ const Controller = ({ timerId }: { timerId: string }) => {
     },
   }
 
+  // Timer Clock
+
+  useEffect(() => {
+    setTimerClockTimeArray(hourMinuteSecond(timerClockInSeconds))
+  }, [timerClockInSeconds])
+
+  const runTimer = () => {
+    const interval: any = setInterval(() => {
+      setTimerClockInSeconds((previousState: number) => previousState + 1)
+    }, 1000)
+    setTimerClockIntervalId(interval)
+    setIsTimerClockRunning(true)
+  }
+  const stopTimer = () => {
+    clearInterval(timerClockIntervalId)
+    clearInterval(cycleClockIntervalId)
+    setTimerClockInSeconds(0)
+    setCycleClockInSeconds(0)
+    setIsCycleClockRunning(false)
+    setIsTimerClockRunning(false)
+    setProgress(0)
+    setUnitsCreated(0)
+  }
+
+  // Cycle Clock
+
+  useEffect(() => {
+    setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
+  }, [cycleClockInSeconds])
+
+  const runCycle = () => {
+    setIsCycleClockStarting(true)
+    setTimeout(function () {
+      const interval: any = setInterval(() => {
+        setCycleClockInSeconds((previousState: number) => previousState + 0.01)
+      }, 10)
+      setCycleClockIntervalId(interval)
+      setIsCycleClockRunning(true)
+      if (!isTimerClockRunning) {
+        runTimer()
+      }
+      setIsCycleClockStarting(false)
+    }, 3000)
+  }
+  const stopCycle = () => {
+    setIsCycleClockStopping(true)
+    setTimeout(function () {
+      setCycleClockInSeconds(0)
+      setIsCycleClockStopping(false)
+      setUnitsCreated(unitsCreated + 1)
+      setProgress(0)
+    }, 3000)
+  }
+
   return (
     <div>
       <div className="flex flex-col md:flex-row justify-center md:justify-between bg-dark-blue py-3 md:py-0 px-4 md:px-12 md:h-20 items-center">
-        {progress === 100 ? (
+        {progress > 100 ? (
           <Image src={LogoRed} alt="Logo" width={200} height={100} />
         ) : (
           <Image src={LogoGreen} alt="Logo" width={200} height={100} />
@@ -210,28 +287,16 @@ const Controller = ({ timerId }: { timerId: string }) => {
           </div>
         </div>
         <div className="flex flex-col">
-          <div className="timer">
-            <h6 className="text-center md:text-right uppercase text-sm xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
-              Time: 00:00:00
-            </h6>
-            <div className="md:float-right mt-2">
-              <div className="">
-                <div className="countdown-container rounded-md bg-[#f1f2e1] pt-2 pb-3.5 px-5 border-2 border-stone-500">
-                  <h2 className="text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold text-[#d4d3cf]">
-                    00:00:00:00
-                  </h2>
-                </div>
-                <div className="flex justify-center">
-                  <h2
-                    className="text-3xl lg:text-5xl xl:text-7xl 2xl:text-8xl w-36 xl:w-60 2xl:w-80 text-stone-400 mt-2 tracking-wider text-center cursor-pointer font-semibold uppercase"
-                    onClick={startProgress}
-                  >
-                    Start
-                  </h2>
-                </div>
-              </div>
-            </div>
-          </div>
+          <CycleClock
+            timerClockTimeArray={timerClockTimeArray}
+            cycleClockTimeArray={cycleClockTimeArray}
+            isCycleClockRunning={isCycleClockRunning}
+            isCycleClockStarting={isCycleClockStarting}
+            isCycleClockStopping={isCycleClockStopping}
+            runCycle={runCycle}
+            stopCycle={stopCycle}
+            progress={progress}
+          />
           {/* Small screen show timer data */}
           <div className="md:hidden mt-8">
             <h6 className="text-center uppercase text-lg text-gray-500 font-semibold leading-none">
@@ -286,7 +351,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
                 </h5>
               </div>
               <h1 className="text-[65px] lg:text-[120px] xl:text-[150px] 2xl:text-[180px] font-semibold text-gray-300 leading-none mt-2">
-                000
+                {unitsCreated < 10
+                  ? `00${unitsCreated}`
+                  : unitsCreated < 100
+                  ? `0${unitsCreated}`
+                  : unitsCreated}
               </h1>
             </div>
           </div>
@@ -296,9 +365,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       <footer className="fixed bg-white w-full bottom-0">
         <div className="progress-bar">
           <div
-            className={`${
-              progress === 100 ? "bg-red-600" : "bg-green-500"
-            } h-4`}
+            className={`${progress > 100 ? "bg-red-600" : "bg-green-500"} h-4`}
             style={{ width: `${progress}%` }}
           ></div>
         </div>
@@ -307,7 +374,13 @@ const Controller = ({ timerId }: { timerId: string }) => {
             Developed By IEKOMEDIA
           </h4>
           <h4 className="uppercase text-blue-950 font-semibold">
-            08 / 11 / 2023 - 00: 10: 42 PM
+            <ControllerDateTime
+              timeZone={
+                !isTimerDetailDataLoading
+                  ? timerDetailData?.item?.locationId.timeZone
+                  : ""
+              }
+            />
           </h4>
         </div>
       </footer>
@@ -319,8 +392,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
             className={`${
               stopMenu
                 ? "translate-y-0"
-                : "translate-y-[153px] xl:translate-y-[216px] 2xl:translate-y-[337px]"
-            } bg-dark-blue h-44 xl:h-60 2xl:h-96 w-72 xl:w-[500px] 2xl:w-[800px] z-20 fixed bottom-0 rounded-t-md px-4 pb-8 transition transform duration-1000`}
+                : "translate-y-[192px] xl:translate-y-[216px] 2xl:translate-y-[337px]"
+            } bg-dark-blue h-62 xl:h-80 2xl:h-96 w-72 xl:w-[500px] 2xl:w-[800px] z-20 fixed bottom-0 rounded-t-md px-4 pb-5 transition transform duration-1000`}
           >
             <div className="flex justify-center items-center mt-1 2xl:mt-3 mb-0 2xl:mb-2">
               {stopMenu ? (
@@ -400,6 +473,21 @@ const Controller = ({ timerId }: { timerId: string }) => {
                     Maintenance
                   </label>
                 </div>
+                <div className="flex space-x-2 2xl:space-x-4 items-center xl:mt-2 2xl:mt-3 mb-4">
+                  <input
+                    id="change-part"
+                    aria-describedby="change-part-description"
+                    name="change-part"
+                    type="checkbox"
+                    className="h-4 w-4 2xl:h-6 2xl:w-6 rounded border-gray-300 text-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor="change-part"
+                    className="text-yellow-200 xl:text-xl 2xl:text-4xl"
+                  >
+                    Change Part
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -426,9 +514,13 @@ const Controller = ({ timerId }: { timerId: string }) => {
                 />
               )}
 
-              <div className="bg-[#274263] xl:text-xl 2xl:text-4xl rounded-md ml-1 2xl:ml-3 text-yellow-200 uppercase w-full py-2 text-center">
+              <button
+                type="button"
+                className="bg-[#274263] xl:text-xl 2xl:text-4xl rounded-md ml-1 2xl:ml-3 text-yellow-200 uppercase w-full py-2 text-center"
+                onClick={() => stopTimer()}
+              >
                 End Production
-              </div>
+              </button>
             </div>
           </div>
         </div>

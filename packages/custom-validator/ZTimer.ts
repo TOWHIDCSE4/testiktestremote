@@ -9,6 +9,7 @@ export const ZTimer = z.object({
   _id: z.string().optional(),
   parts: ZPart.array().optional(),
   factoryId: z.union([z.string(), ZFactory]),
+  machine: ZMachine.optional(),
   machineId: z.union([z.string(), ZMachine]),
   machineClassId: z.string().min(23),
   partId: z.union([z.string(), ZPart]),

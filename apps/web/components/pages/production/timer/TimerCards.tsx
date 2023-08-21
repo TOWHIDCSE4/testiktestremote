@@ -1,5 +1,6 @@
 import {
   T_BackendResponse,
+  T_Machine,
   T_MachineClass,
   T_Part,
   T_Timer,
@@ -104,6 +105,7 @@ function TimerCards({
                         setSelectedTimerId={setSelectedTimerId}
                         setOpenDeleteModal={setOpenDeleteModal}
                         setOpenDetailsModal={setOpenDetailsModal}
+                        machine={timer?.machine as T_Machine}
                       />
                     ) : null
                   )
