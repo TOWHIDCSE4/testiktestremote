@@ -20,7 +20,7 @@ export const getAllJobsPerStatus = async (req: Request, res: Response) => {
 
       res.json({
         error: false,
-        items: statusCount,
+        item: statusCount,
         itemCount: null,
         message: null,
       })
