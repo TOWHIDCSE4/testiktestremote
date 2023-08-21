@@ -4,7 +4,7 @@ import { ZTimer } from "./ZTimer"
 export const ZCycleTimer = z.object({
   _id: z.string().optional(),
   timerId: z.union([z.string(), ZTimer]),
-  createdAt: z.date(),
+  createdAt: z.date().optional(),
   endAt: z.date().nullable().optional(),
 })
 
