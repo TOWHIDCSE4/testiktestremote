@@ -28,19 +28,19 @@ const CycleClock = ({
           Time:
         </h6>
         <div className="flex items-center">
-          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold w-5">
+          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
             {timerClockTimeArray[0]}
           </h6>
           <span className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
             :
           </span>
-          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold w-5">
+          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
             {timerClockTimeArray[1]}
           </h6>
           <span className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
             :
           </span>
-          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold w-5">
+          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
             {timerClockTimeArray[2]}
           </h6>
         </div>
@@ -56,11 +56,11 @@ const CycleClock = ({
                 : "border-stone-500"
             }`}
           >
-            <div className="flex items-center">
+            <div className="flex items-center justify-center">
               <h2
                 className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
-                } w-20`}
+                }`}
               >
                 {cycleClockTimeArray[0]}
               </h2>
@@ -74,7 +74,7 @@ const CycleClock = ({
               <h2
                 className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
-                } w-20`}
+                }`}
               >
                 {cycleClockTimeArray[1]}
               </h2>
@@ -88,7 +88,7 @@ const CycleClock = ({
               <h2
                 className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
-                } w-20`}
+                }`}
               >
                 {cycleClockTimeArray[2]}
               </h2>
@@ -102,7 +102,7 @@ const CycleClock = ({
               <h2
                 className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
-                } w-20`}
+                }`}
               >
                 {cycleClockTimeArray[3]}
               </h2>

@@ -25,6 +25,7 @@ import {
   hourMinuteSecondMilli,
 } from "../../../../helpers/timeConverter"
 import getPercentage from "../../../../helpers/getPercentage"
+import EndProductionModal from "./modals/EndProductionModal"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -47,6 +48,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   >([])
   const [timerClockIntervalId, setTimerClockIntervalId] = useState<number>(0)
 
+  const [isEndProduction, setEndProductionModal] = useState(false)
   const [isCycleClockStarting, setIsCycleClockStarting] = useState(false)
   const [isCycleClockStopping, setIsCycleClockStopping] = useState(false)
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
@@ -237,7 +239,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
             disabled={
               isTimerDetailDataLoading || isUsersLoading || isUpdateTimerLoading
             }
-            className="block mt-2 md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+            className="block mt-2 md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm xl:text-lg 2xl:text-3xl sm:leading-6 disabled:opacity-70"
             defaultValue="Select User"
             required
             onChange={(e) => {
@@ -277,7 +279,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
             </h4>
             <div className="absolute w-60 xl:w-[234px] 2xl:w-[272px] h-[1px] mt-[25px] xl:mt-[32px] 2xl:mt-[51px] ml-20 xl:ml-[87px] 2xl:ml-[145px] bg-gray-400"></div>
           </div>
-          <div className="bg-gray-100 h-16 2xl:h-32 mt-2 w-[321px] 2xl:w-[417px] p-2 text-gray-600">
+          <div className="bg-gray-100 h-32 xl:h-40 2xl:h-56 mt-2 w-[321px] 2xl:w-[417px] p-2 text-gray-600">
             <h6 className="text-xs xl:text-sm 2xl:text-2xl">
               Open the timer controller:
             </h6>
@@ -392,8 +394,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
             className={`${
               stopMenu
                 ? "translate-y-0"
-                : "translate-y-[192px] xl:translate-y-[216px] 2xl:translate-y-[337px]"
-            } bg-dark-blue h-62 xl:h-80 2xl:h-96 w-72 xl:w-[500px] 2xl:w-[800px] z-20 fixed bottom-0 rounded-t-md px-4 pb-5 transition transform duration-1000`}
+                : "translate-y-[192px] xl:translate-y-[297px] 2xl:translate-y-[380px]"
+            } bg-dark-blue h-62 xl:h-80 2xl:h-[430px] w-72 xl:w-[500px] 2xl:w-[800px] z-20 fixed bottom-0 rounded-t-md px-4 pb-5 transition transform duration-1000`}
           >
             <div className="flex justify-center items-center mt-1 2xl:mt-3 mb-0 2xl:mb-2">
               {stopMenu ? (
@@ -517,7 +519,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
               <button
                 type="button"
                 className="bg-[#274263] xl:text-xl 2xl:text-4xl rounded-md ml-1 2xl:ml-3 text-yellow-200 uppercase w-full py-2 text-center"
-                onClick={() => stopTimer()}
+                // onClick={() => stopTimer()}
+                onClick={() => setEndProductionModal(true)}
               >
                 End Production
               </button>
@@ -525,6 +528,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
           </div>
         </div>
       </div>
+      <EndProductionModal
+        isOpen={isEndProduction}
+        onClose={() => setEndProductionModal(false)}
+        stopTimer={() => {
+          stopTimer()
+          setEndProductionModal(false)
+        }}
+      />
     </div>
   )
 }
