@@ -3,9 +3,11 @@ const router = express.Router()
 import { addJob, deleteJob, getAllJobs, getJob, updateJob } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { paginated } from "./paginated"
+import { getAllJobsPerStatus } from "./countJobStatus"
 
 //custom
 router.get("/paginated", isUserLoggedIn, paginated)
+router.get("/status-counts", isUserLoggedIn, getAllJobsPerStatus)
 
 //default
 router.get("/", isUserLoggedIn, getAllJobs)
