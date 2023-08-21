@@ -7,6 +7,7 @@ import useStoreSession from "../../../store/useStoreSession"
 import { T_BackendResponse, T_UserBasic } from "custom-validator"
 import useLocation from "../../../hooks/locations/useLocation"
 import { useEffect } from "react"
+import useGetUser from "../../../hooks/users/useGetUser"
 
 const BasicInformation = () => {
   const queryClient = useQueryClient()
@@ -21,6 +22,9 @@ const BasicInformation = () => {
       locationId: location?.item.name as string,
     },
   })
+  const { data: approvedByUserData, isLoading: isGetUserLoading } = useGetUser(
+    userProfile?.item.approvedBy as string
+  )
   const { mutate, isLoading: updateInfoLoading } = useUpdateBasicInfo()
 
   const onSubmit = (data: T_UserBasic) => {
@@ -152,7 +156,10 @@ const BasicInformation = () => {
           <div>
             <h4 className="text-lg text-gray-900 text-center md:text-left">
               <span>Approved by</span>{" "}
-              <span className="text-red-500">Rocky Lorenz</span>
+              <span className="text-red-500">
+                {approvedByUserData?.item.firstName}{" "}
+                {approvedByUserData?.item.lastName}
+              </span>
             </h4>
           </div>
           <button

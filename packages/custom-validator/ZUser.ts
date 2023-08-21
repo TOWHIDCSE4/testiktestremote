@@ -22,7 +22,7 @@ export const ZUserProfile = z.object({
 })
 
 export const ZUser = z.object({
-  _id: z.string().optional(),
+  _id: z.object({}).optional(),
   firstName: z.string(),
   lastName: z.string(),
   role: ZUserRoles,

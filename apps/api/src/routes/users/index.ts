@@ -13,6 +13,15 @@ import { auth } from "./login"
 import { logout } from "./logout"
 import { verify } from "./verify"
 import { updatePassword } from "./updatePassword"
+import { roleCount } from "./roleCount"
+import { paginated } from "./paginated"
+import { acceptUser } from "./accept"
+
+//custom
+router.get("/paginated", isUserLoggedIn, paginated)
+router.get("/role-count/:role", isUserLoggedIn, roleCount)
+router.patch("/password/:id", isUserLoggedIn, updatePassword)
+router.patch("/accept/:id", isUserLoggedIn, acceptUser)
 
 //default
 router.get("/", isUserLoggedIn, getAllUsers)
@@ -26,8 +35,5 @@ router.delete("/:id", isUserLoggedIn, deleteUser)
 router.post("/login", auth)
 router.post("/logout", logout)
 router.get("/verify/:token", verify)
-
-//custom
-router.patch("/password/:id", isUserLoggedIn, updatePassword)
 
 export default router

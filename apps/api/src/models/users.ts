@@ -20,7 +20,7 @@ const users = new Schema({
   },
   lastLoggedIn: Date,
   lastLoggedOut: Date,
-  approveBy: {
+  approvedBy: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
   },
