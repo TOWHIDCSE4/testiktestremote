@@ -7,6 +7,14 @@ const timerLogs = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Part",
   },
+  jobId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Job",
+  },
+  machineId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Machine",
+  },
   timerId: {
     type: mongoose.Schema.ObjectId,
     ref: "Timer",
@@ -23,6 +31,7 @@ const timerLogs = new Schema({
   stopReason: {
     type: [String],
     default: [
+      "Unit Created",
       "Machine Error",
       "Machine Low",
       "Worker Break",

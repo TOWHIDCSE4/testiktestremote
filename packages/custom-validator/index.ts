@@ -54,3 +54,9 @@ export type { T_TimerReading } from "./ZTimerReading"
 
 export { ZTimer } from "./ZTimer"
 export type { T_Timer } from "./ZTimer"
+
+export { ZCycleTimer } from "./ZCycleTimer"
+export type { T_CycleTimer } from "./ZCycleTimer"
+
+export { ZControllerTimer } from "./ZControllerTimer"
+export type { T_ControllerTimer } from "./ZControllerTimer"

@@ -4,6 +4,7 @@ import {
   T_MachineClass,
   T_Part,
   T_Timer,
+  T_User,
 } from "custom-validator"
 import React, { useState, useEffect } from "react"
 import DetailsModal from "./modals/DetailsModal"
@@ -106,6 +107,7 @@ function TimerCards({
                         setOpenDeleteModal={setOpenDeleteModal}
                         setOpenDetailsModal={setOpenDetailsModal}
                         machine={timer?.machine as T_Machine}
+                        operator={timer?.assignedOperator as T_User}
                       />
                     ) : null
                   )

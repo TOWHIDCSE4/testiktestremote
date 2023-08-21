@@ -4,6 +4,7 @@ import {
   T_MachineClass,
   T_Part,
   T_Timer,
+  T_User,
 } from "custom-validator"
 import React, { Dispatch } from "react"
 import useUpdateTimer from "../../../../hooks/timers/useUpdateTimer"
@@ -18,6 +19,7 @@ type T_Props = {
   setOpenDetailsModal: Dispatch<boolean>
   setOpenDeleteModal: Dispatch<boolean>
   machine: T_Machine
+  operator: T_User
 }
 
 const Timer = ({
@@ -28,6 +30,7 @@ const Timer = ({
   setOpenDetailsModal,
   setOpenDeleteModal,
   machine,
+  operator,
 }: T_Props) => {
   const queryClient = useQueryClient()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
@@ -94,10 +97,14 @@ const Timer = ({
       </div>
       <div className="px-4 py-4 text-center space-y-2">
         <h3 className="text-gray-700 font-bold uppercase text-xl">
-          {machine.name}
+          {machine?.name}
         </h3>
         <h1 className="font-bold text-stone-400 text-5xl">00:00:00</h1>
-        <p className="text-amber-600">Please set Operator</p>
+        <p className="text-amber-600">
+          {operator
+            ? `${operator?.firstName} ${operator?.lastName}`
+            : "Please select operator"}
+        </p>
         <div>
           <h2 className="font-semibold text-gray-400 text-3xl">000</h2>
           <h6 className="text-gray-700 font-semibold uppercase text-sm">

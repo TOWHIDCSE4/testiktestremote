@@ -49,6 +49,15 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
           },
         },
         { $unwind: "$machine" },
+        {
+          $lookup: {
+            from: "users",
+            localField: "operator",
+            foreignField: "_id",
+            as: "assignedOperator",
+          },
+        },
+        { $unwind: "$assignedOperator" },
       ])
 
       res.json({

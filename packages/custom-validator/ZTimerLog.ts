@@ -1,9 +1,14 @@
 import { z } from "zod"
 import { ZUser } from "./ZUser"
+import { ZMachine } from "./ZMachine"
+import { ZPart } from "./ZPart"
+import { ZTimer } from "./ZTimer"
+import { ZJob } from "./ZJob"
 
 export const ZTimerLogStatus = z.enum(["Gain", "Loss"])
 
 export const ZTimerStopReason = z.enum([
+  "Unit Created",
   "Machine Error",
   "Machine Low",
   "Worker Break",
@@ -14,8 +19,10 @@ export const ZTimerStopReason = z.enum([
 export const ZTimerLog = z.object({
   _id: z.string().optional(),
   cycleId: z.number().int().positive(),
-  partId: z.string().min(23),
-  timerId: z.string().min(23),
+  machineId: z.union([z.string(), ZMachine]),
+  jobId: z.union([z.string(), ZJob]),
+  partId: z.union([z.string(), ZPart]),
+  timerId: z.union([z.string(), ZTimer]),
   time: z.number().int().positive(),
   operator: z.union([z.string(), ZUser]),
   status: ZTimerLogStatus,
