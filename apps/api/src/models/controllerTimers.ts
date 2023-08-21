@@ -6,6 +6,10 @@ const controllerTimers = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Timer",
   },
+  locationId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Location",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
