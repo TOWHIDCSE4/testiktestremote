@@ -1,22 +1,21 @@
 import React, { Fragment, useEffect, useState } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid"
-import { T_User, T_UserRole } from "custom-validator"
+import { T_BackendResponse, T_User, T_UserRole } from "custom-validator"
 import DeleteModal from "./modals/DeleteModal"
 import ConfirmationModal from "./modals/ConfirmationModal"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
 
-const TabTable = ({ tab }: { tab: T_UserRole }) => {
+const TabTable = ({
+  tab,
+  data,
+}: {
+  tab: T_UserRole
+  data: T_BackendResponse
+}) => {
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
-  const {
-    data: users,
-    isLoading: isUsersLoading,
-    setRole,
-  } = usePaginatedUsers()
-  useEffect(() => {
-    setRole(tab)
-  }, [tab, setRole])
+
   return (
     <>
       {/* {isJobsLoading ? (
@@ -64,7 +63,7 @@ const TabTable = ({ tab }: { tab: T_UserRole }) => {
           </tr>
         </thead>
         <tbody className="bg-white">
-          {users?.items.map((user: T_User, index: number) => (
+          {data?.items?.map((user: T_User, index: number) => (
             <tr key={index} className="border-b border-gray-200">
               <td className="py-4 pl-4 text-sm sm:pl-6 lg:pl-9 text-gray-800">
                 {user.firstName}
