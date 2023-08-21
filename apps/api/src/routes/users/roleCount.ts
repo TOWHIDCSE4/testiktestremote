@@ -14,7 +14,7 @@ export const roleCount = async (req: Request, res: Response) => {
       }).countDocuments()
       res.json({
         error: false,
-        item: req.params.role,
+        item: null,
         itemCount: userRoleCount,
         message: null,
       })

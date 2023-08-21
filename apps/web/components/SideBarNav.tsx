@@ -92,7 +92,7 @@ const navigation = [
     name: "Accounts",
     slug: "accounts",
     href: "/accounts",
-    showOnlyFor: [ROLES.Administrator, ROLES.Corporate, ROLES.Production],
+    showOnlyFor: [ROLES.Administrator, ROLES.Production],
   },
   {
     name: "Team Members",
