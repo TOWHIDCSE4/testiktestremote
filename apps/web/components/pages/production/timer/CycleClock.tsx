@@ -48,7 +48,7 @@ const CycleClock = ({
       <div className="md:float-right mt-2">
         <div className="">
           <div
-            className={`countdown-container rounded-md bg-[#f1f2e1] pt-2 pb-3.5 px-5 border-2 ${
+            className={`countdown-container w-full lg:w-[430px] xl:w-[700px] 2xl:w-[950px] rounded-md bg-[#f1f2e1] pt-2 pb-3.5 px-5 border-2 ${
               progress > 100
                 ? "border-red-500"
                 : isCycleClockRunning
@@ -58,7 +58,7 @@ const CycleClock = ({
           >
             <div className="flex items-center justify-center">
               <h2
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
+                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
@@ -72,7 +72,7 @@ const CycleClock = ({
                 :
               </span>
               <h2
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
+                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
@@ -86,7 +86,7 @@ const CycleClock = ({
                 :
               </span>
               <h2
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
+                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
@@ -100,7 +100,7 @@ const CycleClock = ({
                 :
               </span>
               <h2
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
+                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
