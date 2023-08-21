@@ -1,24 +1,27 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import combineClasses from "../../../helpers/combineClasses"
-import { T_JobStatus, T_UserRole } from "custom-validator"
+import { T_BackendResponse, T_JobStatus, T_UserRole } from "custom-validator"
 import TabTable from "./TabTable"
+import useGetUserRoleCount from "../../../hooks/users/useGetUserRoleCount"
+import { T_BACKEND_RESPONSE } from "../../../types/global"
 
 const ParentTable = () => {
   const [currentTab, setCurrentTab] = useState<T_UserRole>("Personnel")
   // const [deleteModal, setDeleteModal] = useState(false)
   // const [editModal, setEditModal] = useState(false)
-
-  const tabs = [
-    { name: "Personnel", count: 0, current: currentTab === "Personnel" },
-    { name: "Production", count: 0, current: currentTab === "Production" },
-    { name: "Corporate", count: 0, current: currentTab === "Corporate" },
-    {
-      name: "Administrator",
-      count: 0,
-      current: currentTab === "Administrator",
-    },
-  ]
+  const roles = ["Personnel", "Production", "Corporate", "Administrator"]
+  const { data: userRoleCount, setRoles } = useGetUserRoleCount()
+  useEffect(() => {
+    setRoles(roles.map((role) => role) as string[])
+  }, [setRoles])
+  const tabs = userRoleCount?.map((role) => {
+    return {
+      name: role.item as string,
+      count: role.itemCount as number,
+      current: currentTab === role.item,
+    }
+  })
 
   return (
     <>
@@ -49,7 +52,7 @@ const ParentTable = () => {
                       setCurrentTab(e.currentTarget.value as T_UserRole)
                     }}
                   >
-                    {tabs.map((tab) => (
+                    {tabs?.map((tab) => (
                       <option key={tab.name} value={tab.name}>
                         {tab.name}
                       </option>
@@ -61,7 +64,7 @@ const ParentTable = () => {
                     className="isolate flex divide-x divide-gray-200"
                     aria-label="Tabs"
                   >
-                    {tabs.map((tab, tabIdx) => (
+                    {tabs?.map((tab, tabIdx) => (
                       <button
                         key={tab.name}
                         className={combineClasses(
@@ -69,7 +72,7 @@ const ParentTable = () => {
                             ? "text-gray-900"
                             : "text-gray-500 hover:text-gray-700",
                           tabIdx === 0 ? "" : "",
-                          tabIdx === tabs.length - 1 ? "" : "",
+                          tabIdx === tabs?.length - 1 ? "" : "",
                           "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center text-sm font-bold hover:bg-gray-50 focus:z-10"
                         )}
                         aria-current={tab.current ? "page" : undefined}

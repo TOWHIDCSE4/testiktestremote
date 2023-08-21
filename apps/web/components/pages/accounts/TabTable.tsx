@@ -1,13 +1,22 @@
 import React, { Fragment, useEffect, useState } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { EllipsisVerticalIcon } from "@heroicons/react/24/solid"
-import { T_UserRole } from "custom-validator"
+import { T_User, T_UserRole } from "custom-validator"
 import DeleteModal from "./modals/DeleteModal"
 import ConfirmationModal from "./modals/ConfirmationModal"
+import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
 
 const TabTable = ({ tab }: { tab: T_UserRole }) => {
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
+  const {
+    data: users,
+    isLoading: isUsersLoading,
+    setRole,
+  } = usePaginatedUsers()
+  useEffect(() => {
+    setRole(tab)
+  }, [tab, setRole])
   return (
     <>
       {/* {isJobsLoading ? (
@@ -55,107 +64,64 @@ const TabTable = ({ tab }: { tab: T_UserRole }) => {
           </tr>
         </thead>
         <tbody className="bg-white">
-          {/* {jobs?.items?.map((job: T_Job, index) => {
-              return ( */}
-          <tr className="border-b border-gray-200">
-            <td className="py-4 pl-4 text-sm sm:pl-6 lg:pl-9 text-gray-800">
-              William
-            </td>
-            <td className="py-4 text-sm text-gray-800 pl-4">Oliver</td>
-            <td className="py-4 pl-6 text-sm text-green-500">Approved</td>
-            <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8 z-10">
-              <Menu as="div">
-                <Menu.Button>
-                  <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
-                </Menu.Button>
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items>
-                    <div className="rounded-md border border-gray-300 absolute py-3 px-6 right-0 -translate-x-[10px] bg-white">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="text-left text-gray-800 cursor-pointer"
-                            onClick={() => setConfirmationModal(true)}
-                          >
-                            Accept
-                          </div>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="text-left text-gray-800 mt-2 cursor-pointer"
-                            onClick={() => setDeleteModal(true)}
-                          >
-                            Delete
-                          </div>
-                        )}
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
-            </td>
-          </tr>
-          {/* Second row (to be removed) */}
-          <tr className="border-b border-gray-200">
-            <td className="py-4 pl-4 text-sm sm:pl-6 lg:pl-9 text-gray-800">
-              Dwight
-            </td>
-            <td className="py-4 text-sm text-gray-800 pl-4">Howard</td>
-            <td className="py-4 pl-6 text-sm text-yellow-600">Pending</td>
-            <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8 z-10">
-              <Menu as="div">
-                <Menu.Button>
-                  <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
-                </Menu.Button>
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items>
-                    <div className="rounded-md border border-gray-300 absolute py-3 px-6 right-0 -translate-x-[10px] bg-white">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="text-left text-gray-800 cursor-pointer"
-                            onClick={() => setConfirmationModal(true)}
-                          >
-                            Accept
-                          </div>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="text-left text-gray-800 mt-2 cursor-pointer"
-                            onClick={() => setDeleteModal(true)}
-                          >
-                            Delete
-                          </div>
-                        )}
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
-            </td>
-          </tr>
-          {/* )
-            })} */}
+          {users?.items.map((user: T_User, index: number) => (
+            <tr key={index} className="border-b border-gray-200">
+              <td className="py-4 pl-4 text-sm sm:pl-6 lg:pl-9 text-gray-800">
+                {user.firstName}
+              </td>
+              <td className="py-4 text-sm text-gray-800 pl-4">
+                {user.lastName}
+              </td>
+              <td
+                className={`py-4 pl-6 text-sm ${
+                  user.approvedBy ? "text-green-500" : "text-yellow-600"
+                }`}
+              >
+                {user.approvedBy ? "Approved" : "Pending"}
+              </td>
+              <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8 z-10">
+                <Menu as="div">
+                  <Menu.Button>
+                    <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
+                  </Menu.Button>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items>
+                      <div className="rounded-md border border-gray-300 absolute py-3 px-6 right-0 -translate-x-[10px] bg-white">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="text-left text-gray-800 cursor-pointer"
+                              onClick={() => setConfirmationModal(true)}
+                            >
+                              Accept
+                            </div>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="text-left text-gray-800 mt-2 cursor-pointer"
+                              onClick={() => setDeleteModal(true)}
+                            >
+                              Delete
+                            </div>
+                          )}
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
       {/* ) : (
