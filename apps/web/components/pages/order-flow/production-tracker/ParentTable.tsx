@@ -3,7 +3,7 @@ import {
   ChevronRightIcon,
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/solid"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Fragment } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import Image from "next/image"
@@ -12,11 +12,15 @@ import EditModal from "./modals/EditModal"
 import combineClasses from "../../../../helpers/combineClasses"
 import TabTable from "./TabTable"
 import { T_JobStatus } from "custom-validator"
+import useCountStatus from "../../../../hooks/jobs/useCountStatus"
+import usePartLocationCount from "../../../../hooks/parts/useGetPartLocationCount"
 
 const ParentTable = ({ locationId }: { locationId: string }) => {
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [deleteModal, setDeleteModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
+
+  const { data, isLoading, setJobStatuses, setJobLocation } = useCountStatus()
 
   const tabs = [
     { name: "Pending", count: 0, current: currentTab === "Pending" },
@@ -25,6 +29,21 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
     { name: "Archived", count: 0, current: currentTab === "Archived" },
     { name: "Deleted", count: 0, current: currentTab === "Deleted" },
   ]
+
+  useEffect(() => {
+    if (locationId) {
+      setJobLocation(locationId)
+    }
+    setJobStatuses(tabs.map((tab) => tab.name) as string[])
+  }, [locationId])
+
+  const jobStatusCount = data
+    ? data?.map((jobCount) => {
+        if (!jobCount.error) {
+          return jobCount.item
+        }
+      })
+    : []
 
   return (
     <>
@@ -82,7 +101,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                         onClick={() => setCurrentTab(tab.name as T_JobStatus)}
                       >
                         <span>
-                          {tab.name} ({tab.count})
+                          {tab.name} ({jobStatusCount[tabIdx]} )
                         </span>
                         <span
                           aria-hidden="true"
