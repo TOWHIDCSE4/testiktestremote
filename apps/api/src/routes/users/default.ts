@@ -8,6 +8,8 @@ import {
   ADD_SUCCESS_MESSAGE,
   UPDATE_SUCCESS_MESSAGE,
   DELETE_SUCCESS_MESSAGE,
+  VALID_EMAIL,
+  INVALID_EMAIL,
 } from "../../utils/constants"
 import CryptoJS from "crypto-js"
 import { keys } from "../../config/keys"
@@ -80,8 +82,8 @@ export const getUserByEmail = async (req: Request, res: Response) => {
 }
 
 export const addUser = async (req: Request, res: Response) => {
-  const { firstName, lastName, email, password, location, role } = req.body
-  if (firstName && lastName && email && password && location && role) {
+  const { firstName, lastName, email, password, locationId, role } = req.body
+  if (firstName && lastName && email && password && locationId && role) {
     const encryptPassword = CryptoJS.AES.encrypt(
       password,
       keys.encryptKey as string
@@ -92,40 +94,53 @@ export const addUser = async (req: Request, res: Response) => {
       role,
       email,
       password: encryptPassword,
-      location,
+      locationId,
+      profile: null,
+      createdAt: Date.now(),
+      updatedAt: null,
+      deletedAt: null,
     })
-
-    try {
-      const getExistingUser = await Users.find({
-        $or: [{ email }],
-        deletedAt: { $exists: true },
-      })
-      if (getExistingUser.length === 0) {
-        const validateUserInput = ZUser.safeParse(newUser)
-        if (validateUserInput.success) {
-          const createUser = await newUser.save()
-          res.json({
-            error: false,
-            item: createUser,
-            itemCount: 1,
-            message: ADD_SUCCESS_MESSAGE,
-          })
+    const emailDomain = email.split("@")
+    if (VALID_EMAIL.indexOf(emailDomain[1]) > -1) {
+      try {
+        const getExistingUser = await Users.find({
+          $or: [{ email }],
+          deletedAt: { $exists: true },
+        })
+        if (getExistingUser.length === 0) {
+          const validateUserInput = ZUser.safeParse(newUser)
+          if (validateUserInput.success) {
+            const createUser = await newUser.save()
+            res.json({
+              error: false,
+              item: createUser,
+              itemCount: 1,
+              message: ADD_SUCCESS_MESSAGE,
+            })
+          } else {
+            res.json({ error: true, message: validateUserInput.error })
+          }
         } else {
-          res.json({ error: true, message: validateUserInput.error })
+          res.json({
+            error: true,
+            message: ACCOUNT_ALREADY_EXISTS,
+            items: null,
+            itemCount: null,
+          })
         }
-      } else {
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
         res.json({
           error: true,
-          message: ACCOUNT_ALREADY_EXISTS,
+          message: message,
           items: null,
           itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    } else {
       res.json({
         error: true,
-        message: message,
+        message: INVALID_EMAIL,
         items: null,
         itemCount: null,
       })

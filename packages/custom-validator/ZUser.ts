@@ -28,12 +28,12 @@ export const ZUser = z.object({
   role: ZUserRoles,
   email: z.string().email(),
   password: z.string().min(8),
-  locationId: z.union([z.string(), ZLocation]),
-  profile: ZUserProfile.nullable(),
+  locationId: z.union([z.string(), ZLocation, z.object({})]),
+  profile: ZUserProfile.nullable().optional(),
   approvedBy: z.string().optional(),
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
-  deletedAt: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().nullable().optional(),
+  deletedAt: z.date().nullable().optional(),
 })
 
 export const ZUserBasic = ZUser.pick({
