@@ -8,7 +8,7 @@ export async function updateBasicInfo({
   firstName,
   lastName,
   email,
-  location,
+  locationId,
   _id,
 }: T_UserBasic) {
   const token = Cookies.get("tfl")
@@ -30,12 +30,12 @@ export async function updateBasicInfo({
 
 function useUpdateBasicInfo() {
   const query = useMutation(
-    ({ firstName, lastName, email, location, _id }: T_UserBasic) =>
+    ({ firstName, lastName, email, locationId, _id }: T_UserBasic) =>
       updateBasicInfo({
         firstName,
         lastName,
         email,
-        location,
+        locationId,
         _id,
       })
   )

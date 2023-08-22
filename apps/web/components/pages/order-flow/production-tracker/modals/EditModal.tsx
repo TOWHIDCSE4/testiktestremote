@@ -176,7 +176,11 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                           Select Location
                         </option>
                         {locations?.items.map((key, index) => (
-                          <option className="" key={index} value={key._id}>
+                          <option
+                            className=""
+                            key={index}
+                            value={key._id as string}
+                          >
                             {key.name}
                           </option>
                         ))}
@@ -200,7 +204,11 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                           Select User
                         </option>
                         {usersData?.items.map((key, index) => (
-                          <option className="" key={index} value={key._id}>
+                          <option
+                            className=""
+                            key={index}
+                            value={key._id as string}
+                          >
                             {key.firstName + " " + key.lastName}
                           </option>
                         ))}

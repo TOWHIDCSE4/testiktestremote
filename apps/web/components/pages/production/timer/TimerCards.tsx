@@ -97,9 +97,10 @@ function TimerCards({
                     </div>
                   </>
                 ) : (
-                  timersByLocation?.items?.map((timer: T_Timer) =>
+                  timersByLocation?.items?.map((timer: T_Timer, index) =>
                     timer.machineClassId === machineClass._id ? (
                       <Timer
+                        key={index}
                         timer={timer}
                         machineClass={machineClass}
                         isLoading={isTimersByLocationLoading}
