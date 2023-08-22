@@ -35,3 +35,5 @@ export const ALLOWED_ALL_ROLES = [
 export const ADD_SUCCESS_MESSAGE = "Successfully added"
 export const UPDATE_SUCCESS_MESSAGE = "Successfully updated"
 export const DELETE_SUCCESS_MESSAGE = "Successfully deleted"
+export const VALID_EMAIL = ["ameritexpipe.com", "iekomedia.com"]
+export const INVALID_EMAIL = "Your email is invalid"

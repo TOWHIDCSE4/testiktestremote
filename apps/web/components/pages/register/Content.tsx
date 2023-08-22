@@ -72,12 +72,6 @@ const Content = () => {
               <div>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="grid grid-cols-2 gap-x-3">
-                    <input
-                      type="text"
-                      className="hidden"
-                      {...register("profile")}
-                      value={""}
-                    />
                     <div>
                       <label
                         htmlFor="first-name"
@@ -119,13 +113,13 @@ const Content = () => {
                   </div>
                   <div className="mt-4">
                     <label
-                      htmlFor="location"
+                      htmlFor="role"
                       className="block text-sm font-medium text-gray-900"
                     >
                       Department
                     </label>
                     <select
-                      id="location"
+                      id="role"
                       disabled={isLoading}
                       required
                       className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
@@ -154,7 +148,7 @@ const Content = () => {
                       required
                       disabled={isLocationsLoading || isLoading}
                       className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                      {...register("location", { required: true })}
+                      {...register("locationId", { required: true })}
                       defaultValue=""
                     >
                       <option className="uppercase" value="">
