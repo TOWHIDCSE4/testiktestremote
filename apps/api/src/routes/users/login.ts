@@ -20,6 +20,9 @@ export const auth = async (req: Request, res: Response) => {
         const user = await Users.findOne({
           email,
         })
+        if (!user || (user && !user.approvedBy)) {
+          throw new Error("Your account is still pending for approval")
+        }
         if (!user || (user && user.deletedAt)) {
           throw new Error("Account does not exist in our system")
         }
