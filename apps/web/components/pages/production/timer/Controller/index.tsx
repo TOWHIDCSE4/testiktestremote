@@ -151,8 +151,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [cycleClockInSeconds])
 
   const runCycle = (fromDb?: boolean) => {
-    if (!timerDetailData?.item?.operator) {
-      if (!timerDetailData?.item?.jobId) {
+    if (timerDetailData?.item?.operator) {
+      if (timerDetailData?.item?.jobId) {
         if (!isTimerControllerEnded) {
           setIsCycleClockStarting(true)
           startingTimerReadings([
@@ -348,7 +348,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
         onClose={() => setIsEndProductionModalOpen(false)}
         stopTimer={stopTimer}
         timerId={timerId}
-        controllerTimerId={controllerTimer?.items[0]._id as string}
+        controllerTimerId={
+          controllerTimer?.items[0]?._id
+            ? (controllerTimer?.items[0]._id as string)
+            : ""
+        }
         isTimerClockRunning={isTimerClockRunning}
       />
     </div>

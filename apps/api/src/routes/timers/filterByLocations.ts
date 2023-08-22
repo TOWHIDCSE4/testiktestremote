@@ -1,6 +1,4 @@
 import mongoose from "mongoose"
-import factories from "../../models/factories"
-import machines from "../../models/machines"
 import Timers from "../../models/timers"
 import { UNKNOWN_ERROR_OCCURRED } from "../../utils/constants"
 import { Request, Response } from "express"
