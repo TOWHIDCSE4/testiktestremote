@@ -10,7 +10,7 @@ export const ZTimerLogStatus = z.enum(["Gain", "Loss"])
 export const ZTimerStopReason = z.enum([
   "Unit Created",
   "Machine Error",
-  "Machine Low",
+  "Material Low",
   "Worker Break",
   "Maintenance",
   "Change Part",
@@ -18,12 +18,11 @@ export const ZTimerStopReason = z.enum([
 
 export const ZTimerLog = z.object({
   _id: z.string().optional(),
-  cycleId: z.number().int().positive(),
   machineId: z.union([z.string(), ZMachine]),
   jobId: z.union([z.string(), ZJob]),
   partId: z.union([z.string(), ZPart]),
   timerId: z.union([z.string(), ZTimer]),
-  time: z.number().int().positive(),
+  time: z.number().positive(),
   operator: z.union([z.string(), ZUser]),
   status: ZTimerLogStatus,
   stopReason: z.array(ZTimerStopReason),

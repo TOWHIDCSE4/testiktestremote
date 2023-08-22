@@ -1,3 +1,4 @@
+import { T_ControllerTimer } from "custom-validator"
 import React, { Dispatch } from "react"
 
 type T_Props = {
@@ -9,6 +10,7 @@ type T_Props = {
   runCycle: Function
   stopCycle: Function
   progress: number
+  isAbleToStart: boolean
 }
 
 const CycleClock = ({
@@ -20,6 +22,7 @@ const CycleClock = ({
   runCycle,
   stopCycle,
   progress,
+  isAbleToStart,
 }: T_Props) => {
   return (
     <div className="timer">
@@ -128,7 +131,7 @@ const CycleClock = ({
                   isCycleClockStarting
                     ? "scale-75 transition-transform duration-300 text-green-200 cursor-not-allowed"
                     : "text-green-600 cursor-pointer"
-                }`}
+                } ${isAbleToStart ? "" : "text-stone-200 cursor-pointer"}`}
                 onClick={() => !isCycleClockStarting && runCycle()}
               >
                 Start

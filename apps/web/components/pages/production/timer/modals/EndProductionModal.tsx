@@ -1,40 +1,35 @@
 import { Fragment, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import { CheckIcon } from "@heroicons/react/24/outline"
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid"
 import toast from "react-hot-toast"
-import { useQueryClient } from "@tanstack/react-query"
 import { T_BackendResponse } from "custom-validator"
-import useDeleteJob from "../../../../../hooks/jobs/useDeleteJob"
+import useUpdateControllerTimer from "../../../../../hooks/timers/useUpdateControllerTimer"
+import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
+
 interface EndProductionModalProps {
   isOpen: boolean
   onClose: () => void
   stopTimer: () => void
+  timerId: string
+  controllerTimerId: string
+  isTimerClockRunning: boolean
 }
 
 const EndProductionModal = ({
   isOpen,
   onClose,
   stopTimer,
+  timerId,
+  controllerTimerId,
+  isTimerClockRunning,
 }: EndProductionModalProps) => {
-  const queryClient = useQueryClient()
-  const [isDeleted, setIsDeleted] = useState(false)
-
-  const close = () => {
-    onClose()
-    setIsDeleted(false)
-  }
+  const [isEnding, setIsEnding] = useState(false)
+  const { mutate: endControllerTimer, isLoading: isEndControllerTimerLoading } =
+    useEndControllerTimer()
 
   const callBackReq = {
     onSuccess: (returnData: T_BackendResponse) => {
       if (!returnData.error) {
-        if (returnData.item) {
-          queryClient.invalidateQueries({
-            queryKey: ["jobs"],
-          })
-          onClose()
-          toast.success("Job was deleted")
-        }
       } else {
         toast.error(returnData.message as string)
       }
@@ -42,6 +37,21 @@ const EndProductionModal = ({
     onError: (err: any) => {
       toast.error(String(err))
     },
+  }
+
+  const close = () => {
+    if (controllerTimerId && isTimerClockRunning) {
+      setIsEnding(true)
+      stopTimer()
+      setTimeout(function () {
+        endControllerTimer(timerId, callBackReq)
+        onClose()
+        toast.success("Timer was ended")
+        setIsEnding(false)
+      }, 3000)
+    } else {
+      toast.error("You already ended this timer")
+    }
   }
 
   return (
@@ -92,7 +102,7 @@ const EndProductionModal = ({
                   <div className="mt-5 sm:mt-6 flex space-x-5">
                     <button
                       type="button"
-                      //   disabled={isDeleteJobLoading}
+                      disabled={isEnding}
                       className="inline-flex w-full justify-center border border-gray-300 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       onClick={onClose}
                     >
@@ -100,11 +110,11 @@ const EndProductionModal = ({
                     </button>
                     <button
                       type="button"
-                      //   disabled={isDeleteJobLoading}
-                      className="inlne-flex w-full justify-center rounded-md bg-blue-950 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70"
-                      onClick={stopTimer}
+                      disabled={isEnding}
+                      className="inline-flex w-full justify-center rounded-md bg-blue-950 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70"
+                      onClick={close}
                     >
-                      {/* {isDeleteJobLoading ? (
+                      {isEnding ? (
                         <div
                           className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full"
                           role="status"
@@ -114,8 +124,7 @@ const EndProductionModal = ({
                         </div>
                       ) : (
                         "Yes"
-                      )} */}
-                      Yes
+                      )}
                     </button>
                   </div>
                 </>

@@ -1,10 +1,5 @@
-import {
-  API_URL_JOBS,
-  API_URL_PARTS,
-  ONE_DAY,
-  THREE_MINUTES,
-} from "../../helpers/constants"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { API_URL_JOBS, THREE_MINUTES } from "../../helpers/constants"
+import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse, T_Part } from "custom-validator"
 import Cookies from "js-cookie"
 import { useEffect, useState } from "react"
@@ -49,7 +44,7 @@ function useCountStatus() {
       query.refetch()
     }
   }, [jobLocationId, statuses])
-  console.log(jobLocationId)
+
   return {
     ...query,
     setJobStatuses: setStatuses,

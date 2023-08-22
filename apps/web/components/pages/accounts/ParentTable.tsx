@@ -74,7 +74,6 @@ const ParentTable = () => {
     setRole(currentTab)
   }, [currentTab, setRole])
   const numberOfPages = Math.ceil((users?.itemCount as number) / 10)
-  console.log("parentTable", isUsersLoading)
   return (
     <>
       <div

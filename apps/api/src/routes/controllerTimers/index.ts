@@ -7,8 +7,12 @@ import {
   updateControllerTimer,
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
-import isRoleAllowed from "../../helpers/isRoleAllowed"
-import { ALLOWED_ALL_ROLES } from "../../utils/constants"
+import { todayControllerTimer } from "./todayControllerTimer"
+import { endControllerTimer } from "./endControllerTimer"
+
+//custom
+router.get("/today", isUserLoggedIn, todayControllerTimer)
+router.patch("/end", isUserLoggedIn, endControllerTimer)
 
 //default
 router.get("/", isUserLoggedIn, getAllControllerTimers)

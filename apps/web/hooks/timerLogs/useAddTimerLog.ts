@@ -1,47 +1,23 @@
-import { API_URL_TIMER, API_URL_TIMER_LOGS } from "../../helpers/constants"
+import { API_URL_TIMER_LOGS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
-import { T_TimerLog } from "custom-validator"
+import { T_BackendResponse, T_TimerLog } from "custom-validator"
 import Cookies from "js-cookie"
 
-export async function addTimerLog({
-  partId,
-  timerId,
-  time,
-  operator,
-  status,
-  stopReason,
-}: T_TimerLog) {
+export async function addTimerLog(props: T_TimerLog) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_TIMER_LOGS}`, {
     method: "POST",
-    body: JSON.stringify({
-      partId,
-      timerId,
-      time,
-      operator,
-      status,
-      stopReason,
-    }),
+    body: JSON.stringify(props),
     headers: {
       "content-type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   })
-  return await res.json()
+  return (await res.json()) as T_BackendResponse
 }
 
 function useAddTimerLog() {
-  const query = useMutation(
-    ({ partId, timerId, time, operator, status, stopReason }: T_TimerLog) =>
-      addTimerLog({
-        partId,
-        timerId,
-        time,
-        operator,
-        status,
-        stopReason,
-      })
-  )
+  const query = useMutation((props: T_TimerLog) => addTimerLog(props))
 
   return query
 }

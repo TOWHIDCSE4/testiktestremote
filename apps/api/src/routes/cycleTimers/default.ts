@@ -62,16 +62,14 @@ export const addCycleTimer = async (req: Request, res: Response) => {
     const newCycleTimer = new CycleTimer({
       timerId,
       endAt: null,
-      updatedAt: null,
       createdAt: Date.now(),
-      deletedAt: null,
     })
     const parseCycleTimer = ZCycleTimer.safeParse(req.body)
     if (parseCycleTimer.success) {
       try {
         const getExistingCycleTimer = await CycleTimer.find({
           $or: [{ timerId }],
-          deletedAt: { $exists: false },
+          endAt: null,
         })
         if (getExistingCycleTimer.length === 0) {
           const createCycleTimer = await newCycleTimer.save()

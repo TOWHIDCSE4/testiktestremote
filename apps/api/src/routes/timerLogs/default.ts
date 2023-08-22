@@ -60,54 +60,22 @@ export const getTimeLog = async (req: Request, res: Response) => {
 }
 
 export const addTimeLog = async (req: Request, res: Response) => {
-  const { partId, timerId, time, operator, status, stopReason } = req.body
-  if (partId && timerId && time && operator && status && stopReason) {
-    const newTomerLog = new TimerLogs({
-      partId,
-      timerId,
-      time,
-      operator,
-      status,
-      stopReason,
-      updatedAt: null,
-      deletedAt: null,
-    })
-    const parsedTimerLog = ZTimerLog.safeParse(req.body)
-    if (parsedTimerLog.success) {
-      try {
-        const getExistingTimerLog = await TimerLogs.find({
-          $and: [{ partId }, { timerId }],
-          deletedAt: { $exists: false },
-        })
-        if (getExistingTimerLog.length === 0) {
-          const createTimerLog = await newTomerLog.save()
-          res.json({
-            error: false,
-            item: createTimerLog,
-            itemCount: 1,
-            message: ADD_SUCCESS_MESSAGE,
-          })
-        } else {
-          res.json({
-            error: true,
-            message: TIMER_LOG_ALREADY_EXISTS,
-            items: null,
-            itemCount: null,
-          })
-        }
-      } catch (err: any) {
-        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.json({
-          error: true,
-          message: message,
-          items: null,
-          itemCount: null,
-        })
-      }
-    } else {
+  const parsedTimerLog = ZTimerLog.safeParse(req.body)
+  if (parsedTimerLog.success) {
+    const newTimerLog = new TimerLogs(req.body)
+    try {
+      const createTimerLog = await newTimerLog.save()
+      res.json({
+        error: false,
+        item: createTimerLog,
+        itemCount: 1,
+        message: ADD_SUCCESS_MESSAGE,
+      })
+    } catch (err: any) {
+      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       res.json({
         error: true,
-        message: parsedTimerLog.error.issues,
+        message: message,
         items: null,
         itemCount: null,
       })
@@ -115,7 +83,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
   } else {
     res.json({
       error: true,
-      message: REQUIRED_VALUE_EMPTY,
+      message: parsedTimerLog.error.issues,
       items: null,
       itemCount: null,
     })

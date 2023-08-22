@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
-import { hourMinuteSecond } from "../../../../helpers/timeConverter"
+import { hourMinuteSecond } from "../../../../../helpers/timeConverter"
 
-const ControllerDateTime = ({ timeZone }: { timeZone: string }) => {
+const DateTime = ({ timeZone }: { timeZone: string }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   const currentDate = dayjs
@@ -57,4 +57,4 @@ const ControllerDateTime = ({ timeZone }: { timeZone: string }) => {
   )
 }
 
-export default ControllerDateTime
+export default DateTime

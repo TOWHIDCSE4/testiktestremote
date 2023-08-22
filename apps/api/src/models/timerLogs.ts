@@ -2,7 +2,6 @@ import mongoose from "mongoose"
 const { Schema } = mongoose
 
 const timerLogs = new Schema({
-  cycledId: Number,
   partId: {
     type: mongoose.Schema.ObjectId,
     ref: "Part",
@@ -30,14 +29,15 @@ const timerLogs = new Schema({
   },
   stopReason: {
     type: [String],
-    default: [
+    enum: [
       "Unit Created",
       "Machine Error",
-      "Machine Low",
+      "Material Low",
       "Worker Break",
       "Maintenance",
       "Change Part",
     ],
+    default: ["Unit Created"],
   },
   createdAt: {
     type: Date,

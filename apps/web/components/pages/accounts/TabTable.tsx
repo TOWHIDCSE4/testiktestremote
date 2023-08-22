@@ -19,7 +19,6 @@ const TabTable = ({
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
   const [selectedRowId, setSelectedRowId] = useState("")
-  console.log("tabTable", isUsersLoading)
   return (
     <>
       {isUsersLoading ? (
