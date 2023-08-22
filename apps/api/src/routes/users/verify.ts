@@ -16,8 +16,6 @@ export const verify = async (req: Request, res: Response) => {
       const RD_Session = await redisClient.hGetAll(req.params.token)
       const user = await Users.findOne({
         email,
-        deletedAt: { $exists: false },
-        blockedAt: { $exists: false },
       })
       const isTokenExpired = dayjs().isAfter(RD_Session.expireIn)
       if (user && !isTokenExpired) {
