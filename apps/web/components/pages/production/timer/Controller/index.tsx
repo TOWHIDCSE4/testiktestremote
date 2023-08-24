@@ -25,6 +25,7 @@ import toast from "react-hot-toast"
 import useGetCycleTimer from "../../../../../hooks/timers/useGetCycleTimer"
 import useEndCycleTimer from "../../../../../hooks/timers/useEndCycleTimer"
 import useAddTimerLog from "../../../../../hooks/timerLogs/useAddTimerLog"
+import useAddControllerTimer from "../../../../../hooks/timers/useAddControllerTimer"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -36,6 +37,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const { data: cycleTimer, isLoading: isCycleTimerLoading } =
     useGetCycleTimer(timerId)
 
+  const { mutate: addControllerTimer, isLoading: isAddControllerTimerLoading } =
+    useAddControllerTimer()
   const { mutate: addCycleTimer, isLoading: isAddCycleTimerLoading } =
     useAddCycleTimer()
   const { mutate: endAddCycleTimer, isLoading: isEndAddCycleTimerLoading } =
@@ -171,6 +174,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
             setCycleClockIntervalId(interval)
             setIsCycleClockRunning(true)
             if (!isTimerClockRunning && !fromDb) {
+              addControllerTimer(
+                { timerId, locationId: timerDetailData?.item?.locationId._id },
+                callBackReq
+              )
               runTimer()
             }
             setIsCycleClockStarting(false)
@@ -260,7 +267,9 @@ const Controller = ({ timerId }: { timerId: string }) => {
       )
       const currentDate = dayjs.utc(
         dayjs.tz(
-          dayjs(controllerTimer?.items[0].endAt),
+          controllerTimer?.items[0].endAt
+            ? dayjs(controllerTimer?.items[0].endAt)
+            : dayjs(),
           timeZone ? timeZone : ""
         )
       )

@@ -11,6 +11,9 @@ import { T_MachineClass } from "custom-validator"
 import FilterCheckbox from "./FilterCheckbox"
 import { hourMinuteSecond } from "../../../../helpers/timeConverter"
 import LocalTime from "./LocalTime"
+import useGetLocationLastUpdate from "../../../../hooks/timers/useGetLocationLastUpdate"
+import LastUpdated from "./LastUpdated"
+import InProduction from "./InProduction"
 
 const Clocks = ({
   locationId,
@@ -151,22 +154,12 @@ const Clocks = ({
           timeZone={location?.item.timeZone ? location?.item.timeZone : ""}
           isLoading={isLocationLoading}
         />
-        <div className="rounded-md bg-white shadow p-2 text-center">
-          <h5 className="text-lg text-gray-700 uppercase font-bold">
-            00:00:00
-          </h5>
-          <h6 className="uppercase text-gray-400 font-medium text-sm">
-            Last Updated
-          </h6>
-        </div>
-        <div className="rounded-md bg-white shadow p-2 text-center">
-          <h5 className="text-lg text-gray-700 uppercase font-bold">
-            00:00:00
-          </h5>
-          <h6 className="uppercase text-gray-400 font-medium text-sm">
-            In Production
-          </h6>
-        </div>
+        <LastUpdated
+          locationId={locationId}
+          timeZone={location?.item.timeZone ? location?.item.timeZone : ""}
+          isLoading={isLocationLoading}
+        />
+        <InProduction locationId={locationId} isLoading={isLocationLoading} />
         <div
           className="rounded-md bg-white shadow p-2 text-center hover:bg-gray-50 cursor-pointer"
           onClick={() => setOpenProduction(true)}

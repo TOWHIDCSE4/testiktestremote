@@ -9,9 +9,17 @@ import {
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { todayControllerTimer } from "./todayControllerTimer"
 import { endControllerTimer } from "./endControllerTimer"
+import { locationLastUpdate } from "./locationLastUpdate"
+import { inProduction } from "./inProduction"
 
 //custom
 router.get("/today", isUserLoggedIn, todayControllerTimer)
+router.get("/in-production/:locationId", isUserLoggedIn, inProduction)
+router.get(
+  "/location-last-update/:locationId",
+  isUserLoggedIn,
+  locationLastUpdate
+)
 router.patch("/end", isUserLoggedIn, endControllerTimer)
 
 //default
