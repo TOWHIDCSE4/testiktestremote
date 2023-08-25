@@ -8,7 +8,7 @@ import Cookies from "js-cookie"
 
 export async function getTimerLog(id: string | undefined) {
   const token = Cookies.get("tfl")
-  const res = await fetch(`${API_URL_TIMER_LOGS}/${id}`, {
+  const res = await fetch(`${API_URL_TIMER_LOGS}/timer/${id}`, {
     method: "GET",
     headers: {
       "content-type": "application/json",
@@ -19,7 +19,7 @@ export async function getTimerLog(id: string | undefined) {
 }
 
 function useGetTimerLog(id: string | undefined) {
-  const query = useQuery(["part", id], () => getTimerLog(id), {
+  const query = useQuery(["timer-log", id], () => getTimerLog(id), {
     cacheTime: ONE_DAY,
     staleTime: ONE_DAY,
     refetchOnWindowFocus: false,

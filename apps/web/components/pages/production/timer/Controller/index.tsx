@@ -26,6 +26,7 @@ import useGetCycleTimer from "../../../../../hooks/timers/useGetCycleTimer"
 import useEndCycleTimer from "../../../../../hooks/timers/useEndCycleTimer"
 import useAddTimerLog from "../../../../../hooks/timerLogs/useAddTimerLog"
 import useAddControllerTimer from "../../../../../hooks/timers/useAddControllerTimer"
+import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -49,6 +50,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const { mutate: addTimerLogs, isLoading: isAddTimerLogsLoading } =
     useAddTimerLog()
 
+  const { data: timerLogs, isLoading: isTimerLogsLoading } = useGetAllTimerLogs(
+    { locationId: timerDetailData?.item?.locationId._id, timerId }
+  )
+
   const sectionDiv = useRef<HTMLDivElement>(null)
 
   const [isTimerControllerEnded, setIsTimerControllerEnded] = useState(false)
@@ -56,6 +61,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const [endMenu, setEndMenu] = useState(false)
   const [progress, setProgress] = useState(0)
   const [unitsCreated, setUnitsCreated] = useState(0)
+  const [totals, setTotals] = useState({
+    unitsPerHour: 0,
+    tonsPerHour: 0,
+    totalTons: 0,
+  })
 
   const [isTimerClockRunning, setIsTimerClockRunning] = useState(false)
   const [timerClockInSeconds, setTimerClockInSeconds] = useState(0)
@@ -259,19 +269,15 @@ const Controller = ({ timerId }: { timerId: string }) => {
   useEffect(() => {
     if (controllerTimer?.items && controllerTimer?.items.length > 0) {
       const timeZone = timerDetailData?.item?.locationId.timeZone
-      const timerStart = dayjs.utc(
-        dayjs.tz(
-          dayjs(controllerTimer?.items[0].createdAt),
-          timeZone ? timeZone : ""
-        )
+      const timerStart = dayjs.tz(
+        dayjs(controllerTimer?.items[0].createdAt),
+        timeZone ? timeZone : ""
       )
-      const currentDate = dayjs.utc(
-        dayjs.tz(
-          controllerTimer?.items[0].endAt
-            ? dayjs(controllerTimer?.items[0].endAt)
-            : dayjs(),
-          timeZone ? timeZone : ""
-        )
+      const currentDate = dayjs.tz(
+        controllerTimer?.items[0].endAt
+          ? dayjs(controllerTimer?.items[0].endAt)
+          : dayjs(),
+        timeZone ? timeZone : ""
       )
       const secondsLapse = currentDate.diff(timerStart, "seconds", true)
       setTimerClockInSeconds(secondsLapse)
@@ -286,13 +292,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
   useEffect(() => {
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
       const timeZone = timerDetailData?.item?.locationId.timeZone
-      const timerStart = dayjs.utc(
-        dayjs.tz(
-          dayjs(cycleTimer?.items[0].createdAt),
-          timeZone ? timeZone : ""
-        )
+      const timerStart = dayjs.tz(
+        dayjs(cycleTimer?.items[0].createdAt),
+        timeZone ? timeZone : ""
       )
-      const currentDate = dayjs.utc(dayjs.tz(dayjs(), timeZone ? timeZone : ""))
+      const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
       const secondsLapse = currentDate.diff(timerStart, "seconds", true)
       setCycleClockInSeconds(secondsLapse)
       if (!cycleTimer?.items[0].endAt) {
@@ -301,6 +305,47 @@ const Controller = ({ timerId }: { timerId: string }) => {
       }
     }
   }, [cycleTimer])
+
+  useEffect(() => {
+    if (timerLogs?.items && timerLogs?.items?.length > 0) {
+      setUnitsCreated(timerLogs.itemCount as number)
+    }
+  }, [timerLogs])
+
+  useEffect(() => {
+    if (
+      timerDetailData?.item &&
+      timerLogs?.itemCount &&
+      timerLogs?.items?.length > 0 &&
+      timerClockInSeconds > 0
+    ) {
+      const hoursLapse = timerClockInSeconds / 3600
+      setTotals({
+        unitsPerHour: timerLogs?.itemCount / Math.round(hoursLapse),
+        tonsPerHour:
+          (timerLogs?.itemCount *
+            (timerDetailData?.item?.partId.pounds as number)) /
+          Math.round(hoursLapse),
+        totalTons:
+          timerLogs?.itemCount *
+          (timerDetailData?.item?.partId.pounds as number),
+      })
+    }
+  }, [timerLogs, timerDetailData])
+
+  useEffect(() => {
+    if (timerDetailData?.item && timerClockInSeconds > 0) {
+      const hoursLapse = timerClockInSeconds / 3600
+      setTotals({
+        unitsPerHour: unitsCreated / Math.round(hoursLapse),
+        tonsPerHour:
+          (unitsCreated * (timerDetailData?.item?.partId.pounds as number)) /
+          Math.round(hoursLapse),
+        totalTons:
+          unitsCreated * (timerDetailData?.item?.partId.pounds as number),
+      })
+    }
+  }, [timerDetailData, unitsCreated])
 
   return (
     <div>
@@ -328,7 +373,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
             progress={progress}
             isAbleToStart={!isTimerControllerEnded}
           />
-          <Results unitsCreated={unitsCreated} />
+          <Results unitsCreated={unitsCreated} totals={totals} />
         </div>
         {/* End Medium - large screen show timer data */}
       </div>

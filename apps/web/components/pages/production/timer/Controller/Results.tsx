@@ -1,6 +1,16 @@
 import React from "react"
 
-const Results = ({ unitsCreated }: { unitsCreated: number }) => {
+const Results = ({
+  unitsCreated,
+  totals,
+}: {
+  unitsCreated: number
+  totals: {
+    unitsPerHour: number
+    tonsPerHour: number
+    totalTons: number
+  }
+}) => {
   return (
     <>
       {/* Small screen show timer data */}
@@ -40,19 +50,19 @@ const Results = ({ unitsCreated }: { unitsCreated: number }) => {
             <h5 className="uppercase text-sm xl:text-lg 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right">
               Units Per Hour:{" "}
               <span className="uppercase text-sm xl:text-lg 2xl:text-3xl font-semibold text-gray-500">
-                0.000
+                {totals?.unitsPerHour.toFixed(3)}
               </span>
             </h5>
             <h5 className="uppercase text-sm xl:text-lg 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right">
               Tons Per Hour:{" "}
               <span className="uppercase text-sm xl:text-lg 2xl:text-3xl font-semibold text-gray-500">
-                0.000
+                {totals?.tonsPerHour.toFixed(3)}
               </span>
             </h5>
             <h5 className="uppercase text-sm xl:text-lg 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right">
               Total Tons:{" "}
               <span className="uppercase text-sm xl:text-lg 2xl:text-3xl font-semibold text-gray-500">
-                0.000
+                {totals?.totalTons.toFixed(3)}
               </span>
             </h5>
           </div>

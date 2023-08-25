@@ -8,6 +8,10 @@ import {
   updateTimeLog,
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
+import { timer } from "./timer"
+
+//custom
+router.get("/timer", isUserLoggedIn, timer)
 
 //default
 router.get("/", isUserLoggedIn, getAllTimeLogs)

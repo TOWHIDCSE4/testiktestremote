@@ -17,9 +17,7 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
           $match: {
             $and: [
               { locationId: new mongoose.Types.ObjectId(locationId as string) },
-              {
-                $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-              },
+              { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
             ],
           },
         },
@@ -46,7 +44,12 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
             as: "machine",
           },
         },
-        { $unwind: "$machine" },
+        {
+          $unwind: {
+            path: "$machine",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
         {
           $lookup: {
             from: "users",
@@ -55,7 +58,12 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
             as: "assignedOperator",
           },
         },
-        { $unwind: "$assignedOperator" },
+        {
+          $unwind: {
+            path: "$assignedOperator",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
       ])
 
       res.json({

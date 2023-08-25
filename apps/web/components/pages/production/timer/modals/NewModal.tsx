@@ -11,8 +11,8 @@ import {
 } from "custom-validator"
 import useFactoryMachineClasses from "../../../../../hooks/factories/useFactoryMachineClasses"
 import { useForm } from "react-hook-form"
-import useGetMachineByClass from "../../../../../hooks/machines/useGetMachinesByClass"
-import useGetPartByMachineClass from "../../../../../hooks/parts/useGetPartByMachineClass"
+import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/useGetMachinesByMachineClassLocation"
+import useGetPartByMachineClassLocation from "../../../../../hooks/parts/useGetPartByMachineClassLocation"
 import usePart from "../../../../../hooks/parts/useGetPart"
 import toast from "react-hot-toast"
 import useAddTimer from "../../../../../hooks/timers/useAddTimer"
@@ -47,13 +47,15 @@ const NewModal = ({
   const {
     data: machines,
     isLoading: isMachinesLoading,
-    setSelectedMachineClassId: setMachineSelect,
-  } = useGetMachineByClass()
+    setSelectedMachineClassId: setMachinesSelectClass,
+    setSelectedLocationId: setMachineSelectLocation,
+  } = useGetMachinesByMachineClassLocation()
   const {
     data: parts,
     isLoading: isPartsLoading,
-    setSelectedMachineClassId: setPartSelect,
-  } = useGetPartByMachineClass()
+    setSelectedMachineClassId,
+    setSelectedLocationId,
+  } = useGetPartByMachineClassLocation()
   const { data: specificPart, isLoading: isSpecificPartLoading } =
     usePart(activePart)
 
@@ -183,8 +185,10 @@ const NewModal = ({
                         }
                         onChange={(e) => {
                           setSelectedMachineClass(e.target.value)
-                          setMachineSelect(e.target.value)
-                          setPartSelect(e.target.value)
+                          setMachinesSelectClass(e.target.value)
+                          setMachineSelectLocation(locationId as string)
+                          setSelectedMachineClassId(e.target.value)
+                          setSelectedLocationId(locationId as string)
                         }}
                       >
                         <option disabled value="">
