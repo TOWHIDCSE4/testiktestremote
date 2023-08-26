@@ -199,7 +199,7 @@ const MachineDetailsModal = ({
                     {...register("machineClassId", { required: true })}
                   >
                     <option disabled>Machine Class</option>
-                    {machineClasses?.items.map(
+                    {machineClasses?.items?.map(
                       (machine: T_MachineClass, index: number) => {
                         return (
                           <option

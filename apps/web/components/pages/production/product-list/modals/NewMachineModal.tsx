@@ -219,7 +219,7 @@ const NewMachineModal = ({
                         {...register("machineClassId", { required: true })}
                       >
                         <option value="">Select Machine Class</option>
-                        {machineClasses?.items.map(
+                        {machineClasses?.items?.map(
                           (machine: T_MachineClass, index: number) => {
                             return (
                               <option key={index} value={machine._id as string}>

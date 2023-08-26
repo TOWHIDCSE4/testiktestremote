@@ -228,6 +228,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
                 ? "Gain"
                 : "Loss",
             stopReason: ["Unit Created"],
+            cycle: unitsCreated + 1,
           },
           callBackReq
         )
@@ -251,6 +252,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
                 ? "Gain"
                 : "Loss",
             stopReason: stopReasons,
+            cycle: unitsCreated + 1,
           },
           callBackReq
         )
@@ -319,13 +321,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
       timerLogs?.items?.length > 0 &&
       timerClockInSeconds > 0
     ) {
-      const hoursLapse = timerClockInSeconds / 3600
+      const hoursLapse =
+        timerClockInSeconds > 3600 ? timerClockInSeconds / 3600 : 1
       setTotals({
-        unitsPerHour: timerLogs?.itemCount / Math.round(hoursLapse),
+        unitsPerHour: timerLogs?.itemCount / hoursLapse,
         tonsPerHour:
           (timerLogs?.itemCount *
             (timerDetailData?.item?.partId.pounds as number)) /
-          Math.round(hoursLapse),
+          hoursLapse,
         totalTons:
           timerLogs?.itemCount *
           (timerDetailData?.item?.partId.pounds as number),
@@ -335,7 +338,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   useEffect(() => {
     if (timerDetailData?.item && timerClockInSeconds > 0) {
-      const hoursLapse = timerClockInSeconds / 3600
+      const hoursLapse =
+        timerClockInSeconds > 3600 ? timerClockInSeconds / 3600 : 1
       setTotals({
         unitsPerHour: unitsCreated / Math.round(hoursLapse),
         tonsPerHour:

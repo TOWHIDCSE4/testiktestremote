@@ -11,7 +11,7 @@ import Locations from "../../models/location"
 import TimerLogs from "../../models/timerLogs"
 
 export const timer = async (req: Request, res: Response) => {
-  const { locationId, timerId } = req.query
+  const { locationId, timerId, page } = req.query
   if (locationId && timerId) {
     dayjs.extend(utc.default)
     dayjs.extend(timezone.default)
@@ -38,14 +38,46 @@ export const timer = async (req: Request, res: Response) => {
         const currentDateTZ = dayjs.tz(dayjs(), timeZone ? timeZone : "")
         const diffHours = currentDateTZ.diff(createdAtTZ, "hour")
         if (location?.productionTime && location?.productionTime > diffHours) {
-          const timerLogsCount = await TimerLogs.find({
-            timerId,
-            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-          }).countDocuments()
-          const getTimerLogs = await TimerLogs.find({
-            timerId,
-            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-          })
+          let timerLogsCount = null
+          let getTimerLogs = null
+          if (page && page !== "undefined") {
+            timerLogsCount = await TimerLogs.find({
+              timerId,
+              createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+              $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+            })
+              .countDocuments()
+              .sort({
+                createdAt: -1,
+              })
+              .skip(5 * (Number(page) - 1))
+              .limit(5)
+            getTimerLogs = await TimerLogs.find({
+              timerId,
+              createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+              $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+            })
+              .populate("partId")
+              .populate("operator")
+              .sort({
+                createdAt: -1,
+              })
+              .skip(5 * (Number(page) - 1))
+              .limit(5)
+          } else {
+            timerLogsCount = await TimerLogs.find({
+              timerId,
+              createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+              $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+            }).countDocuments()
+            getTimerLogs = await TimerLogs.find({
+              timerId,
+              createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+              $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+            })
+              .populate("partId")
+              .populate("operator")
+          }
           res.json({
             error: false,
             items: getTimerLogs,

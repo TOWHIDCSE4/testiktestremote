@@ -115,7 +115,13 @@ function TimerCards({
                 )}
               </div>
             </div>
-            <TimerTracker />
+            <h6 className="font-bold text-lg text-gray-800 uppercase mt-7">
+              Timer Tracker - Radial Press And Variants
+            </h6>
+            <TimerTracker
+              locationId={locationId}
+              machineClassId={machineClass._id as string}
+            />
           </>
         ) : isTimersByLocationLoading ? (
           <>

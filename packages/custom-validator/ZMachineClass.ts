@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const ZMachineClass = z.object({
-  _id: z.object({}).optional(),
+  _id: z.string().optional(),
   name: z.string().min(2),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),

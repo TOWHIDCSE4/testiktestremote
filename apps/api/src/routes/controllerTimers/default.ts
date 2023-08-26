@@ -9,7 +9,10 @@ import {
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZControllerTimer } from "custom-validator"
-import { date } from "zod"
+import Locations from "../../models/location"
+import dayjs from "dayjs"
+import * as timezone from "dayjs/plugin/timezone"
+import * as utc from "dayjs/plugin/utc"
 
 export const getAllControllerTimers = async (req: Request, res: Response) => {
   try {
@@ -58,23 +61,35 @@ export const getControllerTimer = async (req: Request, res: Response) => {
 }
 
 export const addControllerTimer = async (req: Request, res: Response) => {
+  dayjs.extend(utc.default)
+  dayjs.extend(timezone.default)
   const { timerId, locationId } = req.body
   if (timerId && locationId) {
-    const newControllerTimer = new ControllerTimer({
-      timerId,
-      locationId,
-      endAt: null,
-      updatedAt: null,
-      createdAt: Date.now(),
-    })
     const parseControllerTimer = ZControllerTimer.safeParse(req.body)
     if (parseControllerTimer.success) {
       try {
-        const getExistingControllerTimer = await ControllerTimer.find({
-          $or: [{ timerId }],
-          deletedAt: { $exists: false },
+        const location = await Locations.findOne({
+          _id: locationId,
         })
-        if (getExistingControllerTimer.length === 0) {
+        const timeZone = location?.timeZone
+        const currentDateStart = dayjs
+          .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
+          .toISOString()
+        const currentDateEnd = dayjs
+          .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
+          .toISOString()
+        const isControllerExistToday = await ControllerTimer.findOne({
+          timerId,
+          createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+        })
+        if (!isControllerExistToday) {
+          const newControllerTimer = new ControllerTimer({
+            timerId,
+            locationId,
+            endAt: null,
+            updatedAt: null,
+            createdAt: Date.now(),
+          })
           const createControllerTimer = await newControllerTimer.save()
           res.json({
             error: false,

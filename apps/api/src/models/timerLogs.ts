@@ -2,6 +2,7 @@ import mongoose from "mongoose"
 const { Schema } = mongoose
 
 const timerLogs = new Schema({
+  cycle: Number,
   partId: {
     type: mongoose.Schema.ObjectId,
     ref: "Part",

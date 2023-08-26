@@ -54,7 +54,7 @@ const Timer = ({
   }
   const openController = () => {
     window.open(
-      `/production/timer/${timer._id}/controller`,
+      `/production/timer/controller/${timer._id}`,
       "Timer Controller",
       "location,status,scrollbars,resizable,width=1024, height=800"
     )

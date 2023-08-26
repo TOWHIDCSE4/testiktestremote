@@ -6,6 +6,7 @@ import {
 import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse, T_TimerLog } from "custom-validator"
 import Cookies from "js-cookie"
+import { useEffect, useState } from "react"
 
 type T_DBReturn = Omit<T_BackendResponse, "items"> & {
   items: T_TimerLog[]
@@ -14,13 +15,15 @@ type T_DBReturn = Omit<T_BackendResponse, "items"> & {
 export async function getAllTimerLogs({
   locationId,
   timerId,
+  page,
 }: {
   locationId: string
   timerId: string
+  page?: number
 }) {
   const token = Cookies.get("tfl")
   const res = await fetch(
-    `${API_URL_TIMER_LOGS}/timer?locationId=${locationId}&timerId=${timerId}`,
+    `${API_URL_TIMER_LOGS}/timer?locationId=${locationId}&timerId=${timerId}&page=${page}`,
     {
       method: "GET",
       headers: {
@@ -35,13 +38,16 @@ export async function getAllTimerLogs({
 function useGetAllTimerLogs({
   locationId,
   timerId,
+  paginated = false,
 }: {
   locationId: string
   timerId: string
+  paginated?: boolean
 }) {
+  const [page, setPage] = useState(paginated ? 1 : undefined)
   const query = useQuery(
-    ["timer-logs", locationId, timerId],
-    () => getAllTimerLogs({ locationId, timerId }),
+    ["timer-logs", locationId, timerId, page],
+    () => getAllTimerLogs({ locationId, timerId, page }),
     {
       cacheTime: SIXTEEN_HOURS,
       staleTime: TWELVE_HOURS,
@@ -49,6 +55,11 @@ function useGetAllTimerLogs({
       enabled: !!locationId && !!timerId,
     }
   )
-  return query
+  useEffect(() => {
+    if (paginated && page && page > 1) {
+      query.refetch()
+    }
+  }, [page])
+  return { ...query, page, setPage }
 }
 export default useGetAllTimerLogs
