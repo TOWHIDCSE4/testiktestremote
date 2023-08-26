@@ -59,7 +59,10 @@ const Report = ({
         <h4 className="text-gray-400 font-bold">Powered by Iekomedia</h4>
         <div className="flex space-x-4">
           <ArrowDownTrayIcon className="h-5 w-5 text-gray-400 cursor-pointer" />
-          <PrinterIcon className="h-5 w-5 text-white cursor-pointer" />
+          <PrinterIcon
+            className="h-5 w-5 text-white cursor-pointer"
+            onClick={() => window.print()}
+          />
         </div>
       </header>
       <main className="px-8">
