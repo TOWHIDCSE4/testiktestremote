@@ -41,7 +41,7 @@ const Results = ({
         </h5>
       </div>
       {/* Medium - large screen show timer data */}
-      <div className="units mt-10 md:mt-28 2xl:mt-56 relative hidden md:block">
+      <div className="units mt-10 md:mt-28 xl:mt-44 2xl:mt-56 relative hidden md:block lg:absolute lg:bottom-[25vh] xl:bottom-[27vh] lg:right-12 lg:w-[420px] xl:w-[500px]">
         <h6 className="text-right uppercase text-lg xl:text-xl 2xl:text-3xl text-gray-500 font-semibold leading-none">
           Units Created
         </h6>

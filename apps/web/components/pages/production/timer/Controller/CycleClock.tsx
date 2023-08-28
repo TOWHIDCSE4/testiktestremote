@@ -30,20 +30,20 @@ const CycleClock = ({
         <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
           Time:
         </h6>
-        <div className="flex items-center">
-          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+        <div className="flex justify-center items-center">
+          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold xl:w-[25px]">
             {timerClockTimeArray[0]}
           </h6>
-          <span className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+          <span className="text-center uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold xl:w-[10px]">
             :
           </span>
-          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold xl:w-[25px]">
             {timerClockTimeArray[1]}
           </h6>
-          <span className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+          <span className="text-center uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold xl:w-[10px]">
             :
           </span>
-          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold xl:w-[25px]">
             {timerClockTimeArray[2]}
           </h6>
         </div>

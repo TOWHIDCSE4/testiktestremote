@@ -352,7 +352,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [timerDetailData, unitsCreated])
 
   return (
-    <div>
+    <div className="h-screen overflow-hidden">
       <Header
         progress={progress}
         isLoading={isTimerDetailDataLoading}

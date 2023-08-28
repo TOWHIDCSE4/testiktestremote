@@ -165,7 +165,7 @@ const Details = ({
         <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 xl:text-lg 2xl:text-3xl">
           Readings
         </h4>
-        <div className="absolute w-60 xl:w-[234px] 2xl:w-[272px] h-[1px] mt-[25px] xl:mt-[32px] 2xl:mt-[51px] ml-20 xl:ml-[87px] 2xl:ml-[145px] bg-gray-400"></div>
+        <div className="absolute w-60 xl:w-[234px] 2xl:w-[272px] h-[1px] mt-[26px] xl:mt-[32px] 2xl:mt-[51px] ml-20 xl:ml-[87px] 2xl:ml-[145px] bg-gray-400"></div>
       </div>
       <div className="bg-gray-100 h-32 xl:h-40 2xl:h-56 mt-2 w-[321px] 2xl:w-[417px] p-2 text-gray-600 overflow-y-hidden">
         <h6 className="text-xs xl:text-sm 2xl:text-2xl">
