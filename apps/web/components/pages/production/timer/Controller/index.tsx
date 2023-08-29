@@ -315,6 +315,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [timerLogs])
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     if (
       timerDetailData?.item &&
       timerLogs?.itemCount &&
