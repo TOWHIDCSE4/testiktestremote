@@ -358,7 +358,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         isLoading={isTimerDetailDataLoading}
         location={timerDetailData?.item?.locationId.name}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-12 mt-7 xl:mb-36">
+      <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-12 mt-7">
         <Details
           timerDetails={timerDetailData?.item}
           isLoading={isTimerDetailDataLoading}
