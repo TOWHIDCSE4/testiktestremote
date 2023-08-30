@@ -27,23 +27,23 @@ const CycleClock = ({
   return (
     <div className="timer">
       <div className="flex items-center gap-2 justify-end">
-        <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+        <h6 className="text-center md:text-right uppercase text-md md:text-lg xl:text-[1.5vw] 2xl:text-3xl text-gray-500 font-semibold">
           Time:
         </h6>
-        <div className="flex items-center">
-          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+        <div className="flex justify-center items-center">
+          <h6 className="text-center uppercase text-md md:text-lg xl:text-[1.5vw] 2xl:text-3xl text-gray-500 font-semibold w-[24px] xl:w-[28px] 2xl:w-[37px]">
             {timerClockTimeArray[0]}
           </h6>
-          <span className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+          <span className="text-center uppercase text-md md:text-lg xl:text-[1.5vw] 2xl:text-3xl text-gray-500 font-semibold w-[8px] xl:w-[10px]">
             :
           </span>
-          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+          <h6 className="text-center uppercase text-md md:text-lg xl:text-[1.5vw] 2xl:text-3xl text-gray-500 font-semibold w-[24px] xl:w-[28px] 2xl:w-[37px]">
             {timerClockTimeArray[1]}
           </h6>
-          <span className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+          <span className="text-center uppercase text-md md:text-lg xl:text-[1.5vw] 2xl:text-3xl text-gray-500 font-semibold w-[8px] xl:w-[10px]">
             :
           </span>
-          <h6 className="text-center md:text-right uppercase text-md xl:text-lg 2xl:text-3xl text-gray-500 font-semibold">
+          <h6 className="text-center uppercase text-md md:text-lg xl:text-[1.5vw] 2xl:text-3xl text-gray-500 font-semibold w-[24px] xl:w-[28px] 2xl:w-[37px]">
             {timerClockTimeArray[2]}
           </h6>
         </div>
@@ -51,7 +51,7 @@ const CycleClock = ({
       <div className="md:float-right mt-2">
         <div className="">
           <div
-            className={`countdown-container w-full lg:w-[430px] xl:w-[700px] 2xl:w-[950px] rounded-md bg-[#f1f2e1] pt-2 pb-3.5 px-5 border-2 ${
+            className={`countdown-container w-full md:w-[350px] lg:w-[430px] xl:w-[700px] 2xl:w-[950px] rounded-md bg-[#f1f2e1] pt-2 pb-3.5 px-5 border-2 ${
               progress > 100
                 ? "border-red-500"
                 : isCycleClockRunning
@@ -61,49 +61,49 @@ const CycleClock = ({
           >
             <div className="flex items-center justify-center">
               <h2
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
+                className={`text-center text-4xl md:text-5xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 md:w-[67px] lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
                 {cycleClockTimeArray[0]}
               </h2>
               <span
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
+                className={`text-center text-4xl md:text-5xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
                 :
               </span>
               <h2
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
+                className={`text-center text-4xl md:text-5xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 md:w-[67px] lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
                 {cycleClockTimeArray[1]}
               </h2>
               <span
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
+                className={`text-center text-4xl md:text-5xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
                 :
               </span>
               <h2
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
+                className={`text-center text-4xl md:text-5xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 md:w-[67px] lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
                 {cycleClockTimeArray[2]}
               </h2>
               <span
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
+                className={`text-center text-4xl md:text-5xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
                 :
               </span>
               <h2
-                className={`text-center text-4xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
+                className={`text-center text-4xl md:text-5xl lg:text-6xl xl:text-8xl 2xl:text-[136px] font-bold w-14 md:w-[67px] lg:w-[87px] xl:w-[140px] 2xl:w-[180px] ${
                   !isCycleClockRunning ? "text-stone-300" : "text-stone-800"
                 }`}
               >
@@ -115,7 +115,7 @@ const CycleClock = ({
             {isCycleClockRunning ? (
               <button
                 type="button"
-                className={`text-3xl lg:text-5xl xl:text-7xl 2xl:text-8xl w-36 xl:w-60 2xl:w-80 mt-2 tracking-wider text-center font-semibold uppercase ${
+                className={`text-3xl md:text-4xl lg:text-5xl xl:text-7xl 2xl:text-8xl w-36 xl:w-60 2xl:w-80 mt-2 tracking-wider text-center font-semibold uppercase ${
                   isCycleClockStopping
                     ? "scale-75 transition-transform duration-300 text-red-200 cursor-not-allowed"
                     : "text-red-600 cursor-pointer"
@@ -127,7 +127,7 @@ const CycleClock = ({
             ) : (
               <button
                 type="button"
-                className={`text-3xl lg:text-5xl xl:text-7xl 2xl:text-8xl w-36 xl:w-60 2xl:w-80 mt-2 tracking-wider text-center font-semibold uppercase ${
+                className={`text-3xl md:text-4xl lg:text-5xl xl:text-7xl 2xl:text-8xl w-36 xl:w-60 2xl:w-80 mt-2 tracking-wider text-center font-semibold uppercase ${
                   isCycleClockStarting
                     ? "scale-75 transition-transform duration-300 text-green-200 cursor-not-allowed"
                     : "text-green-600 cursor-pointer"
