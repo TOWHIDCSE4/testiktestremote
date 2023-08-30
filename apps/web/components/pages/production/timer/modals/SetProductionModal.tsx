@@ -66,7 +66,7 @@ const SetProductionModal = ({
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
         as="div"
-        className="relative z-10"
+        className="relative z-50"
         initialFocus={cancelButtonRef}
         onClose={() => {}}
       >
@@ -79,10 +79,10 @@ const SetProductionModal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" />
         </Transition.Child>
 
-        <div className={`fixed inset-0 z-10 overflow-y-auto`}>
+        <div className={`fixed inset-0 z-50 overflow-y-auto`}>
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}

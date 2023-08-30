@@ -15,7 +15,7 @@ const parts = new Schema({
     type: Array,
     default: [],
   },
-  pounds: String,
+  tons: Number,
   time: Number,
   finishGoodWeight: Number,
   cageWeightActual: Number,

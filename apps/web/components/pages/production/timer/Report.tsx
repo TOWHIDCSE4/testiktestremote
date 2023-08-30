@@ -115,7 +115,7 @@ const Report = ({
                   (acc, log) =>
                     acc +
                     (typeof log.partId === "object"
-                      ? Number(log.partId.pounds)
+                      ? Number(log.partId.tons)
                       : 0),
                   0
                 )

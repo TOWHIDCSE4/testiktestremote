@@ -5,10 +5,14 @@ import EditModal from "./EditModal"
 import useGetPart from "../../../../../hooks/parts/useGetPart"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import { useQueryClient } from "@tanstack/react-query"
-import { I_FACTORY } from "../../../../../types/global"
 import { useForm } from "react-hook-form"
 import useFactoryMachineClasses from "../../../../../hooks/factories/useFactoryMachineClasses"
-import { T_BackendResponse, T_MachineClass, T_Part } from "custom-validator"
+import {
+  T_BackendResponse,
+  T_Factory,
+  T_MachineClass,
+  T_Part,
+} from "custom-validator"
 import useLocations from "../../../../../hooks/locations/useLocations"
 import useUpdatePart from "../../../../../hooks/parts/useUpdatePart"
 import toast from "react-hot-toast"
@@ -169,11 +173,11 @@ const PartDetailsModal = ({
                     }}
                   >
                     <option disabled>Factory</option>
-                    {factories?.items?.map((item: I_FACTORY, index: number) => {
+                    {factories?.items?.map((item: T_Factory, index: number) => {
                       return (
                         <option
                           key={index}
-                          value={item._id}
+                          value={item._id as string}
                           selected={item._id === partDetails?.item?.factoryId}
                         >
                           {item.name}
@@ -218,15 +222,15 @@ const PartDetailsModal = ({
                     )}
                   </select>
                   <label
-                    htmlFor="pounds"
+                    htmlFor="tons"
                     className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
                   >
-                    Pounds:
+                    Tons:
                   </label>
                   <input
-                    id="pounds"
+                    id="tons"
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
-                    defaultValue={partDetails?.item?.pounds}
+                    defaultValue={partDetails?.item?.tons}
                     disabled={
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
@@ -234,13 +238,13 @@ const PartDetailsModal = ({
                       isFactoriesLoading ||
                       isUploadMediaFilesLoading
                     }
-                    {...register("pounds", { required: true })}
+                    {...register("tons", { required: true })}
                   />
                   <label
                     htmlFor="time"
                     className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
                   >
-                    Time:
+                    Time (seconds):
                   </label>
                   <input
                     id="time"
@@ -263,7 +267,7 @@ const PartDetailsModal = ({
                   </label>
                   <input
                     id="finishGoodWeight"
-                    {...register("finishGoodWeight", { required: true })}
+                    {...register("finishGoodWeight")}
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     defaultValue={partDetails?.item?.finishGoodWeight}
                     disabled={
@@ -282,7 +286,7 @@ const PartDetailsModal = ({
                   </label>
                   <input
                     id="cageWeightActual"
-                    {...register("cageWeightActual", { required: true })}
+                    {...register("cageWeightActual")}
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     defaultValue={partDetails?.item?.cageWeightActual}
                     disabled={
@@ -301,7 +305,7 @@ const PartDetailsModal = ({
                   </label>
                   <input
                     id="cageWeightScrap"
-                    {...register("cageWeightScrap", { required: true })}
+                    {...register("cageWeightScrap")}
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     defaultValue={partDetails?.item?.cageWeightScrap}
                     disabled={
@@ -442,7 +446,7 @@ const PartDetailsModal = ({
       <Transition.Root show={isOpen} as={Fragment}>
         <Dialog
           as="div"
-          className="relative z-10"
+          className="relative z-50"
           initialFocus={closeButtonRef}
           onClose={() => {}}
         >
@@ -455,10 +459,10 @@ const PartDetailsModal = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" />
           </Transition.Child>
 
-          <div className={`fixed inset-0 z-10 overflow-y-auto`}>
+          <div className={`fixed inset-0 z-50 overflow-y-auto`}>
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
                 as={Fragment}

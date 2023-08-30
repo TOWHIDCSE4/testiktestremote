@@ -101,7 +101,7 @@ const Machine = ({
     : []
 
   return (
-    <div className={`mt-6 my-10`}>
+    <div className={`mt-6 my-10 pb-16`}>
       <div>
         {/* Location */}
         <div className="grid grid-cols-3 gap-x-6 md:gap-x-8 2xl:gap-x-24 mt-5">

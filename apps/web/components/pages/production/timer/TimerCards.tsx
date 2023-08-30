@@ -14,75 +14,56 @@ import TimerTracker from "./TimerTracker"
 import useTimersByLocation from "../../../../hooks/timers/useTimersByLocation"
 import Timer from "./Timer"
 
+type T_TimerByMachineClass = {
+  id: string
+  name: string
+  count: number
+  timers: T_Timer[]
+}
+
 function TimerCards({
-  machineClass,
+  timerByMachineClass,
+  isLoading,
   locationId,
 }: {
-  machineClass: T_MachineClass
+  timerByMachineClass: T_TimerByMachineClass
+  isLoading: boolean
   locationId: string
 }) {
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [selectedTimerId, setSelectedTimerId] = useState("")
 
-  const {
-    data: timersByLocation,
-    isLoading: isTimersByLocationLoading,
-    setLocationId,
-  } = useTimersByLocation()
-
-  useEffect(() => {
-    if (locationId) {
-      setLocationId(locationId)
-    }
-  }, [locationId])
-
-  const timerByMachineClassCount = (machineClassId: string) => {
-    const timerByMachineClass =
-      timersByLocation?.items?.filter((timer: T_Timer) => {
-        if (timer.machineClassId === machineClassId) {
-          return timer
-        }
-      }) || []
-    return timerByMachineClass
-  }
-
   return (
     <>
       <div>
         <div className="md:flex justify-between mt-7">
-          {isTimersByLocationLoading ? (
+          {isLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-8 w-80 bg-slate-200 rounded"></div>
             </div>
           ) : (
             <h6 className="font-bold text-lg text-gray-800 uppercase">
-              {machineClass.name} - Timers
+              {timerByMachineClass.name} - Timers
             </h6>
           )}
 
-          {isTimersByLocationLoading ? (
+          {isLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-8 w-24 bg-slate-200 rounded"></div>
             </div>
           ) : (
             <h6 className="font-bold text-lg text-gray-500">
-              {timerByMachineClassCount(machineClass._id as string).length > 0
-                ? timerByMachineClassCount(machineClass._id as string).length +
-                  " " +
-                  (timerByMachineClassCount(machineClass._id as string).length >
-                  1
-                    ? "Timers"
-                    : "Timer")
-                : null}
+              {timerByMachineClass.count}{" "}
+              {timerByMachineClass.count > 1 ? "Timers" : "Timer"}
             </h6>
           )}
         </div>
-        {timerByMachineClassCount(machineClass._id as string).length > 0 ? (
+        {timerByMachineClass.timers.length > 0 ? (
           <>
             <div className="mx-auto">
               <div className="mt-7 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 xl:grid-cols-3 xl:gap-x-8">
-                {isTimersByLocationLoading ? (
+                {isLoading ? (
                   <>
                     <div className="animate-pulse flex space-x-4">
                       <div className="h-[25rem] w-full mt-7 bg-slate-200 rounded"></div>
@@ -97,33 +78,31 @@ function TimerCards({
                     </div>
                   </>
                 ) : (
-                  timersByLocation?.items?.map((timer: T_Timer, index) =>
-                    timer.machineClassId === machineClass._id ? (
-                      <Timer
-                        key={index}
-                        timer={timer}
-                        machineClass={machineClass}
-                        isLoading={isTimersByLocationLoading}
-                        setSelectedTimerId={setSelectedTimerId}
-                        setOpenDeleteModal={setOpenDeleteModal}
-                        setOpenDetailsModal={setOpenDetailsModal}
-                        machine={timer?.machine as T_Machine}
-                        operator={timer?.assignedOperator as T_User}
-                      />
-                    ) : null
-                  )
+                  timerByMachineClass.timers?.map((timer: T_Timer, index) => (
+                    <Timer
+                      key={index}
+                      timer={timer}
+                      machineClassId={timerByMachineClass.id}
+                      isLoading={isLoading}
+                      setSelectedTimerId={setSelectedTimerId}
+                      setOpenDeleteModal={setOpenDeleteModal}
+                      setOpenDetailsModal={setOpenDetailsModal}
+                      machine={timer?.machine as T_Machine}
+                      operator={timer?.assignedOperator as T_User}
+                    />
+                  ))
                 )}
               </div>
             </div>
             <h6 className="font-bold text-lg text-gray-800 uppercase mt-7">
-              Timer Tracker - Radial Press And Variants
+              Timer Tracker - {timerByMachineClass.name} And Variants
             </h6>
             <TimerTracker
               locationId={locationId}
-              machineClassId={machineClass._id as string}
+              machineClassId={timerByMachineClass.id as string}
             />
           </>
-        ) : isTimersByLocationLoading ? (
+        ) : isLoading ? (
           <>
             <div className="mt-7 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 xl:grid-cols-3 xl:gap-x-8">
               <div className="animate-pulse flex space-x-4">
@@ -150,7 +129,7 @@ function TimerCards({
         ) : (
           <p className="text-gray-500 mt-4">
             No timer for{" "}
-            <span className="font-semibold">{machineClass.name}</span>
+            <span className="font-semibold">{timerByMachineClass.name}</span>
           </p>
         )}
         <DetailsModal

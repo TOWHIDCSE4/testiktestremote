@@ -10,10 +10,11 @@ import React, { Dispatch } from "react"
 import useUpdateTimer from "../../../../hooks/timers/useUpdateTimer"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
+import DropDownMenu from "./DropDownMenu"
 
 type T_Props = {
   timer: T_Timer
-  machineClass: T_MachineClass
+  machineClassId: string
   isLoading: boolean
   setSelectedTimerId: Dispatch<string>
   setOpenDetailsModal: Dispatch<boolean>
@@ -24,7 +25,7 @@ type T_Props = {
 
 const Timer = ({
   timer,
-  machineClass,
+  machineClassId,
   isLoading,
   setSelectedTimerId,
   setOpenDetailsModal,
@@ -64,11 +65,11 @@ const Timer = ({
       key={timer._id as string}
       className="bg-white rounded-md border border-gray-200 drop-shadow-lg"
     >
-      <div className="px-4 py-4 border-b border-gray-200">
+      <div className="px-4 py-4 border-b border-gray-200 flex items-center gap-2">
         <select
           id="part"
           name="part"
-          className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
           defaultValue={
             typeof timer.partId === "string" && timer.partId ? timer.partId : ""
           }
@@ -83,7 +84,7 @@ const Timer = ({
             Select Part
           </option>
           {timer?.parts?.map((item: T_Part, index: number) => {
-            if (item.machineClassId === machineClass._id) {
+            if (item.machineClassId === machineClassId) {
               return (
                 <option key={index} value={item._id as string}>
                   {item.name}
@@ -94,6 +95,18 @@ const Timer = ({
             }
           })}
         </select>
+        <DropDownMenu
+          setOpenEditModal={(e: React.MouseEvent<HTMLElement>) => {
+            e.stopPropagation()
+            setOpenDetailsModal(true)
+            setSelectedTimerId(timer._id as string)
+          }}
+          setOpenDeleteModal={(e: React.MouseEvent<HTMLElement>) => {
+            e.stopPropagation()
+            setOpenDeleteModal(true)
+            setSelectedTimerId(timer._id as string)
+          }}
+        />
       </div>
       <div className="px-4 py-4 text-center space-y-2">
         <h3 className="text-gray-700 font-bold uppercase text-xl">
@@ -138,24 +151,6 @@ const Timer = ({
           onClick={() => alert("Coming soon...")}
         >
           Live Camera
-        </button>
-        <button
-          className="uppercase disabled:opacity:70 text-sm text-white bg-blue-950 p-1 rounded-md"
-          onClick={() => {
-            setSelectedTimerId(timer._id as string)
-            setOpenDetailsModal(true)
-          }}
-        >
-          Details
-        </button>
-        <button
-          className="uppercase text-sm text-white bg-red-600 p-1 rounded-md"
-          onClick={() => {
-            setSelectedTimerId(timer._id as string)
-            setOpenDeleteModal(true)
-          }}
-        >
-          Remove
         </button>
       </div>
     </div>

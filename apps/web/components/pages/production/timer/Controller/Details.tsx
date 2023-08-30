@@ -38,7 +38,7 @@ const Details = ({
   }
   return (
     <div className="order-last md:order-none mt-6 md:mt-0">
-      <h4 className="uppercase font-semibold text-sm text-gray-800 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
+      <h4 className="uppercase text-sm text-gray-800 md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-bold">
         Details
       </h4>
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7">
@@ -116,9 +116,9 @@ const Details = ({
           ) : (
             <>
               {typeof timerDetails?.partId === "object"
-                ? timerDetails?.partId.pounds
+                ? timerDetails?.partId.tons
                 : "---"}{" "}
-              lbs
+              tons
             </>
           )}
         </span>

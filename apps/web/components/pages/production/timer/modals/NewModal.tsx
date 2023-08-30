@@ -101,7 +101,7 @@ const NewModal = ({
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
         as="div"
-        className="relative z-10"
+        className="relative z-50"
         initialFocus={cancelButtonRef}
         onClose={() => {}}
       >
@@ -114,10 +114,10 @@ const NewModal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" />
         </Transition.Child>
 
-        <div className={`fixed inset-0 z-10 overflow-y-auto`}>
+        <div className={`fixed inset-0 overflow-y-auto z-50`}>
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}
@@ -264,6 +264,25 @@ const NewModal = ({
                         })}
                       </select>
                     </div>
+                    <div className="md:flex items-center mt-3">
+                      <label
+                        htmlFor="drawingNumber"
+                        className="uppercase font-semibold text-gray-800 md:w-[20%]"
+                      >
+                        Night
+                        <br />
+                        Shift
+                      </label>
+                      <select
+                        id="nightShift"
+                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                        defaultValue="false"
+                        required
+                      >
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                      </select>
+                    </div>
                     <h6 className="uppercase font-semibold text-gray-400 mt-4">
                       Timer/Auto Details:
                     </h6>
@@ -273,7 +292,7 @@ const NewModal = ({
                           htmlFor="average-cycle"
                           className="uppercase font-semibold text-gray-800"
                         >
-                          Average Time Per Cycle
+                          Average Time In Seconds
                         </label>
                         <input
                           type="number"
@@ -300,9 +319,7 @@ const NewModal = ({
                           className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 cursor-not-allowed`}
                           disabled
                           value={
-                            !isSpecificPartLoading
-                              ? specificPart.item.pounds
-                              : ""
+                            !isSpecificPartLoading ? specificPart.item.tons : ""
                           }
                         />
                       </div>

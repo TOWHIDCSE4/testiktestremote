@@ -65,7 +65,7 @@ export const addPart = async (req: Request, res: Response) => {
     factoryId,
     machineClassId,
     files,
-    pounds,
+    tons,
     time,
     finishGoodWeight,
     cageWeightActual,
@@ -78,7 +78,7 @@ export const addPart = async (req: Request, res: Response) => {
       name,
       factoryId,
       machineClassId,
-      pounds,
+      tons,
       time,
       files,
       finishGoodWeight,
@@ -132,10 +132,10 @@ export const addPart = async (req: Request, res: Response) => {
 export const updatePart = async (req: Request, res: Response) => {
   const getPart = await Parts.find({
     _id: req.params.id,
-    deletedAt: { $exists: false },
+    $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
   })
   const condition = req.body
-  if (getPart.length === 0) {
+  if (getPart.length > 0) {
     if (!isEmpty(condition)) {
       try {
         const updatePart = await Parts.findByIdAndUpdate(

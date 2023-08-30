@@ -6,7 +6,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline"
 import Image from "next/image"
-import React, { Fragment } from "react"
+import React, { Fragment, useState } from "react"
 import Link from "next/link"
 import useLogout from "../hooks/users/useLogout"
 import { T_BACKEND_RESPONSE } from "../types/global"
@@ -102,6 +102,7 @@ const SideBarNav = () => {
   const router = useRouter()
   const storeSession = useStoreSession((state) => state)
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
+  const [activePage, setActivePage] = useState("")
   const { mutate } = useLogout()
   const logoutUser = () => {
     const callBackReq = {
@@ -123,7 +124,7 @@ const SideBarNav = () => {
     mutate(undefined, callBackReq)
   }
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-dark-blue pr-4 fixed h-full mt-16 z-40">
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-dark-blue pr-4 fixed h-full mt-16 z-30">
       <div className="lg:hidden ml-4">
         <Menu
           as="div"
@@ -263,7 +264,11 @@ const SideBarNav = () => {
                           )}
                         </Link>
                       ) : (
-                        <Accordion item={item} />
+                        <Accordion
+                          item={item}
+                          activePage={activePage}
+                          setActivePage={setActivePage}
+                        />
                       )}
                     </li>
                   )

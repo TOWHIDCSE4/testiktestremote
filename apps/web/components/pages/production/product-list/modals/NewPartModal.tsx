@@ -113,7 +113,7 @@ const NewPartModal = ({
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
         as="div"
-        className="relative z-10"
+        className="relative z-50"
         initialFocus={cancelButtonRef}
         onClose={() => {}}
       >
@@ -126,10 +126,10 @@ const NewPartModal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" />
         </Transition.Child>
 
-        <div className={`fixed inset-0 z-10 overflow-y-auto`}>
+        <div className={`fixed inset-0 z-10 overflow-y-auto z-50`}>
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}
@@ -239,7 +239,7 @@ const NewPartModal = ({
                           htmlFor="weight"
                           className="uppercase font-semibold text-gray-800"
                         >
-                          Weight In LBS
+                          Weight In Tons
                         </label>
                         <input
                           type="number"
@@ -249,8 +249,8 @@ const NewPartModal = ({
                             isAddPartLoading || isUploadMediaFilesLoading
                           }
                           className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                          placeholder="Pounds"
-                          {...register("pounds", {
+                          placeholder="Tons"
+                          {...register("tons", {
                             required: true,
                             valueAsNumber: true,
                           })}

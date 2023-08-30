@@ -1,9 +1,10 @@
 "use client"
 import { ChevronRightIcon } from "@heroicons/react/24/solid"
-import React, { useEffect, useState } from "react"
+import React, { Dispatch, useEffect, useState } from "react"
 import combineClasses from "../helpers/combineClasses"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import path from "path"
 
 type AccordionProps = {
   name: string
@@ -14,7 +15,11 @@ type AccordionProps = {
   }[]
 }
 
-const Accordion = (props: { item: AccordionProps }) => {
+const Accordion = (props: {
+  item: AccordionProps
+  activePage: string
+  setActivePage: Dispatch<string>
+}) => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
 
@@ -23,8 +28,20 @@ const Accordion = (props: { item: AccordionProps }) => {
     setIsOpen(firstPath === props.item.slug)
   }, [pathname, props.item.slug])
 
-  const firstPath = pathname.split("/")[1]
-  const isPageSelected = firstPath === props.item.slug
+  useEffect(() => {
+    const firstPath = pathname.split("/")[1]
+    if (firstPath === props.item.slug) {
+      props.setActivePage(props.item.slug)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (props.activePage === props.item.slug) {
+      setIsOpen(true)
+    } else {
+      setIsOpen(false)
+    }
+  }, [props.activePage])
 
   return (
     <div
@@ -34,15 +51,15 @@ const Accordion = (props: { item: AccordionProps }) => {
     >
       <div
         className="flex items-center gap-4 hover:text-white ml-2"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen)
+          props.setActivePage(props.item.slug)
+        }}
       >
         <div className="flex items-center">
-          {isPageSelected && (
-            <div className="h-2.5 w-2.5 bg-red-700 rounded-full ml-1"></div>
-          )}
           <span
-            className={`uppercase font-medium ${isOpen ? "text-white" : ""} ${
-              isPageSelected ? "ml-5" : "ml-8"
+            className={`uppercase font-medium ml-8 ${
+              isOpen ? "text-white" : ""
             }`}
           >
             {props.item.name}
@@ -58,18 +75,28 @@ const Accordion = (props: { item: AccordionProps }) => {
       </div>
       {isOpen && (
         <div className="mt-1 ml-4 px-2">
-          {props.item.children.map((subItem) => (
-            <Link
-              key={subItem.name}
-              href={subItem.href}
-              className={combineClasses(
-                subItem.href === pathname ? "text-white" : "hover:text-white",
-                "block rounded-md py-2 pr-2 pl-9 leading-6 text-gray-500 font-medium"
-              )}
-            >
-              {subItem.name}
-            </Link>
-          ))}
+          {props.item.children.map((subItem, index) => {
+            return (
+              <div key={index} className="flex items-center">
+                {pathname === subItem.href && (
+                  <div className="h-2.5 w-2.5 bg-red-700 rounded-full ml-4"></div>
+                )}
+                <Link
+                  key={subItem.name}
+                  href={subItem.href}
+                  className={combineClasses(
+                    subItem.href === pathname
+                      ? "text-white"
+                      : "hover:text-white",
+                    pathname === subItem.href ? "pl-4" : "ml-10",
+                    "block rounded-md py-2 pr-2 leading-6 text-gray-500 font-medium"
+                  )}
+                >
+                  {subItem.name}
+                </Link>
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

@@ -98,7 +98,7 @@ const Part = ({
     : []
 
   return (
-    <div className={`mt-6 my-10`}>
+    <div className={`mt-6 my-10 pb-16`}>
       <div>
         {/* Location */}
         <div className="grid grid-cols-3 gap-x-6 md:gap-x-8 2xl:gap-x-24 mt-5">
@@ -330,8 +330,8 @@ const Part = ({
                       </div>
                       <div className="px-4 pb-4">
                         <div className="flex justify-between text-gray-900">
-                          <span>Pounds:</span>
-                          <span>{product.pounds}</span>
+                          <span>Tons:</span>
+                          <span>{product.tons}</span>
                         </div>
                         <div className="flex justify-between text-gray-900">
                           <span>Avg Time:</span>

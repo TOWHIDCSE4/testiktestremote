@@ -328,11 +328,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
         unitsPerHour: timerLogs?.itemCount / hoursLapse,
         tonsPerHour:
           (timerLogs?.itemCount *
-            (timerDetailData?.item?.partId.pounds as number)) /
+            (timerDetailData?.item?.partId.tons as number)) /
           hoursLapse,
         totalTons:
-          timerLogs?.itemCount *
-          (timerDetailData?.item?.partId.pounds as number),
+          timerLogs?.itemCount * (timerDetailData?.item?.partId.tons as number),
       })
     }
   }, [timerLogs, timerDetailData])
@@ -344,10 +343,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
       setTotals({
         unitsPerHour: unitsCreated / Math.round(hoursLapse),
         tonsPerHour:
-          (unitsCreated * (timerDetailData?.item?.partId.pounds as number)) /
+          (unitsCreated * (timerDetailData?.item?.partId.tons as number)) /
           Math.round(hoursLapse),
         totalTons:
-          unitsCreated * (timerDetailData?.item?.partId.pounds as number),
+          unitsCreated * (timerDetailData?.item?.partId.tons as number),
       })
     }
   }, [timerDetailData, unitsCreated])

@@ -64,7 +64,7 @@ const MainNav = () => {
     <>
       <Disclosure
         as="nav"
-        className="bg-light-cyan-blue shadow-lg fixed w-full z-50"
+        className="bg-light-cyan-blue shadow-lg fixed w-full z-40"
       >
         {({ open }) => (
           <>
@@ -277,7 +277,7 @@ const MainNav = () => {
       <div className={`${showSideNav ? "block" : "hidden lg:block"} w-64`}>
         <SideBarNav />
       </div>
-      <div className="p-4 w-full fixed bottom-0 bg-gray-200 lg:pl-72 flex items-center gap-2 justify-center z-30">
+      <div className="p-4 w-full fixed bottom-0 bg-gray-200 lg:pl-72 flex items-center gap-2 justify-center z-20">
         © {dayjs().format("YYYY")} AmeriTex Pipe & Products with{" "}
         <HeartIcon className="h-5 w-5 text-red-500" /> by Ieko Media.
       </div>

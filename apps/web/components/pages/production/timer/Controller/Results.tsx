@@ -24,7 +24,7 @@ const Results = ({
         <h5 className="uppercase text-sm font-medium text-gray-800 mt-4 md:text-right">
           Units Per Hour:{" "}
           <span className="uppercase text-sm font-semibold text-gray-500">
-            0.000
+            0
           </span>
         </h5>
         <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-right">
@@ -50,7 +50,7 @@ const Results = ({
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6">
               Units Per Hour:{" "}
               <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-semibold text-gray-500">
-                {totals?.unitsPerHour.toFixed(3)}
+                {totals?.unitsPerHour}
               </span>
             </h5>
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6">

@@ -10,6 +10,9 @@ import {
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { getAllTimersByFactory } from "./filterByFactories"
 import { getAllTimersByLocation } from "./filterByLocations"
+import { countByMachineClass } from "./countByMachineClass"
+
+router.get("/count-machine-class", isUserLoggedIn, countByMachineClass)
 
 //default
 router.get("/", isUserLoggedIn, getAllTimers)
@@ -21,4 +24,5 @@ router.delete("/:id", isUserLoggedIn, deleteTimer)
 //filter
 router.get("/find/filter/factory", getAllTimersByFactory)
 router.get("/find/filter/location", getAllTimersByLocation)
+
 export default router

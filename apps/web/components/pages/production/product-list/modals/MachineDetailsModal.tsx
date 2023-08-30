@@ -3,10 +3,14 @@ import { Fragment, useRef, useState, useEffect } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import { useQueryClient } from "@tanstack/react-query"
-import { I_FACTORY } from "../../../../../types/global"
 import { useForm } from "react-hook-form"
 import useFactoryMachineClasses from "../../../../../hooks/factories/useFactoryMachineClasses"
-import { T_BackendResponse, T_Machine, T_MachineClass } from "custom-validator"
+import {
+  T_BackendResponse,
+  T_Factory,
+  T_Machine,
+  T_MachineClass,
+} from "custom-validator"
 import toast from "react-hot-toast"
 import ModalMediaList from "./ModalMediaList"
 import useGetMachine from "../../../../../hooks/machines/useGetMachine"
@@ -166,11 +170,11 @@ const MachineDetailsModal = ({
                     }}
                   >
                     <option disabled>Factory</option>
-                    {factories?.items?.map((item: I_FACTORY, index: number) => {
+                    {factories?.items?.map((item: T_Factory, index: number) => {
                       return (
                         <option
                           key={index}
-                          value={item._id}
+                          value={item._id as string}
                           selected={
                             item._id === machineDetails?.item?.factoryId
                           }
@@ -299,7 +303,7 @@ const MachineDetailsModal = ({
       <Transition.Root show={isOpen} as={Fragment}>
         <Dialog
           as="div"
-          className="relative z-10"
+          className="relative z-50"
           initialFocus={closeButtonRef}
           onClose={() => {}}
         >
@@ -312,10 +316,10 @@ const MachineDetailsModal = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" />
           </Transition.Child>
 
-          <div className={`fixed inset-0 z-10 overflow-y-auto`}>
+          <div className={`fixed inset-0 z-50 overflow-y-auto`}>
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
                 as={Fragment}

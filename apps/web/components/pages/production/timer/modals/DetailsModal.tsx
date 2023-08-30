@@ -82,7 +82,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
       <Transition.Root show={isOpen} as={Fragment}>
         <Dialog
           as="div"
-          className="relative z-10"
+          className="relative z-50"
           initialFocus={closeButtonRef}
           onClose={() => {}}
         >
@@ -95,10 +95,10 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" />
           </Transition.Child>
 
-          <div className={`fixed inset-0 z-10 overflow-y-auto`}>
+          <div className={`fixed inset-0 z-50 overflow-y-auto`}>
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
                 as={Fragment}
@@ -153,14 +153,14 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                                 htmlFor="weight"
                                 className="uppercase font-semibold text-sm text-gray-800 col-span-2"
                               >
-                                Weight (LBS):
+                                Weight (Tons):
                               </label>
                               <input
                                 type="number"
                                 id="weight"
                                 className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
                                 disabled
-                                {...register("partId.pounds", {
+                                {...register("partId.tons", {
                                   required: true,
                                 })}
                               />
@@ -168,7 +168,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                                 htmlFor="production-time"
                                 className="uppercase font-semibold text-sm text-gray-800 col-span-2"
                               >
-                                Production Time:
+                                Time (seconds):
                               </label>
                               <input
                                 type="text"
