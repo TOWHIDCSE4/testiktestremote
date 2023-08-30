@@ -1,7 +1,11 @@
 "use client"
 import { Fragment } from "react"
 import { Disclosure, Menu, Transition } from "@headlessui/react"
-import { MagnifyingGlassIcon, ChevronDownIcon } from "@heroicons/react/20/solid"
+import {
+  MagnifyingGlassIcon,
+  ChevronDownIcon,
+  HeartIcon,
+} from "@heroicons/react/20/solid"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   Bars3Icon,
@@ -23,6 +27,7 @@ import Cookies from "js-cookie"
 import { useRouter } from "next/navigation"
 import useLogout from "../hooks/users/useLogout"
 import useProfile from "../hooks/users/useProfile"
+import dayjs from "dayjs"
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ")
@@ -59,7 +64,7 @@ const MainNav = () => {
     <>
       <Disclosure
         as="nav"
-        className="bg-light-cyan-blue shadow-lg fixed w-full z-10"
+        className="bg-light-cyan-blue shadow-lg fixed w-full z-50"
       >
         {({ open }) => (
           <>
@@ -271,6 +276,10 @@ const MainNav = () => {
       </Disclosure>
       <div className={`${showSideNav ? "block" : "hidden lg:block"} w-64`}>
         <SideBarNav />
+      </div>
+      <div className="p-4 w-full fixed bottom-0 bg-gray-200 lg:pl-72 flex items-center gap-2 justify-center z-30">
+        © {dayjs().format("YYYY")} AmeriTex Pipe & Products with{" "}
+        <HeartIcon className="h-5 w-5 text-red-500" /> by Ieko Media.
       </div>
     </>
   )

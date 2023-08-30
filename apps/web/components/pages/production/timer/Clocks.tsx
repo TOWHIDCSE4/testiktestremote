@@ -143,7 +143,7 @@ const Clocks = ({
           </Transition>
         </Menu>
       </div>
-      <div className="grid grid-cols-3 md:grid-cols-5 mb-4 gap-x-5 gap-y-4 md:gap-y-0">
+      <div className="grid grid-cols-3 md:grid-cols-4 mb-4 gap-x-5 gap-y-4 md:gap-y-0">
         <div className="rounded-md bg-white shadow p-2 text-center">
           <h5 className="text-lg text-gray-700 uppercase font-bold">
             {currentDate}
@@ -151,11 +151,6 @@ const Clocks = ({
           <h6 className="uppercase text-gray-400 font-medium text-sm">Date</h6>
         </div>
         <LocalTime
-          timeZone={location?.item.timeZone ? location?.item.timeZone : ""}
-          isLoading={isLocationLoading}
-        />
-        <LastUpdated
-          locationId={locationId}
           timeZone={location?.item.timeZone ? location?.item.timeZone : ""}
           isLoading={isLocationLoading}
         />

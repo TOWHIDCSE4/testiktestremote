@@ -89,12 +89,6 @@ const navigation = [
     children: [{ name: "Sales Dashboard", href: "/sales/sales-dashboard" }],
   },
   {
-    name: "Accounts",
-    slug: "accounts",
-    href: "/accounts",
-    showOnlyFor: [ROLES.Administrator, ROLES.Production],
-  },
-  {
     name: "Team Members",
     slug: "team-members",
     href: "/team-members",
@@ -129,7 +123,7 @@ const SideBarNav = () => {
     mutate(undefined, callBackReq)
   }
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-dark-blue pr-4 fixed h-full mt-16 z-10">
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-dark-blue pr-4 fixed h-full mt-16 z-40">
       <div className="lg:hidden ml-4">
         <Menu
           as="div"
