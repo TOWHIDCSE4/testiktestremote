@@ -51,7 +51,7 @@ const TabTable = ({
   return (
     <>
       {isJobsLoading ? (
-        <div className="flex items-center justify-center my-4">
+        <div className="flex items-center justify-center mb-4 mt-9">
           <div
             className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
             role="status"
@@ -99,15 +99,7 @@ const TabTable = ({
                 className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-32 uppercase"
               >
                 <a href="#" className="group inline-flex">
-                  Machine
-                </a>
-              </th>
-              <th
-                scope="col"
-                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-32 uppercase"
-              >
-                <a href="#" className="group inline-flex">
-                  Draw
+                  Drawing
                 </a>
               </th>
               <th
@@ -171,7 +163,11 @@ const TabTable = ({
                       )}
                     </div>
                   </td>
-                  <td className="py-4 text-sm text-gray-800 pl-4">Pipe</td>
+                  <td className="py-4 text-sm text-gray-800 pl-4">
+                    {typeof job?.factoryId === "object"
+                      ? job?.factoryId?.name
+                      : ""}
+                  </td>
                   <td className="py-4 pl-6 text-sm text-gray-800">
                     {job?.name}
                   </td>
@@ -179,7 +175,6 @@ const TabTable = ({
                     {/* @ts-ignore */}
                     {job?.partId?.name}
                   </td>
-                  <td className="py-4 pl-6 text-sm text-gray-800">Empty</td>
                   <td className="py-4 pl-6 text-sm text-gray-800">
                     {job?.drawingNumber}
                   </td>
@@ -300,7 +295,7 @@ const TabTable = ({
         </table>
       ) : (
         // no item
-        <div className="flex items-center justify-center my-4">
+        <div className="flex items-center justify-center mb-4 mt-9">
           <div className="text-gray-500 text-lg font-semibold">
             No {tab.toLocaleLowerCase()} job found
           </div>

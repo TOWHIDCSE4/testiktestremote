@@ -1,4 +1,4 @@
-import TimerTracker from "../../../../../../../components/pages/production/timer/TimerTracker"
+import SingleTimeTracker from "../../../../../../../components/pages/production/timer/SingleTimeTracker"
 
 const FullScreen = ({
   params,
@@ -7,7 +7,7 @@ const FullScreen = ({
 }) => {
   return (
     <>
-      <TimerTracker
+      <SingleTimeTracker
         locationId={params.locationId}
         machineClassId={params.machineClassId}
       />

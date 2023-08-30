@@ -9,7 +9,6 @@ import Image from "next/image"
 import React, { Fragment, useState } from "react"
 import Link from "next/link"
 import useLogout from "../hooks/users/useLogout"
-import { T_BACKEND_RESPONSE } from "../types/global"
 import Cookies from "js-cookie"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
@@ -19,6 +18,7 @@ import Accordion from "./Accordion"
 import useProfile from "../hooks/users/useProfile"
 import { ROLES } from "../helpers/constants"
 import useStoreSession from "../store/useStoreSession"
+import { T_BackendResponse } from "custom-validator"
 
 const navigation = [
   { name: "Profile Home", slug: "profile-home", href: "/profile-home" },
@@ -106,7 +106,7 @@ const SideBarNav = () => {
   const { mutate } = useLogout()
   const logoutUser = () => {
     const callBackReq = {
-      onSuccess: (data: T_BACKEND_RESPONSE) => {
+      onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
           queryClient.invalidateQueries({
             queryKey: ["session"],

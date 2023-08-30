@@ -101,7 +101,9 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                         onClick={() => setCurrentTab(tab.name as T_JobStatus)}
                       >
                         <span>
-                          {tab.name} ({jobStatusCount[tabIdx]} )
+                          {isLoading
+                            ? "Loading..."
+                            : `${tab.name} (${jobStatusCount[tabIdx]})`}
                         </span>
                         <span
                           aria-hidden="true"

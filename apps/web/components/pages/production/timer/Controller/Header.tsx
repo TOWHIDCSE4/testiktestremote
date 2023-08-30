@@ -16,7 +16,7 @@ const Header = ({
     <div className="flex flex-col md:flex-row justify-center md:justify-between bg-dark-blue py-3 md:py-0 px-4 md:px-12 h-auto items-center">
       {progress > 100 ? (
         <div className="flex items-center h-[90px] w-[190px] xl:h-[120px] xl:w-[230px] 2xl:h-[140px] 2xl:w-[250px] relative">
-          <Image src={LogoRed} alt="Logo" fill />
+          <Image src={LogoRed} alt="Logo" />
         </div>
       ) : (
         <div className="flex items-center h-[90px] w-[190px] xl:h-[120px] xl:w-[230px] 2xl:h-[140px] 2xl:w-[250px] relative">
