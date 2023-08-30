@@ -8,6 +8,7 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import Footer from "./Footer"
+import { usePathname } from "next/navigation"
 
 const Table = ({
   timerId,
@@ -28,6 +29,10 @@ const Table = ({
     setPage,
   } = useGetAllTimerLogs({ timerId, locationId, paginated: true })
   const { data } = useGetAllTimerLogs({ timerId, locationId })
+
+  const pathName = usePathname()
+  const path = pathName.substring(0, 25)
+
   return (
     <>
       <div className="w-full overflow-x-auto">
@@ -36,7 +41,11 @@ const Table = ({
             <tr>
               <th
                 scope="col"
-                className="py-3.5 pr-3 text-left text-sm font-semibold text-gray-900 pl-4 lg:pl-8 uppercase"
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } py-3.5 pr-3 text-left font-semibold text-gray-900 pl-4 lg:pl-8 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   Cycle
@@ -47,7 +56,11 @@ const Table = ({
               </th>
               <th
                 scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   Date
@@ -58,7 +71,11 @@ const Table = ({
               </th>
               <th
                 scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   Part/Product
@@ -69,7 +86,11 @@ const Table = ({
               </th>
               <th
                 scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   Operator
@@ -80,7 +101,11 @@ const Table = ({
               </th>
               <th
                 scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   ID
@@ -91,7 +116,11 @@ const Table = ({
               </th>
               <th
                 scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   Status
@@ -102,7 +131,11 @@ const Table = ({
               </th>
               <th
                 scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   Time
@@ -113,7 +146,11 @@ const Table = ({
               </th>
               <th
                 scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   Stop Reason

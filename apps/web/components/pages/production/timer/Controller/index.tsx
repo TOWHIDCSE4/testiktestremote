@@ -315,6 +315,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [timerLogs])
 
   useEffect(() => {
+    window.scrollTo(0, 0)
     if (
       timerDetailData?.item &&
       timerLogs?.itemCount &&
@@ -352,13 +353,13 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [timerDetailData, unitsCreated])
 
   return (
-    <div>
+    <div className="h-screen overflow-hidden">
       <Header
         progress={progress}
         isLoading={isTimerDetailDataLoading}
         location={timerDetailData?.item?.locationId.name}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-12 mt-7 xl:mb-36">
+      <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-12 mt-7">
         <Details
           timerDetails={timerDetailData?.item}
           isLoading={isTimerDetailDataLoading}
