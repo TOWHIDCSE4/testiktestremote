@@ -35,7 +35,6 @@ const LocalTime = ({
 
   useEffect(() => {
     setLocalTimeArray(hourMinuteSecond(timeInSeconds))
-    return () => clearInterval(intervalId)
   }, [timeInSeconds])
 
   const runLocalTime = () => {
