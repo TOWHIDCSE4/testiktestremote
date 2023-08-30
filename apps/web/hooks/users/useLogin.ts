@@ -1,8 +1,13 @@
 import { API_URL_USERS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
-import { T_LOGIN } from "../../types/global"
 
-export async function loginUser({ email, password }: T_LOGIN) {
+export async function loginUser({
+  email,
+  password,
+}: {
+  email: string
+  password: string
+}) {
   const res = await fetch(`${API_URL_USERS}/login`, {
     method: "POST",
     body: JSON.stringify({
@@ -17,11 +22,12 @@ export async function loginUser({ email, password }: T_LOGIN) {
 }
 
 function useLogin() {
-  const query = useMutation(({ email, password }: T_LOGIN) =>
-    loginUser({
-      email,
-      password,
-    })
+  const query = useMutation(
+    ({ email, password }: { email: string; password: string }) =>
+      loginUser({
+        email,
+        password,
+      })
   )
   return query
 }

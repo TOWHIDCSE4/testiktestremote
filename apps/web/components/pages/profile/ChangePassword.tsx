@@ -1,8 +1,6 @@
 import { Roboto } from "next/font/google"
 import useProfile from "../../../hooks/users/useProfile"
-import useSession from "../../../hooks/users/useSession"
 import { useForm } from "react-hook-form"
-import { I_UserUpdate, T_BACKEND_RESPONSE } from "../../../types/global"
 import toast from "react-hot-toast"
 import useUpdatePassword from "../../../hooks/users/useUpdatePassword"
 import { useState } from "react"

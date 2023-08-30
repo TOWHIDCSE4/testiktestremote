@@ -1,4 +1,3 @@
-import { I_UserUpdate } from "../../types/global"
 import { API_URL_USERS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"

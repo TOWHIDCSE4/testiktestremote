@@ -21,13 +21,13 @@ import Image from "next/image"
 import Link from "next/link"
 import SideBarNav from "./SideBarNav"
 import DarkLogo from "../assets/logo/logo-dark.png"
-import { T_BACKEND_RESPONSE, T_LOGOUT } from "../types/global"
 import toast from "react-hot-toast"
 import Cookies from "js-cookie"
 import { useRouter } from "next/navigation"
 import useLogout from "../hooks/users/useLogout"
 import useProfile from "../hooks/users/useProfile"
 import dayjs from "dayjs"
+import { T_BackendResponse } from "custom-validator"
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ")
@@ -42,7 +42,7 @@ const MainNav = () => {
   const { mutate } = useLogout()
   const logoutUser = () => {
     const callBackReq = {
-      onSuccess: (data: T_BACKEND_RESPONSE) => {
+      onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
           queryClient.invalidateQueries({
             queryKey: ["session"],

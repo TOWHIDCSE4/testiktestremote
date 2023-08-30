@@ -1,5 +1,4 @@
 import { T_User } from "custom-validator"
-import { I_User } from "../../../web/types/global"
 import { API_URL_USERS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
 

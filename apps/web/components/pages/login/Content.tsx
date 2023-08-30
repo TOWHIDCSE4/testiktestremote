@@ -9,15 +9,18 @@ import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import Cookies from "js-cookie"
-import { T_BACKEND_RESPONSE, T_LOGIN } from "../../../types/global"
+import { T_BackendResponse } from "custom-validator"
 
 const Content = () => {
-  const { register, handleSubmit } = useForm<T_LOGIN>()
+  const { register, handleSubmit } = useForm<{
+    email: string
+    password: string
+  }>()
   const router = useRouter()
   const { mutate, isLoading } = useLogin()
-  const onSubmit = (data: T_LOGIN) => {
+  const onSubmit = (data: { email: string; password: string }) => {
     const callBackReq = {
-      onSuccess: (data: T_BACKEND_RESPONSE) => {
+      onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
           if (data.item) {
             Cookies.set("tfl", data.item?.token)

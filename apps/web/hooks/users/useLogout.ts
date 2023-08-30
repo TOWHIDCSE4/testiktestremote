@@ -1,6 +1,5 @@
 import { API_URL_USERS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
-import { T_LOGOUT } from "../../types/global"
 import Cookies from "js-cookie"
 
 export async function logoutUser() {
