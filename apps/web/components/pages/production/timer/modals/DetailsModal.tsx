@@ -140,7 +140,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                                 htmlFor="product-name"
                                 className="uppercase font-semibold text-sm text-gray-800 col-span-2"
                               >
-                                Part/Product Name:
+                                Product Name:
                               </label>
                               <input
                                 type="text"

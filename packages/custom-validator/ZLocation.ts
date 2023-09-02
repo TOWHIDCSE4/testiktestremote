@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const ZLocation = z.object({
-  _id: z.object({}).optional(),
+  _id: z.string().optional(),
   name: z.string().min(2),
   productionTime: z.number().lte(24).gt(0),
   timeZone: z.string().min(2),

@@ -160,62 +160,6 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                     </div>
                     <div className="md:flex items-center mt-3">
                       <label
-                        htmlFor="location"
-                        className="uppercase font-semibold text-gray-800 md:w-36"
-                      >
-                        Location
-                      </label>
-                      <select
-                        id="location"
-                        disabled={isLocationsLoading}
-                        className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                        required
-                        {...register("locationId", { required: true })}
-                      >
-                        <option className="" value="">
-                          Select Location
-                        </option>
-                        {locations?.items.map((key, index) => (
-                          <option
-                            className=""
-                            key={index}
-                            value={key._id as string}
-                          >
-                            {key.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="md:flex items-center mt-3">
-                      <label
-                        htmlFor="userId"
-                        className="uppercase font-semibold text-gray-800 md:w-36"
-                      >
-                        User
-                      </label>
-                      <select
-                        id="userId"
-                        disabled={isLocationsLoading}
-                        className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                        required
-                        {...register("userId", { required: true })}
-                      >
-                        <option className="" value="">
-                          Select User
-                        </option>
-                        {usersData?.items.map((key, index) => (
-                          <option
-                            className=""
-                            key={index}
-                            value={key._id as string}
-                          >
-                            {key.firstName + " " + key.lastName}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="md:flex items-center mt-3">
-                      <label
                         htmlFor="factory"
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
@@ -253,7 +197,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         required
                         {...register("partId", { required: true })}
                       >
-                        <option value="">Select Part</option>
+                        <option value="">Select Product</option>
                         {partsData?.items.map((key, index) => (
                           <option key={index} value={key._id as string}>
                             {key.name}

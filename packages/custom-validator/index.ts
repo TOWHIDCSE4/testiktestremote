@@ -49,8 +49,8 @@ export type {
   T_TimerStopReason,
 } from "./ZTimerLog"
 
-export { ZTimerReading } from "./ZTimerReading"
-export type { T_TimerReading } from "./ZTimerReading"
+export { ZJobTimer } from "./ZJobTimer"
+export type { T_JobTimer } from "./ZJobTimer"
 
 export { ZTimer } from "./ZTimer"
 export type { T_Timer } from "./ZTimer"

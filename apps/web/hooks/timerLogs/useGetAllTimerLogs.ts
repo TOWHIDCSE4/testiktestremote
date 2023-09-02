@@ -49,10 +49,9 @@ function useGetAllTimerLogs({
     ["timer-logs", locationId, timerId, page],
     () => getAllTimerLogs({ locationId, timerId, page }),
     {
-      cacheTime: SIXTEEN_HOURS,
-      staleTime: TWELVE_HOURS,
       refetchOnWindowFocus: false,
       enabled: !!locationId && !!timerId,
+      refetchInterval: 1000,
     }
   )
   useEffect(() => {

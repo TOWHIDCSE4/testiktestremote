@@ -1,11 +1,12 @@
 import { z } from "zod"
 
-export const ZFactory = z.object({
+export const ZJobTimer = z.object({
   _id: z.string().optional(),
-  name: z.string().min(2),
+  timerId: z.string(),
+  jobId: z.string(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
 })
 
-export type T_Factory = z.infer<typeof ZFactory>
+export type T_JobTimer = z.infer<typeof ZJobTimer>

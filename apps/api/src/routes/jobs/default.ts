@@ -62,13 +62,40 @@ export const addJob = async (req: Request, res: Response) => {
   if (parsedJob.success) {
     const newJob = new Jobs(req.body)
     try {
-      const createJob = await newJob.save()
-      res.json({
-        error: false,
-        message: ADD_SUCCESS_MESSAGE,
-        item: createJob,
-        itemCount: 1,
-      })
+      if (req.body.isStock) {
+        const getStockJob = await Jobs.findOne({
+          locationId: req.body.locationId,
+          partId: req.body.partId,
+          factoryId: req.body.factoryId,
+          isStock: true,
+          status: { $ne: "Deleted" },
+          $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        })
+        if (!getStockJob) {
+          const createJob = await newJob.save()
+          res.json({
+            error: false,
+            message: ADD_SUCCESS_MESSAGE,
+            item: createJob,
+            itemCount: 1,
+          })
+        } else {
+          res.json({
+            error: true,
+            message: "Stock job already exists",
+            items: null,
+            itemCount: null,
+          })
+        }
+      } else {
+        const createJob = await newJob.save()
+        res.json({
+          error: false,
+          message: ADD_SUCCESS_MESSAGE,
+          item: createJob,
+          itemCount: 1,
+        })
+      }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       res.json({

@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const ZPart = z.object({
-  _id: z.object({}).optional(),
+  _id: z.string().optional(),
   name: z.string().min(3),
   factoryId: z.string().min(23),
   machineClassId: z.string().min(23),

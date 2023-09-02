@@ -1,11 +1,14 @@
 import mongoose from "mongoose"
 const { Schema } = mongoose
 
-const timerReadings = new Schema({
-  action: String,
+const jobTimer = new Schema({
   timerId: {
     type: mongoose.Schema.ObjectId,
     ref: "Timer",
+  },
+  jobId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Job",
   },
   createdAt: {
     type: Date,
@@ -15,4 +18,4 @@ const timerReadings = new Schema({
   deletedAt: Date,
 })
 
-export default mongoose.model("TimerReading", timerReadings)
+export default mongoose.model("JobTimer", jobTimer)

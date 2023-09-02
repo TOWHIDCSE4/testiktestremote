@@ -82,7 +82,7 @@ const Table = ({
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
-                  Part/Product
+                  Product
                   <span className="ml-2 flex-none rounded text-gray-400">
                     <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
                   </span>
@@ -211,11 +211,11 @@ const Table = ({
                   <td className="px-3 py-4 text-sm text-gray-500">
                     {item.status === "Gain" ? (
                       <span className="font-bold text-green-500">
-                        {item.time.toFixed(2)}
+                        {item.time.toFixed(2)} s
                       </span>
                     ) : (
                       <span className="font-bold text-red-500">
-                        {item.time.toFixed(2)}
+                        {item.time.toFixed(2)} s
                       </span>
                     )}
                   </td>
@@ -227,7 +227,7 @@ const Table = ({
                   </td>
                 </tr>
               ))}
-            {isPaginatedLoading || isPaginatedRefetching ? (
+            {isPaginatedLoading ? (
               <div className="flex items-center justify-center my-4">
                 <div
                   className="animate-spin inline-block w-5 h-5 border-2 border-current border-t-transparent text-dark-blue rounded-full my-1"

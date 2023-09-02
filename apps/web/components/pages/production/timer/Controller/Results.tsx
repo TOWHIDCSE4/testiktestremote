@@ -50,7 +50,7 @@ const Results = ({
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6">
               Units Per Hour:{" "}
               <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-semibold text-gray-500">
-                {totals?.unitsPerHour}
+                {totals?.unitsPerHour.toFixed(2)}
               </span>
             </h5>
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6">

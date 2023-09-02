@@ -31,7 +31,7 @@ const EditModal = ({ isOpen, onClose }: EditModalProps) => {
     return (
       <form>
         <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-          <h3 className="text-gray-800 font-semibold text-2xl">Edit Part</h3>
+          <h3 className="text-gray-800 font-semibold text-2xl">Edit Product</h3>
           <div className="md:flex items-center mt-4">
             <label
               htmlFor="name-id"

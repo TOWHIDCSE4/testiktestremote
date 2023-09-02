@@ -8,7 +8,7 @@ import MachineClassRoute from "./machineClasses"
 import MachineRoute from "./machines"
 import PartRoute from "./parts"
 import TimerLogRoute from "./timerLogs"
-import TimerReadingsRoute from "./timerReadings"
+import JobTimerRoute from "./jobTimer"
 import JobRoute from "./jobs"
 import CycleTimerRoute from "./cycleTimers"
 import ControllerTimerRoute from "./controllerTimers"
@@ -16,7 +16,7 @@ import ControllerTimerRoute from "./controllerTimers"
 const App = (app: Application) => {
   app.use(`${API_ROOT}/users`, UsersRoute)
   app.use(`${API_ROOT}/timers`, TimerRoute)
-  app.use(`${API_ROOT}/timer-readings`, TimerReadingsRoute)
+  app.use(`${API_ROOT}/job-timer`, JobTimerRoute)
   app.use(`${API_ROOT}/timer-logs`, TimerLogRoute)
   app.use(`${API_ROOT}/parts`, PartRoute)
   app.use(`${API_ROOT}/machines`, MachineRoute)

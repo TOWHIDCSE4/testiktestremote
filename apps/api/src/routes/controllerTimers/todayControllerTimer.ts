@@ -49,7 +49,8 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
           error: false,
           items: [],
           itemCount: null,
-          message: null,
+          message:
+            "Location production time was ended, please try again the next day.",
         })
       }
     } catch (err: any) {

@@ -19,9 +19,9 @@ const Content = () => {
   const [openNewMachineModal, setOpenNewMachineModal] = useState(false)
   const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
   const [currentLocationTab, setCurrentLocationTab] = useState<string>("")
-  const [typeState, setTypeState] = useState("Part")
+  const [typeState, setTypeState] = useState("Product")
 
-  const tabs = [{ name: "Part" }, { name: "Machine" }]
+  const tabs = [{ name: "Product" }, { name: "Machine" }]
 
   useEffect(() => {
     if (locationTabs.length === 0) {
@@ -65,13 +65,13 @@ const Content = () => {
             </h4>
           </div>
           <div>
-            {typeState === "Part" ? (
+            {typeState === "Product" ? (
               <button
                 type="button"
                 className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
                 onClick={() => setOpenNewPartModal(true)}
               >
-                New Part
+                New Product
               </button>
             ) : (
               <button
@@ -116,7 +116,7 @@ const Content = () => {
             ))}
           </nav>
         </div>
-        {typeState === "Part" ? (
+        {typeState === "Product" ? (
           <Part
             setCurrentLocationTab={setCurrentLocationTab}
             currentLocationTab={currentLocationTab}

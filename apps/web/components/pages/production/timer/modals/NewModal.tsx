@@ -254,7 +254,7 @@ const NewModal = ({
                         }
                         onChange={(e) => setActivePart(e.currentTarget.value)}
                       >
-                        <option disabled>Select Part</option>
+                        <option>Select Product</option>
                         {parts?.items.map((part: T_Part, index: number) => {
                           return (
                             <option key={index} value={part._id as string}>

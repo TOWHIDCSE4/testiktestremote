@@ -13,6 +13,7 @@ import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
 import useProfile from "../../../../hooks/users/useProfile"
 import Image from "next/image"
+import combineClasses from "../../../../helpers/combineClasses"
 
 const TabTable = ({
   tab,
@@ -255,32 +256,42 @@ const TabTable = ({
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items>
-                          <div className="rounded-md border border-gray-300 absolute py-1 -translate-x-[78px] z-10 bg-white">
+                        <Menu.Items className="absolute right-9 z-10 mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                          <div className="py-1">
                             <Menu.Item>
                               {({ active }) => (
-                                <div
-                                  className="text-left text-gray-800 cursor-pointer hover:bg-gray-100 px-6 py-1"
+                                <span
+                                  className={combineClasses(
+                                    active
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-700",
+                                    "block px-4 py-2 text-sm cursor-pointer text-left"
+                                  )}
                                   onClick={() => {
                                     setEditModal(true)
                                     setJobId(job._id as string)
                                   }}
                                 >
                                   Edit
-                                </div>
+                                </span>
                               )}
                             </Menu.Item>
                             <Menu.Item>
                               {({ active }) => (
-                                <div
-                                  className="text-left text-gray-800  cursor-pointer hover:bg-gray-100  px-6 py-1"
+                                <span
+                                  className={combineClasses(
+                                    active
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-700",
+                                    "block px-4 py-2 text-sm cursor-pointer text-left"
+                                  )}
                                   onClick={() => {
                                     setDeleteModal(true)
                                     setJobId(job._id as string)
                                   }}
                                 >
                                   Delete
-                                </div>
+                                </span>
                               )}
                             </Menu.Item>
                           </div>

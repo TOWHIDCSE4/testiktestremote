@@ -65,12 +65,13 @@ const NewModal = ({
         toast.error(String(err))
       },
     }
+
     mutate(
       {
         ...data,
         isStock:
           typeof data.isStock === "string"
-            ? Boolean(data.isStock)
+            ? data.isStock === "true"
             : data.isStock,
         status: "Pending",
         locationId: locationId as string,
@@ -192,7 +193,7 @@ const NewModal = ({
                           isPartsLoading
                         }
                       >
-                        <option value="">Select Part</option>
+                        <option value="">Select Product</option>
                         {parts?.items.map((part: T_Part, index: number) => {
                           return (
                             <option key={index} value={part._id as string}>
@@ -326,6 +327,7 @@ const NewModal = ({
                       onClick={() => {
                         closeModal()
                         reset()
+                        setIsStock(false)
                       }}
                       ref={cancelButtonRef}
                     >

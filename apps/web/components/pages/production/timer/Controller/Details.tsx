@@ -1,15 +1,25 @@
-import { T_BackendResponse, T_Timer, T_User } from "custom-validator"
-import React from "react"
+import {
+  T_BackendResponse,
+  T_Job,
+  T_JobTimer,
+  T_Timer,
+  T_User,
+} from "custom-validator"
+import React, { useEffect } from "react"
 import useUsers from "../../../../../hooks/users/useUsers"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
+import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
+import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTimerByTimerId"
 
 type T_Props = {
   timerDetails: T_Timer
   isLoading: boolean
   readingMessages: string[]
   sectionDiv: React.RefObject<HTMLDivElement>
+  jobTimer: T_JobTimer
+  isJobTimerLoading: boolean
 }
 
 const Details = ({
@@ -17,9 +27,30 @@ const Details = ({
   isLoading,
   readingMessages,
   sectionDiv,
+  jobTimer,
+  isJobTimerLoading,
 }: T_Props) => {
   const queryClient = useQueryClient()
   const { data: users, isLoading: isUsersLoading } = useUsers()
+  const locationId =
+    typeof timerDetails?.locationId === "object" && timerDetails?.locationId._id
+      ? timerDetails?.locationId._id
+      : ""
+  const factoryId =
+    typeof timerDetails?.factoryId === "object" && timerDetails?.factoryId._id
+      ? timerDetails?.factoryId._id
+      : ""
+  const partId =
+    typeof timerDetails?.partId === "object" && timerDetails?.partId._id
+      ? timerDetails?.partId._id
+      : ""
+  const {
+    data: timerJobs,
+    isLoading: isTimerJobsLoading,
+    setFactoryId,
+    setLocationId,
+    setPartId,
+  } = useGetTimerJobs()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
@@ -36,6 +67,13 @@ const Details = ({
       toast.error(String(err))
     },
   }
+  useEffect(() => {
+    if (timerDetails) {
+      setFactoryId(factoryId)
+      setLocationId(locationId)
+      setPartId(partId)
+    }
+  }, [timerDetails])
   return (
     <div className="order-last md:order-none mt-6 md:mt-0">
       <h4 className="uppercase text-sm text-gray-800 md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-bold">
@@ -74,7 +112,7 @@ const Details = ({
         </span>
       </h5>
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7">
-        Part/Product:{" "}
+        Product:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
           {isLoading ? (
             <div className="animate-pulse flex space-x-4">
@@ -153,13 +191,22 @@ const Details = ({
         Job
       </h4>
       <select
-        id="machine-part"
-        name="machine-part"
+        id="jobs"
+        name="jobs"
+        disabled={isLoading || isTimerJobsLoading || isJobTimerLoading}
+        defaultValue="Select Job"
+        required
+        value={jobTimer?.jobId as string}
         className={`block mt-2 w-full md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl sm:xl:leading-7`}
       >
-        <option>STOCK (SEGUIN) 30 TON MACHINE</option>
-        <option>DC STOCK</option>
-        <option>DC STOCK</option>
+        <option value="">Select Job</option>
+        {timerJobs?.items.map((item: T_Job, index: number) => {
+          return (
+            <option key={index} value={item._id as string}>
+              {item.name}
+            </option>
+          )
+        })}
       </select>
       <div className="relative flex">
         <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">

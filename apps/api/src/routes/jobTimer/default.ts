@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import TimerReadings from "../../models/timerReadings"
+import JobTimer from "../../models/jobTimer"
 import {
   UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUE_EMPTY,
@@ -9,17 +9,17 @@ import {
   DELETE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
-import { ZTimerReading } from "custom-validator"
+import { ZJobTimer } from "custom-validator"
 
-export const getAllTimerReadings = async (req: Request, res: Response) => {
+export const getAllJobTimer = async (req: Request, res: Response) => {
   try {
-    const timerReadingCount = await TimerReadings.find().countDocuments()
-    const getAllTimerReadings = await TimerReadings.find().sort({
+    const timerReadingCount = await JobTimer.find().countDocuments()
+    const getAllJobTimer = await JobTimer.find().sort({
       createdAt: -1,
     })
     res.json({
       error: false,
-      items: getAllTimerReadings,
+      items: getAllJobTimer,
       itemCount: timerReadingCount,
       message: null,
     })
@@ -34,15 +34,15 @@ export const getAllTimerReadings = async (req: Request, res: Response) => {
   }
 }
 
-export const getTimerReading = async (req: Request, res: Response) => {
+export const getJobTimer = async (req: Request, res: Response) => {
   try {
-    const getTimerReading = await TimerReadings.findOne({
+    const getJobTimer = await JobTimer.findOne({
       _id: req.params.id,
       deletedAt: null,
     })
     res.json({
       error: false,
-      item: getTimerReading,
+      item: getJobTimer,
       itemCount: 1,
       message: null,
     })
@@ -57,51 +57,37 @@ export const getTimerReading = async (req: Request, res: Response) => {
   }
 }
 
-export const addTimerReading = async (req: Request, res: Response) => {
+export const addJobTimer = async (req: Request, res: Response) => {
   const { action, timerId } = req.body
-  if (action && timerId) {
-    const newTimerReading = new TimerReadings({
-      action,
-      timerId,
-      updatedAt: null,
-      deletedAt: null,
-    })
-    const parsedTimerReading = ZTimerReading.safeParse(req.body)
-    if (parsedTimerReading.success) {
-      try {
-        const getExistingTimerReading = await TimerReadings.find({
-          $or: [{ action, timerId }],
-          deletedAt: { $exists: false },
+  const parsedJobTimer = ZJobTimer.safeParse(req.body)
+  if (parsedJobTimer.success) {
+    try {
+      const getExistingJobTimer = await JobTimer.find({
+        $or: [{ action, timerId }],
+        deletedAt: { $exists: false },
+      })
+      if (getExistingJobTimer.length === 0) {
+        const newJobTimer = new JobTimer(req.body)
+        const createJobTimer = await newJobTimer.save()
+        res.json({
+          error: false,
+          item: createJobTimer,
+          itemCount: 1,
+          message: ADD_SUCCESS_MESSAGE,
         })
-        if (getExistingTimerReading.length === 0) {
-          const createTimerReading = await newTimerReading.save()
-          res.json({
-            error: false,
-            item: createTimerReading,
-            itemCount: 1,
-            message: ADD_SUCCESS_MESSAGE,
-          })
-        } else {
-          res.json({
-            error: true,
-            message: TIMER_READING_ALREADY_EXISTS,
-            items: null,
-            itemCount: null,
-          })
-        }
-      } catch (err: any) {
-        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      } else {
         res.json({
           error: true,
-          message: message,
+          message: TIMER_READING_ALREADY_EXISTS,
           items: null,
           itemCount: null,
         })
       }
-    } else {
+    } catch (err: any) {
+      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       res.json({
         error: true,
-        message: parsedTimerReading.error.issues,
+        message: message,
         items: null,
         itemCount: null,
       })
@@ -109,23 +95,23 @@ export const addTimerReading = async (req: Request, res: Response) => {
   } else {
     res.json({
       error: true,
-      message: REQUIRED_VALUE_EMPTY,
+      message: parsedJobTimer.error.issues,
       items: null,
       itemCount: null,
     })
   }
 }
 
-export const updateTimerReading = async (req: Request, res: Response) => {
-  const getTimerReading = await TimerReadings.find({
+export const updateJobTimer = async (req: Request, res: Response) => {
+  const getJobTimer = await JobTimer.find({
     _id: req.params.id,
     deletedAt: { $exists: false },
   })
   const condition = req.body
-  if (getTimerReading.length === 0) {
+  if (getJobTimer.length === 0) {
     if (!isEmpty(condition)) {
       try {
-        const updateTimerReading = await TimerReadings.findByIdAndUpdate(
+        const updateJobTimer = await JobTimer.findByIdAndUpdate(
           req.params.id,
           {
             $set: req.body,
@@ -135,7 +121,7 @@ export const updateTimerReading = async (req: Request, res: Response) => {
         )
         res.json({
           error: false,
-          item: updateTimerReading,
+          item: updateJobTimer,
           itemCount: 1,
           message: UPDATE_SUCCESS_MESSAGE,
         })
@@ -166,27 +152,24 @@ export const updateTimerReading = async (req: Request, res: Response) => {
   }
 }
 
-export const deleteTimerReading = async (req: Request, res: Response) => {
+export const deleteJobTimer = async (req: Request, res: Response) => {
   try {
-    const getTimerReading = await TimerReadings.find({
+    const getJobTimer = await JobTimer.find({
       _id: req.params.id,
       deletedAt: null,
     })
-    if (getTimerReading.length > 0) {
-      const deleteTimerReading = await TimerReadings.findByIdAndUpdate(
-        req.params.id,
-        {
-          $set: {
-            deletedAt: Date.now(),
-          },
-        }
-      )
-      const deletedTimerReading = await TimerReadings.findById({
+    if (getJobTimer.length > 0) {
+      const deleteJobTimer = await JobTimer.findByIdAndUpdate(req.params.id, {
+        $set: {
+          deletedAt: Date.now(),
+        },
+      })
+      const deletedJobTimer = await JobTimer.findById({
         _id: req.params.id,
       })
       res.json({
         error: false,
-        item: deletedTimerReading,
+        item: deletedJobTimer,
         itemCount: 1,
         message: DELETE_SUCCESS_MESSAGE,
       })
