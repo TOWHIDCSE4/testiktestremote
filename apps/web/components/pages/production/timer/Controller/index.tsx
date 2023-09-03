@@ -77,7 +77,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const [isLocationTimeEnded, setIsLocationTimeEnded] = useState(false)
   const [stopMenu, setStopMenu] = useState(false)
   const [endMenu, setEndMenu] = useState(false)
-  const [progress, setProgress] = useState(0)
+  const [progress, setProgress] = useState(100)
   const [unitsCreated, setUnitsCreated] = useState(0)
   const [totals, setTotals] = useState({
     unitsPerHour: 0,
@@ -158,7 +158,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       setCycleClockInSeconds(0)
       setIsCycleClockRunning(false)
       setIsTimerClockRunning(false)
-      setProgress(0)
+      setProgress(100)
       setIsTimerControllerEnded(true)
     }, 3000)
   }

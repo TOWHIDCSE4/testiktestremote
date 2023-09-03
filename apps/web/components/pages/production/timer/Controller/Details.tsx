@@ -207,6 +207,7 @@ const Details = ({
             </option>
           )
         })}
+        <option value="add">Add New Job</option>
       </select>
       <div className="relative flex">
         <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
