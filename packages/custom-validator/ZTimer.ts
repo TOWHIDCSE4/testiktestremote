@@ -14,6 +14,7 @@ export const ZTimer = z.object({
   machineId: z.union([z.string(), ZMachine]),
   machineClassId: z.union([z.string(), ZMachineClass]),
   partId: z.union([z.string(), ZPart]),
+  location: ZLocation.optional(),
   locationId: z.union([z.string(), ZLocation]),
   operator: z.string().min(23).optional(),
   assignedOperator: ZUser.optional(),

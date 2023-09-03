@@ -4,145 +4,137 @@ import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import useTimersByLocation from "../../../../hooks/timers/useTimersByLocation"
 import Table from "./TimerTracker/Table"
+import useGetCycleTimerRealTime from "../../../../hooks/timers/useGetCycleTimerRealTime"
+import { hourMinuteSecond } from "../../../../helpers/timeConverter"
+import dayjs from "dayjs"
+import * as timezone from "dayjs/plugin/timezone"
+import * as utc from "dayjs/plugin/utc"
+import useGetTimerDetails from "../../../../hooks/timers/useGetTimerDetails"
 
-const tabs = [
-  { name: "RPP1225", current: true },
-  { name: "30 Ton", current: false },
-  { name: "40 Ton", current: false },
-  { name: "RP1635", current: false },
-  { name: "RP1635", current: false },
-  { name: "RP1635", current: false },
-  { name: "RP1635", current: false },
-  { name: "RP1635", current: false },
-]
-
-// @ts-expect-error
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
-}
-
-const SingleTimeTracker = ({
-  locationId,
-  machineClassId,
-}: {
-  locationId: string
-  machineClassId: string
-}) => {
-  const pathName = usePathname()
-  const {
-    data: timersByLocation,
-    isLoading: isTimersByLocationLoading,
-    setLocationId,
-  } = useTimersByLocation()
-  const [timers, setTimers] = useState<T_Timer[]>([])
+const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
+  dayjs.extend(utc.default)
+  dayjs.extend(timezone.default)
+  const [dailyUnits, setDailyUnits] = useState<number>(0)
+  const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
+    useGetTimerDetails(timerId as string)
   const [selectedTimerMachine, setSelectedTimerMachine] = useState<string>("")
-  const [selectedTimerId, setSelectedTimerId] = useState<string>("")
   const [selectedLocationId, setSelectedLocationId] = useState<string>("")
-
-  const openFullScreenTracker = () => {
-    window.open(
-      `/production/timer/tracker/${locationId}/${machineClassId}`,
-      "Timer Tracker",
-      "location,status,scrollbars,resizable,width=1024, height=800"
-    )
-  }
+  const { data: cycleTimer, isLoading: isCycleTimerLoading } =
+    useGetCycleTimerRealTime(timerId as string)
+  const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
+  const [cycleClockInSeconds, setCycleClockInSeconds] = useState(0)
+  const [cycleClockTimeArray, setCycleCockTimeArray] = useState<
+    Array<number | string>
+  >([])
+  const [cycleClockIntervalId, setCycleClockIntervalId] = useState<number>(0)
 
   useEffect(() => {
-    if (locationId) {
-      setLocationId(locationId)
+    if (timerDetailData?.item) {
+      setSelectedTimerMachine(timerDetailData?.item?.machineId?.name as string)
+      setSelectedLocationId(timerDetailData?.item?.locationId?._id as string)
     }
-  }, [locationId])
-
+  }, [timerDetailData])
+  const runCycle = () => {
+    const interval: any = setInterval(() => {
+      setCycleClockInSeconds((previousState: number) => previousState + 1)
+    }, 1000)
+    setCycleClockIntervalId(interval)
+  }
+  useEffect(() => {
+    setCycleCockTimeArray(hourMinuteSecond(cycleClockInSeconds))
+  }, [cycleClockInSeconds])
   useEffect(() => {
     if (
-      timersByLocation?.items &&
-      timersByLocation?.items.length > 0 &&
-      machineClassId
+      timerDetailData?.item &&
+      cycleTimer?.items &&
+      cycleTimer?.items.length > 0
     ) {
-      const timers = timersByLocation.items
-        .map((timer: T_Timer) => {
-          return timer.machineClassId === machineClassId ? timer : null
-        })
-        .filter((timer) => timer !== null)
-      setSelectedTimerMachine(timers[0]?.machine?.name as string)
-      setSelectedTimerId(timers[0]?._id as string)
-      setSelectedLocationId(timers[0]?.locationId as string)
-      setTimers(timers as T_Timer[])
+      const timeZone = timerDetailData?.item?.locationId?.timeZone
+      const timerStart = dayjs.tz(
+        dayjs(cycleTimer?.items[0].createdAt),
+        timeZone ? timeZone : ""
+      )
+      const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
+      const secondsLapse = currentDate.diff(timerStart, "seconds", true)
+      setCycleClockInSeconds(secondsLapse)
+      if (!cycleTimer?.items[0].endAt && !isCycleClockRunning) {
+        runCycle()
+        setIsCycleClockRunning(true)
+      }
+    } else {
+      clearInterval(cycleClockIntervalId)
+      setIsCycleClockRunning(false)
     }
-  }, [timersByLocation, machineClassId])
+  }, [cycleTimer, timerDetailData])
 
   return (
     <div
-      className={`drop-shadow-lg border border-gray-200 bg-white rounded-md ${
-        pathName === `/production/timer/tracker/${locationId}/${machineClassId}`
-          ? "mt-0 h-screen"
-          : "mt-7"
-      }`}
+      className={`drop-shadow-lg border border-gray-200 bg-white rounded-md mt-0 h-screen`}
     >
       <div>
         <div>
           {/* Tabs */}
-          <div
-            className={`flex items-center px-4 md:px-0 mt-4 pb-4 md:pb-0 md:mt-0 shadow`}
-          >
-            <div className={`w-full`}>
-              <div className="sm:hidden">
-                <label htmlFor="tabs" className="sr-only">
-                  Select a tab
-                </label>
-                {/* Use an "onChange" listener to redirect the user to the selected tab URL. */}
-                <select
-                  id="tabs"
-                  name="tabs"
-                  className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-blue-950"
-                  defaultValue={
-                    timers.find((tab) => tab._id === selectedTimerId)?._id
-                  }
-                >
-                  {timers.map((tab) => (
-                    <option key={tab._id}>{tab?.machine?.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="hidden sm:block">
-                <nav
-                  className="isolate flex divide-x divide-gray-200"
-                  aria-label="Tabs"
-                >
-                  {timers.map((tab, tabIdx) => (
-                    <button
-                      key={tabIdx}
-                      className={classNames(
-                        selectedTimerId === tab._id
-                          ? "text-gray-900"
-                          : "text-gray-500 hover:text-gray-700",
-                        tabIdx === 0 ? "" : "",
-                        tabIdx === tabs.length - 1 ? "" : "",
-                        "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center text-sm font-bold hover:bg-gray-50 focus:z-10"
-                      )}
-                      onClick={() => setSelectedTimerId(tab._id as string)}
-                    >
-                      <span>{tab.machine?.name}</span>
-                      <span
-                        aria-hidden="true"
-                        className={classNames(
-                          selectedTimerId === tab._id
-                            ? "bg-blue-950"
-                            : "bg-transparent",
-                          "absolute inset-x-0 bottom-0 h-1"
-                        )}
-                      />
-                    </button>
-                  ))}
-                </nav>
-              </div>
+          <div className="flex border-b border-gray-200 px-4 py-2">
+            <div className="flex-1 flex gap-3 items-center">
+              <h3 className="text-lg">Daily Units:</h3>
+              <h3 className="text-lg font-bold">{dailyUnits}</h3>
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <h3 className="text-2xl font-bold">{selectedTimerMachine}</h3>
+              <h3 className="text-lg text-gray-400">
+                {timerDetailData?.item?.locationId.name}
+              </h3>
+            </div>
+            <div className="flex-1 flex gap-3 items-center justify-end">
+              {isCycleClockRunning ? (
+                <div className="flex items-center justify-center">
+                  <h2
+                    className={`text-center font-bold text-3xl ${
+                      !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
+                    }`}
+                  >
+                    {cycleClockTimeArray[0]}
+                  </h2>
+                  <span
+                    className={`text-center font-bold text-3xl ${
+                      !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
+                    }`}
+                  >
+                    :
+                  </span>
+                  <h2
+                    className={`text-center font-bold text-3xl ${
+                      !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
+                    }`}
+                  >
+                    {cycleClockTimeArray[1]}
+                  </h2>
+                  <span
+                    className={`text-center font-bold text-3xl ${
+                      !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
+                    }`}
+                  >
+                    :
+                  </span>
+                  <h2
+                    className={`text-center font-bold text-3xl ${
+                      !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
+                    }`}
+                  >
+                    {cycleClockTimeArray[2]}
+                  </h2>
+                </div>
+              ) : (
+                <h2 className="font-bold text-stone-400 text-3xl">00:00:00</h2>
+              )}
             </div>
           </div>
           {/* Table */}
           <Table
-            timerId={selectedTimerId}
+            timerId={timerId}
             locationId={selectedLocationId}
             timerMachine={selectedTimerMachine}
+            setDailyUnits={setDailyUnits}
           />
         </div>
       </div>

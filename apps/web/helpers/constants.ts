@@ -1,3 +1,5 @@
+export const REFETCH_ACTIVATED = false
+
 export const INVALID_AUTH = "Invalid authentication"
 
 export const ROLES = {

@@ -41,7 +41,7 @@ const TimerTracker = ({
 
   const openFullScreenTracker = () => {
     window.open(
-      `/production/timer/tracker/${locationId}/${machineClassId}`,
+      `/production/timer/tracker/${selectedTimerId}`,
       "Timer Tracker",
       "location,status,scrollbars,resizable,width=1024, height=800"
     )
@@ -146,7 +146,11 @@ const TimerTracker = ({
                 pathName === "/production/timer/tracker" ? "hidden" : ""
               }`}
             >
-              <span onClick={openFullScreenTracker} className="cursor-pointer">
+              <button
+                type="button"
+                onClick={openFullScreenTracker}
+                className="cursor-pointer"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="14"
@@ -166,7 +170,7 @@ const TimerTracker = ({
                     </g>
                   </g>
                 </svg>
-              </span>
+              </button>
             </div>
           </div>
           {/* Table */}

@@ -64,6 +64,20 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
             preserveNullAndEmptyArrays: true,
           },
         },
+        {
+          $lookup: {
+            from: "locations",
+            localField: "locationId",
+            foreignField: "_id",
+            as: "location",
+          },
+        },
+        {
+          $unwind: {
+            path: "$location",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
       ])
 
       res.json({

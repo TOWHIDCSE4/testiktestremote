@@ -61,7 +61,7 @@ const NewPartModal = ({
             reset()
             setSelectedFactory("")
             setFiles([])
-            toast.success("New part was added")
+            toast.success("New product was added")
           }
         } else {
           toast.error(returnData.message as string)
@@ -144,7 +144,7 @@ const NewPartModal = ({
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <h3 className="text-gray-800 font-semibold text-2xl">
-                      {`${locationState} > New Part`}
+                      {`${locationState} > New Product`}
                     </h3>
                     <div className="md:flex items-center mt-6">
                       <label

@@ -9,15 +9,18 @@ import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import Footer from "./Footer"
 import { usePathname } from "next/navigation"
+import { Dispatch, useEffect } from "react"
 
 const Table = ({
   timerId,
   locationId,
   timerMachine,
+  setDailyUnits,
 }: {
   timerId: string
   locationId: string
   timerMachine: string
+  setDailyUnits?: Dispatch<number>
 }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
@@ -32,6 +35,12 @@ const Table = ({
 
   const pathName = usePathname()
   const path = pathName.substring(0, 25)
+
+  useEffect(() => {
+    if (setDailyUnits && typeof data?.itemCount === "number") {
+      setDailyUnits(data?.itemCount || 0)
+    }
+  }, [data])
 
   return (
     <>

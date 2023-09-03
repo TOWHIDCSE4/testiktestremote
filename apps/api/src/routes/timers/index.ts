@@ -13,9 +13,11 @@ import { getAllTimersByLocation } from "./filterByLocations"
 import { countByMachineClass } from "./countByMachineClass"
 import { assignJob } from "./assignJob"
 import { timerJobs } from "./timerJobs"
+import { totalTonsUnit } from "./totalTonsUnit"
 
 router.get("/count-machine-class", isUserLoggedIn, countByMachineClass)
 router.get("/timer-jobs", isUserLoggedIn, timerJobs)
+router.get("/total-tons-unit", isUserLoggedIn, totalTonsUnit)
 router.post("/assign-job", isUserLoggedIn, assignJob)
 
 //default

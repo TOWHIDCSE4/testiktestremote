@@ -1,5 +1,6 @@
 import {
   API_URL_TIMER_LOGS,
+  REFETCH_ACTIVATED,
   SIXTEEN_HOURS,
   TWELVE_HOURS,
 } from "../../helpers/constants"
@@ -51,7 +52,7 @@ function useGetAllTimerLogs({
     {
       refetchOnWindowFocus: false,
       enabled: !!locationId && !!timerId,
-      refetchInterval: 1000,
+      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
     }
   )
   useEffect(() => {

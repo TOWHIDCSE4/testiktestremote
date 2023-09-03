@@ -314,7 +314,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setIsTimerControllerEnded(true)
       }
     } else {
-      if (controllerTimer?.items?.length === 0 && !controllerTimer.error) {
+      if (
+        controllerTimer?.items?.length === 0 &&
+        !controllerTimer.error &&
+        controllerTimer?.message
+      ) {
         setIsTimerControllerEnded(true)
         setIsLocationTimeEnded(true)
         toast.error(controllerTimer?.message as string, { duration: 5000 })
@@ -436,7 +440,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
             runCycle={runCycle}
             stopCycle={stopCycle}
             progress={progress}
-            isAbleToStart={!isTimerControllerEnded}
+            isAbleToStart={!isTimerControllerEnded && !isJobTimerLoading}
           />
           <Results unitsCreated={unitsCreated} totals={totals} />
         </div>

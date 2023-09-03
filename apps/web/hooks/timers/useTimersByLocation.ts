@@ -1,5 +1,6 @@
 import {
   API_URL_TIMER,
+  REFETCH_ACTIVATED,
   SIXTEEN_HOURS,
   TWELVE_HOURS,
 } from "../../helpers/constants"
@@ -33,8 +34,7 @@ function useTimersByLocation() {
     ["timers-location", locationId],
     () => getTimerByLocation(locationId),
     {
-      cacheTime: SIXTEEN_HOURS,
-      staleTime: TWELVE_HOURS,
+      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
       refetchOnWindowFocus: false,
       enabled: locationId !== "",
     }
