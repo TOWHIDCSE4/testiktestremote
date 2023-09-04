@@ -3,8 +3,20 @@ import { T_User } from "custom-validator"
 import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
 import ParentTable from "./ParentTable"
+import { ROLES } from "../../../helpers/constants"
+
+const TEAMMEMBERS_ADMIN_ROLES = [ROLES.Administrator, ROLES.Production]
 
 const Content = () => {
+  const storeSession = useStoreSession((state) => state)
+  if (!TEAMMEMBERS_ADMIN_ROLES.includes(storeSession.role))
+    return (
+      <div className="mt-28">
+        <h2 className="text-center">
+          You are not authorize to access this page.
+        </h2>
+      </div>
+    )
   return (
     <div className={`my-20 pb-10`}>
       <div className="content px-4 md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mx-auto mt-28">
