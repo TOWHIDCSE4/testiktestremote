@@ -163,7 +163,7 @@ const Content = () => {
       ) : (
         <div className="mt-28">
           <h2 className="text-center">
-            You are not Authorize to access this page.
+            You are not authorize to access this page.
           </h2>
         </div>
       )}
