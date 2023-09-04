@@ -1,9 +1,9 @@
-import SingleTimeTracker from "../../../../../../components/pages/production/timer/SingleTimeTracker"
+import SingleTimerTracker from "../../../../../../components/pages/production/timer/TimerTracker/SingleTimerTracker"
 
 const FullScreen = ({ params }: { params: { timerId: string } }) => {
   return (
     <>
-      <SingleTimeTracker timerId={params.timerId} />
+      <SingleTimerTracker timerId={params.timerId} />
     </>
   )
 }

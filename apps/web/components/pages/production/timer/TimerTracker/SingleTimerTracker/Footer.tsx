@@ -1,6 +1,6 @@
 import { T_TimerLog } from "custom-validator"
 import React, { Dispatch, useEffect, useState } from "react"
-import { hourMinuteSecond } from "../../../../../helpers/timeConverter"
+import { hourMinuteSecond } from "../../../../../../helpers/timeConverter"
 import TrackerDetails from "./Details"
 import { usePathname } from "next/navigation"
 
@@ -87,8 +87,8 @@ const Footer = ({
               <p
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-lg xl:text-xl 2xl:text-2xl"
+                    : "text-lg"
                 } text-gray-700`}
               >
                 Showing <span className="font-medium">{logs.length}</span> of{" "}
@@ -101,8 +101,8 @@ const Footer = ({
                 type="button"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-lg xl:text-xl 2xl:text-2xl"
+                    : "text-lg"
                 } relative inline-flex items-center rounded-md bg-white px-3 py-2 font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0 disabled:opacity-70 disabled:cursor-not-allowed`}
                 onClick={() => page > 1 && setPage(page - 1)}
                 disabled={page < 2}
@@ -113,8 +113,8 @@ const Footer = ({
                 type="button"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-lg xl:text-xl 2xl:text-2xl"
+                    : "text-lg"
                 } relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0 disabled:opacity-70 disabled:cursor-not-allowed`}
                 onClick={() => setPage(page + 1)}
                 disabled={page === maxPage}

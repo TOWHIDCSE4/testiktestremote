@@ -3,7 +3,7 @@ import React, { Dispatch, useEffect, useState } from "react"
 import { hourMinuteSecond } from "../../../../../helpers/timeConverter"
 import { usePathname } from "next/navigation"
 
-const TrackerDetails = ({
+const Details = ({
   page,
   setPage,
   logs,
@@ -129,6 +129,48 @@ const TrackerDetails = ({
             </h6>
           </div>
           <div>
+            <div>
+              <h6
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } uppercase font-bold text-gray-700 leading-6`}
+              >
+                Overall Units: 0
+              </h6>
+              <h6
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } uppercase font-bold text-gray-700 leading-6`}
+              >
+                Overall Tons: 0.000
+              </h6>
+            </div>
+            <div>
+              <h6
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } uppercase font-bold text-gray-700 leading-6`}
+              >
+                Global Units: 0
+              </h6>
+              <h6
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } uppercase font-bold text-gray-700 leading-6`}
+              >
+                Global Tons: 0.000
+              </h6>
+            </div>
+          </div>
+          <div className="flex flex-col text-right">
             <button
               className={`
               ${
@@ -143,52 +185,8 @@ const TrackerDetails = ({
           </div>
         </div>
       </div>
-      <div className="">
-        <div className="flex justify-between border-t border-gray-300 px-4 lg:px-8 py-3">
-          <div>
-            <h6
-              className={`${
-                path === "/production/timer/tracker"
-                  ? "text-sm xl:text-xl 2xl:text-2xl"
-                  : "text-sm"
-              } uppercase font-bold text-gray-700 leading-6`}
-            >
-              Overall Units: 0
-            </h6>
-            <h6
-              className={`${
-                path === "/production/timer/tracker"
-                  ? "text-sm xl:text-xl 2xl:text-2xl"
-                  : "text-sm"
-              } uppercase font-bold text-gray-700 leading-6`}
-            >
-              Overall Tons: 0.000
-            </h6>
-          </div>
-          <div>
-            <h6
-              className={`${
-                path === "/production/timer/tracker"
-                  ? "text-sm xl:text-xl 2xl:text-2xl"
-                  : "text-sm"
-              } uppercase font-bold text-gray-700 leading-6`}
-            >
-              Global Units: 0
-            </h6>
-            <h6
-              className={`${
-                path === "/production/timer/tracker"
-                  ? "text-sm xl:text-xl 2xl:text-2xl"
-                  : "text-sm"
-              } uppercase font-bold text-gray-700 leading-6`}
-            >
-              Global Tons: 0.000
-            </h6>
-          </div>
-        </div>
-      </div>
     </>
   )
 }
 
-export default TrackerDetails
+export default Details

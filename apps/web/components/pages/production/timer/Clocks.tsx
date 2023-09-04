@@ -14,6 +14,7 @@ import LocalTime from "./LocalTime"
 import useGetLocationLastUpdate from "../../../../hooks/timers/useGetLocationLastUpdate"
 import LastUpdated from "./LastUpdated"
 import InProduction from "./InProduction"
+import useStoreSession from "../../../../store/useStoreSession"
 
 const Clocks = ({
   locationId,
@@ -32,6 +33,10 @@ const Clocks = ({
 }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
+  const storeSession = useStoreSession((state) => state)
+  const userRole = storeSession?.role
+  const allowedToOpenProductionTimeModal =
+    userRole === "Administrator" || userRole === "Production"
   const [isAllFilterSelected, setIsAllFilterSelected] = useState(true)
   const [openFilter, setOpenFilter] = useState(false)
   const [openSetProduction, setOpenProduction] = useState(false)
@@ -65,6 +70,12 @@ const Clocks = ({
     )
     setSelectedMachineClasses(updatedMachineClasses)
     setIsAllFilterSelected(!isAllFilterSelected)
+  }
+
+  const openProductionModal = () => {
+    if (allowedToOpenProductionTimeModal) {
+      setOpenProduction(!openSetProduction)
+    }
   }
 
   return (
@@ -156,8 +167,11 @@ const Clocks = ({
         />
         <InProduction locationId={locationId} isLoading={isLocationLoading} />
         <div
-          className="rounded-md bg-white shadow p-2 text-center hover:bg-gray-50 cursor-pointer"
-          onClick={() => setOpenProduction(true)}
+          className={`rounded-md bg-white shadow p-2 text-center ${
+            allowedToOpenProductionTimeModal &&
+            "hover:bg-gray-50 cursor-pointer"
+          }`}
+          onClick={() => openProductionModal()}
         >
           <h5 className="text-lg text-gray-700 uppercase font-bold">
             {!isLocationLoading ? location.item.productionTime : "0"} Hours

@@ -3,7 +3,7 @@ import {
   ChevronUpDownIcon,
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/solid"
-import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
+import useGetAllTimerLogs from "../../../../../../hooks/timerLogs/useGetAllTimerLogs"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
@@ -56,8 +56,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-md xl:text-xl 2xl:text-2xl"
+                    : "text-md"
                 } py-3.5 pr-3 text-left font-semibold text-gray-900 pl-4 lg:pl-8 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -71,8 +71,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-md xl:text-xl 2xl:text-2xl"
+                    : "text-md"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -86,8 +86,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-md xl:text-xl 2xl:text-2xl"
+                    : "text-md"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -101,8 +101,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-md xl:text-xl 2xl:text-2xl"
+                    : "text-md"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -116,8 +116,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-md xl:text-xl 2xl:text-2xl"
+                    : "text-md"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -131,8 +131,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-md xl:text-xl 2xl:text-2xl"
+                    : "text-md"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -146,8 +146,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-md xl:text-xl 2xl:text-2xl"
+                    : "text-md"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -161,8 +161,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-sm xl:text-xl 2xl:text-2xl"
-                    : "text-sm"
+                    ? "text-md xl:text-xl 2xl:text-2xl"
+                    : "text-md"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -184,18 +184,18 @@ const Table = ({
             {paginated?.items &&
               paginated?.items.map((item, idx, array) => (
                 <tr key={idx}>
-                  <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8">
+                  <td className="py-4 pl-4 pr-3 text-lg xl:text-2xl font-medium text-gray-900 sm:pl-6 lg:pl-8">
                     {item.cycle}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td className="px-3 py-2 text-lg xl:text-2xl text-gray-500">
                     {dayjs
                       .tz(dayjs(item.createdAt), "America/Chicago")
                       .format("MM/DD/YYYY")}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td className="px-3 py-2 text-lg xl:text-2xl text-gray-500">
                     {typeof item.partId === "object" ? item.partId.name : ""}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td className="px-3 py-2 text-lg xl:text-2xl text-gray-500">
                     {typeof item.operator === "object"
                       ? item.operator?.firstName
                       : ""}{" "}
@@ -203,10 +203,10 @@ const Table = ({
                       ? item.operator?.lastName
                       : ""}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td className="px-3 py-2 text-lg xl:text-2xl text-gray-500">
                     {item._id ? item._id.slice(-6) : ""}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td className="px-3 py-2 text-lg xl:text-2xl text-gray-500">
                     {item.status === "Gain" ? (
                       <span className="font-bold text-green-500">
                         {item.status}
@@ -217,7 +217,7 @@ const Table = ({
                       </span>
                     )}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td className="px-3 py-2 text-lg xl:text-2xl text-gray-500">
                     {item.status === "Gain" ? (
                       <span className="font-bold text-green-500">
                         {item.time.toFixed(2)}s
@@ -228,10 +228,10 @@ const Table = ({
                       </span>
                     )}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td className="px-3 py-2 text-lg xl:text-2xl text-gray-500">
                     {item.stopReason.join(", ")}
                   </td>
-                  <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
+                  <td className="relative py-4 pl-3 pr-4 text-right text-lg xl:text-2xl font-medium sm:pr-6 lg:pr-8">
                     <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
                   </td>
                 </tr>

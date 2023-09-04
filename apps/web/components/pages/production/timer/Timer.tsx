@@ -214,18 +214,18 @@ const Timer = ({
         ) : (
           <h2 className="font-bold text-stone-400 text-5xl">00:00:00</h2>
         )}
-        <p className="text-amber-600">
+        <p className="text-amber-600 text-lg">
           {operator
             ? `${operator?.firstName} ${operator?.lastName}`
             : "Please select operator"}
         </p>
         <div>
-          <h2 className="font-semibold text-gray-400 text-3xl">
+          <h2 className="font-semibold text-gray-400 text-5xl">
             {totalTonsUnit?.item.dailyUnits
               ? addZeroFront(totalTonsUnit?.item.dailyUnits)
               : "000"}
           </h2>
-          <h6 className="text-gray-700 font-semibold uppercase text-sm">
+          <h6 className="text-gray-700 font-semibold uppercase text-lg">
             Daily Units
           </h6>
         </div>

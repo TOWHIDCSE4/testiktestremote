@@ -50,8 +50,8 @@ export const timer = async (req: Request, res: Response) => {
               .sort({
                 createdAt: -1,
               })
-              .skip(5 * (Number(page) - 1))
-              .limit(5)
+              .skip(3 * (Number(page) - 1))
+              .limit(3)
             getTimerLogs = await TimerLogs.find({
               timerId,
               createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
@@ -62,8 +62,8 @@ export const timer = async (req: Request, res: Response) => {
               .sort({
                 createdAt: -1,
               })
-              .skip(5 * (Number(page) - 1))
-              .limit(5)
+              .skip(3 * (Number(page) - 1))
+              .limit(3)
           } else {
             timerLogsCount = await TimerLogs.find({
               timerId,

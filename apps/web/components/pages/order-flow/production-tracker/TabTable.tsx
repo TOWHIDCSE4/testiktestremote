@@ -181,7 +181,6 @@ const TabTable = ({
                   </td>
                   <td className="py-4 pl-6 text-sm text-gray-800">
                     <div className="flex items-center">
-                      1 /{" "}
                       {job?.count ? (
                         job?.count
                       ) : (

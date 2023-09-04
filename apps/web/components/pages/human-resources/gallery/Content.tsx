@@ -3,8 +3,8 @@
 const Content = () => {
   return (
     <>
-      <div className="mt-20">
-        <div className="content px-4 md:px-7 lg:px-16 2xl:px-80 mt-28">
+      <div className={`my-20 pb-10`}>
+        <div className="content px-4 md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mx-auto mt-28">
           <h1 className="text-gray-800 text-3xl font-bold">Gallery</h1>
           <h4 className="uppercase text-sm text-gray-500 font-medium tracking-widest mt-2">
             Human Resources

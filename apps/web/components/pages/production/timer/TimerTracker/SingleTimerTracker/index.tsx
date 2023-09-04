@@ -1,15 +1,12 @@
 "use client"
-import { T_Timer } from "custom-validator"
-import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import useTimersByLocation from "../../../../hooks/timers/useTimersByLocation"
-import Table from "./TimerTracker/Table"
-import useGetCycleTimerRealTime from "../../../../hooks/timers/useGetCycleTimerRealTime"
-import { hourMinuteSecond } from "../../../../helpers/timeConverter"
+import Table from "./Table"
+import useGetCycleTimerRealTime from "../../../../../../hooks/timers/useGetCycleTimerRealTime"
+import { hourMinuteSecond } from "../../../../../../helpers/timeConverter"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
-import useGetTimerDetails from "../../../../hooks/timers/useGetTimerDetails"
+import useGetTimerDetails from "../../../../../../hooks/timers/useGetTimerDetails"
 
 const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -76,12 +73,16 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
           {/* Tabs */}
           <div className="flex border-b border-gray-200 px-4 py-2">
             <div className="flex-1 flex gap-3 items-center">
-              <h3 className="text-lg">Daily Units:</h3>
-              <h3 className="text-lg font-bold">{dailyUnits}</h3>
+              <h3 className="text-3xl xl:text-4xl text-gray-500">
+                Daily Units:
+              </h3>
+              <h3 className="text-3xl xl:text-4xl font-bold">{dailyUnits}</h3>
             </div>
             <div className="flex-1 flex flex-col items-center justify-center">
-              <h3 className="text-2xl font-bold">{selectedTimerMachine}</h3>
-              <h3 className="text-lg text-gray-400">
+              <h3 className="text-4xl xl:text-6xl font-bold">
+                {selectedTimerMachine}
+              </h3>
+              <h3 className="text-2xl xl:text-4xl text-gray-400">
                 {timerDetailData?.item?.locationId.name}
               </h3>
             </div>
@@ -89,35 +90,35 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
               {isCycleClockRunning ? (
                 <div className="flex items-center justify-center">
                   <h2
-                    className={`text-center font-bold text-3xl ${
+                    className={`text-center font-bold text-5xl xl:text-6xl ${
                       !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
                     }`}
                   >
                     {cycleClockTimeArray[0]}
                   </h2>
                   <span
-                    className={`text-center font-bold text-3xl ${
+                    className={`text-center font-bold text-5xl xl:text-6xl ${
                       !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
                     }`}
                   >
                     :
                   </span>
                   <h2
-                    className={`text-center font-bold text-3xl ${
+                    className={`text-center font-bold text-5xl xl:text-6xl ${
                       !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
                     }`}
                   >
                     {cycleClockTimeArray[1]}
                   </h2>
                   <span
-                    className={`text-center font-bold text-3xl ${
+                    className={`text-center font-bold text-5xl xl:text-6xl ${
                       !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
                     }`}
                   >
                     :
                   </span>
                   <h2
-                    className={`text-center font-bold text-3xl ${
+                    className={`text-center font-bold text-5xl xl:text-6xl  ${
                       !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
                     }`}
                   >
@@ -125,7 +126,9 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
                   </h2>
                 </div>
               ) : (
-                <h2 className="font-bold text-stone-400 text-3xl">00:00:00</h2>
+                <h2 className="font-bold text-stone-400 text-5xl xl:text-6xl">
+                  00:00:00
+                </h2>
               )}
             </div>
           </div>
