@@ -52,7 +52,7 @@ const TabTable = ({
   return (
     <>
       {isJobsLoading ? (
-        <div className="flex items-center justify-center mb-4 mt-9">
+        <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
           <div
             className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
             role="status"
@@ -62,18 +62,18 @@ const TabTable = ({
           </div>
         </div>
       ) : !jobs?.error && jobs?.itemCount && jobs?.itemCount > 0 ? (
-        <table className="w-full divide-y divide-gray-300">
+        <table className="w-full divide-y divide-gray-300 table-fixed">
           <thead>
             <tr>
               <th
                 scope="col"
-                className="py-3.5 pl-5 md:pl-7 lg:pl-9 text-left text-sm font-semibold text-gray-900 w-16 uppercase"
+                className="py-3.5 pl-5 md:pl-7 lg:pl-9 text-left text-sm font-semibold text-gray-900 w-20 uppercase"
               >
                 User
               </th>
               <th
                 scope="col"
-                className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase pl-4"
+                className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase pl-4 w-28"
               >
                 <a href="#" className="group inline-flex">
                   Factory
@@ -81,7 +81,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-32 uppercase"
+                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-24 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Name
@@ -89,7 +89,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-32 uppercase"
+                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Part
@@ -97,7 +97,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-32 uppercase"
+                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-20 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Drawing
@@ -105,7 +105,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-32 uppercase"
+                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-20 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Count
@@ -113,7 +113,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-32 uppercase"
+                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-20 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Priority
@@ -121,7 +121,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-32 uppercase"
+                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-24 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Due
@@ -129,7 +129,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8"
+                className="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8 w-16"
               >
                 <span className="sr-only">Edit</span>
               </th>
@@ -139,7 +139,7 @@ const TabTable = ({
             {jobs?.items?.map((job: T_Job, index) => {
               return (
                 <tr className="border-b border-gray-200" key={index}>
-                  <td className="py-4 pl-4 text-sm sm:pl-6 lg:pl-8">
+                  <td className="py-3 pl-4 text-sm sm:pl-6 lg:pl-8">
                     <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
                       {!isUserProfileLoading &&
                       userProfile?.item.profile?.photo ? (
@@ -164,22 +164,22 @@ const TabTable = ({
                       )}
                     </div>
                   </td>
-                  <td className="py-4 text-sm text-gray-800 pl-4">
+                  <td className="py-3 text-sm text-gray-800 pl-4">
                     {typeof job?.factoryId === "object"
                       ? job?.factoryId?.name
                       : ""}
                   </td>
-                  <td className="py-4 pl-6 text-sm text-gray-800">
+                  <td className="py-3 pl-6 text-sm text-gray-800">
                     {job?.name}
                   </td>
-                  <td className="py-4 pl-6 text-sm text-gray-800">
+                  <td className="py-3 pl-6 text-sm text-gray-800">
                     {/* @ts-ignore */}
                     {job?.partId?.name}
                   </td>
-                  <td className="py-4 pl-6 text-sm text-gray-800">
+                  <td className="py-3 pl-6 text-sm text-gray-800">
                     {job?.drawingNumber}
                   </td>
-                  <td className="py-4 pl-6 text-sm text-gray-800">
+                  <td className="py-3 pl-6 text-sm text-gray-800">
                     <div className="flex items-center">
                       {job?.count ? (
                         job?.count
@@ -189,7 +189,7 @@ const TabTable = ({
                       <br />
                     </div>
                   </td>
-                  <td className="py-4 pl-6 text-sm text-gray-800">
+                  <td className="py-3 pl-6 text-sm text-gray-800">
                     {/* <ChartBarIcon
                       className={`h-5 w-5 ${
                         job?.priorityStatus === "High"
@@ -232,7 +232,7 @@ const TabTable = ({
                       ></div>
                     </div>
                   </td>
-                  <td className="py-4 pl-6 text-sm text-gray-800">
+                  <td className="py-3 pl-6 text-sm text-gray-800">
                     {job?.dueDate ? (
                       dayjs(job?.dueDate).format("DD/MM/YYYY")
                     ) : (
@@ -241,7 +241,7 @@ const TabTable = ({
                     <br />
                     <span className="text-red-500 hidden">Overdue</span>
                   </td>
-                  <td className="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
+                  <td className="py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
                     <Menu as="div">
                       <Menu.Button>
                         <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
@@ -305,13 +305,13 @@ const TabTable = ({
         </table>
       ) : (
         // no item
-        <div className="flex items-center justify-center mb-4 mt-9">
+        <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
           <div className="text-gray-500 text-lg font-semibold">
             No {tab.toLocaleLowerCase()} job found
           </div>
         </div>
       )}
-      <div className="">
+      <div className="absolute inset-x-0 bottom-0">
         <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
           <div className="h-10 z-[-1] sm:hidden">
             <a
