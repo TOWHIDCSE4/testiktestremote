@@ -35,6 +35,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
       setJobLocation(locationId)
     }
     setJobStatuses(tabs.map((tab) => tab.name) as string[])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locationId])
 
   const jobStatusCount = data
@@ -119,7 +120,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
               </div>
             </div>
             {/* Table */}
-            <div className="w-full overflow-x-auto">
+            <div className="w-full overflow-x-auto h-[30rem] relative">
               {/* <table className="w-full divide-y divide-gray-300">
                 <thead>
                   <tr>
