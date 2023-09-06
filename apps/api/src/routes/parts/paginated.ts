@@ -8,20 +8,27 @@ import {
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, factoryId, machineClassId, name } = req.query
   if (page && locationId) {
+    const isNotAssigned = factoryId === "Not Assigned"
     try {
       const partsCount = await Parts.find({
         locationId: locationId,
-        ...(factoryId && { factoryId: factoryId }),
+        ...(factoryId && !isNotAssigned ? { factoryId: factoryId } : {}),
         ...(machineClassId && { machineClassId: machineClassId }),
-        ...(name && { name: { $regex: `.*${name}.*` } }),
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        ...(name && { name: { $regex: `.*${name}.*`, $options: "i" } }),
+        $and: [
+          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
+          ...(isNotAssigned ? [{ $or: [{ time: 0 }, { tons: 0 }] }] : []),
+        ],
       }).countDocuments()
       const getAllParts = await Parts.find({
         locationId: locationId,
-        ...(factoryId && { factoryId: factoryId }),
+        ...(factoryId && !isNotAssigned ? { factoryId: factoryId } : {}),
         ...(machineClassId && { machineClassId: machineClassId }),
         ...(name && { name: { $regex: `.*${name}.*`, $options: "i" } }),
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        $and: [
+          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
+          ...(isNotAssigned ? [{ $or: [{ time: 0 }, { tons: 0 }] }] : []),
+        ],
       })
         .sort({
           createdAt: -1,
