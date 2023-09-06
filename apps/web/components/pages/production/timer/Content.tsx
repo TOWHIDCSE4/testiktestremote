@@ -10,12 +10,15 @@ import combineClasses from "../../../../helpers/combineClasses"
 import Clocks from "./Clocks"
 import useMachineClasses from "../../../../hooks/machineClasses/useMachineClasses"
 import { T_MachineClass } from "custom-validator"
+import useStoreSession from "../../../../store/useStoreSession"
+import { ROLES } from "../../../../helpers/constants"
 
 type T_LocationTabs = {
   _id?: string
   name: string
   count?: number
 }
+const TIMER_ADMIN_ROLES = [ROLES.Administrator, ROLES.Production]
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -25,6 +28,7 @@ const Content = () => {
   const [selectedMachineClasses, setSelectedMachineClasses] = useState<
     (T_MachineClass & { isSelected: boolean })[]
   >([])
+  const storeSession = useStoreSession((state) => state)
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses()
 
@@ -66,6 +70,14 @@ const Content = () => {
     (tab) => tab._id === currentLocationTab
   )?.name
 
+  if (!TIMER_ADMIN_ROLES.includes(storeSession.role))
+    return (
+      <div className="mt-28">
+        <h2 className="text-center">
+          You are not authorize to access this page.
+        </h2>
+      </div>
+    )
   return (
     <div className={`my-20 pb-10`}>
       <div className="content px-4 md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mx-auto mt-28">
