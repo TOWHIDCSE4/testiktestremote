@@ -141,19 +141,19 @@ const TabTable = ({
                 <tr className="border-b border-gray-200" key={index}>
                   <td className="py-4 pl-4 text-sm sm:pl-6 lg:pl-8">
                     <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
-                      {!isUserProfileLoading &&
-                      userProfile?.item.profile?.photo ? (
+                      {typeof job?.userId === "object" &&
+                      job?.userId?.profile?.photo ? (
                         <Image
                           className="rounded-full"
-                          src={`/files/${userProfile?.item.profile?.photo}`}
+                          src={`/files/${job?.userId?.profile?.photo}`}
                           alt="Profile image"
                           fill
                         />
-                      ) : !isUserProfileLoading &&
-                        !userProfile?.item.profile?.photo ? (
+                      ) : typeof job?.userId === "object" &&
+                        !job?.userId?.profile?.photo ? (
                         <Image
                           className="rounded-full"
-                          src={`https://ui-avatars.com/api/?name=${userProfile?.item?.firstName}+${userProfile?.item?.lastName}`}
+                          src={`https://ui-avatars.com/api/?name=${job?.userId?.firstName}+${job?.userId?.lastName}`}
                           alt="Profile image"
                           fill
                         />
