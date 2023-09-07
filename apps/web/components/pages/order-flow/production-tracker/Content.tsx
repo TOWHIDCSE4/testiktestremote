@@ -4,18 +4,22 @@ import useLocations from "../../../../hooks/locations/useLocations"
 import combineClasses from "../../../../helpers/combineClasses"
 import NewModal from "./modals/NewModal"
 import ParentTable from "./ParentTable"
+import useStoreSession from "../../../../store/useStoreSession"
+import { ROLES } from "../../../../helpers/constants"
 
 type T_LocationTabs = {
   _id?: string
   name: string
   count?: number
 }
+const PRODUCTION_TRACKER_ADMIN_ROLES = [ROLES.Administrator, ROLES.Production]
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
   const [currentLocationTab, setCurrentLocationTab] = useState<string>("")
   const [openNewModal, setOpenNewModal] = useState(false)
+  const storeSession = useStoreSession((state) => state)
   useEffect(() => {
     if (locationTabs.length === 0) {
       if (locations) {
@@ -35,6 +39,14 @@ const Content = () => {
     (tab) => tab._id === currentLocationTab
   )?.name
 
+  if (!PRODUCTION_TRACKER_ADMIN_ROLES.includes(storeSession.role))
+    return (
+      <div className="mt-28">
+        <h2 className="text-center">
+          You are not authorize to access this page.
+        </h2>
+      </div>
+    )
   return (
     <>
       <div className={`my-20 pb-10`}>
