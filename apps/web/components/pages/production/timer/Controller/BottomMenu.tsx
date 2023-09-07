@@ -22,8 +22,8 @@ const BottomMenu = ({
         className={`${
           stopMenu
             ? "translate-y-0"
-            : "translate-y-[192px] xl:translate-y-[297px] 2xl:translate-y-[380px]"
-        } bg-dark-blue h-62 xl:h-80 2xl:h-[430px] w-72 xl:w-[500px] 2xl:w-[800px] z-20 fixed bottom-0 rounded-t-md px-4 pb-5 transition transform duration-1000`}
+            : "translate-y-[178px] xl:translate-y-[297px] 2xl:translate-y-[380px]"
+        } bg-dark-blue h-62 xl:h-80 2xl:h-[430px] w-96 xl:w-[500px] 2xl:w-[800px] z-20 fixed bottom-0 rounded-t-md px-4 pb-5 transition transform duration-1000`}
       >
         <div className="flex justify-center items-center mt-1 2xl:mt-3 mb-0 2xl:mb-2">
           {stopMenu ? (
@@ -42,7 +42,7 @@ const BottomMenu = ({
           <h6 className="text-yellow-200 uppercase xl:text-xl 2xl:text-4xl mt-2 2xl:mt-6">
             Stop
           </h6>
-          <div>
+          <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 px-4">
             <div className="flex space-x-2 2xl:space-x-4 items-center mt-1 xl:mt-3 2xl:mt-6">
               <input
                 id="machine-error"

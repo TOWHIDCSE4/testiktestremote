@@ -183,19 +183,35 @@ const Table = ({
           <tbody className="divide-y divide-gray-200 bg-white">
             {paginated?.items &&
               paginated?.items.map((item, idx, array) => (
-                <tr key={idx}>
-                  <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8">
+                <tr key={idx} className={`${!item.jobId ? "bg-red-50" : ""}`}>
+                  <td
+                    className={`py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 lg:pl-8 ${
+                      item.jobId ? "text-gray-900" : "text-red-500"
+                    }`}
+                  >
                     {item.cycle}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td
+                    className={`px-3 py-4 text-sm text-gray-500 ${
+                      item.jobId ? "text-gray-900" : "text-red-500"
+                    }`}
+                  >
                     {dayjs
                       .tz(dayjs(item.createdAt), "America/Chicago")
                       .format("MM/DD/YYYY")}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td
+                    className={`px-3 py-4 text-sm text-gray-500 ${
+                      item.jobId ? "text-gray-900" : "text-red-500"
+                    }`}
+                  >
                     {typeof item.partId === "object" ? item.partId.name : ""}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td
+                    className={`px-3 py-4 text-sm text-gray-500 ${
+                      item.jobId ? "text-gray-900" : "text-red-500"
+                    }`}
+                  >
                     {typeof item.operator === "object"
                       ? item.operator?.firstName
                       : ""}{" "}
@@ -203,10 +219,18 @@ const Table = ({
                       ? item.operator?.lastName
                       : ""}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td
+                    className={`px-3 py-4 text-sm text-gray-500 ${
+                      item.jobId ? "text-gray-900" : "text-red-500"
+                    }`}
+                  >
                     {item._id ? item._id.slice(-6) : ""}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td
+                    className={`px-3 py-4 text-sm text-gray-500 ${
+                      item.jobId ? "text-gray-900" : "text-red-500"
+                    }`}
+                  >
                     {item.status === "Gain" ? (
                       <span className="font-bold text-green-500">
                         {item.status}
@@ -217,7 +241,7 @@ const Table = ({
                       </span>
                     )}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td className={`px-3 py-4 text-sm`}>
                     {item.status === "Gain" ? (
                       <span className="font-bold text-green-500">
                         {item.time.toFixed(2)}s
@@ -228,7 +252,11 @@ const Table = ({
                       </span>
                     )}
                   </td>
-                  <td className="px-3 py-4 text-sm text-gray-500">
+                  <td
+                    className={`px-3 py-4 text-sm text-gray-500 ${
+                      item.jobId ? "text-gray-900" : "text-red-500"
+                    }`}
+                  >
                     {item.stopReason.join(", ")}
                   </td>
                   <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">

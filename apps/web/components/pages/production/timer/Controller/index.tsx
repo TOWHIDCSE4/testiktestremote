@@ -267,7 +267,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           {
             timerId,
             machineId: timerDetailData?.item?.machineId._id as string,
-            jobId: jobTimer?.item.jobId as string,
+            jobId: null,
             partId: timerDetailData?.item?.partId._id as string,
             time: cycleClockInSeconds,
             operator: timerDetailData?.item?.operator as string,
