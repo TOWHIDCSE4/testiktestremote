@@ -3,6 +3,7 @@ const { Schema } = mongoose
 
 const machineClasses = new Schema({
   name: String,
+  rowNumber: Number,
   createdAt: {
     type: Date,
     default: Date.now,

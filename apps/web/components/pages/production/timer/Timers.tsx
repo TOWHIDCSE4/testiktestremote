@@ -8,6 +8,7 @@ type T_TimerByMachineClass = {
   id: string
   name: string
   count: number
+  rowNumber: number
   timers: T_Timer[]
   isSelected: boolean
 }
@@ -36,7 +37,19 @@ const Timers = ({
 
   useEffect(() => {
     if (!timersByLocation) return
-    const machineClassGroup = machineClasses
+    const machineClassesVariantRemoved = machineClasses.filter(
+      (machineClass) => machineClass.name !== "Variant"
+    )
+    const machineClassesVariant = machineClasses.find(
+      (machineClass) => machineClass.name === "Variant"
+    )
+    const variantTimers =
+      timersByLocation?.items?.filter((timer: T_Timer) => {
+        if (timer.machineClassId === machineClassesVariant?._id) {
+          return timer
+        }
+      }) || []
+    const machineClassGroup = machineClassesVariantRemoved
       ?.map((machineClass) => {
         const timerByMachineClass =
           timersByLocation?.items?.filter((timer: T_Timer) => {
@@ -44,16 +57,22 @@ const Timers = ({
               return timer
             }
           }) || []
+        const isRadialPress = machineClass.name === "Radial Press"
         return {
           id: machineClass._id,
-          name: machineClass.name,
+          name: isRadialPress
+            ? `${machineClass.name} and Variants`
+            : machineClass.name,
           count: timerByMachineClass.length,
-          timers: timerByMachineClass,
+          rowNumber: machineClass.rowNumber,
+          timers: isRadialPress
+            ? [...timerByMachineClass, ...variantTimers]
+            : timerByMachineClass,
           isSelected: machineClass.isSelected,
         }
       })
       .sort(function (a, b) {
-        return b.count - a.count
+        return a.rowNumber - b.rowNumber
       })
     setTimersByMachineClass(machineClassGroup as T_TimerByMachineClass[])
   }, [timersByLocation, machineClasses])
