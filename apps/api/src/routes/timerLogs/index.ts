@@ -9,9 +9,11 @@ import {
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { timer } from "./timer"
+import { productInventory } from "./productInventory"
 
 //custom
 router.get("/timer", isUserLoggedIn, timer)
+router.get("/inventory/:partId", isUserLoggedIn, productInventory)
 
 //default
 router.get("/", isUserLoggedIn, getAllTimeLogs)

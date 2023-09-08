@@ -19,6 +19,7 @@ import toast from "react-hot-toast"
 import ModalMediaList from "./ModalMediaList"
 import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
+import useGetProductLogs from "../../../../../hooks/timerLogs/useGetProductLogs"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -49,9 +50,10 @@ const PartDetailsModal = ({
     isRefetching: isMachineClassesRefetching,
     setSelectedFactoryId,
   } = useFactoryMachineClasses()
-  const { data: locations, isLoading: isLocationsLoading } = useLocations()
+  const { data: productLogs, isLoading: isProductLogsLoading } =
+    useGetProductLogs(id)
   const { mutate, isLoading: isUpdatePartLoading } = useUpdatePart()
-
+  console.log("dddd", productLogs)
   const { register, handleSubmit } = useForm<T_Part>({
     values: partDetails?.item,
   })
@@ -134,7 +136,6 @@ const PartDetailsModal = ({
               disabled={
                 isUpdatePartLoading ||
                 isPartDetailsLoading ||
-                isLocationsLoading ||
                 isFactoriesLoading ||
                 isUploadMediaFilesLoading
               }
@@ -163,7 +164,6 @@ const PartDetailsModal = ({
                     disabled={
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
-                      isLocationsLoading ||
                       isFactoriesLoading ||
                       isUploadMediaFilesLoading
                     }
@@ -197,7 +197,6 @@ const PartDetailsModal = ({
                     disabled={
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
-                      isLocationsLoading ||
                       isFactoriesLoading ||
                       isMachineClassesRefetching ||
                       isUploadMediaFilesLoading
@@ -234,7 +233,6 @@ const PartDetailsModal = ({
                     disabled={
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
-                      isLocationsLoading ||
                       isFactoriesLoading ||
                       isUploadMediaFilesLoading
                     }
@@ -254,7 +252,6 @@ const PartDetailsModal = ({
                     disabled={
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
-                      isLocationsLoading ||
                       isFactoriesLoading ||
                       isUploadMediaFilesLoading
                     }
@@ -273,7 +270,6 @@ const PartDetailsModal = ({
                     disabled={
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
-                      isLocationsLoading ||
                       isFactoriesLoading ||
                       isUploadMediaFilesLoading
                     }
@@ -292,7 +288,6 @@ const PartDetailsModal = ({
                     disabled={
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
-                      isLocationsLoading ||
                       isFactoriesLoading ||
                       isUploadMediaFilesLoading
                     }
@@ -311,7 +306,6 @@ const PartDetailsModal = ({
                     disabled={
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
-                      isLocationsLoading ||
                       isFactoriesLoading ||
                       isUploadMediaFilesLoading
                     }
@@ -325,7 +319,7 @@ const PartDetailsModal = ({
                   <input
                     id="inInventory"
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
-                    defaultValue={0}
+                    defaultValue={productLogs?.item ? productLogs?.item : 0}
                     disabled={true}
                   />
                   <label
@@ -399,7 +393,6 @@ const PartDetailsModal = ({
               disabled={
                 isUpdatePartLoading ||
                 isPartDetailsLoading ||
-                isLocationsLoading ||
                 isFactoriesLoading ||
                 isUploadMediaFilesLoading
               }
@@ -428,7 +421,6 @@ const PartDetailsModal = ({
               disabled={
                 isUpdatePartLoading ||
                 isPartDetailsLoading ||
-                isLocationsLoading ||
                 isFactoriesLoading ||
                 isUploadMediaFilesLoading
               }
