@@ -230,63 +230,72 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   const stopCycle = () => {
     setIsCycleClockStopping(true)
+    clearInterval(cycleClockIntervalId)
     startingTimerReadings([
       `${currentDate} - Stopping timer`,
       `${currentDate} - Timer stopped`,
       `${currentDate} - Timer cycle reset`,
       `${currentDate} - One unit created`,
     ])
-    setTimeout(function () {
-      if (stopReasons.length === 0) {
-        endAddCycleTimer(timerId, callBackReq)
-        addTimerLogs(
-          {
-            timerId,
-            machineId: timerDetailData?.item?.machineId._id as string,
-            jobId: jobTimer?.item.jobId as string,
-            partId: timerDetailData?.item?.partId._id as string,
-            time: cycleClockInSeconds,
-            operator: timerDetailData?.item?.operator as string,
-            status:
-              (timerDetailData?.item?.partId.time as number) >
-              cycleClockInSeconds
-                ? "Gain"
-                : "Loss",
-            stopReason: ["Unit Created"],
-            cycle: unitsCreated + 1,
-          },
-          callBackReq
-        )
-      } else {
-        clearInterval(cycleClockIntervalId)
-        setIsCycleClockRunning(false)
+    if (stopReasons.length === 0) {
+      endAddCycleTimer(timerId, callBackReq)
+      addTimerLogs(
+        {
+          timerId,
+          machineId: timerDetailData?.item?.machineId._id as string,
+          jobId: jobTimer?.item.jobId as string,
+          partId: timerDetailData?.item?.partId._id as string,
+          time: cycleClockInSeconds,
+          operator: timerDetailData?.item?.operator as string,
+          status:
+            (timerDetailData?.item?.partId.time as number) > cycleClockInSeconds
+              ? "Gain"
+              : "Loss",
+          stopReason: ["Unit Created"],
+          cycle: unitsCreated + 1,
+        },
+        callBackReq
+      )
+      setTimeout(function () {
+        setCycleClockInSeconds(0)
+        setIsCycleClockStopping(false)
+        setUnitsCreated(unitsCreated + 1)
+        setProgress(0)
+        const interval: any = setInterval(() => {
+          setCycleClockInSeconds(
+            (previousState: number) => previousState + 0.01
+          )
+        }, 10)
+        setCycleClockIntervalId(interval)
+      }, 3000)
+    } else {
+      endCycleTimer(timerId, callBackReq)
+      addTimerLogs(
+        {
+          timerId,
+          machineId: timerDetailData?.item?.machineId._id as string,
+          jobId: null,
+          partId: timerDetailData?.item?.partId._id as string,
+          time: cycleClockInSeconds,
+          operator: timerDetailData?.item?.operator as string,
+          status:
+            (timerDetailData?.item?.partId.time as number) > cycleClockInSeconds
+              ? "Gain"
+              : "Loss",
+          stopReason: stopReasons,
+          cycle: unitsCreated + 1,
+        },
+        callBackReq
+      )
+      setTimeout(function () {
+        setProgress(100)
         setStopReasons([])
         setStopMenu(false)
-        endCycleTimer(timerId, callBackReq)
-        addTimerLogs(
-          {
-            timerId,
-            machineId: timerDetailData?.item?.machineId._id as string,
-            jobId: null,
-            partId: timerDetailData?.item?.partId._id as string,
-            time: cycleClockInSeconds,
-            operator: timerDetailData?.item?.operator as string,
-            status:
-              (timerDetailData?.item?.partId.time as number) >
-              cycleClockInSeconds
-                ? "Gain"
-                : "Loss",
-            stopReason: stopReasons,
-            cycle: unitsCreated + 1,
-          },
-          callBackReq
-        )
-      }
-      setCycleClockInSeconds(0)
-      setIsCycleClockStopping(false)
-      setUnitsCreated(unitsCreated + 1)
-      setProgress(0)
-    }, 3000)
+        setCycleClockInSeconds(0)
+        setUnitsCreated(unitsCreated + 1)
+        setIsCycleClockRunning(false)
+      }, 3000)
+    }
   }
 
   useEffect(() => {

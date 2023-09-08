@@ -53,7 +53,7 @@ const PartDetailsModal = ({
   const { data: productLogs, isLoading: isProductLogsLoading } =
     useGetProductLogs(id)
   const { mutate, isLoading: isUpdatePartLoading } = useUpdatePart()
-  console.log("dddd", productLogs)
+
   const { register, handleSubmit } = useForm<T_Part>({
     values: partDetails?.item,
   })
