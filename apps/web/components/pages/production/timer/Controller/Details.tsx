@@ -107,9 +107,10 @@ const Details = ({
 
   useEffect(() => {
     if (
-      selectedOperator.id &&
-      typeof timerDetails?.operator === "object" &&
-      selectedOperator.id !== timerDetails?.operator._id
+      (selectedOperator.id && !timerDetails?.operator) ||
+      (selectedOperator.id &&
+        typeof timerDetails?.operator === "object" &&
+        selectedOperator.id !== timerDetails?.operator._id)
     ) {
       mutate({ ...timerDetails, operator: selectedOperator.id }, callBackReq)
     }

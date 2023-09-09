@@ -13,6 +13,7 @@ const Footer = ({
   maxPage,
   locationId,
   timerId,
+  machineClassId,
 }: {
   page: number
   setPage: Dispatch<number>
@@ -22,19 +23,13 @@ const Footer = ({
   maxPage: number
   locationId: string
   timerId: string
+  machineClassId: string
 }) => {
   const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([])
   const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([])
   const [floatTimeArray, setFloatTimeArray] = useState<Array<number | string>>(
     []
   )
-  const openReport = () => {
-    window.open(
-      `/production/timer/report/${locationId}/${timerId}`,
-      "Timer Tracker",
-      "location,status,scrollbars,resizable,width=800, height=800"
-    )
-  }
   useEffect(() => {
     setGainTimeArray(
       hourMinuteSecond(
@@ -76,6 +71,7 @@ const Footer = ({
             maxPage={maxPage}
             locationId={locationId}
             timerId={timerId}
+            machineClassId={machineClassId}
           />
         </div>
         <div>

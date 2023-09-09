@@ -13,6 +13,7 @@ const Footer = ({
   maxPage,
   locationId,
   timerId,
+  machineClassId,
 }: {
   page: number
   setPage: Dispatch<number>
@@ -22,6 +23,7 @@ const Footer = ({
   maxPage: number
   locationId: string
   timerId: string
+  machineClassId: string
 }) => {
   const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([])
   const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([])
@@ -76,6 +78,7 @@ const Footer = ({
             maxPage={maxPage}
             locationId={locationId}
             timerId={timerId}
+            machineClassId={machineClassId}
           />
         </div>
         <div>

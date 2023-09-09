@@ -16,11 +16,13 @@ const Table = ({
   locationId,
   timerMachine,
   setDailyUnits,
+  machineClassId,
 }: {
   timerId: string
   locationId: string
   timerMachine: string
   setDailyUnits?: Dispatch<number>
+  machineClassId: string
 }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
@@ -298,6 +300,7 @@ const Table = ({
         maxPage={data?.itemCount ? Math.ceil(data?.itemCount / 5) : 0}
         locationId={locationId}
         timerId={timerId}
+        machineClassId={machineClassId}
       />
     </>
   )

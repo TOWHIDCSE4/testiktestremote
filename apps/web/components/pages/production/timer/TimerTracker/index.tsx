@@ -178,6 +178,7 @@ const TimerTracker = ({
             timerId={selectedTimerId}
             locationId={selectedLocationId}
             timerMachine={selectedTimerMachine}
+            machineClassId={machineClassId}
           />
         </div>
       </div>

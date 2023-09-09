@@ -16,6 +16,8 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
     useGetTimerDetails(timerId as string)
   const [selectedTimerMachine, setSelectedTimerMachine] = useState<string>("")
   const [selectedLocationId, setSelectedLocationId] = useState<string>("")
+  const [selectedMachineClassId, setSelectedMachineClassId] =
+    useState<string>("")
   const { data: cycleTimer, isLoading: isCycleTimerLoading } =
     useGetCycleTimerRealTime(timerId as string)
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
@@ -29,6 +31,9 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
     if (timerDetailData?.item) {
       setSelectedTimerMachine(timerDetailData?.item?.machineId?.name as string)
       setSelectedLocationId(timerDetailData?.item?.locationId?._id as string)
+      setSelectedMachineClassId(
+        timerDetailData?.item?.machineClassId?._id as string
+      )
     }
   }, [timerDetailData])
   const runCycle = () => {
@@ -138,6 +143,7 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
             locationId={selectedLocationId}
             timerMachine={selectedTimerMachine}
             setDailyUnits={setDailyUnits}
+            machineClassId={selectedMachineClassId}
           />
         </div>
       </div>

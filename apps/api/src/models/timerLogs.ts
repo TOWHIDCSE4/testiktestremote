@@ -16,6 +16,10 @@ const timerLogs = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Machine",
   },
+  machineClassId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "MachineClass",
+  },
   timerId: {
     type: mongoose.Schema.ObjectId,
     ref: "Timer",

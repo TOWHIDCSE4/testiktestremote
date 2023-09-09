@@ -12,6 +12,7 @@ const Details = ({
   maxPage,
   locationId,
   timerId,
+  machineClassId,
 }: {
   page: number
   setPage: Dispatch<number>
@@ -21,6 +22,7 @@ const Details = ({
   maxPage: number
   locationId: string
   timerId: string
+  machineClassId: string
 }) => {
   const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([])
   const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([])
@@ -99,7 +101,7 @@ const Details = ({
               }
                 uppercase font-semibold text-gray-700 leading-6`}
             >
-              Total Gain:{" "}
+              Total Gainssss:{" "}
               <span className="text-green-500">
                 {gainTimeArray[0]}:{gainTimeArray[1]}:{gainTimeArray[2]}
               </span>
@@ -147,7 +149,7 @@ const Details = ({
                 Overall Tons: 0.000
               </h6>
             </div>
-            <div>
+            {/* <div>
               <h6
                 className={`${
                   path === "/production/timer/tracker"
@@ -166,7 +168,7 @@ const Details = ({
               >
                 Global Tons: 0.000
               </h6>
-            </div>
+            </div> */}
           </div>
           <div>
             <button

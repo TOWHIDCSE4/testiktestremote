@@ -2,6 +2,7 @@ import { T_TimerLog } from "custom-validator"
 import React, { Dispatch, useEffect, useState } from "react"
 import { hourMinuteSecond } from "../../../../../helpers/timeConverter"
 import { usePathname } from "next/navigation"
+import useGetOverallTotal from "../../../../../hooks/timerLogs/useGetOverallTotal"
 
 const Details = ({
   page,
@@ -12,6 +13,7 @@ const Details = ({
   maxPage,
   locationId,
   timerId,
+  machineClassId,
 }: {
   page: number
   setPage: Dispatch<number>
@@ -21,7 +23,13 @@ const Details = ({
   maxPage: number
   locationId: string
   timerId: string
+  machineClassId: string
 }) => {
+  const { data: overallUnitTons, isLoading: isOverallUnitTonsLoading } =
+    useGetOverallTotal({
+      locationId,
+      machineClassId,
+    })
   const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([])
   const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([])
   const [floatTimeArray, setFloatTimeArray] = useState<Array<number | string>>(
@@ -90,7 +98,7 @@ const Details = ({
                           : 0),
                       0
                     )
-                    .toFixed(3)
+                    .toFixed(6)
                 : "0.000"}
             </h6>
             <h6
@@ -137,7 +145,10 @@ const Details = ({
                     : "text-sm"
                 } uppercase font-bold text-gray-700 leading-6`}
               >
-                Overall Units: 0
+                Overall Units:{" "}
+                {overallUnitTons?.item?.units
+                  ? overallUnitTons?.item?.units
+                  : "0"}
               </h6>
               <h6
                 className={`${
@@ -146,7 +157,10 @@ const Details = ({
                     : "text-sm"
                 } uppercase font-bold text-gray-700 leading-6`}
               >
-                Overall Tons: 0.000
+                Overall Tons:{" "}
+                {overallUnitTons?.item?.tons
+                  ? overallUnitTons?.item?.tons.toFixed(6)
+                  : "0.000"}
               </h6>
             </div>
             <div>

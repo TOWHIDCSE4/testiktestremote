@@ -4,6 +4,7 @@ import { ZMachine } from "./ZMachine"
 import { ZPart } from "./ZPart"
 import { ZTimer } from "./ZTimer"
 import { ZJob } from "./ZJob"
+import { ZMachineClass } from "./ZMachineClass"
 
 export const ZTimerLogStatus = z.enum(["Gain", "Loss"])
 
@@ -21,6 +22,7 @@ export const ZTimerLog = z.object({
   cycle: z.number().positive(),
   globalCycle: z.number().positive().optional(),
   machineId: z.union([z.string(), ZMachine]),
+  machineClassId: z.union([z.string(), ZMachineClass]),
   jobId: z.union([z.string(), ZJob]).nullable(),
   partId: z.union([z.string(), ZPart]),
   timerId: z.union([z.string(), ZTimer]),
