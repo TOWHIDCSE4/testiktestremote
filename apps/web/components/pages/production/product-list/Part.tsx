@@ -62,6 +62,7 @@ const Part = ({
 
   useEffect(() => {
     setLocationId(currentLocationTab)
+    setPage(1)
   }, [currentLocationTab, setLocationId])
 
   const numberOfPages = Math.ceil((allParts?.itemCount as number) / 6)

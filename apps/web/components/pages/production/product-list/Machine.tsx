@@ -52,7 +52,6 @@ const Machine = ({
   } = useFactoryMachineClasses()
   const { data: machineLocationCount, setMachineLocationIds } =
     useGetMachineLocationCount()
-  const [openNewModal, setOpenNewModal] = useState(false)
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
@@ -65,6 +64,7 @@ const Machine = ({
 
   useEffect(() => {
     setLocationId(currentLocationTab)
+    setPage(1)
   }, [currentLocationTab, setLocationId])
 
   const numberOfPages = Math.ceil((allMachines?.itemCount as number) / 6)
