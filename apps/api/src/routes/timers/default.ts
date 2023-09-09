@@ -45,6 +45,7 @@ export const getTimer = async (req: Request, res: Response) => {
       .populate("partId")
       .populate("machineId")
       .populate("machineClassId")
+      .populate("operator")
       .populate("createdBy")
     res.json({
       error: false,

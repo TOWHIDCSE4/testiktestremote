@@ -16,7 +16,7 @@ export const ZTimer = z.object({
   partId: z.union([z.string(), ZPart]),
   location: ZLocation.optional(),
   locationId: z.union([z.string(), ZLocation]),
-  operator: z.string().min(23).optional(),
+  operator: z.union([z.string(), ZUser]).optional(),
   assignedOperator: ZUser.optional(),
   part: ZPart.optional(),
   createdBy: z.union([z.string(), ZUser]),
