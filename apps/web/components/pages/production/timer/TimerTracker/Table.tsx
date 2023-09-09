@@ -226,13 +226,13 @@ const Table = ({
                   >
                     {item._id ? item._id.slice(-6) : ""}
                   </td>
-                  <td
-                    className={`px-3 py-4 text-sm text-gray-500 ${
-                      item.jobId ? "text-gray-900" : "text-red-500"
-                    }`}
-                  >
+                  <td className={`px-3 py-4 text-sm text-gray-500`}>
                     {item.status === "Gain" ? (
-                      <span className="font-bold text-green-500">
+                      <span
+                        className={`font-bold ${
+                          item.jobId ? "text-green-500" : "text-red-500"
+                        }`}
+                      >
                         {item.status}
                       </span>
                     ) : (
@@ -243,7 +243,11 @@ const Table = ({
                   </td>
                   <td className={`px-3 py-4 text-sm`}>
                     {item.status === "Gain" ? (
-                      <span className="font-bold text-green-500">
+                      <span
+                        className={`font-bold ${
+                          item.jobId ? "text-green-500" : "text-red-500"
+                        }`}
+                      >
                         {item.time.toFixed(2)}s
                       </span>
                     ) : (
