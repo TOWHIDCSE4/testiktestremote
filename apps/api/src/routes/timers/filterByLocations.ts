@@ -52,6 +52,20 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
         },
         {
           $lookup: {
+            from: "parts",
+            localField: "partId",
+            foreignField: "_id",
+            as: "part",
+          },
+        },
+        {
+          $unwind: {
+            path: "$part",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
             from: "users",
             localField: "operator",
             foreignField: "_id",

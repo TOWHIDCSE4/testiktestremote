@@ -17,6 +17,9 @@ import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import useGetCycleTimerRealTime from "../../../../hooks/timers/useGetCycleTimerRealTime"
 import { hourMinuteSecond } from "../../../../helpers/timeConverter"
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import { Combobox } from "@headlessui/react"
+import combineClasses from "../../../../helpers/combineClasses"
 
 type T_Props = {
   timer: T_Timer
@@ -56,6 +59,11 @@ const Timer = ({
     Array<number | string>
   >([])
   const [cycleClockIntervalId, setCycleClockIntervalId] = useState<number>(0)
+  const [partQuery, setPartQuery] = useState("")
+  const [selectedPart, setSelectedPart] = useState({
+    id: typeof timer.partId === "string" && timer.partId ? timer.partId : "",
+    name: timer?.part ? timer?.part?.name : "",
+  })
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
@@ -121,41 +129,63 @@ const Timer = ({
     }
   }, [cycleTimer])
 
+  const filteredParts =
+    partQuery === ""
+      ? timer?.parts?.slice(0, 15)
+      : timer?.parts
+          ?.filter((timer) => {
+            return timer.name.toLowerCase().includes(partQuery.toLowerCase())
+          })
+          ?.slice(0, 15)
+
+  useEffect(() => {
+    if (selectedPart.id && selectedPart.id !== timer.partId) {
+      const timerCopy = { ...timer }
+      // Needed to remove parts because of 413 error
+      delete timerCopy.parts
+      mutate({ ...timerCopy, partId: selectedPart.id }, callBackReq)
+    }
+  }, [selectedPart])
+
   return (
     <div
       key={timer._id as string}
       className="bg-white rounded-md border border-gray-200 drop-shadow-lg"
     >
       <div className="px-4 py-4 border-b border-gray-200 flex items-center gap-2">
-        <select
-          id="part"
-          name="part"
-          className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-          defaultValue={
-            typeof timer.partId === "string" && timer.partId ? timer.partId : ""
-          }
-          disabled={isLoading || isUpdateTimerLoading}
-          onChange={(e) => {
-            if (e.target.value !== timer.partId) {
-              mutate({ ...timer, partId: e.target.value }, callBackReq)
-            }
-          }}
-        >
-          <option value={""} disabled>
-            Select Part
-          </option>
-          {timer?.parts?.map((item: T_Part, index: number) => {
-            if (item.machineClassId === machineClassId) {
-              return (
-                <option key={index} value={item._id as string}>
-                  {item.name}
-                </option>
-              )
-            } else {
-              return null
-            }
-          })}
-        </select>
+        <Combobox as="div" value={selectedPart} onChange={setSelectedPart}>
+          <div className="relative">
+            <Combobox.Input
+              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 ${
+                isUpdateTimerLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              onChange={(event) => setPartQuery(event.target.value)}
+              displayValue={(selected: { id: string; name: string }) => {
+                return selected ? selected.name : ""
+              }}
+            />
+            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+              <ChevronUpDownIcon
+                className="h-5 w-5 text-gray-400"
+                aria-hidden="true"
+              />
+            </Combobox.Button>
+
+            {filteredParts && filteredParts.length > 0 ? (
+              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                {filteredParts.map((item: T_Part, index: number) => (
+                  <Combobox.Option
+                    key={index}
+                    value={{ id: item._id, name: item.name }}
+                    className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
+                  >
+                    <span className="block">{item.name}</span>
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            ) : null}
+          </div>
+        </Combobox>
         <DropDownMenu
           setOpenEditModal={(e: React.MouseEvent<HTMLElement>) => {
             e.stopPropagation()
