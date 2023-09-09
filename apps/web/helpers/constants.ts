@@ -1,4 +1,4 @@
-export const REFETCH_ACTIVATED = false
+export const REFETCH_ACTIVATED = true
 
 export const INVALID_AUTH = "Invalid authentication"
 
