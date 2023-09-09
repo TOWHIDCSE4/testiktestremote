@@ -205,29 +205,6 @@ const Details = ({
       <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
         Operator
       </h4>
-      {/* <select
-        id="user"
-        name="user"
-        disabled={isLoading || isUsersLoading || isUpdateTimerLoading}
-        className="block mt-2 md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl sm:xl:leading-7 disabled:opacity-70"
-        defaultValue="Select User"
-        required
-        onChange={(e) => {
-          if (e.target.value !== timerDetails?.operator) {
-            mutate({ ...timerDetails, operator: e.target.value }, callBackReq)
-          }
-        }}
-        value={timerDetails?.operator}
-      >
-        <option value="">Select User</option>
-        {users?.items.map((item: T_User, index: number) => {
-          return (
-            <option key={index} value={item._id as string}>
-              {item.firstName} {item.lastName}
-            </option>
-          )
-        })}
-      </select> */}
       <Combobox
         as="div"
         value={selectedOperator}

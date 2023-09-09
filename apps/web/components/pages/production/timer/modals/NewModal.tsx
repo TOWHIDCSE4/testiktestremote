@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import {
@@ -18,6 +18,8 @@ import toast from "react-hot-toast"
 import useAddTimer from "../../../../../hooks/timers/useAddTimer"
 import useProfile from "../../../../../hooks/users/useProfile"
 import { useQueryClient } from "@tanstack/react-query"
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import { Combobox } from "@headlessui/react"
 
 interface NewModalProps {
   isOpen: boolean
@@ -39,6 +41,11 @@ const NewModal = ({
   const [selectedFactory, setSelectedFactory] = useState("")
   const [selectedMachineClass, setSelectedMachineClass] = useState("")
   const [activePart, setActivePart] = useState("")
+  const [partQuery, setPartQuery] = useState("")
+  const [selectedPart, setSelectedPart] = useState({
+    id: "",
+    name: "",
+  })
   const {
     data: machineClasses,
     isLoading: isMachineClassesLoading,
@@ -56,10 +63,11 @@ const NewModal = ({
     setSelectedMachineClassId,
     setSelectedLocationId,
   } = useGetPartByMachineClassLocation()
-  const { data: specificPart, isLoading: isSpecificPartLoading } =
-    usePart(activePart)
+  const { data: specificPart, isLoading: isSpecificPartLoading } = usePart(
+    selectedPart.id
+  )
 
-  const { register, handleSubmit, reset } = useForm<T_Timer>()
+  const { register, handleSubmit, reset, setValue } = useForm<T_Timer>()
   const { mutate, isLoading: isMutateLoading } = useAddTimer()
 
   const onSubmit = (data: T_Timer) => {
@@ -72,6 +80,11 @@ const NewModal = ({
           toast.success(String(data.message))
           closeModal()
           reset()
+          setPartQuery("")
+          setSelectedPart({
+            id: "",
+            name: "",
+          })
         } else {
           toast.error(String(data.message))
         }
@@ -96,6 +109,21 @@ const NewModal = ({
     setSelectedFactory("")
     setSelectedMachineClass("")
   }
+
+  const filteredParts =
+    partQuery === ""
+      ? parts?.items.slice(0, 15) || []
+      : parts?.items
+          ?.filter((timer) => {
+            return timer.name.toLowerCase().includes(partQuery.toLowerCase())
+          })
+          ?.slice(0, 15) || []
+
+  useEffect(() => {
+    if (selectedPart.id) {
+      setValue("partId", selectedPart.id)
+    }
+  }, [selectedPart])
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -242,27 +270,59 @@ const NewModal = ({
                       >
                         Part
                       </label>
-                      <select
-                        id="machine-part"
-                        {...register("partId")}
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                        defaultValue="Select Part"
-                        disabled={
-                          selectedMachineClass === "" ||
-                          isMutateLoading ||
-                          isPartsLoading
-                        }
-                        onChange={(e) => setActivePart(e.currentTarget.value)}
-                      >
-                        <option>Select Product</option>
-                        {parts?.items.map((part: T_Part, index: number) => {
-                          return (
-                            <option key={index} value={part._id as string}>
-                              {part.name}
-                            </option>
-                          )
-                        })}
-                      </select>
+                      <div className="block md:w-[80%] w-full">
+                        <Combobox
+                          as="div"
+                          value={selectedPart}
+                          onChange={setSelectedPart}
+                        >
+                          <div className="relative w-full">
+                            <Combobox.Input
+                              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 ${
+                                isMutateLoading
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : ""
+                              } ${
+                                filteredParts?.length === 0 &&
+                                "opacity-70 cursor-not-allowed"
+                              }`}
+                              displayValue={(selected: {
+                                id: string
+                                name: string
+                              }) => {
+                                return selected ? selected.name : ""
+                              }}
+                              required
+                              onChange={(event) =>
+                                setPartQuery(event.target.value)
+                              }
+                              placeholder="Search Part"
+                            />
+                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                              <ChevronUpDownIcon
+                                className="h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                            </Combobox.Button>
+
+                            {filteredParts && filteredParts.length > 0 ? (
+                              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                {filteredParts.map(
+                                  (item: T_Part, index: number) => (
+                                    <Combobox.Option
+                                      key={index}
+                                      value={{ id: item._id, name: item.name }}
+                                      className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
+                                    >
+                                      <span className="block">{item.name}</span>
+                                    </Combobox.Option>
+                                  )
+                                )}
+                              </Combobox.Options>
+                            ) : null}
+                          </div>
+                        </Combobox>
+                      </div>
                     </div>
                     <div className="md:flex items-center mt-3">
                       <label

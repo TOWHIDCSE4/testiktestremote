@@ -1,5 +1,5 @@
 "use client"
-import { Fragment, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { T_BackendResponse, T_Timer, T_User } from "custom-validator"
 import { useQueryClient } from "@tanstack/react-query"
@@ -8,6 +8,8 @@ import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
 import toast from "react-hot-toast"
 import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
 import useUsers from "../../../../../hooks/users/useUsers"
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import { Combobox } from "@headlessui/react"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -18,6 +20,7 @@ interface DetailsModalProps {
 const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
   const queryClient = useQueryClient()
   const closeButtonRef = useRef(null)
+  const searchRef = useRef(null)
   const { data: users, isLoading: isUsersLoading } = useUsers()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
@@ -27,10 +30,16 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
     handleSubmit,
     reset,
     formState: { isDirty },
+    setValue,
+    watch,
   } = useForm<T_Timer>({
     values: timerDetailData?.item,
   })
-
+  const [operatorQuery, setOperatorQuery] = useState("")
+  const [selectedOperator, setSelectedOperator] = useState({
+    id: "",
+    name: "",
+  })
   const onSubmit = (data: T_Timer) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
@@ -77,6 +86,43 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
     )
   }
 
+  const filteredOperator =
+    operatorQuery === ""
+      ? users?.items?.slice(0, 15)
+      : users?.items
+          ?.filter((user) => {
+            return (
+              user.firstName
+                .toLowerCase()
+                .includes(operatorQuery.toLowerCase()) ||
+              user.lastName.toLowerCase().includes(operatorQuery.toLowerCase())
+            )
+          })
+          ?.slice(0, 15)
+
+  useEffect(() => {
+    if (timerDetailData?.item?.operator?._id) {
+      setSelectedOperator({
+        id: timerDetailData?.item?.operator?._id as string,
+        name: `${timerDetailData?.item?.operator?.firstName} ${timerDetailData?.item?.operator?.lastName}`,
+      })
+    }
+  }, [timerDetailData])
+
+  useEffect(() => {
+    if (selectedOperator.id) {
+      setValue("operator", selectedOperator.id, { shouldDirty: true })
+    }
+  }, [selectedOperator])
+
+  // Remove focus for operator combobox
+  useEffect(() => {
+    setTimeout(() => {
+      // @ts-ignore
+      searchRef.current?.blur()
+    }, 0)
+  })
+
   return (
     <>
       <Transition.Root show={isOpen} as={Fragment}>
@@ -98,7 +144,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" />
           </Transition.Child>
 
-          <div className={`fixed inset-0 z-50 overflow-y-auto`}>
+          <div className={`fixed inset-0 z-50 overflow-auto`}>
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
               <Transition.Child
                 as={Fragment}
@@ -183,58 +229,63 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                               >
                                 Operator:
                               </label>
-                              <select
-                                id="user"
-                                {...register("operator", { required: true })}
-                                className={`block mt-0 w-full col-span-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
-                                defaultValue="Select Operator"
-                                disabled={
-                                  isTimerDetailDataLoading ||
-                                  isUpdateTimerLoading ||
-                                  isUsersLoading
-                                }
-                                required
-                              >
-                                <option value="">Select Operator</option>
-                                {users?.items?.map(
-                                  (item: T_User, index: number) => {
-                                    return (
-                                      <option
-                                        key={index}
-                                        value={item._id as string}
-                                      >
-                                        {item.firstName} {item.lastName}
-                                      </option>
-                                    )
-                                  }
-                                )}
-                              </select>
+                              <div className="col-span-2">
+                                <Combobox
+                                  as="div"
+                                  value={selectedOperator}
+                                  onChange={setSelectedOperator}
+                                >
+                                  <div className="relative">
+                                    <Combobox.Input
+                                      className={`block mt-0 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${
+                                        isTimerDetailDataLoading
+                                          ? "opacity-50 cursor-not-allowed"
+                                          : ""
+                                      }`}
+                                      onChange={(event) =>
+                                        setOperatorQuery(event.target.value)
+                                      }
+                                      displayValue={(selected: {
+                                        id: string
+                                        name: string
+                                      }) => {
+                                        return selected ? selected.name : ""
+                                      }}
+                                      placeholder="Search Operator"
+                                      required
+                                      ref={searchRef}
+                                    />
+                                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                                      <ChevronUpDownIcon
+                                        className="h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                      />
+                                    </Combobox.Button>
+
+                                    {filteredOperator &&
+                                    filteredOperator.length > 0 ? (
+                                      <Combobox.Options className="absolute z-[10000] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                        {filteredOperator.map(
+                                          (item: T_User, index: number) => (
+                                            <Combobox.Option
+                                              key={index}
+                                              value={{
+                                                id: item._id,
+                                                name: `${item.firstName} ${item.lastName}`,
+                                              }}
+                                              className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
+                                            >
+                                              <span className="block">{`${item.firstName} ${item.lastName}`}</span>
+                                            </Combobox.Option>
+                                          )
+                                        )}
+                                      </Combobox.Options>
+                                    ) : null}
+                                  </div>
+                                </Combobox>
+                              </div>
                             </div>
                           </div>
-                          {/* <div className="lg:w-[400px] mt-5 lg:mt-0">
-                            <div className="w-full">
-                              <div className="text-gray-400 text-sm border-2 border-gray-300 text-center rounded-md h-52 p-5"></div>
-                              <div className="border-2 border-gray-300 rounded-md p-2 mt-2 h-28">
-                                <div className="grid grid-cols-5">
-                                  <div className="col-span-3 text-xs text-gray-600">
-                                    File Name
-                                  </div>
-                                  <div className="col-span-2 text-xs text-gray-600">
-                                    File Type
-                                  </div>
-                                  <div className="col-span-3 text-sm font-light text-gray-400 mt-2">
-                                    No Media Previews
-                                  </div>
-                                </div>
-                              </div>
-                              <button
-                                disabled={isTimerDetailDataLoading}
-                                className="uppercase dsiabled:opacity-70 float-right mt-2 bg-blue-800 hover:bg-blue-700 text-white text-sm py-1 px-4 rounded-md"
-                              >
-                                Upload
-                              </button>
-                            </div>
-                          </div> */}
                         </div>
                       </div>
                       <div className="w-full bg-gray-100 mt-16 lg:mt-7 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
@@ -263,6 +314,11 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                           type="button"
                           className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
                           onClick={() => {
+                            setSelectedOperator({
+                              id: "",
+                              name: "",
+                            })
+                            setOperatorQuery("")
                             onClose()
                             reset()
                           }}
