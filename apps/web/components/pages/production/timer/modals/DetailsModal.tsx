@@ -10,6 +10,7 @@ import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
 import useUsers from "../../../../../hooks/users/useUsers"
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
+import PartDetailsModal from "../../product-list/modals/PartDetailsModal"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -23,6 +24,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
   const searchRef = useRef(null)
   const { data: users, isLoading: isUsersLoading } = useUsers()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
+  const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(id)
   const {
@@ -122,6 +124,14 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
       searchRef.current?.blur()
     }, 0)
   })
+
+  useEffect(() => {
+    if (!openDetailsModal) {
+      queryClient.invalidateQueries({
+        queryKey: ["timer", id],
+      })
+    }
+  }, [openDetailsModal])
 
   return (
     <>
@@ -288,43 +298,57 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                           </div>
                         </div>
                       </div>
-                      <div className="w-full bg-gray-100 mt-16 lg:mt-7 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                      <div className="w-full bg-gray-100 mt-16 lg:mt-7 px-4 py-3 sm:flex sm:justify-between sm:px-6">
                         <button
-                          type="submit"
-                          className="uppercase inline-flex w-full items-center justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 disabled:opacity-70 sm:w-auto"
+                          type="button"
+                          className="uppercase inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-70 sm:w-auto"
                           disabled={
                             isTimerDetailDataLoading ||
                             isUpdateTimerLoading ||
                             !isDirty
                           }
+                          onClick={() => setOpenDetailsModal(true)}
                         >
-                          {isUpdateTimerLoading ? (
-                            <div
-                              className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full"
-                              role="status"
-                              aria-label="loading"
-                            >
-                              <span className="sr-only">Loading...</span>
-                            </div>
-                          ) : (
-                            "Save"
-                          )}
+                          Edit Part
                         </button>
-                        <button
-                          type="button"
-                          className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
-                          onClick={() => {
-                            setSelectedOperator({
-                              id: "",
-                              name: "",
-                            })
-                            setOperatorQuery("")
-                            onClose()
-                            reset()
-                          }}
-                        >
-                          Close
-                        </button>
+                        <div>
+                          <button
+                            type="button"
+                            className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
+                            onClick={() => {
+                              setSelectedOperator({
+                                id: "",
+                                name: "",
+                              })
+                              setOperatorQuery("")
+                              onClose()
+                              reset()
+                            }}
+                          >
+                            Close
+                          </button>
+                          <button
+                            type="submit"
+                            className="uppercase inline-flex w-full items-center justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 disabled:opacity-70 sm:w-auto"
+                            disabled={
+                              isTimerDetailDataLoading ||
+                              isUpdateTimerLoading ||
+                              !isDirty
+                            }
+                          >
+                            {isUpdateTimerLoading ? (
+                              <div
+                                className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full"
+                                role="status"
+                                aria-label="loading"
+                              >
+                                <span className="sr-only">Loading...</span>
+                              </div>
+                            ) : (
+                              "Save"
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </form>
@@ -334,6 +358,16 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
           </div>
         </Dialog>
       </Transition.Root>
+      <PartDetailsModal
+        isOpen={openDetailsModal}
+        locationState={
+          timerDetailData?.item?.locationId
+            ? timerDetailData?.item?.locationId.name
+            : "Loading..."
+        }
+        onClose={() => setOpenDetailsModal(false)}
+        id={timerDetailData?.item?.partId?._id as string}
+      />
     </>
   )
 }
