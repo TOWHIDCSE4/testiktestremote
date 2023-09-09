@@ -192,13 +192,20 @@ const Table = ({
                     {item.cycle}
                   </td>
                   <td
-                    className={`px-3 py-4 text-sm text-gray-500 ${
+                    className={`px-3 py-4 text-sm text-gray-500 flex flex-col ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
-                    {dayjs
-                      .tz(dayjs(item.createdAt), "America/Chicago")
-                      .format("MM/DD/YYYY")}
+                    <span>
+                      {dayjs
+                        .tz(dayjs(item.createdAt), "America/Chicago")
+                        .format("MM/DD/YYYY")}
+                    </span>
+                    <span>
+                      {dayjs
+                        .tz(dayjs(item.createdAt), "America/Chicago")
+                        .format("h:mm A")}
+                    </span>
                   </td>
                   <td
                     className={`px-3 py-4 text-sm text-gray-500 ${
