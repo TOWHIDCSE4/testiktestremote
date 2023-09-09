@@ -1,10 +1,7 @@
 "use client"
-import { Fragment, useState, useEffect } from "react"
-import { Menu, Transition } from "@headlessui/react"
-import { ChevronDownIcon } from "@heroicons/react/20/solid"
+import { useState, useEffect, useMemo } from "react"
 import Timers from "./Timers"
 import NewModal from "./modals/NewModal"
-import SetProductionModal from "./modals/SetProductionModal"
 import useLocations from "../../../../hooks/locations/useLocations"
 import combineClasses from "../../../../helpers/combineClasses"
 import Clocks from "./Clocks"
@@ -12,13 +9,20 @@ import useMachineClasses from "../../../../hooks/machineClasses/useMachineClasse
 import { T_MachineClass } from "custom-validator"
 import useStoreSession from "../../../../store/useStoreSession"
 import { ROLES } from "../../../../helpers/constants"
+import useLocation from "../../../../hooks/locations/useLocation"
+import useProfile from "../../../../hooks/users/useProfile"
 
 type T_LocationTabs = {
   _id?: string
   name: string
   count?: number
 }
-const TIMER_ADMIN_ROLES = [ROLES.Administrator, ROLES.Production]
+const TIMER_ADMIN_ROLES = [
+  ROLES.Administrator,
+  ROLES.Production,
+  ROLES.Personnel,
+]
+const TIMER_CITY_ROLES = [ROLES.Personnel, ROLES.Production]
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -29,6 +33,8 @@ const Content = () => {
     (T_MachineClass & { isSelected: boolean })[]
   >([])
   const storeSession = useStoreSession((state) => state)
+  const { data: location, setSelectedLocationId } = useLocation()
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses()
 
@@ -46,9 +52,21 @@ const Content = () => {
       // setPartLocationIds(
       //   locations?.items?.map((location) => location._id) as string[]
       // )
-      setCurrentLocationTab(locations?.items[0]?._id as string)
+
+      if (
+        !TIMER_CITY_ROLES.includes(
+          userProfile?.item.role || ROLES.Administrator
+        )
+      )
+        setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
+  useEffect(() => {
+    if (
+      TIMER_CITY_ROLES.includes(userProfile?.item.role || ROLES.Administrator)
+    )
+      setCurrentLocationTab(location?.item._id || "")
+  }, [location])
 
   useEffect(() => {
     if (
@@ -65,11 +83,20 @@ const Content = () => {
       setSelectedMachineClasses(updatedMachineClasses)
     }
   }, [machineClasses])
+  useEffect(() => {
+    if (userProfile?.item.locationId) {
+      setSelectedLocationId(userProfile?.item.locationId as string)
+    }
+  }, [userProfile])
 
   const currentLocationTabName = locationTabs.find(
     (tab) => tab._id === currentLocationTab
   )?.name
-
+  const isTimerCityRoles = useMemo(() => {
+    return TIMER_CITY_ROLES.includes(
+      userProfile?.item.role || ROLES.Administrator
+    )
+  }, [userProfile])
   if (!TIMER_ADMIN_ROLES.includes(storeSession.role))
     return (
       <div className="mt-28">
@@ -93,13 +120,15 @@ const Content = () => {
             </h4>
           </div>
           <div>
-            <button
-              type="button"
-              className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-              onClick={() => setOpenNewModal(true)}
-            >
-              New Timer
-            </button>
+            {userProfile?.item.role !== ROLES.Personnel && (
+              <button
+                type="button"
+                className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+                onClick={() => setOpenNewModal(true)}
+              >
+                New Timer
+              </button>
+            )}
           </div>
         </div>
         <div className="w-full h-0.5 bg-gray-200 mt-5"></div>
@@ -112,10 +141,13 @@ const Content = () => {
                 className={combineClasses(
                   tab._id === currentLocationTab
                     ? "bg-blue-950 text-white"
+                    : isTimerCityRoles
+                    ? "bg-white text-gray-400"
                     : "bg-white text-gray-700 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
                 onClick={() => setCurrentLocationTab(tab._id as string)}
+                disabled={isTimerCityRoles && tab.name !== location?.item.name}
               >
                 {tab.name} {tab?.count ? `(${tab.count})` : null}
               </button>

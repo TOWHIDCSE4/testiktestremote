@@ -14,7 +14,7 @@ import { ZLocation } from "custom-validator"
 export const getAllLocations = async (req: Request, res: Response) => {
   try {
     const locationsCount = await Locations.find().countDocuments()
-    const getAllLocations = await Locations.find().sort({ createdAt: -1 })
+    const getAllLocations = await Locations.find().sort({ createdAt: 1 })
     res.json({
       error: false,
       items: getAllLocations,
