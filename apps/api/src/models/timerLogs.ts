@@ -3,6 +3,7 @@ const { Schema } = mongoose
 
 const timerLogs = new Schema({
   cycle: Number,
+  globalCycle: Number,
   partId: {
     type: mongoose.Schema.ObjectId,
     ref: "Part",

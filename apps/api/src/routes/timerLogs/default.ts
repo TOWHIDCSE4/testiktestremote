@@ -62,8 +62,12 @@ export const getTimeLog = async (req: Request, res: Response) => {
 export const addTimeLog = async (req: Request, res: Response) => {
   const parsedTimerLog = ZTimerLog.safeParse(req.body)
   if (parsedTimerLog.success) {
-    const newTimerLog = new TimerLogs(req.body)
     try {
+      const timerLogsCount = await TimerLogs.find().countDocuments()
+      const newTimerLog = new TimerLogs({
+        ...req.body,
+        globalCycle: timerLogsCount + 1,
+      })
       const createTimerLog = await newTimerLog.save()
       res.json({
         error: false,

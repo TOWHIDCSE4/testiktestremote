@@ -231,7 +231,7 @@ const Table = ({
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
-                    {item._id ? item._id.slice(-6) : ""}
+                    {item.globalCycle ? item.globalCycle : ""}
                   </td>
                   <td className={`px-3 py-4 text-sm text-gray-500`}>
                     {item.status === "Gain" ? (

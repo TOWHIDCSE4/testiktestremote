@@ -19,6 +19,7 @@ export const ZTimerStopReason = z.enum([
 export const ZTimerLog = z.object({
   _id: z.string().optional(),
   cycle: z.number().positive(),
+  globalCycle: z.number().positive().optional(),
   machineId: z.union([z.string(), ZMachine]),
   jobId: z.union([z.string(), ZJob]).nullable(),
   partId: z.union([z.string(), ZPart]),
