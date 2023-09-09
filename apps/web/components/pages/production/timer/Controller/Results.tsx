@@ -49,26 +49,26 @@ const Results = ({
           <div className="-translate-y-1.5 md:-translate-y-2 lg:-translate-y-3.5 md:w-[220px] lg:w-auto xl:-translate-y-6">
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6 grid-cols-4 grid justify-items-stretch">
               <label className="justify-self-end col-span-3">
-                Units Per Hour:{" "}
+                Units Per Hour:
               </label>
-              <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-semibold text-gray-500 justify-self-start">
-                {totals?.unitsPerHour ? totals?.unitsPerHour : "0"}
+              <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-semibold text-gray-500 justify-self-start ml-1">
+                {totals?.unitsPerHour ? Math.round(totals?.unitsPerHour) : "0"}
               </span>
             </h5>
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6 grid-cols-4 grid justify-items-stretch">
               <label className="justify-self-end col-span-3">
-                Tons Per Hour:{" "}
+                Tons Per Hour:
               </label>
-              <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-semibold text-gray-500 justify-self-start">
-                {totals?.tonsPerHour ? totals?.tonsPerHour : "0.000"}
+              <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-semibold text-gray-500 justify-self-start  ml-1">
+                {totals?.tonsPerHour ? totals?.tonsPerHour.toFixed(6) : "0.000"}
               </span>
             </h5>
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6 grid-cols-4 grid justify-items-stretch">
               <label className="justify-self-end col-span-3">
                 Total Tons:{" "}
               </label>
-              <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-semibold text-gray-500 justify-self-start">
-                {totals?.totalTons ? totals?.totalTons : "0.000"}
+              <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-semibold text-gray-500 justify-self-start  ml-1">
+                {totals?.totalTons ? totals?.totalTons.toFixed(6) : "0.000"}
               </span>
             </h5>
           </div>

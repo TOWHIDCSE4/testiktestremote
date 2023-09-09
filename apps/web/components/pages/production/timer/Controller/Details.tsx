@@ -154,7 +154,7 @@ const Details = ({
           ) : (
             <>
               {typeof timerDetails?.partId === "object"
-                ? timerDetails?.partId.tons
+                ? timerDetails?.partId.tons.toFixed(6)
                 : "---"}{" "}
               tons
             </>

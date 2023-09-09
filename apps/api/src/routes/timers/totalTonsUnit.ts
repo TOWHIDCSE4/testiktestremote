@@ -63,9 +63,11 @@ export const totalTonsUnit = async (req: Request, res: Response) => {
             item: {
               tons: partsTotalTons,
               tonsPerHour:
-                partsTotalTons / (totalHoursPass === 0 ? 1 : totalHoursPass),
+                partsTotalTons /
+                (totalHoursPass === 0 ? 1 : Math.round(totalHoursPass)),
               unitPerHour:
-                logTotalCount / (totalHoursPass === 0 ? 1 : totalHoursPass),
+                logTotalCount /
+                (totalHoursPass === 0 ? 1 : Math.round(totalHoursPass)),
               dailyUnits: logTotalCount,
             },
             itemCount: null,
