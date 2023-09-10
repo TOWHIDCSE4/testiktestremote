@@ -17,7 +17,7 @@ jobs:
         continue-on-error: true
       - name: Start pm2 api
         working-directory: apps/api
-        run: pm2 start npm --name api -- run start
+        run: pm2 start npm --name api -- run dev
       - name: Show pm2 api
         working-directory: apps/api
         run: pm2 describe api
