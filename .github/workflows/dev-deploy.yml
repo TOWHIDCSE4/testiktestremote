@@ -10,7 +10,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: npm install
+      - name: Install dependencies
+        working-directory: ./apms
+        run: npm install
       - name: Delete pm2 api
         working-directory: ./apms/apps/api
         run: pm2 delete api
