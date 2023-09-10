@@ -1,15 +1,17 @@
-name: dev-deploy
+name: prod-api-deploy
 
 on:
   push:
-    branches: ["dev"]
+    branches: ["main"]
 
 jobs:
   deployment:
-    runs-on: api-dev
+    runs-on: api-prod
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: main
       - run: npm install
       - name: Delete pm2 api
         working-directory: apps/api
