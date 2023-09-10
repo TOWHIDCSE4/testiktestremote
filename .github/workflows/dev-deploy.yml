@@ -6,7 +6,7 @@ on:
 
 jobs:
   deployment:
-    runs-on: dev-api
+    runs-on: api-dev
 
     steps:
       - uses: actions/checkout@v3
