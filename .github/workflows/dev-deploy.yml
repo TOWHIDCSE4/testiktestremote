@@ -1,0 +1,26 @@
+name: dev-deploy
+
+on:
+  push:
+    branches: ["dev"]
+
+jobs:
+  deployment:
+    runs-on: dev-api
+
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install
+      - name: Delete pm2 api
+        working-directory: ./apms/apps/api
+        run: pm2 delete api
+        continue-on-error: true
+      - name: Start pm2 api
+        working-directory: ./apms/apps/api
+        run: pm2 start npm --name api -- run start
+      - name: Show pm2 api
+        working-directory: ./apms/apps/api
+        run: pm2 describe api
+      - name: Show pm2 api logs
+        working-directory: ./apms/apps/api
+        run: pm2 logs --nostream
