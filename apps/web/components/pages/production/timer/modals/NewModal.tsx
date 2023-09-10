@@ -380,7 +380,7 @@ const NewModal = ({
                           disabled
                           value={
                             !isSpecificPartLoading && specificPart.item.tons
-                              ? specificPart.item.tons.toFixed(6)
+                              ? specificPart.item.tons.toFixed(3)
                               : ""
                           }
                         />

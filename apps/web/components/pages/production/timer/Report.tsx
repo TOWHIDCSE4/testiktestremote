@@ -199,7 +199,7 @@ const Report = ({
                     {typeof log?.partId === "object" ? log?.partId.name : ""}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {log._id ? log._id.slice(-6) : ""}
+                    {log.globalCycle ? log.globalCycle : ""}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     {typeof log.operator === "object"
@@ -222,7 +222,7 @@ const Report = ({
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"></td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {log.time.toFixed(2)} s
+                    {log.time.toFixed(2)}s
                   </td>
                 </tr>
               ))

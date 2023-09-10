@@ -60,7 +60,7 @@ const Results = ({
                 Tons Per Hour:
               </label>
               <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-semibold text-gray-500 justify-self-start  ml-1">
-                {totals?.tonsPerHour ? totals?.tonsPerHour.toFixed(6) : "0.000"}
+                {totals?.tonsPerHour ? totals?.tonsPerHour.toFixed(3) : "0.000"}
               </span>
             </h5>
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6 grid-cols-4 grid justify-items-stretch">
@@ -68,7 +68,7 @@ const Results = ({
                 Total Tons:{" "}
               </label>
               <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-semibold text-gray-500 justify-self-start  ml-1">
-                {totals?.totalTons ? totals?.totalTons.toFixed(6) : "0.000"}
+                {totals?.totalTons ? totals?.totalTons.toFixed(3) : "0.000"}
               </span>
             </h5>
           </div>

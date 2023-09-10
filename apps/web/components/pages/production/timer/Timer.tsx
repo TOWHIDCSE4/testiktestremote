@@ -265,7 +265,7 @@ const Timer = ({
           <span>Total Tons:</span>
           <span>
             {totalTonsUnit?.item.tons
-              ? totalTonsUnit?.item.tons.toFixed(6)
+              ? totalTonsUnit?.item.tons.toFixed(3)
               : "0.000"}
           </span>
         </div>
@@ -273,7 +273,7 @@ const Timer = ({
           <span>Average Ton/hr:</span>
           <span>
             {totalTonsUnit?.item.tons
-              ? totalTonsUnit?.item.tonsPerHour.toFixed(6)
+              ? totalTonsUnit?.item.tonsPerHour.toFixed(3)
               : "0.000"}
           </span>
         </div>

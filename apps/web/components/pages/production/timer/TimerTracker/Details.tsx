@@ -98,7 +98,7 @@ const Details = ({
                           : 0),
                       0
                     )
-                    .toFixed(6)
+                    .toFixed(3)
                 : "0.000"}
             </h6>
             <h6
@@ -159,7 +159,7 @@ const Details = ({
               >
                 Overall Tons:{" "}
                 {overallUnitTons?.item?.tons
-                  ? overallUnitTons?.item?.tons.toFixed(6)
+                  ? overallUnitTons?.item?.tons.toFixed(3)
                   : "0.000"}
               </h6>
             </div>
