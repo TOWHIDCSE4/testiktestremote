@@ -90,7 +90,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
 
   const filteredOperator =
     operatorQuery === ""
-      ? users?.items?.slice(0, 15)
+      ? users?.items?.slice(0, 30)
       : users?.items
           ?.filter((user) => {
             return (
@@ -100,7 +100,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
               user.lastName.toLowerCase().includes(operatorQuery.toLowerCase())
             )
           })
-          ?.slice(0, 15)
+          ?.slice(0, 30)
 
   useEffect(() => {
     if (timerDetailData?.item?.operator?._id) {
@@ -123,7 +123,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
       // @ts-ignore
       searchRef.current?.blur()
     }, 0)
-  })
+  }, [])
 
   useEffect(() => {
     if (!openDetailsModal) {
@@ -244,14 +244,11 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                                   as="div"
                                   value={selectedOperator}
                                   onChange={setSelectedOperator}
+                                  disabled={isTimerDetailDataLoading}
                                 >
                                   <div className="relative">
                                     <Combobox.Input
-                                      className={`block mt-0 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 ${
-                                        isTimerDetailDataLoading
-                                          ? "opacity-50 cursor-not-allowed"
-                                          : ""
-                                      }`}
+                                      className={`block mt-0 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 text-sm sm:leading-6 disabled:cursor-not-allowed disabled:opacity-70`}
                                       onChange={(event) =>
                                         setOperatorQuery(event.target.value)
                                       }
@@ -267,7 +264,11 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                                     />
                                     <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                                       <ChevronUpDownIcon
-                                        className="h-5 w-5 text-gray-400"
+                                        className={`h-5 w-5 ${
+                                          isTimerDetailDataLoading
+                                            ? "text-gray-400"
+                                            : "text-gray-600"
+                                        }`}
                                         aria-hidden="true"
                                       />
                                     </Combobox.Button>
@@ -303,9 +304,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                           type="button"
                           className="uppercase inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-70 sm:w-auto"
                           disabled={
-                            isTimerDetailDataLoading ||
-                            isUpdateTimerLoading ||
-                            !isDirty
+                            isTimerDetailDataLoading || isUpdateTimerLoading
                           }
                           onClick={() => setOpenDetailsModal(true)}
                         >

@@ -93,7 +93,7 @@ const Details = ({
 
   const filteredOperator =
     operatorQuery === ""
-      ? users?.items?.slice(0, 15)
+      ? users?.items?.slice(0, 30)
       : users?.items
           ?.filter((user) => {
             return (
@@ -103,7 +103,7 @@ const Details = ({
               user.lastName.toLowerCase().includes(operatorQuery.toLowerCase())
             )
           })
-          ?.slice(0, 15)
+          ?.slice(0, 30)
 
   useEffect(() => {
     if (
@@ -213,9 +213,7 @@ const Details = ({
       >
         <div className="relative md:w-60 xl:w-80 2xl:w-[420px]">
           <Combobox.Input
-            className={`block mt-2 md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl sm:xl:leading-7 ${
-              isUpdateTimerLoading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`block mt-2 md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl sm:xl:leading-7 disabled:opacity-50 disabled:cursor-not-allowed`}
             onChange={(event) => setOperatorQuery(event.target.value)}
             displayValue={(selected: { id: string; name: string }) => {
               return selected ? selected.name : ""
@@ -223,7 +221,9 @@ const Details = ({
           />
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
             <ChevronUpDownIcon
-              className="h-5 w-5 text-gray-400"
+              className={`h-5 w-5 ${
+                isUpdateTimerLoading ? "text-gray-400" : "text-gray-600"
+              }`}
               aria-hidden="true"
             />
           </Combobox.Button>

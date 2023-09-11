@@ -246,6 +246,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
           jobId: jobTimer?.item.jobId as string,
           partId: timerDetailData?.item?.partId._id as string,
           machineClassId: timerDetailData?.item?.machineClassId._id as string,
+          factoryId: timerDetailData?.item?.factoryId._id as string,
+          locationId: timerDetailData?.item?.locationId._id as string,
           time: cycleClockInSeconds,
           operator: timerDetailData?.item?.operator._id as string,
           status:
@@ -276,6 +278,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
           timerId,
           machineId: timerDetailData?.item?.machineId._id as string,
           machineClassId: timerDetailData?.item?.machineClassId._id as string,
+          locationId: timerDetailData?.item?.locationId._id as string,
+          factoryId: timerDetailData?.item?.factoryId._id as string,
           jobId: null,
           partId: timerDetailData?.item?.partId._id as string,
           time: cycleClockInSeconds,

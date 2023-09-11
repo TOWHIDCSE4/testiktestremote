@@ -4,6 +4,14 @@ const { Schema } = mongoose
 const timerLogs = new Schema({
   cycle: Number,
   globalCycle: Number,
+  locationId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Location",
+  },
+  factoryId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Factory",
+  },
   partId: {
     type: mongoose.Schema.ObjectId,
     ref: "Part",

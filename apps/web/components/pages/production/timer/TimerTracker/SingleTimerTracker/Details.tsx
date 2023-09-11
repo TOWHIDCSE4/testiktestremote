@@ -70,38 +70,10 @@ const Details = ({
                 path === "/production/timer/tracker"
                   ? "text-lg xl:text-xl 2xl:text-2xl"
                   : "text-lg"
-              } uppercase font-semibold text-gray-700 leading-6`}
-            >
-              {timerMachine} Total Units: {logCount}
-            </h6>
-            <h6
-              className={`${
-                path === "/production/timer/tracker"
-                  ? "text-lg xl:text-xl 2xl:text-2xl"
-                  : "text-lg"
-              } uppercase font-semibold text-gray-700 leading-6`}
-            >
-              {timerMachine} Total Tons:{" "}
-              {logs
-                ? logs.reduce(
-                    (acc, log) =>
-                      acc +
-                      (typeof log.partId === "object"
-                        ? Number(log.partId.tons)
-                        : 0),
-                    0
-                  )
-                : "0.000"}
-            </h6>
-            <h6
-              className={`${
-                path === "/production/timer/tracker"
-                  ? "text-lg xl:text-xl 2xl:text-2xl"
-                  : "text-lg"
               }
                 uppercase font-semibold text-gray-700 leading-6`}
             >
-              Total Gainssss:{" "}
+              Total Gain:{" "}
               <span className="text-green-500">
                 {gainTimeArray[0]}:{gainTimeArray[1]}:{gainTimeArray[2]}
               </span>
@@ -135,18 +107,30 @@ const Details = ({
                   path === "/production/timer/tracker"
                     ? "text-lg xl:text-xl 2xl:text-2xl"
                     : "text-lg"
-                } uppercase font-bold text-gray-700 leading-6`}
+                } uppercase font-semibold text-gray-700 leading-6`}
               >
-                Overall Units: 0
+                {timerMachine} Total Units: {logCount}
               </h6>
               <h6
                 className={`${
                   path === "/production/timer/tracker"
                     ? "text-lg xl:text-xl 2xl:text-2xl"
                     : "text-lg"
-                } uppercase font-bold text-gray-700 leading-6`}
+                } uppercase font-semibold text-gray-700 leading-6`}
               >
-                Overall Tons: 0.000
+                {timerMachine} Total Tons:{" "}
+                {logs
+                  ? logs
+                      .reduce(
+                        (acc, log) =>
+                          acc +
+                          (typeof log.partId === "object"
+                            ? Number(log.partId.tons)
+                            : 0),
+                        0
+                      )
+                      .toFixed(3)
+                  : "0.000"}
               </h6>
             </div>
             {/* <div>
@@ -170,7 +154,7 @@ const Details = ({
               </h6>
             </div> */}
           </div>
-          <div>
+          {/* <div>
             <button
               className={`
               ${
@@ -182,7 +166,7 @@ const Details = ({
             >
               View Report
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </>

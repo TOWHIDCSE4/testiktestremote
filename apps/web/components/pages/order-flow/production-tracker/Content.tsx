@@ -6,6 +6,7 @@ import NewModal from "./modals/NewModal"
 import ParentTable from "./ParentTable"
 import useStoreSession from "../../../../store/useStoreSession"
 import { ROLES } from "../../../../helpers/constants"
+import LogsTable from "./LogsTable"
 
 type T_LocationTabs = {
   _id?: string
@@ -107,6 +108,7 @@ const Content = () => {
             )}
           </div>
           <ParentTable locationId={currentLocationTab} />
+          <LogsTable locationId={currentLocationTab} />
         </div>
       </div>
       <NewModal

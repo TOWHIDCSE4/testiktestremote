@@ -294,10 +294,10 @@ const Table = ({
       <Footer
         page={typeof page === "number" ? page : 0}
         setPage={setPage}
-        logs={data?.items || []}
+        logs={paginated?.items || []}
         logCount={data?.itemCount || 0}
         timerMachine={timerMachine}
-        maxPage={data?.itemCount ? Math.ceil(data?.itemCount / 5) : 0}
+        maxPage={data?.itemCount ? Math.ceil(data?.itemCount / 3) : 0}
         locationId={locationId}
         timerId={timerId}
         machineClassId={machineClassId}
