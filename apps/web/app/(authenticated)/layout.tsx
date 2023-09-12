@@ -2,6 +2,7 @@ import AuthWrapper from "../../components/AuthWrapper"
 import QueryWrapper from "../../components/QueryWrapper"
 import MainNav from "../../components/MainNav"
 import "../globals.css"
+import "../fonts.css"
 import { Exo_2 } from "next/font/google"
 import { Toaster } from "react-hot-toast"
 

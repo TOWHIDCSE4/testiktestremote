@@ -150,23 +150,28 @@ const NewModal = ({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full sm:max-w-lg">
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full sm:max-w-[34rem]">
                 <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                    <h3 className="text-gray-800 font-semibold text-2xl">
-                      {locationState} &gt; New Timer/Process
+                  <div className="flex items-center bg-[#b28c56] text-white uppercase rounded-t-lg justify-between h-28 m-[0.2rem] p-8 border-dark-blue border-b-8">
+                    <h3 className="text-lg tracking-wider">
+                      New Timer/Process
                     </h3>
-                    <div className="md:flex items-center mt-6">
+                    <h2 className="font-bold text-7xl font-BebasNeueBold tracking-widest mt-2">
+                      {locationState}
+                    </h2>
+                  </div>
+                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 border-b-4">
+                    <div className="md:flex items-center">
                       <label
                         htmlFor="machine-process"
-                        className="uppercase font-semibold text-gray-800 md:w-[20%]"
+                        className="uppercase font-semibold text-lg text-gray-800 md:w-[35%] text-right mr-3"
                       >
                         Machine / Process
                       </label>
                       <select
                         id="machine-process"
                         {...register("machineId")}
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                        className={`block mt-2 md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         defaultValue="Select Machine"
                         disabled={isMutateLoading || isMachinesLoading}
                         onChange={(event) => {
@@ -191,11 +196,11 @@ const NewModal = ({
                     <div className="md:flex items-center mt-4">
                       <label
                         htmlFor="machine-part"
-                        className="uppercase font-semibold text-gray-800 md:w-[20%]"
+                        className="uppercase font-semibold text-lg text-gray-800 md:w-[35%] text-right mr-3"
                       >
                         Part
                       </label>
-                      <div className="block md:w-[80%] w-full">
+                      <div className="block md:w-[60%] w-full">
                         <Combobox
                           as="div"
                           value={selectedPart}
@@ -257,15 +262,13 @@ const NewModal = ({
                     <div className="md:flex items-center mt-3">
                       <label
                         htmlFor="drawingNumber"
-                        className="uppercase font-semibold text-gray-800 md:w-[20%]"
+                        className="uppercase font-semibold text-lg text-gray-800 md:w-[35%] text-right mr-3"
                       >
-                        Night
-                        <br />
-                        Shift
+                        Night Shift
                       </label>
                       <select
                         id="nightShift"
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                        className={`block mt-2 md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         defaultValue="false"
                         required
                       >
@@ -273,22 +276,25 @@ const NewModal = ({
                         <option value="true">Yes</option>
                       </select>
                     </div>
-                    <h6 className="uppercase font-semibold text-gray-400 mt-4">
-                      Timer/Auto Details:
-                    </h6>
-                    <div className="mt-4 grid md:grid-cols-2 gap-x-8 gap-y-4 md:gap-y-0">
+                    <div className="flex w-full">
+                      <h6 className="uppercase font-semibold text-gray-400 mt-4 ml-5 w-5/12 text-xl mr-3">
+                        Timer/Auto Details
+                      </h6>
+                      <div className="border-gray-400 border-b-4 w-1/2 h-8"></div>
+                    </div>
+                    <div className="md:flex mt-4 px-10 justify-around grid md:grid-cols-2 gap-x-8 gap-y-4 md:gap-y-0 text-center">
                       <div>
                         <label
                           htmlFor="average-cycle"
-                          className="uppercase font-semibold text-gray-800"
+                          className="uppercase font-semibold text-gray-800 text-sm"
                         >
-                          Average Time In Seconds
+                          Average Time Per Cycle
                         </label>
                         <input
                           type="number"
                           name="average-cycle"
                           id="average-cycle"
-                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 cursor-not-allowed`}
+                          className={`mt-2 block w-full rounded-md border-0 py-[0.1em] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-xs sm:leading-6 disabled:opacity-70 cursor-not-allowed`}
                           disabled
                           value={
                             !isSpecificPartLoading ? specificPart.item.time : ""
@@ -298,7 +304,7 @@ const NewModal = ({
                       <div>
                         <label
                           htmlFor="weight"
-                          className="uppercase font-semibold text-gray-800"
+                          className="uppercase font-semibold text-gray-800 text-sm"
                         >
                           Weight In Tons
                         </label>
@@ -306,7 +312,7 @@ const NewModal = ({
                           type="number"
                           name="weight"
                           id="weight"
-                          className={`mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 cursor-not-allowed`}
+                          className={`mt-2 block w-full rounded-md border-0 py-[0.1em] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-xs sm:leading-6 disabled:opacity-70 cursor-not-allowed`}
                           disabled
                           value={
                             !isSpecificPartLoading && specificPart.item.tons
@@ -320,7 +326,7 @@ const NewModal = ({
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
                       type="submit"
-                      className="ml-3 uppercase flex items-center rounded-md bg-green-700 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
+                      className="uppercase inline-flex w-full h-6 items-center justify-center rounded-md bg-red-700 px-9 text-sm font-semibold text-white shadow-sm hover:bg-red-600 sm:ml-3  disabled:opacity-70 sm:w-auto"
                     >
                       {isMutateLoading ? (
                         <div
@@ -336,7 +342,7 @@ const NewModal = ({
                     </button>
                     <button
                       type="button"
-                      className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
+                      className="uppercase inline-flex w-full h-6 items-center justify-center rounded-md bg-gray-400 px-6 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-300 sm:mt-0 sm:w-auto disabled:opacity-70"
                       onClick={() => {
                         closeModal()
                         reset()

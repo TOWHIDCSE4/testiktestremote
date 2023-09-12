@@ -42,11 +42,14 @@ const MultipleImageUpload = ({
     <section className="my-4">
       <label
         htmlFor="file-upload"
-        className="uppercase font-semibold text-gray-800"
+        className="uppercase font-semibold text-gray-800 text-sm"
       >
         Assign Photos And Video Previews
       </label>
-      <div {...getRootProps()} className={`${isLoading && "opacity-70"}`}>
+      <div
+        {...getRootProps()}
+        className={`${isLoading && "opacity-70"} text-center`}
+      >
         <input {...getInputProps()} />
         <div
           className={`text-gray-400 text-sm border-2 border-gray-300 border-dashed text-center p-5 rounded mt-2 cursor-pointer ${
@@ -55,7 +58,7 @@ const MultipleImageUpload = ({
         >
           Drop files here or click to upload
         </div>
-        <em className="text-xs mt-1 text-gray-600">
+        <em className="text-[0.7rem] mt-1 text-gray-600">
           photos will be resized under 1mb and videos compressed to 1min at 720p
         </em>
       </div>

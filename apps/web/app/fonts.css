@@ -1,0 +1,86 @@
+/* fonts.css */
+@font-face {
+  font-family: "BebasNeueBold";
+  src: url("../assets/fonts/BebasNeue/BebasNeue\ Bold.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "BebasNeueBook";
+  src: url("../assets/fonts/BebasNeue/BebasNeue\ Book.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "BebasNeueLight";
+  src: url("../assets/fonts/BebasNeue/BebasNeue\ Light.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "BebasNeueRegular";
+  src: url("../assets/fonts/BebasNeue/BebasNeue\ Regular.woff")
+    format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LatoBlack";
+  src: url("../assets/fonts/Lato/Lato-Black.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LatoBlackItalic";
+  src: url("../assets/fonts/Lato/Lato-BlackItalic.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LatoBold";
+  src: url("../assets/fonts/Lato/Lato-Bold.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LatoBoldItalic";
+  src: url("../assets/fonts/Lato/Lato-BoldItalic.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LatoItalic";
+  src: url("../assets/fonts/Lato/Lato-Italic.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LatoLight";
+  src: url("../assets/fonts/Lato/Lato-Light.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LatoLightItalic";
+  src: url("../assets/fonts/Lato/Lato-LightItalic.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LatoRegular";
+  src: url("../assets/fonts/Lato/Lato-Regular.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LatoThin";
+  src: url("../assets/fonts/Lato/Lato-Thin.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "LatoThinItalic";
+  src: url("../assets/fonts/Lato/Lato-ThinItalic.woff") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
