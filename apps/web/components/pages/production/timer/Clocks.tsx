@@ -36,7 +36,9 @@ const Clocks = ({
   const storeSession = useStoreSession((state) => state)
   const userRole = storeSession?.role
   const allowedToOpenProductionTimeModal =
-    userRole === "Administrator" || userRole === "Production"
+    userRole === "Administrator" ||
+    userRole === "Production" ||
+    userRole === "Super"
   const [isAllFilterSelected, setIsAllFilterSelected] = useState(true)
   const [openFilter, setOpenFilter] = useState(false)
   const [openSetProduction, setOpenProduction] = useState(false)
@@ -47,19 +49,6 @@ const Clocks = ({
   const currentDate = dayjs
     .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "")
     .format("MMM DD YYYY")
-
-  // const localeTime = dayjs
-  //   .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "")
-  //   .format("hh:mm:ss")
-
-  // const localeTimeInSeconds = dayjs
-  //   .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "").format();
-
-  // const localeTimeStartOfDay = dayjs
-  //   .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "").startOf('day').format();
-
-  // const totalSecondsPass = dayjs(localeTimeInSeconds).diff(localeTimeStartOfDay, 'second');
-  // const localTimeArray = hourMinuteSecond(totalSecondsPass);
 
   const handleOnChange = () => {
     const updatedMachineClasses = selectedMachineClasses.map(

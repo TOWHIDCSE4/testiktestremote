@@ -16,7 +16,7 @@ export async function updateBasicInfo({
     body: JSON.stringify({
       firstName,
       lastName,
-      location,
+      locationId,
       email,
     }),
     headers: {

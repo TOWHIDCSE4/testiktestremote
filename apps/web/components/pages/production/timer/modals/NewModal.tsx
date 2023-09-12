@@ -11,7 +11,7 @@ import {
 } from "custom-validator"
 import useFactoryMachineClasses from "../../../../../hooks/factories/useFactoryMachineClasses"
 import { useForm } from "react-hook-form"
-import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/useGetMachinesByMachineClassLocation"
+import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/useGetMachinesByLocation"
 import useGetPartByMachineClassLocation from "../../../../../hooks/parts/useGetPartByMachineClassLocation"
 import usePart from "../../../../../hooks/parts/useGetPart"
 import toast from "react-hot-toast"
@@ -37,26 +37,14 @@ const NewModal = ({
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
-  const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const [selectedFactory, setSelectedFactory] = useState("")
-  const [selectedMachineClass, setSelectedMachineClass] = useState("")
-  const [activePart, setActivePart] = useState("")
+  const [selectedMachine, setSelectedMachine] = useState<T_Machine | null>(null)
   const [partQuery, setPartQuery] = useState("")
   const [selectedPart, setSelectedPart] = useState({
     id: "",
     name: "",
   })
-  const {
-    data: machineClasses,
-    isLoading: isMachineClassesLoading,
-    setSelectedFactoryId,
-  } = useFactoryMachineClasses()
-  const {
-    data: machines,
-    isLoading: isMachinesLoading,
-    setSelectedMachineClassId: setMachinesSelectClass,
-    setSelectedLocationId: setMachineSelectLocation,
-  } = useGetMachinesByMachineClassLocation()
+  const { data: machines, isLoading: isMachinesLoading } =
+    useGetMachinesByMachineClassLocation(locationId as string)
   const {
     data: parts,
     isLoading: isPartsLoading,
@@ -98,7 +86,8 @@ const NewModal = ({
         ...data,
         locationId: locationId ? locationId : "",
         createdBy: userProfile?.item._id as string,
-        machineClassId: selectedMachineClass,
+        machineClassId: selectedMachine?.machineClassId as string,
+        factoryId: selectedMachine?.factoryId as string,
       },
       callBackReq
     )
@@ -106,24 +95,29 @@ const NewModal = ({
 
   const closeModal = () => {
     onClose()
-    setSelectedFactory("")
-    setSelectedMachineClass("")
   }
 
   const filteredParts =
     partQuery === ""
-      ? parts?.items.slice(0, 15) || []
+      ? parts?.items?.slice(0, 30) || []
       : parts?.items
           ?.filter((timer) => {
             return timer.name.toLowerCase().includes(partQuery.toLowerCase())
           })
-          ?.slice(0, 15) || []
+          ?.slice(0, 30) || []
 
   useEffect(() => {
     if (selectedPart.id) {
       setValue("partId", selectedPart.id)
     }
   }, [selectedPart])
+
+  useEffect(() => {
+    if (selectedMachine) {
+      setSelectedLocationId(locationId as string)
+      setSelectedMachineClassId(selectedMachine.machineClassId as string)
+    }
+  }, [selectedMachine])
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -162,78 +156,7 @@ const NewModal = ({
                     <h3 className="text-gray-800 font-semibold text-2xl">
                       {locationState} &gt; New Timer/Process
                     </h3>
-
                     <div className="md:flex items-center mt-6">
-                      <label
-                        htmlFor="factory"
-                        className="uppercase font-semibold text-gray-800 md:w-[20%]"
-                      >
-                        Factory
-                      </label>
-                      <select
-                        id="factory"
-                        {...register("factoryId")}
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                        disabled={isFactoriesLoading || isMutateLoading}
-                        defaultValue={""}
-                        onChange={(e) => {
-                          setSelectedFactory(e.target.value)
-                          setSelectedFactoryId(e.target.value)
-                        }}
-                      >
-                        <option disabled value="">
-                          Select Factory
-                        </option>
-                        {factories?.items?.map(
-                          (item: T_Factory, index: number) => {
-                            return (
-                              <option key={index} value={item._id as string}>
-                                {item.name}
-                              </option>
-                            )
-                          }
-                        )}
-                      </select>
-                    </div>
-                    <div className="md:flex items-center mt-4">
-                      <label
-                        htmlFor="machine-class"
-                        className="uppercase font-semibold text-gray-800 md:w-[20%]"
-                      >
-                        Machine Class
-                      </label>
-                      <select
-                        id="machine-class"
-                        className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                        defaultValue={""}
-                        disabled={
-                          selectedFactory === "" ||
-                          isMutateLoading ||
-                          isMachineClassesLoading
-                        }
-                        onChange={(e) => {
-                          setSelectedMachineClass(e.target.value)
-                          setMachinesSelectClass(e.target.value)
-                          setMachineSelectLocation(locationId as string)
-                          setSelectedMachineClassId(e.target.value)
-                          setSelectedLocationId(locationId as string)
-                        }}
-                      >
-                        <option disabled value="">
-                          Select Machine Class
-                        </option>
-                        {machineClasses?.items?.map(
-                          (machine: T_MachineClass, index: number) => {
-                            return (
-                              <option key={index} value={machine._id as string}>
-                                {machine.name}
-                              </option>
-                            )
-                          }
-                        )}
-                      </select>
-                    </div>
-                    <div className="md:flex items-center mt-4">
                       <label
                         htmlFor="machine-process"
                         className="uppercase font-semibold text-gray-800 md:w-[20%]"
@@ -245,14 +168,16 @@ const NewModal = ({
                         {...register("machineId")}
                         className={`block mt-2 md:mt-0 w-full md:w-[80%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         defaultValue="Select Machine"
-                        disabled={
-                          selectedMachineClass === "" ||
-                          isMutateLoading ||
-                          isMachinesLoading
-                        }
+                        disabled={isMutateLoading || isMachinesLoading}
+                        onChange={(event) => {
+                          const machine = machines?.items.find((item) => {
+                            return item._id === event.target.value
+                          })
+                          setSelectedMachine(machine as T_Machine)
+                        }}
                       >
                         <option disabled>Select Machine</option>
-                        {machines?.items.map(
+                        {machines?.items?.map(
                           (item: T_Machine, index: number) => {
                             return (
                               <option key={index} value={item._id as string}>
@@ -297,10 +222,15 @@ const NewModal = ({
                                 setPartQuery(event.target.value)
                               }
                               placeholder="Search Part"
+                              autoComplete="off"
                             />
                             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                               <ChevronUpDownIcon
-                                className="h-5 w-5 text-gray-400"
+                                className={`h-5 w-5 ${
+                                  filteredParts?.length === 0
+                                    ? "text-gray-300"
+                                    : "text-gray-500"
+                                }`}
                                 aria-hidden="true"
                               />
                             </Combobox.Button>
@@ -380,7 +310,7 @@ const NewModal = ({
                           disabled
                           value={
                             !isSpecificPartLoading && specificPart.item.tons
-                              ? specificPart.item.tons.toFixed(6)
+                              ? specificPart.item.tons.toFixed(3)
                               : ""
                           }
                         />

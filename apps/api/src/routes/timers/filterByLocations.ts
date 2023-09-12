@@ -24,11 +24,21 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
         {
           $lookup: {
             from: "parts",
-            let: { locId: "$locationId" },
+            let: {
+              locationId: "$locationId",
+              machineClassId: "$machineClassId",
+              factoryId: "$factoryId",
+            },
             pipeline: [
               {
                 $match: {
-                  $expr: { $eq: ["$locationId", "$$locId"] },
+                  $expr: {
+                    $and: [
+                      { $eq: ["$locationId", "$$locationId"] },
+                      { $eq: ["$machineClassId", "$$machineClassId"] },
+                      { $eq: ["$factoryId", "$$factoryId"] },
+                    ],
+                  },
                   $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
                 },
               },

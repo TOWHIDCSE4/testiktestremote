@@ -95,7 +95,7 @@ function TimerCards({
               </div>
             </div>
             <h6 className="font-bold text-lg text-gray-800 uppercase mt-7">
-              Timer Tracker - {timerByMachineClass.name} And Variants
+              Timer Tracker - {timerByMachineClass.name}
             </h6>
             <TimerTracker
               locationId={locationId}

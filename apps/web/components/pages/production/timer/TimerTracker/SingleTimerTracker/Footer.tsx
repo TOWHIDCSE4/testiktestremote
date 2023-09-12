@@ -25,37 +25,6 @@ const Footer = ({
   timerId: string
   machineClassId: string
 }) => {
-  const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([])
-  const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([])
-  const [floatTimeArray, setFloatTimeArray] = useState<Array<number | string>>(
-    []
-  )
-  const openReport = () => {
-    window.open(
-      `/production/timer/report/${locationId}/${timerId}`,
-      "Timer Tracker",
-      "location,status,scrollbars,resizable,width=800, height=800"
-    )
-  }
-  useEffect(() => {
-    setGainTimeArray(
-      hourMinuteSecond(
-        logs.reduce(
-          (acc, log) => acc + (log.status === "Gain" ? Number(log.time) : 0),
-          0
-        )
-      )
-    )
-    setLossTimeArray(
-      hourMinuteSecond(
-        logs.reduce(
-          (acc, log) => acc + (log.status === "Loss" ? Number(log.time) : 0),
-          0
-        )
-      )
-    )
-  }, [logs])
-
   const pathName = usePathname()
   const path = pathName.substring(0, 25)
 
@@ -95,8 +64,8 @@ const Footer = ({
                 } text-gray-700`}
               >
                 Showing <span className="font-medium">{logs.length}</span> of{" "}
-                <span className="font-medium">{Math.ceil(logCount / 5)}</span>{" "}
-                result{Math.ceil(logCount / 5) > 1 ? "s" : ""}
+                <span className="font-medium">{Math.ceil(logCount / 3)}</span>{" "}
+                result{Math.ceil(logCount / 3) > 1 ? "s" : ""}
               </p>
             </div>
             <div className="flex flex-1 justify-between sm:justify-end">
@@ -120,7 +89,7 @@ const Footer = ({
                     : "text-lg"
                 } relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0 disabled:opacity-70 disabled:cursor-not-allowed`}
                 onClick={() => setPage(page + 1)}
-                disabled={page === maxPage}
+                disabled={page === maxPage || logs.length === 0}
               >
                 Next
               </button>

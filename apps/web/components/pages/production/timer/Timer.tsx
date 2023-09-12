@@ -131,12 +131,12 @@ const Timer = ({
 
   const filteredParts =
     partQuery === ""
-      ? timer?.parts?.slice(0, 15)
+      ? timer?.parts?.slice(0, 30)
       : timer?.parts
           ?.filter((timer) => {
             return timer.name.toLowerCase().includes(partQuery.toLowerCase())
           })
-          ?.slice(0, 15)
+          ?.slice(0, 30)
 
   useEffect(() => {
     if (selectedPart.id && selectedPart.id !== timer.partId) {
@@ -153,12 +153,15 @@ const Timer = ({
       className="bg-white rounded-md border border-gray-200 drop-shadow-lg"
     >
       <div className="px-4 py-4 border-b border-gray-200 flex items-center gap-2">
-        <Combobox as="div" value={selectedPart} onChange={setSelectedPart}>
+        <Combobox
+          as="div"
+          value={selectedPart}
+          onChange={setSelectedPart}
+          disabled={isUpdateTimerLoading}
+        >
           <div className="relative">
             <Combobox.Input
-              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 ${
-                isUpdateTimerLoading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 disabled:opacity-50 disabled:cursor-not-allowed`}
               onChange={(event) => setPartQuery(event.target.value)}
               displayValue={(selected: { id: string; name: string }) => {
                 return selected ? selected.name : ""
@@ -166,7 +169,9 @@ const Timer = ({
             />
             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
               <ChevronUpDownIcon
-                className="h-5 w-5 text-gray-400"
+                className={`h-5 w-5 ${
+                  isUpdateTimerLoading ? "text-gray-400" : "text-gray-600"
+                }`}
                 aria-hidden="true"
               />
             </Combobox.Button>
@@ -251,7 +256,7 @@ const Timer = ({
         </p>
         <div>
           <h2 className="font-semibold text-gray-400 text-5xl">
-            {totalTonsUnit?.item.dailyUnits
+            {totalTonsUnit?.item?.dailyUnits
               ? addZeroFront(totalTonsUnit?.item.dailyUnits)
               : "000"}
           </h2>
@@ -264,23 +269,23 @@ const Timer = ({
         <div className="flex justify-between text-gray-900">
           <span>Total Tons:</span>
           <span>
-            {totalTonsUnit?.item.tons
-              ? totalTonsUnit?.item.tons.toFixed(6)
+            {totalTonsUnit?.item?.tons
+              ? totalTonsUnit?.item?.tons.toFixed(3)
               : "0.000"}
           </span>
         </div>
         <div className="flex justify-between text-gray-900">
           <span>Average Ton/hr:</span>
           <span>
-            {totalTonsUnit?.item.tons
-              ? totalTonsUnit?.item.tonsPerHour.toFixed(6)
+            {totalTonsUnit?.item?.tons
+              ? totalTonsUnit?.item?.tonsPerHour.toFixed(3)
               : "0.000"}
           </span>
         </div>
         <div className="flex justify-between text-gray-900">
           <span>Average Unit/hr:</span>
           <span>
-            {totalTonsUnit?.item.tons
+            {totalTonsUnit?.item?.tons
               ? Math.round(totalTonsUnit?.item.unitPerHour)
               : "0"}
           </span>
