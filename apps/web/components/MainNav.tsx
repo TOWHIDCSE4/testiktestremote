@@ -204,7 +204,11 @@ const MainNav = () => {
                                   <div className="h-3 w-24 bg-slate-200 rounded"></div>
                                 </div>
                               ) : (
-                                <>{userProfile?.item?.role}</>
+                                <>
+                                  {userProfile?.item?.role === "Super"
+                                    ? "Administrator"
+                                    : userProfile?.item?.role}
+                                </>
                               )}
                             </span>
                           </div>

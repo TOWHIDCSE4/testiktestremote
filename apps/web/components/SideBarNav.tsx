@@ -16,7 +16,7 @@ import { usePathname } from "next/navigation"
 import combineClasses from "../helpers/combineClasses"
 import Accordion from "./Accordion"
 import useProfile from "../hooks/users/useProfile"
-import { ROLES } from "../helpers/constants"
+import { USER_ROLES } from "../helpers/constants"
 import useStoreSession from "../store/useStoreSession"
 import { T_BackendResponse } from "custom-validator"
 
@@ -92,7 +92,12 @@ const navigation = [
     name: "Team Members",
     slug: "team-members",
     href: "/team-members",
-    showOnlyFor: [ROLES.Administrator, ROLES.Corporate, ROLES.Production],
+    showOnlyFor: [
+      USER_ROLES.Super,
+      USER_ROLES.Administrator,
+      USER_ROLES.Corporate,
+      USER_ROLES.Production,
+    ],
   },
 ]
 
@@ -165,7 +170,11 @@ const SideBarNav = () => {
                       <div className="h-3 w-24 bg-slate-200 rounded"></div>
                     </div>
                   ) : (
-                    <>{userProfile?.item?.role}</>
+                    <>
+                      {userProfile?.item?.role === "Super"
+                        ? "Administrator"
+                        : userProfile?.item?.role}
+                    </>
                   )}
                 </span>
               </div>

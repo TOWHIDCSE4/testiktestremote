@@ -6,22 +6,56 @@ import {
 import Users from "../../models/users"
 
 export const paginated = async (req: Request, res: Response) => {
-  const { page, role } = req.query
-  if (page && role) {
+  const { page, role, locationId, status, name, excludeUser } = req.query
+  if (page) {
     try {
       const usersCount = await Users.find({
-        role: role,
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        ...(role && role !== "null" ? { role: role } : {}),
+        ...(locationId && { locationId: locationId }),
+        ...(status && status !== "null" ? { status: status } : {}),
+        _id: { $ne: excludeUser },
+        role: { $ne: "Super" },
+        $and: [
+          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
+          ...(name
+            ? [
+                {
+                  $or: [
+                    { firstName: { $regex: `.*${name}.*`, $options: "i" } },
+                    { lastName: { $regex: `.*${name}.*`, $options: "i" } },
+                  ],
+                },
+              ]
+            : []),
+        ],
       }).countDocuments()
       const getAllUsers = await Users.find({
-        role: role,
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        ...(role && role !== "null" ? { role: role } : {}),
+        ...(locationId && { locationId: locationId }),
+        ...(status && status !== "null" ? { status: status } : {}),
+        _id: { $ne: excludeUser },
+        role: { $ne: "Super" },
+        $and: [
+          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
+          ...(name
+            ? [
+                {
+                  $or: [
+                    { firstName: { $regex: `.*${name}.*`, $options: "i" } },
+                    { lastName: { $regex: `.*${name}.*`, $options: "i" } },
+                  ],
+                },
+              ]
+            : []),
+        ],
       })
+        .populate("locationId")
+        .populate("factoryId")
         .sort({
           createdAt: -1,
         })
-        .skip(10 * (Number(page) - 1))
-        .limit(10)
+        .skip(5 * (Number(page) - 1))
+        .limit(5)
       res.json({
         error: false,
         items: getAllUsers,

@@ -1,11 +1,24 @@
 import { z } from "zod"
 import { ZLocation } from "./ZLocation"
+import { ZFactory } from "./ZFactory"
 
 export const ZUserRoles = z.enum([
   "Administrator",
   "Corporate",
   "Production",
   "Personnel",
+  "HR",
+  "Accounting",
+  "Sales",
+  "Super",
+])
+
+export const ZUserStatus = z.enum([
+  "Approved",
+  "Rejected",
+  "Archived",
+  "Blocked",
+  "Requested",
 ])
 
 export const ZUserProfile = z.object({
@@ -22,15 +35,18 @@ export const ZUserProfile = z.object({
 })
 
 export const ZUser = z.object({
-  _id: z.object({}).optional(),
+  _id: z.string().optional(),
   firstName: z.string(),
   lastName: z.string(),
   role: ZUserRoles,
   email: z.string().email(),
   password: z.string().min(8),
-  locationId: z.union([z.string(), ZLocation, z.object({})]),
+  isGlobalFactory: z.boolean().optional(),
+  locationId: z.union([z.string(), ZLocation]),
+  factoryId: z.union([z.string(), ZFactory]).nullable().optional(),
   profile: ZUserProfile.nullable().optional(),
   approvedBy: z.string().optional(),
+  status: ZUserStatus,
   createdAt: z.date().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -50,6 +66,7 @@ export const ZUserPassword = ZUser.pick({
 })
 
 export type T_User = z.infer<typeof ZUser>
+export type T_UserStatus = z.infer<typeof ZUserStatus>
 export type T_UserRole = z.infer<typeof ZUserRoles>
 export type T_UserBasic = z.infer<typeof ZUserBasic>
 export type T_UserProfile = z.infer<typeof ZUserProfile>

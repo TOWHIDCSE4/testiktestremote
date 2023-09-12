@@ -407,7 +407,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 <div>
                   {isPaginatedLoading ? (
                     <div className="animate-pulse flex space-x-4">
-                      <div className="h-8 w-36 mt-7 bg-slate-200 rounded"></div>
+                      <div className="h-8 w-36 bg-slate-200 rounded"></div>
                     </div>
                   ) : (
                     <nav
