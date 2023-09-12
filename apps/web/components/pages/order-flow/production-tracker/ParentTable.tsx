@@ -120,7 +120,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
               </div>
             </div>
             {/* Table */}
-            <div className="w-full overflow-x-auto h-[30rem] relative">
+            <div className="w-full overflow-x-auto h-[30rem] relative flex flex-col">
               <TabTable tab={currentTab} locationId={locationId} />
             </div>
           </div>
