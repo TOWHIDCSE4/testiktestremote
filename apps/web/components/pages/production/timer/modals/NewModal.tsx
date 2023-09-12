@@ -20,6 +20,7 @@ import useProfile from "../../../../../hooks/users/useProfile"
 import { useQueryClient } from "@tanstack/react-query"
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
+import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
 
 interface NewModalProps {
   isOpen: boolean
@@ -37,6 +38,8 @@ const NewModal = ({
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const { data: machineClasses, isLoading: isMachineClassesLoading } =
+    useMachineClasses()
   const [selectedMachine, setSelectedMachine] = useState<T_Machine | null>(null)
   const [partQuery, setPartQuery] = useState("")
   const [selectedPart, setSelectedPart] = useState({
@@ -162,6 +165,31 @@ const NewModal = ({
                   </div>
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 border-b-4">
                     <div className="md:flex items-center">
+                      <label
+                        htmlFor="machine-process"
+                        className="uppercase font-semibold text-lg text-gray-800 md:w-[35%] text-right mr-3"
+                      >
+                        Machine Class
+                      </label>
+                      <select
+                        id="machineClass"
+                        required
+                        className={`block mt-2 md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                        defaultValue="Machine Class"
+                      >
+                        <option value="">Machine Class</option>
+                        {machineClasses?.items?.map(
+                          (machine: T_MachineClass, index: number) => {
+                            return (
+                              <option key={index} value={machine._id as string}>
+                                {machine.name}
+                              </option>
+                            )
+                          }
+                        )}
+                      </select>
+                    </div>
+                    <div className="md:flex items-center mt-4">
                       <label
                         htmlFor="machine-process"
                         className="uppercase font-semibold text-lg text-gray-800 md:w-[35%] text-right mr-3"
