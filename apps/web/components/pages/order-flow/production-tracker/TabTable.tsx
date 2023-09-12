@@ -51,7 +51,6 @@ const TabTable = ({
   }, [tab, locationId])
 
   const numberOfPages = Math.ceil((jobs?.itemCount as number) / 10)
-  console.log(jobs)
 
   return (
     <>
@@ -140,7 +139,7 @@ const TabTable = ({
             </tr>
           </thead>
           <tbody className="bg-white w-full">
-            {jobs?.items?.map((job: T_Job, index) => (
+            {jobs?.items?.slice(0, 5).map((job: T_Job, index) => (
               <>
                 <tr className="border-b border-gray-200 relative w-full">
                   <td className="py-3 pl-4 text-sm sm:pl-6 lg:pl-8 static">
@@ -176,7 +175,7 @@ const TabTable = ({
                         {open === index ? (
                           <ChevronDownIcon className="h-6 w-6 absolute left-1 -bottom-1 text-gray-400" />
                         ) : (
-                          <ChevronUpIcon className="h-6 w-6 absolute left-1 -bottom-1 text-gray-400" />
+                          <ChevronRightIcon className="h-6 w-6 pb-1 absolute left-1 -bottom-1 text-gray-400" />
                         )}
                       </button>
                     )}
@@ -310,43 +309,47 @@ const TabTable = ({
                 </tr>
                 {open === index && (
                   <tr>
-                    <td colSpan={9} className=" bg-slate-200 w-full p-5">
-                      <span className="text-lg uppercase whitespace-nowrap">
-                        additional info
-                      </span>
-                      <table className="mt-5 w-full text-center">
-                        <thead>
-                          <th className="text-sm font-semibold text-gray-900 uppercase">
-                            date/time
-                          </th>
-                          <th className="text-sm font-semibold text-gray-900 uppercase">
-                            factory
-                          </th>
-                          <th className="text-sm font-semibold text-gray-900 uppercase">
-                            machine
-                          </th>
-                          <th className="text-sm font-semibold text-gray-900 uppercase">
-                            drawing
-                          </th>
-                          <th className="text-sm font-semibold text-gray-900 uppercase">
-                            count
-                          </th>
-                        </thead>
-                        <tbody className="pt-3">
-                          {job.timerLogs.map(({ date, items }) => {
-                            const [item] = items
-                            return (
-                              <tr>
-                                <td>{date}</td>
-                                <td>{job.factoryId.name}</td>
-                                <td>{item.machineId.name}</td>
-                                <td>{job.drawingNumber}</td>
-                                <td>{items.length}</td>
-                              </tr>
-                            )
-                          })}
-                        </tbody>
-                      </table>
+                    <td colSpan={9}>
+                      <div className="h-[90px] overflow-auto bg-slate-200 w-full p-1 pl-3">
+                        <span className="text-base font-bold uppercase whitespace-nowrap">
+                          additional info
+                        </span>
+                        <div className="mt-1">
+                          <table className="w-full text-center">
+                            <thead>
+                              <th className="text-sm font-semibold text-gray-900 uppercase">
+                                date/time
+                              </th>
+                              <th className="text-sm font-semibold text-gray-900 uppercase">
+                                factory
+                              </th>
+                              <th className="text-sm font-semibold text-gray-900 uppercase">
+                                machine
+                              </th>
+                              <th className="text-sm font-semibold text-gray-900 uppercase">
+                                drawing
+                              </th>
+                              <th className="text-sm font-semibold text-gray-900 uppercase">
+                                count
+                              </th>
+                            </thead>
+                            <tbody className="pt-3">
+                              {job.timerLogs.map(({ date, items }) => {
+                                const [item] = items
+                                return (
+                                  <tr>
+                                    <td>{date}</td>
+                                    <td>{job.factoryId.name}</td>
+                                    <td>{item.machineId.name}</td>
+                                    <td>{job.drawingNumber}</td>
+                                    <td>{items.length}</td>
+                                  </tr>
+                                )
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -362,7 +365,7 @@ const TabTable = ({
           </div>
         </div>
       )}
-      <div className="absolute inset-x-0 bottom-0">
+      <div className="inset-x-0 bottom-0">
         <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
           <div className="h-10 z-[-1] sm:hidden">
             <a
@@ -379,7 +382,7 @@ const TabTable = ({
             </a>
           </div>
           <div className="hidden h-12 sm:flex sm:flex-1 sm:items-center sm:justify-between">
-            <div className="absolute">
+            <div className="">
               <p className="text-sm text-gray-700">
                 Showing{" "}
                 <span className="font-medium">
@@ -390,7 +393,7 @@ const TabTable = ({
                 results
               </p>
             </div>
-            <div className="absolute z-[-1] right-7">
+            <div className="z-[-1] right-7">
               <div>
                 {isJobsLoading ? (
                   <div className="animate-pulse flex space-x-4">

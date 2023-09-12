@@ -90,10 +90,10 @@ export const paginated = async (req: Request, res: Response) => {
           },
         },
         {
-          $skip: 10 * (Number(page) - 1),
+          $skip: 4 * (Number(page) - 1),
         },
         {
-          $limit: 10,
+          $limit: 4,
         },
       ])
       const groupedData = _.map(getAllJobs, (item) => {
