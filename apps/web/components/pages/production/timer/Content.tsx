@@ -18,15 +18,12 @@ type T_LocationTabs = {
   count?: number
 }
 const TIMER_ADMIN_ROLES = [
+  USER_ROLES.Super,
   USER_ROLES.Administrator,
   USER_ROLES.Production,
   USER_ROLES.Personnel,
 ]
-const TIMER_CITY_ROLES = [
-  USER_ROLES.Super,
-  USER_ROLES.Personnel,
-  USER_ROLES.Production,
-]
+const TIMER_CITY_ROLES = [USER_ROLES.Personnel, USER_ROLES.Production]
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -53,18 +50,19 @@ const Content = () => {
           }))
         )
       }
-      // setPartLocationIds(
-      //   locations?.items?.map((location) => location._id) as string[]
-      // )
-
       if (
         !TIMER_CITY_ROLES.includes(
-          userProfile?.item.role || USER_ROLES.Administrator
+          userProfile?.item.role
+            ? userProfile?.item.role
+            : USER_ROLES.Administrator
+            ? USER_ROLES.Administrator
+            : USER_ROLES.Super
         )
       )
         setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
+
   useEffect(() => {
     if (
       TIMER_CITY_ROLES.includes(
@@ -89,6 +87,7 @@ const Content = () => {
       setSelectedMachineClasses(updatedMachineClasses)
     }
   }, [machineClasses])
+
   useEffect(() => {
     if (userProfile?.item.locationId) {
       setSelectedLocationId(userProfile?.item.locationId as string)
