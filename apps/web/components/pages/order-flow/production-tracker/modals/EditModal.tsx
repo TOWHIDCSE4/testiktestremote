@@ -10,7 +10,7 @@ import {
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import useFactoryMachineClasses from "../../../../../hooks/factories/useFactoryMachineClasses"
-import useGetMachineByClass from "../../../../../hooks/machines/useGetMachinesByMachineClassLocation"
+import useGetMachineByClass from "../../../../../hooks/machines/useGetMachinesByLocation"
 import useGetPartByMachineClass from "../../../../../hooks/parts/useGetPartByMachineClassLocation"
 import usePart from "../../../../../hooks/parts/useGetPart"
 import useAddTimer from "../../../../../hooks/timers/useAddTimer"
@@ -34,32 +34,10 @@ interface EditModalProps {
 const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
-  const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const [selectedFactory, setSelectedFactory] = useState("")
-  const [selectedMachineClass, setSelectedMachineClass] = useState("")
-  const [activePart, setActivePart] = useState("")
-  const {
-    data: machineClasses,
-    isLoading: isMachineClassesLoading,
-    setSelectedFactoryId,
-  } = useFactoryMachineClasses()
-  const {
-    data: machines,
-    isLoading: isMachinesLoading,
-    setSelectedMachineClassId: setMachineSelect,
-  } = useGetMachineByClass()
-  const {
-    data: parts,
-    isLoading: isPartsLoading,
-    setSelectedMachineClassId: setPartSelect,
-  } = useGetPartByMachineClass()
-  const { data: specificPart, isLoading: isSpecificPartLoading } =
-    usePart(activePart)
 
   const { data: jobData, isLoading: jobIsLoading } = useGetJob(jobId)
   const { mutate, isLoading: isMutateLoading } = useUpdateJob()
-  const { data: usersData, isLoading: usersIsLoading } = useUsers()
 
   const {
     data: partsData,
@@ -73,6 +51,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
       setFactoryId(jobData.item.factoryId)
     }
   }, [jobData])
+
   const { register, handleSubmit, reset, watch } = useForm<T_Job>({
     values: jobData?.item,
   })
@@ -100,8 +79,6 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
 
   const closeModal = () => {
     onClose()
-    setSelectedFactory("")
-    setSelectedMachineClass("")
   }
 
   return (

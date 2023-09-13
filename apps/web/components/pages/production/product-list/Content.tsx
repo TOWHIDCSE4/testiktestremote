@@ -7,14 +7,18 @@ import combineClasses from "../../../../helpers/combineClasses"
 import Part from "./Part"
 import NewMachineModal from "./modals/NewMachineModal"
 import useStoreSession from "../../../../store/useStoreSession"
-import { ROLES } from "../../../../helpers/constants"
+import { USER_ROLES } from "../../../../helpers/constants"
 
 type T_LocationTabs = {
   _id?: string
   name: string
   count?: number
 }
-const PRODUCTION_ADMIN_ROLES = [ROLES.Administrator, ROLES.Production]
+const PRODUCTION_ADMIN_ROLES = [
+  USER_ROLES.Super,
+  USER_ROLES.Administrator,
+  USER_ROLES.Production,
+]
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()

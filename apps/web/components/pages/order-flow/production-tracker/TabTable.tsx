@@ -14,6 +14,7 @@ import DeleteModal from "./modals/DeleteModal"
 import useProfile from "../../../../hooks/users/useProfile"
 import Image from "next/image"
 import combineClasses from "../../../../helpers/combineClasses"
+import JobDetails from "./modals/JobDetails"
 
 const TabTable = ({
   tab,
@@ -34,6 +35,7 @@ const TabTable = ({
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
 
   const [editModal, setEditModal] = useState(false)
+  const [detailsModal, setDetailsModal] = useState(false)
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [jobId, setJobId] = useState("")
   const [deleteModal, setDeleteModal] = useState(false)
@@ -47,7 +49,7 @@ const TabTable = ({
     }
   }, [tab, locationId])
 
-  const numberOfPages = Math.ceil((jobs?.itemCount as number) / 10)
+  const numberOfPages = Math.ceil((jobs?.itemCount as number) / 5)
 
   return (
     <>
@@ -138,22 +140,26 @@ const TabTable = ({
           <tbody className="bg-white">
             {jobs?.items?.map((job: T_Job, index) => {
               return (
-                <tr className="border-b border-gray-200" key={index}>
+                <tr
+                  className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
+                  key={index}
+                  onClick={() => setDetailsModal(true)}
+                >
                   <td className="py-3 pl-4 text-sm sm:pl-6 lg:pl-8">
                     <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
-                      {typeof job?.userId === "object" &&
-                      job?.userId?.profile?.photo ? (
+                      {typeof job?.user === "object" &&
+                      job?.user?.profile?.photo ? (
                         <Image
                           className="rounded-full"
-                          src={`/files/${job?.userId?.profile?.photo}`}
+                          src={`/files/${job?.user?.profile?.photo}`}
                           alt="Profile image"
                           fill
                         />
-                      ) : typeof job?.userId === "object" &&
-                        !job?.userId?.profile?.photo ? (
+                      ) : typeof job?.user === "object" &&
+                        !job?.user?.profile?.photo ? (
                         <Image
                           className="rounded-full"
-                          src={`https://ui-avatars.com/api/?name=${job?.userId?.firstName}+${job?.userId?.lastName}`}
+                          src={`https://ui-avatars.com/api/?name=${job?.user?.firstName}+${job?.user?.lastName}`}
                           alt="Profile image"
                           fill
                         />
@@ -165,16 +171,13 @@ const TabTable = ({
                     </div>
                   </td>
                   <td className="py-3 text-sm text-gray-800 pl-4">
-                    {typeof job?.factoryId === "object"
-                      ? job?.factoryId?.name
-                      : ""}
+                    {typeof job?.factory === "object" ? job?.factory?.name : ""}
                   </td>
                   <td className="py-3 pl-6 text-sm text-gray-800">
                     {job?.name}
                   </td>
                   <td className="py-3 pl-6 text-sm text-gray-800">
-                    {/* @ts-ignore */}
-                    {job?.partId?.name}
+                    {job?.part?.name}
                   </td>
                   <td className="py-3 pl-6 text-sm text-gray-800">
                     {job?.drawingNumber}
@@ -182,7 +185,10 @@ const TabTable = ({
                   <td className="py-3 pl-6 text-sm text-gray-800">
                     <div className="flex items-center">
                       {job?.count ? (
-                        job?.count
+                        <>
+                          {job.timerLogs ? job.timerLogs.length : 0}/
+                          {job?.count}
+                        </>
                       ) : (
                         <span className="text-2xl">∞</span>
                       )}{" "}
@@ -243,7 +249,7 @@ const TabTable = ({
                   </td>
                   <td className="py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
                     <Menu as="div">
-                      <Menu.Button>
+                      <Menu.Button onClick={(e) => e.stopPropagation()}>
                         <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
                       </Menu.Button>
                       <Transition
@@ -257,6 +263,24 @@ const TabTable = ({
                       >
                         <Menu.Items className="absolute right-9 z-10 mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                           <div className="py-1">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <span
+                                  className={combineClasses(
+                                    active
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-700",
+                                    "block px-4 py-2 text-sm cursor-pointer text-left"
+                                  )}
+                                  onClick={() => {
+                                    setDetailsModal(true)
+                                    setJobId(job._id as string)
+                                  }}
+                                >
+                                  Details
+                                </span>
+                              )}
+                            </Menu.Item>
                             <Menu.Item>
                               {({ active }) => (
                                 <span
@@ -327,8 +351,8 @@ const TabTable = ({
               Next
             </a>
           </div>
-          <div className="hidden h-12 sm:flex sm:flex-1 sm:items-center sm:justify-between">
-            <div className="absolute">
+          <div className="h-12 flex items-center w-full">
+            <div className="flex-1">
               <p className="text-sm text-gray-700">
                 Showing{" "}
                 <span className="font-medium">
@@ -339,59 +363,46 @@ const TabTable = ({
                 results
               </p>
             </div>
-            <div className="absolute z-[-1] right-7">
-              <div>
-                {isJobsLoading ? (
-                  <div className="animate-pulse flex space-x-4">
-                    <div className="h-8 w-36 mt-7 bg-slate-200 rounded"></div>
-                  </div>
-                ) : (
-                  <nav
-                    className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                    aria-label="Pagination"
+            <div>
+              {isJobsLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-8 w-36 bg-slate-200 rounded"></div>
+                </div>
+              ) : (
+                <nav
+                  className="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                  aria-label="Pagination"
+                >
+                  <button
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1 || numberOfPages === 0}
+                    className="relative disabled:opacity-70 inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                   >
-                    <button
-                      onClick={() => setPage(page - 1)}
-                      disabled={page === 1 || numberOfPages === 0}
-                      className="relative disabled:opacity-70 inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                    >
-                      <span className="sr-only">Previous</span>
-                      <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-                    </button>
-                    {numberOfPages
-                      ? [...Array(numberOfPages)].map((_, index) => (
-                          <button
-                            key={index + 1}
-                            onClick={() => setPage(index + 1)}
-                            className={
-                              page === index + 1
-                                ? "relative z-10 inline-flex items-center bg-blue-950 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                : "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                            }
-                          >
-                            {index + 1}
-                          </button>
-                        ))
-                      : null}
-                    <button
-                      onClick={() => setPage(page + 1)}
-                      className="relative disabled:opacity-70 inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                      disabled={page === numberOfPages || numberOfPages === 0}
-                    >
-                      <span className="sr-only">Next</span>
-                      <ChevronRightIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </button>
-                  </nav>
-                )}
-              </div>
+                    <span className="sr-only">Previous</span>
+                    <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                  <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold bg-blue-950 text-white ring-1 ring-inset ring-blue-900 hover:bg-blue-950 focus:z-20 focus:outline-offset-0">
+                    {page}
+                  </button>
+                  <button
+                    onClick={() => setPage(page + 1)}
+                    className="relative disabled:opacity-70 inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    disabled={page === numberOfPages || numberOfPages === 0}
+                  >
+                    <span className="sr-only">Next</span>
+                    <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </nav>
+              )}
             </div>
           </div>
         </div>
       </div>
-
+      <JobDetails
+        isOpen={detailsModal}
+        onClose={() => setDetailsModal(false)}
+        jobId={jobId}
+      />
       <DeleteModal
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}

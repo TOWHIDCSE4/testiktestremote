@@ -5,24 +5,22 @@ import {
 import { Request, Response } from "express"
 import Machines from "../../models/machines"
 
-export const locationMachineClass = async (req: Request, res: Response) => {
-  const { locationId, machineClassId } = req.query
-  if (locationId && machineClassId) {
+export const byLocation = async (req: Request, res: Response) => {
+  const { locationId } = req.query
+  if (locationId) {
     try {
-      const machinesCountByClass = await Machines.find({
+      const machinesCountByLocation = await Machines.find({
         locationId,
-        machineClassId,
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
-      const getMachineByClass = await Machines.find({
+      const getMachineByLocation = await Machines.find({
         locationId,
-        machineClassId,
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       })
       res.json({
         error: false,
-        items: getMachineByClass,
-        count: machinesCountByClass,
+        items: getMachineByLocation,
+        count: machinesCountByLocation,
         message: null,
       })
     } catch (err: any) {

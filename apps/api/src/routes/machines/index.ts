@@ -10,12 +10,12 @@ import {
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { locationCount } from "./locationCount"
 import { paginated } from "./paginated"
-import { locationMachineClass } from "./locationMachineClass"
+import { byLocation } from "./byLocation"
 
 //custom
 router.get("/paginated", isUserLoggedIn, paginated)
 router.get("/location-count/:id", isUserLoggedIn, locationCount)
-router.get("/location-machine-class", isUserLoggedIn, locationMachineClass)
+router.get("/by-location", isUserLoggedIn, byLocation)
 
 //default
 router.get("/", isUserLoggedIn, getAllMachines)

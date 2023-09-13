@@ -1,37 +1,37 @@
 import { Request, Response } from "express"
-import Machines from "../../models/machines"
 import {
   REQUIRED_VALUES_MISSING,
   UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
+import TimerLogs from "../../models/timerLogs"
 
-export const paginated = async (req: Request, res: Response) => {
-  const { page, locationId, factoryId, machineClassId, name } = req.query
-  if (page && locationId) {
+export const globalLogs = async (req: Request, res: Response) => {
+  const { locationId, factoryId, machineId, machineClassId, page } = req.query
+  if (locationId) {
     try {
-      const partsCount = await Machines.find({
+      const timerLogsCount = await TimerLogs.find({
         locationId: locationId,
         ...(factoryId && { factoryId: factoryId }),
+        ...(machineId && { machineClassId: machineId }),
         ...(machineClassId && { machineClassId: machineClassId }),
-        ...(name && { name: { $regex: `.*${name}.*`, $options: "i" } }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
-      const getAllParts = await Machines.find({
+      const getTimerLogs = await TimerLogs.find({
         locationId: locationId,
         ...(factoryId && { factoryId: factoryId }),
+        ...(machineId && { machineClassId: machineId }),
         ...(machineClassId && { machineClassId: machineClassId }),
-        ...(name && { name: { $regex: `.*${name}.*`, $options: "i" } }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       })
-        .sort({
-          createdAt: -1,
-        })
-        .skip(6 * (Number(page) - 1))
-        .limit(6)
+        .populate("partId")
+        .populate("operator")
+        .sort({ createdAt: -1 })
+        .skip(5 * (Number(page) - 1))
+        .limit(5)
       res.json({
         error: false,
-        items: getAllParts,
-        itemCount: partsCount,
+        items: getTimerLogs,
+        itemCount: timerLogsCount,
         message: null,
       })
     } catch (err: any) {

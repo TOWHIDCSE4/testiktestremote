@@ -76,36 +76,6 @@ const Details = ({
                 path === "/production/timer/tracker"
                   ? "text-sm xl:text-xl 2xl:text-2xl"
                   : "text-sm"
-              } uppercase font-semibold text-gray-700 leading-6`}
-            >
-              {timerMachine} Total Units: {logCount}
-            </h6>
-            <h6
-              className={`${
-                path === "/production/timer/tracker"
-                  ? "text-sm xl:text-xl 2xl:text-2xl"
-                  : "text-sm"
-              } uppercase font-semibold text-gray-700 leading-6`}
-            >
-              {timerMachine} Total Tons:{" "}
-              {logs
-                ? logs
-                    .reduce(
-                      (acc, log) =>
-                        acc +
-                        (typeof log.partId === "object"
-                          ? Number(log.partId.tons)
-                          : 0),
-                      0
-                    )
-                    .toFixed(3)
-                : "0.000"}
-            </h6>
-            <h6
-              className={`${
-                path === "/production/timer/tracker"
-                  ? "text-sm xl:text-xl 2xl:text-2xl"
-                  : "text-sm"
               }
                 uppercase font-semibold text-gray-700 leading-6`}
             >
@@ -143,6 +113,36 @@ const Details = ({
                   path === "/production/timer/tracker"
                     ? "text-sm xl:text-xl 2xl:text-2xl"
                     : "text-sm"
+                } uppercase font-semibold text-gray-700 leading-6`}
+              >
+                {timerMachine} Total Units: {logCount}
+              </h6>
+              <h6
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
+                } uppercase font-semibold text-gray-700 leading-6`}
+              >
+                {timerMachine} Total Tons:{" "}
+                {logs
+                  ? logs
+                      .reduce(
+                        (acc, log) =>
+                          acc +
+                          (typeof log.partId === "object"
+                            ? Number(log.partId.tons)
+                            : 0),
+                        0
+                      )
+                      .toFixed(3)
+                  : "0.000"}
+              </h6>
+              {/* <h6
+                className={`${
+                  path === "/production/timer/tracker"
+                    ? "text-sm xl:text-xl 2xl:text-2xl"
+                    : "text-sm"
                 } uppercase font-bold text-gray-700 leading-6`}
               >
                 Overall Units:{" "}
@@ -161,9 +161,9 @@ const Details = ({
                 {overallUnitTons?.item?.tons
                   ? overallUnitTons?.item?.tons.toFixed(3)
                   : "0.000"}
-              </h6>
+              </h6> */}
             </div>
-            <div>
+            {/* <div>
               <h6
                 className={`${
                   path === "/production/timer/tracker"
@@ -182,9 +182,9 @@ const Details = ({
               >
                 Global Tons: 0.000
               </h6>
-            </div>
+            </div> */}
           </div>
-          <div className="flex flex-col text-right">
+          {/* <div className="flex flex-col text-right">
             <button
               className={`
               ${
@@ -196,7 +196,7 @@ const Details = ({
             >
               View Report
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
