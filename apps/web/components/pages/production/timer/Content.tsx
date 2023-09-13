@@ -8,7 +8,7 @@ import Clocks from "./Clocks"
 import useMachineClasses from "../../../../hooks/machineClasses/useMachineClasses"
 import { T_MachineClass } from "custom-validator"
 import useStoreSession from "../../../../store/useStoreSession"
-import { ROLES } from "../../../../helpers/constants"
+import { USER_ROLES } from "../../../../helpers/constants"
 import useLocation from "../../../../hooks/locations/useLocation"
 import useProfile from "../../../../hooks/users/useProfile"
 
@@ -18,11 +18,12 @@ type T_LocationTabs = {
   count?: number
 }
 const TIMER_ADMIN_ROLES = [
-  ROLES.Administrator,
-  ROLES.Production,
-  ROLES.Personnel,
+  USER_ROLES.Super,
+  USER_ROLES.Administrator,
+  USER_ROLES.Production,
+  USER_ROLES.Personnel,
 ]
-const TIMER_CITY_ROLES = [ROLES.Personnel, ROLES.Production]
+const TIMER_CITY_ROLES = [USER_ROLES.Personnel, USER_ROLES.Production]
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -49,21 +50,24 @@ const Content = () => {
           }))
         )
       }
-      // setPartLocationIds(
-      //   locations?.items?.map((location) => location._id) as string[]
-      // )
-
       if (
         !TIMER_CITY_ROLES.includes(
-          userProfile?.item.role || ROLES.Administrator
+          userProfile?.item.role
+            ? userProfile?.item.role
+            : USER_ROLES.Administrator
+            ? USER_ROLES.Administrator
+            : USER_ROLES.Super
         )
       )
         setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
+
   useEffect(() => {
     if (
-      TIMER_CITY_ROLES.includes(userProfile?.item.role || ROLES.Administrator)
+      TIMER_CITY_ROLES.includes(
+        userProfile?.item.role || USER_ROLES.Administrator
+      )
     )
       setCurrentLocationTab(location?.item._id || "")
   }, [location])
@@ -83,6 +87,7 @@ const Content = () => {
       setSelectedMachineClasses(updatedMachineClasses)
     }
   }, [machineClasses])
+
   useEffect(() => {
     if (userProfile?.item.locationId) {
       setSelectedLocationId(userProfile?.item.locationId as string)
@@ -94,7 +99,7 @@ const Content = () => {
   )?.name
   const isTimerCityRoles = useMemo(() => {
     return TIMER_CITY_ROLES.includes(
-      userProfile?.item.role || ROLES.Administrator
+      userProfile?.item.role || USER_ROLES.Administrator
     )
   }, [userProfile])
   if (!TIMER_ADMIN_ROLES.includes(storeSession.role))
@@ -120,7 +125,7 @@ const Content = () => {
             </h4>
           </div>
           <div>
-            {userProfile?.item.role !== ROLES.Personnel && (
+            {userProfile?.item.role !== USER_ROLES.Personnel && (
               <button
                 type="button"
                 className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"

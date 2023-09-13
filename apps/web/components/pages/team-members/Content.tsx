@@ -1,11 +1,13 @@
 "use client"
-import { T_User } from "custom-validator"
-import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
 import ParentTable from "./ParentTable"
-import { ROLES } from "../../../helpers/constants"
+import { USER_ROLES } from "../../../helpers/constants"
 
-const TEAMMEMBERS_ADMIN_ROLES = [ROLES.Administrator, ROLES.Production]
+const TEAMMEMBERS_ADMIN_ROLES = [
+  USER_ROLES.Super,
+  USER_ROLES.Administrator,
+  USER_ROLES.HR,
+]
 
 const Content = () => {
   const storeSession = useStoreSession((state) => state)
@@ -24,9 +26,9 @@ const Content = () => {
           <h2 className="text-gray-800 text-[33px] font-semibold leading-none">
             Team Members
           </h2>
-          <h4 className="uppercase text-sm text-gray-500 font-medium tracking-widest mt-2">
+          {/* <h4 className="uppercase text-sm text-gray-500 font-medium tracking-widest mt-2">
             Team Members
-          </h4>
+          </h4> */}
         </div>
         <div className="w-full h-0.5 bg-gray-200 mt-5"></div>
         <ParentTable />

@@ -6,7 +6,16 @@ const users = new Schema({
   lastName: String,
   role: {
     type: String,
-    enum: ["Administrator", "Corporate", "Production", "Personnel"],
+    enum: [
+      "Super",
+      "Administrator",
+      "Corporate",
+      "Production",
+      "Personnel",
+      "HR",
+      "Accounting",
+      "Sales",
+    ],
   },
   email: String,
   password: String,
@@ -14,6 +23,11 @@ const users = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Location",
   },
+  factoryId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Factory",
+  },
+  isGlobalFactory: Boolean,
   profile: {
     type: Object,
     default: null,
@@ -24,7 +38,10 @@ const users = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "User",
   },
-  blockedAt: Date,
+  status: {
+    type: String,
+    enum: ["Approved", "Rejected", "Archived", "Blocked", "Requested"],
+  },
   createdAt: {
     type: Date,
     default: Date.now,

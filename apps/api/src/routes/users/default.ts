@@ -88,11 +88,14 @@ export const addUser = async (req: Request, res: Response) => {
       password,
       keys.encryptKey as string
     ).toString()
+    const emailDomain = email.split("@")
     const newUser = new Users({
       firstName,
       lastName,
       role,
       email,
+      status:
+        VALID_EMAIL.indexOf(emailDomain[1]) > -1 ? "Requested" : "Rejected",
       password: encryptPassword,
       locationId,
       profile: null,
@@ -100,47 +103,37 @@ export const addUser = async (req: Request, res: Response) => {
       updatedAt: null,
       deletedAt: null,
     })
-    const emailDomain = email.split("@")
-    if (VALID_EMAIL.indexOf(emailDomain[1]) > -1) {
-      try {
-        const getExistingUser = await Users.find({
-          $or: [{ email }],
-          deletedAt: { $exists: true },
-        })
-        if (getExistingUser.length === 0) {
-          const validateUserInput = ZUser.safeParse(newUser)
-          if (validateUserInput.success) {
-            const createUser = await newUser.save()
-            res.json({
-              error: false,
-              item: createUser,
-              itemCount: 1,
-              message: ADD_SUCCESS_MESSAGE,
-            })
-          } else {
-            res.json({ error: true, message: validateUserInput.error })
-          }
-        } else {
+    try {
+      const getExistingUser = await Users.find({
+        $or: [{ email }],
+        deletedAt: { $exists: true },
+      })
+      if (getExistingUser.length === 0) {
+        const validateUserInput = ZUser.safeParse(req.body)
+        if (validateUserInput.success) {
+          const createUser = await newUser.save()
           res.json({
-            error: true,
-            message: ACCOUNT_ALREADY_EXISTS,
-            items: null,
-            itemCount: null,
+            error: false,
+            item: createUser,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
           })
+        } else {
+          res.json({ error: true, message: validateUserInput.error })
         }
-      } catch (err: any) {
-        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      } else {
         res.json({
           error: true,
-          message: message,
+          message: ACCOUNT_ALREADY_EXISTS,
           items: null,
           itemCount: null,
         })
       }
-    } else {
+    } catch (err: any) {
+      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       res.json({
         error: true,
-        message: INVALID_EMAIL,
+        message: message,
         items: null,
         itemCount: null,
       })

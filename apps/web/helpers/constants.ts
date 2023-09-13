@@ -2,11 +2,23 @@ export const REFETCH_ACTIVATED = true
 
 export const INVALID_AUTH = "Invalid authentication"
 
-export const ROLES = {
+export const USER_ROLES = {
   Production: "Production",
   Corporate: "Corporate",
   Administrator: "Administrator",
   Personnel: "Personnel",
+  HR: "HR",
+  Sales: "Sales",
+  Accounting: "Accounting",
+  Super: "Super",
+}
+
+export const USER_STATUSES = {
+  Approved: "Approved",
+  Rejected: "Rejected",
+  Archived: "Archived",
+  Blocked: "Blocked",
+  Requested: "Requested",
 }
 
 export const ONE_DAY = 1000 * 60 * 60 * 24 // 24 hours

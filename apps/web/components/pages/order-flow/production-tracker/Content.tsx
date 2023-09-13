@@ -5,7 +5,7 @@ import combineClasses from "../../../../helpers/combineClasses"
 import NewModal from "./modals/NewModal"
 import ParentTable from "./ParentTable"
 import useStoreSession from "../../../../store/useStoreSession"
-import { ROLES } from "../../../../helpers/constants"
+import { USER_ROLES } from "../../../../helpers/constants"
 import LogsTable from "./LogsTable"
 
 type T_LocationTabs = {
@@ -13,7 +13,11 @@ type T_LocationTabs = {
   name: string
   count?: number
 }
-const PRODUCTION_TRACKER_ADMIN_ROLES = [ROLES.Administrator, ROLES.Production]
+const PRODUCTION_TRACKER_ADMIN_ROLES = [
+  USER_ROLES.Super,
+  USER_ROLES.Administrator,
+  USER_ROLES.Production,
+]
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
