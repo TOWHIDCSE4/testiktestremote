@@ -67,6 +67,18 @@ export const assignJob = async (req: Request, res: Response) => {
             jobId: selectedJobId,
           })
           const createJobTimer = await newJobTimer.save()
+          if (createJobTimer) {
+            await Jobs.findByIdAndUpdate(
+              selectedJobId,
+              {
+                $set: {
+                  status: "Assigned",
+                },
+                updatedAt: Date.now(),
+              },
+              { new: true }
+            )
+          }
           res.json({
             error: false,
             item: createJobTimer,

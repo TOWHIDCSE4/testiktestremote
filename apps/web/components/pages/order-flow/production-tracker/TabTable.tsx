@@ -14,6 +14,7 @@ import DeleteModal from "./modals/DeleteModal"
 import useProfile from "../../../../hooks/users/useProfile"
 import Image from "next/image"
 import combineClasses from "../../../../helpers/combineClasses"
+import JobDetails from "./modals/JobDetails"
 
 const TabTable = ({
   tab,
@@ -34,6 +35,7 @@ const TabTable = ({
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
 
   const [editModal, setEditModal] = useState(false)
+  const [detailsModal, setDetailsModal] = useState(false)
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [jobId, setJobId] = useState("")
   const [deleteModal, setDeleteModal] = useState(false)
@@ -138,7 +140,11 @@ const TabTable = ({
           <tbody className="bg-white">
             {jobs?.items?.map((job: T_Job, index) => {
               return (
-                <tr className="border-b border-gray-200" key={index}>
+                <tr
+                  className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
+                  key={index}
+                  onClick={() => setDetailsModal(true)}
+                >
                   <td className="py-3 pl-4 text-sm sm:pl-6 lg:pl-8">
                     <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
                       {typeof job?.user === "object" &&
@@ -179,7 +185,10 @@ const TabTable = ({
                   <td className="py-3 pl-6 text-sm text-gray-800">
                     <div className="flex items-center">
                       {job?.count ? (
-                        job?.count
+                        <>
+                          {job.timerLogs ? job.timerLogs.length : 0}/
+                          {job?.count}
+                        </>
                       ) : (
                         <span className="text-2xl">∞</span>
                       )}{" "}
@@ -240,7 +249,7 @@ const TabTable = ({
                   </td>
                   <td className="py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
                     <Menu as="div">
-                      <Menu.Button>
+                      <Menu.Button onClick={(e) => e.stopPropagation()}>
                         <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
                       </Menu.Button>
                       <Transition
@@ -254,6 +263,24 @@ const TabTable = ({
                       >
                         <Menu.Items className="absolute right-9 z-10 mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                           <div className="py-1">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <span
+                                  className={combineClasses(
+                                    active
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-700",
+                                    "block px-4 py-2 text-sm cursor-pointer text-left"
+                                  )}
+                                  onClick={() => {
+                                    setDetailsModal(true)
+                                    setJobId(job._id as string)
+                                  }}
+                                >
+                                  Details
+                                </span>
+                              )}
+                            </Menu.Item>
                             <Menu.Item>
                               {({ active }) => (
                                 <span
@@ -371,7 +398,11 @@ const TabTable = ({
           </div>
         </div>
       </div>
-
+      <JobDetails
+        isOpen={detailsModal}
+        onClose={() => setDetailsModal(false)}
+        jobId={jobId}
+      />
       <DeleteModal
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}

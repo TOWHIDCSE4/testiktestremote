@@ -4,25 +4,43 @@ import {
   ChevronDoubleDownIcon,
 } from "@heroicons/react/24/solid"
 import { T_TimerStopReason } from "custom-validator"
+import toast from "react-hot-toast"
 
 const BottomMenu = ({
   stopMenu,
   setStopMenu,
   stopReasons,
   setStopReasons,
+  stopCycle,
+  isCycleClockRunning,
 }: {
   stopMenu: boolean
   setStopMenu: Dispatch<boolean>
   stopReasons: T_TimerStopReason[]
   setStopReasons: Dispatch<T_TimerStopReason[]>
+  stopCycle: Function
+  isCycleClockRunning: boolean
 }) => {
+  const stop = () => {
+    if (stopReasons.length > 0 && isCycleClockRunning) {
+      stopCycle()
+    } else {
+      if (!isCycleClockRunning) {
+        toast.error("Cycle clock is not running")
+      } else {
+        if (stopReasons.length === 0) {
+          toast.error("Please select at least one reason")
+        }
+      }
+    }
+  }
   return (
     <div className="flex justify-center">
       <div
         className={`${
           stopMenu
             ? "translate-y-0"
-            : "translate-y-[178px] xl:translate-y-[297px] 2xl:translate-y-[380px]"
+            : "translate-y-[191px] xl:translate-y-[297px] 2xl:translate-y-[380px]"
         } bg-dark-blue h-62 xl:h-80 2xl:h-[430px] w-96 xl:w-[500px] 2xl:w-[800px] z-20 fixed bottom-0 rounded-t-md px-4 pb-5 transition transform duration-1000`}
       >
         <div className="flex justify-center items-center mt-1 2xl:mt-3 mb-0 2xl:mb-2">
@@ -39,9 +57,13 @@ const BottomMenu = ({
           )}
         </div>
         <div className="bg-[#274263] rounded-md mt-1 h-full flex flex-col justify-start items-center">
-          <h6 className="text-yellow-200 uppercase xl:text-xl 2xl:text-4xl mt-2 2xl:mt-6">
+          <button
+            type="button"
+            className="text-yellow-200 uppercase xl:text-xl 2xl:text-4xl mt-2 2xl:mt-6 bg-dark-blue rounded-md shadow-lg hover:shadow-2xl w-24 py-2"
+            onClick={() => stop()}
+          >
             Stop
-          </h6>
+          </button>
           <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 px-4">
             <div className="flex space-x-2 2xl:space-x-4 items-center mt-1 xl:mt-3 2xl:mt-6">
               <input

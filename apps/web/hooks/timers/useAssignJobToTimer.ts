@@ -1,6 +1,6 @@
 import { API_URL_TIMER } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
-import { T_Timer } from "custom-validator"
+import { T_JobStatus, T_Timer } from "custom-validator"
 import Cookies from "js-cookie"
 
 type T_AssignJobToTimer = {
@@ -8,6 +8,7 @@ type T_AssignJobToTimer = {
   partId: string
   factoryId: string
   timerId: string
+  status: T_JobStatus
 }
 
 export async function assignJobToTimer(data: T_AssignJobToTimer) {
