@@ -191,29 +191,33 @@ const Controller = ({ timerId }: { timerId: string }) => {
               `${currentDate} - Starting timer`,
               `${currentDate} - Timer started`,
             ])
-            setTimeout(function () {
-              if (!isCycleClockRunning && !fromDb) {
-                addCycleTimer({ timerId }, callBackReq)
-              }
-              const interval: any = setInterval(() => {
-                setCycleClockInSeconds(
-                  (previousState: number) => previousState + 0.01
-                )
-              }, 10)
-              setCycleClockIntervalId(interval)
-              setIsCycleClockRunning(true)
-              if (!isTimerClockRunning && !fromDb) {
-                addControllerTimer(
-                  {
-                    timerId,
-                    locationId: timerDetailData?.item?.locationId._id,
-                  },
-                  callBackReq
-                )
-                runTimer()
-              }
-              setIsCycleClockStarting(false)
-            }, 3000)
+            setTimeout(
+              function () {
+                if (!isCycleClockRunning && !fromDb) {
+                  addCycleTimer({ timerId }, callBackReq)
+                }
+                const interval: any = setInterval(() => {
+                  setCycleClockInSeconds(
+                    (previousState: number) => previousState + 0.01
+                  )
+                }, 10)
+                setCycleClockIntervalId(interval)
+                setIsCycleClockRunning(true)
+                setIsCycleClockStopping(false)
+                if (!isTimerClockRunning && !fromDb) {
+                  addControllerTimer(
+                    {
+                      timerId,
+                      locationId: timerDetailData?.item?.locationId._id,
+                    },
+                    callBackReq
+                  )
+                  runTimer()
+                }
+                setIsCycleClockStarting(false)
+              },
+              fromDb ? 0 : 3000
+            )
           } else {
             toast.error("You already ended this timer")
           }
@@ -263,7 +267,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setCycleClockInSeconds(0)
         setIsCycleClockStopping(false)
         setUnitsCreated(unitsCreated + 1)
-        setProgress(0)
+        if (timerDetailData?.item?.partId.time === 0) {
+          setProgress(100)
+        } else {
+          setProgress(0)
+        }
         const interval: any = setInterval(() => {
           setCycleClockInSeconds(
             (previousState: number) => previousState + 0.01
@@ -352,7 +360,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
       const secondsLapse = currentDate.diff(timerStart, "seconds", true)
       setCycleClockInSeconds(secondsLapse)
       if (!cycleTimer?.items[0].endAt) {
-        setProgress(secondsLapse)
+        if (timerDetailData?.item?.partId.time === 0) {
+          setProgress(100)
+        } else {
+          setProgress(secondsLapse)
+        }
         runCycle(true)
       }
     }

@@ -652,7 +652,7 @@ const Content = () => {
                       <span className="sr-only">Previous</span>
                       <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
                     </button>
-                    <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold bg-blue-900 text-white ring-1 ring-inset ring-blue-900 hover:bg-blue-950 focus:z-20 focus:outline-offset-0">
+                    <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold bg-blue-950 text-white ring-1 ring-inset ring-blue-900 hover:bg-blue-950 focus:z-20 focus:outline-offset-0">
                       {page}
                     </button>
                     <button

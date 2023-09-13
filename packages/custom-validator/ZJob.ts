@@ -4,6 +4,9 @@ import { ZUser } from "./ZUser"
 import { ZLocation } from "./ZLocation"
 import { ZFactory } from "./ZFactory"
 import { ZPart } from "./ZPart"
+import { ZMachineClass } from "./ZMachineClass"
+import { ZTimer } from "./ZTimer"
+import { ZTimerLogStatus, ZTimerStopReason } from "./ZTimerLog"
 
 export const ZJobStatus = z.enum([
   "Pending",
@@ -22,6 +25,31 @@ export const ZJob = z.object({
   locationId: z.union([z.string(), ZLocation]),
   factoryId: z.union([z.string(), ZFactory]),
   partId: z.union([ZPart, z.string()]),
+  part: ZPart.optional(),
+  factory: ZPart.optional(),
+  user: ZUser.optional(),
+  timerLogs: z
+    .array(
+      z.object({
+        _id: z.string().optional(),
+        cycle: z.number().positive(),
+        globalCycle: z.number().positive().optional(),
+        locationId: z.union([z.string(), ZLocation]),
+        factoryId: z.union([z.string(), ZFactory]),
+        machineId: z.union([z.string(), ZMachine]),
+        machineClassId: z.union([z.string(), ZMachineClass]),
+        partId: z.union([z.string(), ZPart]),
+        timerId: z.union([z.string(), ZTimer]),
+        time: z.number().positive(),
+        operator: z.union([z.string(), ZUser]),
+        status: ZTimerLogStatus,
+        stopReason: z.array(ZTimerStopReason),
+        createdAt: z.date().nullable().optional(),
+        updatedAt: z.date().nullable().optional(),
+        deletedAt: z.date().nullable().optional(),
+      })
+    )
+    .optional(),
   machine: ZMachine.optional(),
   status: ZJobStatus,
   drawingNumber: z.string(),
