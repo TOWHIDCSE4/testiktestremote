@@ -204,7 +204,7 @@ const TabTable = ({
                         )}
                         /
                         {job?.isStock === true ? (
-                          <span className="text-2xl">∞</span>
+                          <span className="text-xl">∞</span>
                         ) : (
                           job.count
                         )}
