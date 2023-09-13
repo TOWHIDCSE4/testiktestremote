@@ -7,7 +7,7 @@ import {
   DELETE_SUCCESS_MESSAGE,
   REQUIRED_VALUES_MISSING,
 } from "../../utils/constants"
-import { ZJobCreate } from "custom-validator/ZJobCreate"
+import { ZJob } from "custom-validator"
 
 export const getAllJobs = async (req: Request, res: Response) => {
   try {
@@ -58,19 +58,19 @@ export const getJob = async (req: Request, res: Response) => {
 }
 
 export const addJob = async (req: Request, res: Response) => {
-  const parsedJob = ZJobCreate.safeParse(req.body)
+  const parsedJob = ZJob.safeParse(req.body)
   if (parsedJob.success) {
     const newJob = new Jobs(req.body)
     try {
-      const getStockJob = await Jobs.findOne({
-        locationId: req.body.locationId,
-        partId: req.body.partId,
-        factoryId: req.body.factoryId,
-        isStock: true,
-        status: { $ne: "Deleted" },
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      })
       if (req.body.isStock) {
+        const getStockJob = await Jobs.findOne({
+          locationId: req.body.locationId,
+          partId: req.body.partId,
+          factoryId: req.body.factoryId,
+          isStock: true,
+          status: { $ne: "Deleted" },
+          $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        })
         if (!getStockJob) {
           const createJob = await newJob.save()
           res.json({
@@ -89,12 +89,6 @@ export const addJob = async (req: Request, res: Response) => {
         }
       } else {
         const createJob = await newJob.save()
-        if (!getStockJob) {
-          await new Jobs({
-            ...req.body,
-            isStock: true,
-          }).save()
-        }
         res.json({
           error: false,
           message: ADD_SUCCESS_MESSAGE,
