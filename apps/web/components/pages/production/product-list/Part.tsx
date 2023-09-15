@@ -67,8 +67,6 @@ const Part = ({
 
   const numberOfPages = Math.ceil((allParts?.itemCount as number) / 6)
 
-  console.log(numberOfPages)
-
   useEffect(() => {
     if (factoryIdFilter) {
       setSelectedFactoryId(factoryIdFilter)
@@ -383,7 +381,7 @@ const Part = ({
                       <div className="px-4 pb-4">
                         <div className="flex justify-between text-gray-900">
                           <span>Tons:</span>
-                          <span>{product.tons.toFixed(6)}</span>
+                          <span>{product.tons.toFixed(3)}</span>
                         </div>
                         <div className="flex justify-between text-gray-900">
                           <span>Avg Time:</span>
