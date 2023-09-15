@@ -5,7 +5,6 @@ import {
   UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
 import mongoose from "mongoose"
-import TimerLogs from "../../models/timerLogs"
 
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, status } = req.query
@@ -16,20 +15,6 @@ export const paginated = async (req: Request, res: Response) => {
         ...(status && { status: status }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
-      // const getAllJobs = await Jobs.find({
-      //   locationId: locationId,
-      //   ...(status && { status: status }),
-      //   $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      // })
-      //   .populate("partId")
-      //   .populate("factoryId")
-      //   .populate("userId")
-      //   .sort({
-      //     createdAt: -1,
-      //   })
-      //   .skip(5 * (Number(page) - 1))
-      //   .limit(5)
-      // new
       const getAllJobs = await Jobs.aggregate([
         {
           $match: {
@@ -55,6 +40,23 @@ export const paginated = async (req: Request, res: Response) => {
               },
             ],
             as: "timerLogs",
+          },
+        },
+        {
+          $lookup: {
+            from: "jobtimers",
+            let: {
+              jobId: "$_id",
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ["$jobId", "$$jobId"] },
+                  $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+                },
+              },
+            ],
+            as: "job",
           },
         },
         {

@@ -259,7 +259,7 @@ const PartDetailsModal = ({
                     htmlFor="finish-good-weight"
                     className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
                   >
-                    Finish Good Weigth:
+                    Finish Good Weight:
                   </label>
                   <input
                     id="finishGoodWeight"

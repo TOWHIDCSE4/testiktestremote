@@ -421,6 +421,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           partId: timerDetailData?.item?.partId._id as string,
           factoryId: timerDetailData?.item?.factoryId._id as string,
           locationId: timerDetailData?.item?.locationId._id as string,
+          status: "Active",
         },
         {
           onSuccess: (returnData: T_BackendResponse) => {
@@ -485,6 +486,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
           setStopMenu={setStopMenu}
           stopReasons={stopReasons}
           setStopReasons={setStopReasons}
+          isCycleClockRunning={isCycleClockRunning}
+          stopCycle={stopCycle}
         />
         {/* Right Side Slide Menu */}
         <SideMenu
