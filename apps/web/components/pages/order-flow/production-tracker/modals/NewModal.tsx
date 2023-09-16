@@ -4,6 +4,7 @@ import {
   T_BackendResponse,
   T_Factory,
   T_Job,
+  T_JobTimer,
   T_Machine,
   T_Part,
   T_User,
@@ -11,18 +12,20 @@ import {
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import useFactories from "../../../../../hooks/factories/useFactories"
-import useLocations from "../../../../../hooks/locations/useLocations"
 import useAddJob from "../../../../../hooks/jobs/useAddJob"
-import useUsers from "../../../../../hooks/users/useUsers"
 import useGetPartsByFactoryLocation from "../../../../../hooks/parts/useGetPartsByFactoryLocation"
 import useProfile from "../../../../../hooks/users/useProfile"
 import { useQueryClient } from "@tanstack/react-query"
+import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 
 interface NewModalProps {
   isOpen: boolean
   locationState: string | null
   locationId: string | null
   onClose: () => void
+  jobTimer?: T_JobTimer
+  factoryId?: string
+  partId?: string
 }
 
 const NewModal = ({
@@ -30,6 +33,9 @@ const NewModal = ({
   locationState,
   locationId,
   onClose,
+  jobTimer,
+  factoryId,
+  partId,
 }: NewModalProps) => {
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
@@ -44,7 +50,36 @@ const NewModal = ({
   } = useGetPartsByFactoryLocation()
 
   const { register, handleSubmit, reset, watch, setValue } = useForm<T_Job>()
-  const { mutate, isLoading: isMutateLoading } = useAddJob()
+  const { mutate: addNewJob, isLoading: isAddNewJobLoading } = useAddJob()
+  const { mutate: updateJobTimer, isLoading: isUpdateJobTimerLoading } =
+    useUpdateJobTimer()
+
+  const mutateJobTimer = (jobId: string) => {
+    if (jobTimer) {
+      const callBackReq = {
+        onSuccess: (data: T_BackendResponse) => {
+          if (!data.error) {
+            queryClient.invalidateQueries({
+              queryKey: ["timer-jobs", locationId, factoryId, partId],
+            })
+            queryClient.invalidateQueries({
+              queryKey: ["job-timer-timer"],
+            })
+            toast.success("Timer has been updated")
+            closeModal()
+            reset()
+            setIsStock(false)
+          } else {
+            toast.error(String(data.message))
+          }
+        },
+        onError: (err: any) => {
+          toast.error(String(err))
+        },
+      }
+      updateJobTimer({ ...jobTimer, jobId }, callBackReq)
+    }
+  }
 
   const onSubmit = (data: T_Job) => {
     const callBackReq = {
@@ -54,9 +89,13 @@ const NewModal = ({
             queryKey: ["jobs"],
           })
           toast.success(String(data.message))
-          closeModal()
-          reset()
-          setIsStock(false)
+          if (jobTimer) {
+            mutateJobTimer(data?.item?._id as string)
+          } else {
+            closeModal()
+            reset()
+            setIsStock(false)
+          }
         } else {
           toast.error(String(data.message))
         }
@@ -65,8 +104,7 @@ const NewModal = ({
         toast.error(String(err))
       },
     }
-
-    mutate(
+    addNewJob(
       {
         ...data,
         isStock:
@@ -89,6 +127,14 @@ const NewModal = ({
     setValue("locationId", locationId as string)
     setLocationId(locationId as string)
   }, [locationId])
+
+  useEffect(() => {
+    if (factoryId) {
+      setFactoryId(factoryId)
+      setValue("factoryId", factoryId as string)
+      setValue("partId", partId as string)
+    }
+  }, [factoryId])
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -141,6 +187,11 @@ const NewModal = ({
                         {...register("name", { required: true })}
                         className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         required
+                        disabled={
+                          isAddNewJobLoading ||
+                          isProfileLoading ||
+                          isUpdateJobTimerLoading
+                        }
                       />
                     </div>
                     <div className="md:flex items-center mt-3">
@@ -151,7 +202,13 @@ const NewModal = ({
                         Factory
                       </label>
                       <select
-                        disabled={isFactoriesLoading}
+                        disabled={
+                          isFactoriesLoading ||
+                          isAddNewJobLoading ||
+                          isProfileLoading ||
+                          isUpdateJobTimerLoading ||
+                          !!factoryId
+                        }
                         id="factory"
                         required
                         {...register("factoryId", { required: true })}
@@ -160,6 +217,7 @@ const NewModal = ({
                         onChange={(e) => {
                           setFactoryId(e.target.value)
                         }}
+                        value={factoryId}
                       >
                         <option value="">Select Factory</option>
                         {factories?.items?.map(
@@ -189,9 +247,13 @@ const NewModal = ({
                         disabled={
                           !parts ||
                           parts?.items.length === 0 ||
-                          isMutateLoading ||
-                          isPartsLoading
+                          isAddNewJobLoading ||
+                          isPartsLoading ||
+                          isProfileLoading ||
+                          isUpdateJobTimerLoading ||
+                          !!partId
                         }
+                        value={partId}
                       >
                         <option value="">Select Product</option>
                         {parts?.items.map((part: T_Part, index: number) => {
@@ -216,6 +278,11 @@ const NewModal = ({
                         id="drawingNumber"
                         required
                         className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                        disabled={
+                          isAddNewJobLoading ||
+                          isProfileLoading ||
+                          isUpdateJobTimerLoading
+                        }
                       />
                     </div>
                     <div className="md:flex items-center mt-3">
@@ -239,6 +306,11 @@ const NewModal = ({
                           }
                           setIsStock(e.target.value === "true")
                         }}
+                        disabled={
+                          isAddNewJobLoading ||
+                          isProfileLoading ||
+                          isUpdateJobTimerLoading
+                        }
                       >
                         <option value="false">No</option>
                         <option value="true">Yes</option>
@@ -262,6 +334,11 @@ const NewModal = ({
                             id="drawingNumber"
                             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             required
+                            disabled={
+                              isAddNewJobLoading ||
+                              isProfileLoading ||
+                              isUpdateJobTimerLoading
+                            }
                           />
                         </div>
                         <div className="md:flex items-center mt-3">
@@ -280,6 +357,11 @@ const NewModal = ({
                             id="dueDate"
                             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             required
+                            disabled={
+                              isAddNewJobLoading ||
+                              isProfileLoading ||
+                              isUpdateJobTimerLoading
+                            }
                           />
                         </div>
                         <div className="md:flex items-center mt-3">
@@ -295,6 +377,11 @@ const NewModal = ({
                             className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             defaultValue="High"
                             required
+                            disabled={
+                              isAddNewJobLoading ||
+                              isProfileLoading ||
+                              isUpdateJobTimerLoading
+                            }
                           >
                             <option>High</option>
                             <option>Medium</option>
@@ -309,7 +396,7 @@ const NewModal = ({
                       type="submit"
                       className="ml-3 uppercase flex items-center rounded-md bg-green-700 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
                     >
-                      {isMutateLoading ? (
+                      {isAddNewJobLoading || isUpdateJobTimerLoading ? (
                         <div
                           className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
                           role="status"
