@@ -37,6 +37,7 @@ const Machine = ({
   const {
     data: allMachines,
     isLoading: isGetAllMachinesLoading,
+
     setLocationId,
     setPage,
     setFactoryId,
@@ -67,7 +68,7 @@ const Machine = ({
     setPage(1)
   }, [currentLocationTab, setLocationId])
 
-  const numberOfPages = Math.ceil((allMachines?.itemCount as number) / 6)
+  const numberOfPages = Math.ceil((allMachines?.itemCount as number) / 6) || 1
 
   useEffect(() => {
     if (factoryIdFilter) {
@@ -229,20 +230,69 @@ const Machine = ({
             </div>
           </div>
         </div>
-        {/* Product card list container */}
-        {isGetAllMachinesLoading ? (
-          <div className="animate-pulse flex space-x-4">
-            <div className="h-6 w-24 mt-10 bg-slate-200 rounded"></div>
+        <div className="hidden mt-7 sm:flex sm:flex-1 sm:items-center sm:justify-between">
+          {isGetAllMachinesLoading ? (
+            <div className="animate-pulse flex space-x-4">
+              <div className="h-6 w-24 mt-10 bg-slate-200 rounded"></div>
+            </div>
+          ) : allMachines?.itemCount === 0 ? (
+            <h6 className="font-bold mt-7 text-lg text-gray-800">
+              No parts found
+            </h6>
+          ) : (
+            <h6 className="font-bold text-lg text-gray-800">
+              {allMachines?.itemCount} Machines
+            </h6>
+          )}
+          <div>
+            {isGetAllMachinesLoading ? (
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-8 w-36 mt-7 bg-slate-200 rounded"></div>
+              </div>
+            ) : (
+              <nav
+                className="isolate inline-flex rounded-md shadow-sm"
+                aria-label="Pagination"
+              >
+                <button
+                  onClick={() => setPage(page - 1)}
+                  disabled={page === 1 || numberOfPages === 0}
+                  className={`relative disabled:opacity-70 inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
+                    page > 1 && "font-bold"
+                  }`}
+                >
+                  <span className="sr-only">Previous</span>
+                  <ChevronLeftIcon
+                    className={`h-5 w-5 ${
+                      page > 1 && "stroke-1 stroke-blue-950"
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+                <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                  {page} / {numberOfPages}
+                </button>
+                <button
+                  onClick={() => setPage(page + 1)}
+                  className={`relative disabled:opacity-70 inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0`}
+                  disabled={page === numberOfPages || numberOfPages === 0}
+                >
+                  <span className="sr-only">Next</span>
+                  <ChevronRightIcon
+                    className={`h-5 w-5 ${
+                      numberOfPages > 1 &&
+                      page < numberOfPages &&
+                      "stroke-1 stroke-blue-950"
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+              </nav>
+            )}
           </div>
-        ) : allMachines?.itemCount === 0 ? (
-          <h6 className="font-bold mt-7 text-lg text-gray-800">
-            No machines found
-          </h6>
-        ) : (
-          <h6 className="font-bold mt-7 text-lg text-gray-800">
-            {allMachines?.itemCount} Machines
-          </h6>
-        )}
+        </div>
+        {/* Product card list container */}
+
         <div>
           <div className="mx-auto">
             <div className="mt-7 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
@@ -362,7 +412,7 @@ const Machine = ({
               <div>
                 <p className="text-sm text-gray-700">
                   Showing{" "}
-                  <span className="font-medium">
+                  <span className="font-bold">
                     {allMachines?.items?.length as number}
                   </span>{" "}
                   items
@@ -385,10 +435,15 @@ const Machine = ({
                     className="relative disabled:opacity-70 inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                   >
                     <span className="sr-only">Previous</span>
-                    <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+                    <ChevronLeftIcon
+                      className={`h-5 w-5 ${
+                        page > 1 && "stroke-1 stroke-blue-950"
+                      }`}
+                      aria-hidden="true"
+                    />
                   </button>
                   <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
-                    {page}
+                    {page} / {numberOfPages}
                   </button>
                   <button
                     onClick={() => setPage(page + 1)}
@@ -396,7 +451,14 @@ const Machine = ({
                     disabled={page === numberOfPages || numberOfPages === 0}
                   >
                     <span className="sr-only">Next</span>
-                    <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+                    <ChevronRightIcon
+                      className={`h-5 w-5 ${
+                        numberOfPages > 1 &&
+                        page < numberOfPages &&
+                        "stroke-1 stroke-blue-950"
+                      }`}
+                      aria-hidden="true"
+                    />
                   </button>
                 </nav>
               )}

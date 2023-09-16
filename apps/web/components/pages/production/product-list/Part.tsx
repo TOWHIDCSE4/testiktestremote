@@ -65,7 +65,7 @@ const Part = ({
     setPage(1)
   }, [currentLocationTab, setLocationId])
 
-  const numberOfPages = Math.ceil((allParts?.itemCount as number) / 6)
+  const numberOfPages = Math.ceil((allParts?.itemCount as number) / 6) || 1
 
   useEffect(() => {
     if (factoryIdFilter) {
