@@ -1,4 +1,8 @@
-import { API_URL_JOBS, THREE_MINUTES } from "../../helpers/constants"
+import {
+  API_URL_JOBS,
+  REFETCH_ACTIVATED,
+  THREE_MINUTES,
+} from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse, T_Part } from "custom-validator"
 import Cookies from "js-cookie"
@@ -27,15 +31,15 @@ function useCountStatus() {
   const [statuses, setStatuses] = useState<string[]>([])
   const [jobLocationId, setJobLocationid] = useState("")
   const query = useQuery(
-    ["status-counts", statuses],
+    ["job-status-counts", statuses],
     () =>
       Promise.all(
         statuses.map((status) => getStatusCount(jobLocationId, status))
       ),
     {
-      staleTime: THREE_MINUTES,
       refetchOnWindowFocus: false,
       enabled: !!statuses && !!jobLocationId,
+      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
     }
   )
 

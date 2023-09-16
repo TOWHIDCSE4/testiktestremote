@@ -355,18 +355,18 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
               </Transition.Child>
             </div>
           </div>
+          <PartDetailsModal
+            isOpen={openDetailsModal}
+            locationState={
+              timerDetailData?.item?.locationId
+                ? timerDetailData?.item?.locationId.name
+                : "Loading..."
+            }
+            onClose={() => setOpenDetailsModal(false)}
+            id={timerDetailData?.item?.partId?._id as string}
+          />
         </Dialog>
       </Transition.Root>
-      <PartDetailsModal
-        isOpen={openDetailsModal}
-        locationState={
-          timerDetailData?.item?.locationId
-            ? timerDetailData?.item?.locationId.name
-            : "Loading..."
-        }
-        onClose={() => setOpenDetailsModal(false)}
-        id={timerDetailData?.item?.partId?._id as string}
-      />
     </>
   )
 }

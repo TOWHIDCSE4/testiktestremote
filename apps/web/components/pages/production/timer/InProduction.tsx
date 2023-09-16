@@ -17,6 +17,7 @@ const InProduction = ({
     isLoading: isProductionTimeLoading,
     refetch,
   } = useGetLocationProductionTime(locationId)
+  const [isClockRunning, setIsClockRunning] = useState(false)
   const [timeInSeconds, setTimeInSeconds] = useState(0)
   const [localTimeArray, setLocalTimeArray] = useState<Array<number | string>>(
     []
@@ -28,13 +29,18 @@ const InProduction = ({
       setTimeInSeconds((previousState: number) => previousState + 1)
     }, 1000)
     setIntervalId(interval)
+    setIsClockRunning(true)
   }
 
   useEffect(() => {
-    if (typeof productionTime?.item === "number" && productionTime?.item > 0) {
+    if (
+      typeof productionTime?.item === "number" &&
+      productionTime?.item > 0 &&
+      timeInSeconds === 0
+    ) {
       runLocalTime()
       setTimeInSeconds(productionTime.item)
-    } else {
+    } else if (typeof productionTime?.item !== "number" && timeInSeconds > 0) {
       setTimeInSeconds(0)
       clearInterval(intervalId)
       setIntervalId(0)

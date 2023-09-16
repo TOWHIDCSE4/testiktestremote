@@ -11,8 +11,10 @@ import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
 import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
+import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
+import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
 
 type T_Props = {
   timerDetails: T_Timer
@@ -53,7 +55,10 @@ const Details = ({
     setPartId,
   } = useGetTimerJobs()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
+  const { mutate: updateJobTimer, isLoading: isUpdateJobTimerLoading } =
+    useUpdateJobTimer()
   const [operatorQuery, setOperatorQuery] = useState("")
+  const [openNewJobModal, setOpenNewJobModal] = useState(false)
   const [selectedOperator, setSelectedOperator] = useState({
     id: "",
     name: "",
@@ -63,6 +68,9 @@ const Details = ({
       if (!data.error) {
         queryClient.invalidateQueries({
           queryKey: ["timer", timerDetails._id],
+        })
+        queryClient.invalidateQueries({
+          queryKey: ["job-timer-timer"],
         })
         toast.success("Timer has been updated")
       } else {
@@ -252,11 +260,23 @@ const Details = ({
       <select
         id="jobs"
         name="jobs"
-        disabled={isLoading || isTimerJobsLoading || isJobTimerLoading}
+        disabled={
+          isLoading ||
+          isTimerJobsLoading ||
+          isJobTimerLoading ||
+          isUpdateJobTimerLoading
+        }
         defaultValue="Select Job"
         required
         value={jobTimer?.jobId as string}
         className={`block mt-2 w-full md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl sm:xl:leading-7`}
+        onChange={(e) => {
+          if (e.target.value === "Add New Job") {
+            setOpenNewJobModal(true)
+          } else {
+            updateJobTimer({ ...jobTimer, jobId: e.target.value }, callBackReq)
+          }
+        }}
       >
         <option value="">Select Job</option>
         {timerJobs?.items.map((item: T_Job, index: number) => {
@@ -266,7 +286,7 @@ const Details = ({
             </option>
           )
         })}
-        <option value="add">Add New Job</option>
+        <option>Add New Job</option>
       </select>
       <div className="relative flex">
         <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
@@ -290,6 +310,20 @@ const Details = ({
         })}
         <div ref={sectionDiv} />
       </div>
+      <NewJobModal
+        isOpen={openNewJobModal}
+        locationState={
+          typeof timerDetails?.locationId === "object" &&
+          timerDetails?.locationId._id
+            ? timerDetails?.locationId.name
+            : "Loading..."
+        }
+        locationId={locationId}
+        onClose={() => setOpenNewJobModal(false)}
+        jobTimer={jobTimer}
+        factoryId={factoryId}
+        partId={partId}
+      />
     </div>
   )
 }

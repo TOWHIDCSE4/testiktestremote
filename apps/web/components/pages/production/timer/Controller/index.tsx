@@ -177,6 +177,18 @@ const Controller = ({ timerId }: { timerId: string }) => {
     },
   }
 
+  const callBackReqAddTimerLog = {
+    onSuccess: (returnData: T_BackendResponse) => {
+      if (!returnData.error) {
+      } else {
+        toast.error(String(returnData.message))
+      }
+    },
+    onError: (err: any) => {
+      toast.error(String(err))
+    },
+  }
+
   useEffect(() => {
     setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
   }, [cycleClockInSeconds])
@@ -261,7 +273,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           stopReason: ["Unit Created"],
           cycle: unitsCreated + 1,
         },
-        callBackReq
+        callBackReqAddTimerLog
       )
       setTimeout(function () {
         setCycleClockInSeconds(0)
@@ -299,7 +311,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           stopReason: stopReasons,
           cycle: unitsCreated + 1,
         },
-        callBackReq
+        callBackReqAddTimerLog
       )
       setTimeout(function () {
         setProgress(100)
