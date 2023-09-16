@@ -5,14 +5,17 @@ import Cookies from "js-cookie"
 
 export async function updateJobTimer(props: T_JobTimer) {
   const token = Cookies.get("tfl")
-  const res = await fetch(`${API_URL_JOB_TIMER}/${props._id}`, {
-    method: "PATCH",
-    body: JSON.stringify(props),
-    headers: {
-      "content-type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  const res = await fetch(
+    `${API_URL_JOB_TIMER}/update-controller/${props._id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(props),
+      headers: {
+        "content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
   return await res.json()
 }
 
