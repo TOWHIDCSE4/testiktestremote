@@ -277,7 +277,8 @@ const TabTable = ({
                                       : "text-gray-700",
                                     "block px-4 py-2 text-sm cursor-pointer text-left"
                                   )}
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation()
                                     setDetailsModal(true)
                                     setJobId(job._id as string)
                                   }}
@@ -295,7 +296,8 @@ const TabTable = ({
                                       : "text-gray-700",
                                     "block px-4 py-2 text-sm cursor-pointer text-left"
                                   )}
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation()
                                     setEditModal(true)
                                     setJobId(job._id as string)
                                   }}
@@ -313,7 +315,8 @@ const TabTable = ({
                                       : "text-gray-700",
                                     "block px-4 py-2 text-sm cursor-pointer text-left"
                                   )}
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation()
                                     setDeleteModal(true)
                                     setJobId(job._id as string)
                                   }}
