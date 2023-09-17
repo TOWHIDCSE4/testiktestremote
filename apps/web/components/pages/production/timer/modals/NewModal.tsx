@@ -174,6 +174,10 @@ const NewModal = ({
                             return item._id === event.target.value
                           })
                           setSelectedMachine(machine as T_Machine)
+                          setSelectedPart({
+                            id: "",
+                            name: "",
+                          })
                         }}
                       >
                         <option disabled>Select Machine</option>
