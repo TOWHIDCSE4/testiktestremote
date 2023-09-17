@@ -12,8 +12,10 @@ import { timer } from "./timer"
 import { productInventory } from "./productInventory"
 import { overallUnitTons } from "./overallUnitTons"
 import { globalLogs } from "./globalLogs"
+import { groupByDate } from "./groupByDate"
 
 //custom
+router.get("/group-by-date", isUserLoggedIn, groupByDate)
 router.get("/timer", isUserLoggedIn, timer)
 router.get("/global", isUserLoggedIn, globalLogs)
 router.get("/inventory/:partId", isUserLoggedIn, productInventory)

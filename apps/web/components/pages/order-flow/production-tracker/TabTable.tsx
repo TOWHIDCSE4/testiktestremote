@@ -38,6 +38,7 @@ const TabTable = ({
   const [detailsModal, setDetailsModal] = useState(false)
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [jobId, setJobId] = useState("")
+  const [jobName, setJobName] = useState("")
   const [deleteModal, setDeleteModal] = useState(false)
 
   useEffect(() => {
@@ -143,7 +144,11 @@ const TabTable = ({
                 <tr
                   className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
                   key={index}
-                  onClick={() => setDetailsModal(true)}
+                  onClick={() => {
+                    setJobId(job._id as string)
+                    setJobName(job.name as string)
+                    setDetailsModal(true)
+                  }}
                 >
                   <td className="py-3 pl-4 text-sm sm:pl-6 lg:pl-8">
                     <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
@@ -402,6 +407,7 @@ const TabTable = ({
         isOpen={detailsModal}
         onClose={() => setDetailsModal(false)}
         jobId={jobId}
+        jobName={jobName}
       />
       <DeleteModal
         isOpen={deleteModal}

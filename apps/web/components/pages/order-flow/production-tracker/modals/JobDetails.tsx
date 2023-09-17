@@ -1,70 +1,26 @@
-import { Fragment, useRef, useState } from "react"
+import { Fragment, useRef } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import { T_BackendResponse, T_Job } from "custom-validator"
-import { useForm } from "react-hook-form"
-import toast from "react-hot-toast"
-import useFactories from "../../../../../hooks/factories/useFactories"
-import useAddJob from "../../../../../hooks/jobs/useAddJob"
-import useGetPartsByFactoryLocation from "../../../../../hooks/parts/useGetPartsByFactoryLocation"
-import useProfile from "../../../../../hooks/users/useProfile"
-import { useQueryClient } from "@tanstack/react-query"
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import useGetLogsByDate from "../../../../../hooks/timerLogs/useGetLogsByDate"
 
 interface NewModalProps {
   isOpen: boolean
   jobId: string | null
+  jobName: string | null
   onClose: () => void
 }
 
-const JobDetails = ({ isOpen, jobId, onClose }: NewModalProps) => {
-  const queryClient = useQueryClient()
+type T_GroupLogs = {
+  _id: string
+  machine: string
+  factory: string
+  drawingNumber: string
+  count: number
+}
+
+const JobDetails = ({ isOpen, jobId, jobName, onClose }: NewModalProps) => {
   const cancelButtonRef = useRef(null)
-  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
-  const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const [isStock, setIsStock] = useState(false)
-  const {
-    data: parts,
-    isLoading: isPartsLoading,
-    setLocationId,
-    setFactoryId,
-  } = useGetPartsByFactoryLocation()
-
-  const { register, handleSubmit, reset, watch, setValue } = useForm<T_Job>()
-  const { mutate, isLoading: isMutateLoading } = useAddJob()
-
-  const onSubmit = (data: T_Job) => {
-    const callBackReq = {
-      onSuccess: (data: T_BackendResponse) => {
-        if (!data.error) {
-          queryClient.invalidateQueries({
-            queryKey: ["jobs"],
-          })
-          toast.success(String(data.message))
-          closeModal()
-          reset()
-          setIsStock(false)
-        } else {
-          toast.error(String(data.message))
-        }
-      },
-      onError: (err: any) => {
-        toast.error(String(err))
-      },
-    }
-
-    mutate(
-      {
-        ...data,
-        isStock:
-          typeof data.isStock === "string"
-            ? data.isStock === "true"
-            : data.isStock,
-        status: "Pending",
-        userId: userProfile?.item._id as string,
-      },
-      callBackReq
-    )
-  }
+  const { data, isLoading } = useGetLogsByDate(jobId as string)
 
   const closeModal = () => {
     onClose()
@@ -104,8 +60,11 @@ const JobDetails = ({ isOpen, jobId, onClose }: NewModalProps) => {
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full sm:max-w-4xl">
                 <div className="px-6 py-4">
                   <h3 className="text-2xl font-semibold">
-                    Additional Information
+                    Job Additional Information
                   </h3>
+                  <p className="mt-2">
+                    Job Name: <span className="font-bold">{jobName}</span>
+                  </p>
                 </div>
                 <table className="w-full divide-y divide-gray-300 border-t border-gray-300">
                   <thead>
@@ -183,32 +142,53 @@ const JobDetails = ({ isOpen, jobId, onClose }: NewModalProps) => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    <tr>
-                      <td
-                        className={`py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 lg:pl-8`}
-                      >
-                        9/13/2023
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-700 flex flex-col`}
-                      >
-                        Pipe And Box
-                      </td>
-                      <td className={`px-3 py-4 text-sm text-gray-700`}>
-                        RP1225
-                      </td>
-                      <td className={`px-3 py-4 text-sm text-gray-700`}>52</td>
-                      <td className={`px-3 py-4 text-sm text-gray-700`}>0</td>
-                    </tr>
+                    {data?.items?.map((item: T_GroupLogs, index: number) => (
+                      <tr key={index}>
+                        <td
+                          className={`py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 lg:pl-8`}
+                        >
+                          {item._id}
+                        </td>
+                        <td
+                          className={`px-3 py-4 text-sm text-gray-700 flex flex-col`}
+                        >
+                          {item.factory}
+                        </td>
+                        <td className={`px-3 py-4 text-sm text-gray-700`}>
+                          {item.machine}
+                        </td>
+                        <td className={`px-3 py-4 text-sm text-gray-700`}>
+                          {item.drawingNumber}
+                        </td>
+                        <td className={`px-3 py-4 text-sm text-gray-700`}>
+                          {item.count}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
+                {isLoading && (
+                  <div className="flex items-center justify-center w-full my-6">
+                    <div
+                      className="animate-spin inline-block w-6 h-6 border-4 border-current border-t-transparent text-dark-blue rounded-full"
+                      role="status"
+                      aria-label="loading"
+                    >
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                )}
+                {!isLoading && data?.itemCount === 0 && (
+                  <div className="flex items-center justify-center w-full my-6">
+                    <h3 className="text-gray-500">No logs found</h3>
+                  </div>
+                )}
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="button"
                     className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
                     onClick={() => {
                       closeModal()
-                      reset()
                     }}
                     ref={cancelButtonRef}
                   >
