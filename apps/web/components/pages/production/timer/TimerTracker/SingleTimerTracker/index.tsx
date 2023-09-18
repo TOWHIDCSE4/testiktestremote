@@ -78,10 +78,10 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
           {/* Tabs */}
           <div className="flex border-b border-gray-200 px-4 py-2">
             <div className="flex-1 flex gap-3 items-center">
-              <h3 className="text-3xl xl:text-4xl text-gray-500">
+              <h3 className="text-3xl xl:text-6xl text-gray-500">
                 Daily Units:
               </h3>
-              <h3 className="text-3xl xl:text-4xl font-bold">{dailyUnits}</h3>
+              <h3 className="text-3xl xl:text-6xl font-bold">{dailyUnits}</h3>
             </div>
             <div className="flex-1 flex flex-col items-center justify-center">
               <h3 className="text-4xl xl:text-6xl font-bold">
@@ -95,35 +95,35 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
               {isCycleClockRunning ? (
                 <div className="flex items-center justify-center">
                   <h2
-                    className={`text-center font-bold text-5xl xl:text-6xl ${
+                    className={`text-center font-bold text-5xl xl:text-8xl ${
                       !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
                     }`}
                   >
                     {cycleClockTimeArray[0]}
                   </h2>
                   <span
-                    className={`text-center font-bold text-5xl xl:text-6xl ${
+                    className={`text-center font-bold text-5xl xl:text-8xl ${
                       !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
                     }`}
                   >
                     :
                   </span>
                   <h2
-                    className={`text-center font-bold text-5xl xl:text-6xl ${
+                    className={`text-center font-bold text-5xl xl:text-8xl ${
                       !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
                     }`}
                   >
                     {cycleClockTimeArray[1]}
                   </h2>
                   <span
-                    className={`text-center font-bold text-5xl xl:text-6xl ${
+                    className={`text-center font-bold text-5xl xl:text-8xl ${
                       !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
                     }`}
                   >
                     :
                   </span>
                   <h2
-                    className={`text-center font-bold text-5xl xl:text-6xl  ${
+                    className={`text-center font-bold text-5xl xl:text-8xl  ${
                       !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
                     }`}
                   >
@@ -131,7 +131,7 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
                   </h2>
                 </div>
               ) : (
-                <h2 className="font-bold text-stone-400 text-5xl xl:text-6xl">
+                <h2 className="font-bold text-stone-400 text-5xl xl:text-8xl">
                   00:00:00
                 </h2>
               )}

@@ -108,7 +108,7 @@ export const updateJobTimer = async (req: Request, res: Response) => {
     deletedAt: { $exists: false },
   })
   const condition = req.body
-  if (getJobTimer.length === 0) {
+  if (getJobTimer.length > 0) {
     if (!isEmpty(condition)) {
       try {
         const updateJobTimer = await JobTimer.findByIdAndUpdate(
@@ -137,7 +137,7 @@ export const updateJobTimer = async (req: Request, res: Response) => {
     } else {
       res.json({
         error: true,
-        message: "Timer reading cannot be found",
+        message: "Timer job cannot be found",
         items: null,
         itemCount: null,
       })

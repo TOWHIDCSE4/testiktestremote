@@ -9,7 +9,9 @@ import {
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { getByTimerId } from "./getByTimerId"
+import { updateController } from "./updateController"
 
+router.patch("/update-controller/:id", isUserLoggedIn, updateController)
 router.get("/timer", isUserLoggedIn, getByTimerId)
 
 //default

@@ -12,6 +12,7 @@ import {
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZTimerLog } from "custom-validator"
+import Jobs from "../../models/jobs"
 
 export const getAllTimeLogs = async (req: Request, res: Response) => {
   try {
@@ -69,12 +70,43 @@ export const addTimeLog = async (req: Request, res: Response) => {
         globalCycle: timerLogsCount + 1,
       })
       const createTimerLog = await newTimerLog.save()
-      res.json({
-        error: false,
-        item: createTimerLog,
-        itemCount: 1,
-        message: ADD_SUCCESS_MESSAGE,
-      })
+      if (req.body.jobId) {
+        const job = await Jobs.findOne({ _id: req.body.jobId })
+        const targetCountJob = job?.count
+        const currCountJob = await TimerLogs.find({
+          jobId: req.body.jobId,
+        }).countDocuments()
+        if (targetCountJob && currCountJob === targetCountJob) {
+          await Jobs.findByIdAndUpdate(
+            req.body.jobId,
+            {
+              status: "Testing",
+              updatedAt: Date.now(),
+            },
+            { new: true }
+          )
+          res.json({
+            error: true,
+            item: null,
+            itemCount: null,
+            message: "Target count reached, please change the timer job",
+          })
+        } else if (targetCountJob && currCountJob > targetCountJob) {
+          res.json({
+            error: true,
+            item: null,
+            itemCount: null,
+            message: "Target count exceeded, please change the timer job",
+          })
+        } else {
+          res.json({
+            error: false,
+            item: createTimerLog,
+            itemCount: 1,
+            message: ADD_SUCCESS_MESSAGE,
+          })
+        }
+      }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       res.json({

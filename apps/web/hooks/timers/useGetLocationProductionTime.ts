@@ -2,6 +2,7 @@ import {
   API_URL_CONTROLLER_TIMER,
   API_URL_TIMER,
   ONE_DAY,
+  REFETCH_ACTIVATED,
 } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse } from "custom-validator"
@@ -33,10 +34,9 @@ function useGetLocationProductionTime(locationId: string | undefined) {
     ["in-production", locationId],
     () => getLocationProductionTime(locationId),
     {
-      cacheTime: ONE_DAY,
-      staleTime: ONE_DAY,
       refetchOnWindowFocus: false,
       enabled: !!locationId,
+      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
     }
   )
   return query
