@@ -16,6 +16,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
 import useMachines from "../../../../../hooks/machines/useMachines"
 import { set } from "mongoose"
+import useGetMachinesByLocation from "../../../../../hooks/machines/useGetMachinesByLocation"
 
 const LogsTable = ({ locationId }: { locationId: string }) => {
   dayjs.extend(utc.default)
@@ -23,7 +24,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses()
-  const { data: machines, isLoading: isMachinesLoading } = useMachines()
+  const { data: machines, isLoading: isMachinesLoading } =
+    useGetMachinesByLocation(locationId)
   const [filterBy, setFilterBy] = useState("All")
   const {
     data: paginated,
