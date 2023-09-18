@@ -71,7 +71,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
       const newTimerLog = new TimerLogs({
         ...req.body,
         globalCycle: !checkIfHasData
-          ? 10000
+          ? 100000
           : (lastTimerLog[0].globalCycle ? lastTimerLog[0].globalCycle : 0) + 1,
       })
       const createTimerLog = await newTimerLog.save()
