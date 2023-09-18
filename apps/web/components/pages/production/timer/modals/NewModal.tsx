@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState, useMemo } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import {
@@ -18,9 +18,14 @@ import toast from "react-hot-toast"
 import useAddTimer from "../../../../../hooks/timers/useAddTimer"
 import useProfile from "../../../../../hooks/users/useProfile"
 import { useQueryClient } from "@tanstack/react-query"
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  FaceSmileIcon,
+} from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
+import useTimersByLocation from "../../../../../hooks/timers/useTimersByLocation"
 
 interface NewModalProps {
   isOpen: boolean
@@ -65,13 +70,24 @@ const NewModal = ({
 
   const { register, handleSubmit, reset, setValue } = useForm<T_Timer>()
   const { mutate, isLoading: isMutateLoading } = useAddTimer()
+  const {
+    data: timersByLocation,
+    isLoading: isTimersByLocationLoading,
+    setLocationId: setTimersLocationId,
+  } = useTimersByLocation()
   const setSelectedLocationId = (locationId: string) => {
     setSelectedMachineLocationId(locationId)
     setSelectedPartLocationId(locationId)
+    setTimersLocationId(locationId)
   }
   const setSelectedMachineClassId = (locationId: string) => {
     setSelectedMachineMachineClassId(locationId)
     setSelectedPartMachineClassId(locationId)
+    setSelectedMachine(null)
+    setSelectedPart({
+      id: "",
+      name: "",
+    })
   }
   const onSubmit = (data: T_Timer) => {
     const callBackReq = {
@@ -111,11 +127,41 @@ const NewModal = ({
   const closeModal = () => {
     onClose()
   }
+  const filteredMachinesByTimerExist = useMemo(() => {
+    console.log(
+      machines,
+      timersByLocation,
+      machines?.items?.filter((machine) => {
+        if (timersByLocation)
+          return timersByLocation?.items?.filter((timer) => {
+            timer.machineId == machine._id
+          })?.length > 0
+            ? false
+            : true
+        else return false
+      })
+    )
+    return machines?.items?.filter((machine) => {
+      if (timersByLocation) {
+        console.log(
+          timersByLocation?.items?.filter((timer) => {
+            console.log(timer.machineId as string, machine._id as string)
+            ;(timer.machineId as string) == (machine._id as string)
+          })
+        )
+        return (
+          timersByLocation?.items?.filter((timer) => {
+            return (timer.machineId as string) == (machine._id as string)
+          })?.length == 0
+        )
+      } else return false
+    })
+  }, [machines, timersByLocation])
 
   const filteredMachines =
     machineQuery === ""
-      ? machines?.items?.slice(0, 30) || []
-      : machines?.items
+      ? filteredMachinesByTimerExist?.slice(0, 30) || []
+      : filteredMachinesByTimerExist
           ?.filter((timer) => {
             return timer.name.toLowerCase().includes(machineQuery.toLowerCase())
           })
@@ -139,12 +185,6 @@ const NewModal = ({
   useEffect(() => {
     if (selectedMachine?._id) {
       setValue("machineId", selectedMachine?._id as string)
-    }
-  }, [selectedMachine])
-
-  useEffect(() => {
-    if (selectedMachine) {
-      setSelectedMachineClassId(selectedMachine.machineClassId as string)
     }
   }, [selectedMachine])
 
