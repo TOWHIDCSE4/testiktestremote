@@ -71,7 +71,7 @@ export const addTimer = async (req: Request, res: Response) => {
     if (parsedTimer.success) {
       try {
         const getExistingTimer = await Timers.find({
-          $or: [{ factoryId, machineId, partId }],
+          $or: [{ locationId, machineId }],
           deletedAt: { $exists: false },
         })
         if (getExistingTimer.length === 0) {

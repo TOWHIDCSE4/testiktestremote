@@ -174,6 +174,10 @@ const NewModal = ({
                             return item._id === event.target.value
                           })
                           setSelectedMachine(machine as T_Machine)
+                          setSelectedPart({
+                            id: "",
+                            name: "",
+                          })
                         }}
                       >
                         <option disabled>Select Machine</option>
@@ -200,17 +204,13 @@ const NewModal = ({
                           as="div"
                           value={selectedPart}
                           onChange={setSelectedPart}
+                          disabled={
+                            isMutateLoading || filteredParts?.length === 0
+                          }
                         >
                           <div className="relative w-full">
                             <Combobox.Input
-                              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 ${
-                                isMutateLoading
-                                  ? "opacity-50 cursor-not-allowed"
-                                  : ""
-                              } ${
-                                filteredParts?.length === 0 &&
-                                "opacity-70 cursor-not-allowed"
-                              }`}
+                              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
                               displayValue={(selected: {
                                 id: string
                                 name: string

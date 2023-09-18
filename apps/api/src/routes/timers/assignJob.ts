@@ -54,7 +54,7 @@ export const assignJob = async (req: Request, res: Response) => {
               selectedJobId,
               {
                 $set: {
-                  status: "Assigned",
+                  status: "Active",
                 },
                 updatedAt: Date.now(),
               },
