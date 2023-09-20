@@ -70,6 +70,7 @@ const NewModal = ({
 
   const { register, handleSubmit, reset, setValue } = useForm<T_Timer>()
   const { mutate, isLoading: isMutateLoading } = useAddTimer()
+  // TODO: this is a temporary fix from here
   const {
     data: timersByLocation,
     isLoading: isTimersByLocationLoading,
@@ -89,6 +90,7 @@ const NewModal = ({
       name: "",
     })
   }
+  // TODO: this is a temporary fix to here
   const onSubmit = (data: T_Timer) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
@@ -127,6 +129,7 @@ const NewModal = ({
   const closeModal = () => {
     onClose()
   }
+  // TODO: this is a temporary fix from here
   const filteredMachinesByTimerExist = useMemo(() => {
     console.log(
       machines,
@@ -166,6 +169,7 @@ const NewModal = ({
             return timer.name.toLowerCase().includes(machineQuery.toLowerCase())
           })
           ?.slice(0, 30) || []
+  // TODO: this is a temporary fix to here
   const filteredParts =
     partQuery === ""
       ? parts?.items?.slice(0, 30) || []
