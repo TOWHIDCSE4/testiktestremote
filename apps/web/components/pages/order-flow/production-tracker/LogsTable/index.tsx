@@ -408,7 +408,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               <div>
                 {isPaginatedLoading ? (
                   <div className="animate-pulse flex space-x-4">
-                    <div className="h-8 w-36 bg-slate-200 rounded"></div>
+                    <div className="h-8 w-36 mt-7 bg-slate-200 rounded"></div>
                   </div>
                 ) : (
                   <nav
@@ -421,10 +421,15 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       className="relative disabled:opacity-70 inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                     >
                       <span className="sr-only">Previous</span>
-                      <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+                      <ChevronLeftIcon
+                        className={`h-5 w-5 ${
+                          page > 1 && "stroke-1 stroke-blue-950"
+                        }`}
+                        aria-hidden="true"
+                      />
                     </button>
-                    <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold bg-blue-950 text-white ring-1 ring-inset ring-blue-900 hover:bg-blue-950 focus:z-20 focus:outline-offset-0">
-                      {page}
+                    <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                      {page} / {numberOfPages ? numberOfPages : 1}
                     </button>
                     <button
                       onClick={() => setPage(page + 1)}
@@ -433,7 +438,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     >
                       <span className="sr-only">Next</span>
                       <ChevronRightIcon
-                        className="h-5 w-5"
+                        className={`h-5 w-5 ${
+                          numberOfPages > 1 &&
+                          page < numberOfPages &&
+                          "stroke-1 stroke-blue-950"
+                        }`}
                         aria-hidden="true"
                       />
                     </button>
