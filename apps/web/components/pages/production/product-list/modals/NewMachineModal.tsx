@@ -15,6 +15,8 @@ import {
 import toast from "react-hot-toast"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
 import useAddMachine from "../../../../../hooks/machines/useAddMachine"
+import { Bebas_Neue } from "next/font/google"
+const bebas_neueu = Bebas_Neue({ weight: "400", subsets: ["latin"] })
 
 interface NewModalProps {
   isOpen: boolean
@@ -146,7 +148,9 @@ const NewMachineModal = ({
                     <h3 className="text-lg tracking-wider">
                       New Machine/Process
                     </h3>
-                    <h2 className="font-bold text-7xl font-BebasNeueBold tracking-widest mt-2">
+                    <h2
+                      className={`font-bold text-7xl tracking-widest mt-2 ${bebas_neueu.className}`}
+                    >
                       {locationState}
                     </h2>
                   </div>

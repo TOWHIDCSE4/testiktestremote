@@ -22,6 +22,8 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
 import useTimersByLocation from "../../../../../hooks/timers/useTimersByLocation"
+import { Bebas_Neue } from "next/font/google"
+const bebas_neueu = Bebas_Neue({ weight: "400", subsets: ["latin"] })
 
 interface NewModalProps {
   isOpen: boolean
@@ -202,7 +204,9 @@ const NewModal = ({
                     <h3 className="text-lg tracking-wider">
                       New Timer/Process
                     </h3>
-                    <h2 className="font-bold text-7xl font-BebasNeueBold tracking-widest mt-2">
+                    <h2
+                      className={`font-bold text-7xl tracking-widest mt-2 ${bebas_neueu.className}`}
+                    >
                       {locationState}
                     </h2>
                   </div>

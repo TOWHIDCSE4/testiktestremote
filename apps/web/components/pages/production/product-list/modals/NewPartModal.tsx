@@ -15,6 +15,8 @@ import useAddPart from "../../../../../hooks/parts/useAddPart"
 import MultipleImageUpload from "../../../../MultipleImageUpload"
 import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
+import { Bebas_Neue } from "next/font/google"
+const bebas_neueu = Bebas_Neue({ weight: "400", subsets: ["latin"] })
 
 interface NewModalProps {
   isOpen: boolean
@@ -144,7 +146,9 @@ const NewPartModal = ({
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="flex items-center bg-dark-blue text-white uppercase rounded-t-lg justify-between h-28 m-[0.2rem] p-8 border-b-red-700 border-b-8">
                     <h3 className="text-lg tracking-wider">New Part/Product</h3>
-                    <h2 className="font-bold text-7xl font-BebasNeueBold tracking-widest mt-2">
+                    <h2
+                      className={`font-bold text-7xl tracking-widest mt-2 ${bebas_neueu.className}`}
+                    >
                       {locationState}
                     </h2>
                   </div>
