@@ -43,6 +43,7 @@ export const timer = async (req: Request, res: Response) => {
           if (page && page !== "undefined") {
             timerLogsCount = await TimerLogs.find({
               timerId,
+              stopReason: { $in: ["Unit Created"] },
               createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
               $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
             })
@@ -56,6 +57,7 @@ export const timer = async (req: Request, res: Response) => {
               .limit(countPerPage ? Number(countPerPage) : 3)
             getTimerLogs = await TimerLogs.find({
               timerId,
+              stopReason: { $in: ["Unit Created"] },
               createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
               $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
             })
@@ -70,11 +72,13 @@ export const timer = async (req: Request, res: Response) => {
               .limit(countPerPage ? Number(countPerPage) : 3)
           } else {
             timerLogsCount = await TimerLogs.find({
+              stopReason: { $in: ["Unit Created"] },
               timerId,
               createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
               $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
             }).countDocuments()
             getTimerLogs = await TimerLogs.find({
+              stopReason: { $in: ["Unit Created"] },
               timerId,
               createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
               $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],

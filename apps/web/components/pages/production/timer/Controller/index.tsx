@@ -278,7 +278,9 @@ const Controller = ({ timerId }: { timerId: string }) => {
       setTimeout(function () {
         setCycleClockInSeconds(0)
         setIsCycleClockStopping(false)
-        setUnitsCreated(unitsCreated + 1)
+        if (!!stopReasons.length) {
+          setUnitsCreated(unitsCreated + 1)
+        }
         if (timerDetailData?.item?.partId.time === 0) {
           setProgress(100)
         } else {
@@ -309,7 +311,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
               ? "Gain"
               : "Loss",
           stopReason: stopReasons,
-          cycle: unitsCreated + 1,
+          cycle: unitsCreated,
         },
         callBackReqAddTimerLog
       )
@@ -318,7 +320,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setStopReasons([])
         setStopMenu(false)
         setCycleClockInSeconds(0)
-        setUnitsCreated(unitsCreated + 1)
         setIsCycleClockRunning(false)
       }, 3000)
     }
