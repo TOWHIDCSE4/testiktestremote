@@ -3,10 +3,6 @@ import {
   REQUIRED_VALUES_MISSING,
   UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
-import dayjs from "dayjs"
-import * as timezone from "dayjs/plugin/timezone"
-import * as utc from "dayjs/plugin/utc"
-import Locations from "../../models/location"
 import Jobs from "../../models/jobs"
 import JobTimer from "../../models/jobTimer"
 
@@ -18,22 +14,8 @@ export const assignJob = async (req: Request, res: Response) => {
     req.body.timerId
   ) {
     try {
-      dayjs.extend(utc.default)
-      dayjs.extend(timezone.default)
-      const locationId = String(req.body.locationId)
-      const location = await Locations.findOne({
-        _id: locationId,
-      })
-      const timeZone = location?.timeZone
-      const currentDateStart = dayjs
-        .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
-        .toISOString()
-      const currentDateEnd = dayjs
-        .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
-        .toISOString()
       const getDayJobTimer = await JobTimer.findOne({
         timerId: req.body.timerId,
-        createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
       })
       if (!getDayJobTimer) {
         const jobs = await Jobs.find({
@@ -67,6 +49,18 @@ export const assignJob = async (req: Request, res: Response) => {
             jobId: selectedJobId,
           })
           const createJobTimer = await newJobTimer.save()
+          if (createJobTimer) {
+            await Jobs.findByIdAndUpdate(
+              selectedJobId,
+              {
+                $set: {
+                  status: "Active",
+                },
+                updatedAt: Date.now(),
+              },
+              { new: true }
+            )
+          }
           res.json({
             error: false,
             item: createJobTimer,
@@ -107,7 +101,7 @@ export const assignJob = async (req: Request, res: Response) => {
           error: true,
           item: null,
           itemCount: null,
-          message: "Job already assigned for the day",
+          message: "Job already assigned",
         })
       }
     } catch (err: any) {

@@ -11,7 +11,7 @@ import Locations from "../../models/location"
 import TimerLogs from "../../models/timerLogs"
 
 export const timer = async (req: Request, res: Response) => {
-  const { locationId, timerId, page } = req.query
+  const { locationId, timerId, page, countPerPage } = req.query
   if (locationId && timerId) {
     dayjs.extend(utc.default)
     dayjs.extend(timezone.default)
@@ -43,6 +43,7 @@ export const timer = async (req: Request, res: Response) => {
           if (page && page !== "undefined") {
             timerLogsCount = await TimerLogs.find({
               timerId,
+              stopReason: { $in: ["Unit Created"] },
               createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
               $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
             })
@@ -50,10 +51,13 @@ export const timer = async (req: Request, res: Response) => {
               .sort({
                 createdAt: -1,
               })
-              .skip(3 * (Number(page) - 1))
-              .limit(3)
+              .skip(
+                (countPerPage ? Number(countPerPage) : 3) * (Number(page) - 1)
+              )
+              .limit(countPerPage ? Number(countPerPage) : 3)
             getTimerLogs = await TimerLogs.find({
               timerId,
+              stopReason: { $in: ["Unit Created"] },
               createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
               $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
             })
@@ -62,15 +66,19 @@ export const timer = async (req: Request, res: Response) => {
               .sort({
                 createdAt: -1,
               })
-              .skip(3 * (Number(page) - 1))
-              .limit(3)
+              .skip(
+                (countPerPage ? Number(countPerPage) : 3) * (Number(page) - 1)
+              )
+              .limit(countPerPage ? Number(countPerPage) : 3)
           } else {
             timerLogsCount = await TimerLogs.find({
+              stopReason: { $in: ["Unit Created"] },
               timerId,
               createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
               $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
             }).countDocuments()
             getTimerLogs = await TimerLogs.find({
+              stopReason: { $in: ["Unit Created"] },
               timerId,
               createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
               $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],

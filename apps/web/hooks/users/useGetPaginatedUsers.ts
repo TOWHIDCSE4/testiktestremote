@@ -1,8 +1,10 @@
 import { API_URL_USERS, THREE_MINUTES } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
-import { T_BackendResponse, T_User } from "custom-validator"
+import { T_BackendResponse, T_User, T_UserRole } from "custom-validator"
+import { T_UserStatus } from "custom-validator/ZUser"
 import Cookies from "js-cookie"
 import { useEffect, useState } from "react"
+import useProfile from "./useProfile"
 
 type T_DBReturn = Omit<T_BackendResponse, "items"> & {
   items: T_User[]
@@ -11,13 +13,21 @@ type T_DBReturn = Omit<T_BackendResponse, "items"> & {
 export async function getAllUsers({
   page,
   role,
+  locationId,
+  status,
+  name,
+  excludeUser,
 }: {
   page: number
-  role: string
+  role: T_UserRole | null
+  locationId: string
+  status: T_UserStatus | null
+  name: string
+  excludeUser: string
 }) {
   const token = Cookies.get("tfl")
   const res = await fetch(
-    `${API_URL_USERS}/paginated?page=${page}&role=${role}`,
+    `${API_URL_USERS}/paginated?page=${page}&role=${role}&locationId=${locationId}&status=${status}&name=${name}&excludeUser=${excludeUser}`,
     {
       method: "GET",
       headers: {
@@ -31,21 +41,33 @@ export async function getAllUsers({
 
 function usePaginatedUsers() {
   const [page, setPage] = useState(1)
-  const [role, setRole] = useState("")
+  const [locationId, setLocationId] = useState("")
+  const [role, setRole] = useState<T_UserRole | null>(null)
+  const [status, setStatus] = useState<T_UserStatus | null>(null)
+  const [name, setName] = useState("")
+  const { data: userProfile } = useProfile()
   const query = useQuery(
-    ["parts", page, role],
-    () => getAllUsers({ page, role }),
+    ["paginated-users", page, role, locationId, status, name],
+    () =>
+      getAllUsers({
+        page,
+        role,
+        locationId,
+        status,
+        name,
+        excludeUser: userProfile?.item?._id as string,
+      }),
     {
       staleTime: THREE_MINUTES,
       refetchOnWindowFocus: false,
-      enabled: !!role && !!page,
+      enabled: !!page && !!userProfile?.item?._id,
     }
   )
   useEffect(() => {
-    if (role && page) {
+    if (page && (role || status || locationId || name)) {
       query.refetch()
     }
-  }, [page, role])
+  }, [page, role, status, locationId, name])
 
   return {
     ...query,
@@ -53,6 +75,9 @@ function usePaginatedUsers() {
     setPage,
     role,
     setRole,
+    setLocationId,
+    setStatus,
+    setName,
   }
 }
 export default usePaginatedUsers

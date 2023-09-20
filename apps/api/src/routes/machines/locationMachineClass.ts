@@ -1,30 +1,29 @@
-import { Request, Response } from "express"
-import Jobs from "../../models/jobs"
 import {
-  UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUES_MISSING,
+  UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
+import { Request, Response } from "express"
+import Machines from "../../models/machines"
 
-export const timerJobs = async (req: Request, res: Response) => {
-  if (req.query.locationId && req.query.partId && req.query.factoryId) {
+export const locationMachineClass = async (req: Request, res: Response) => {
+  const { locationId, machineClassId } = req.query
+  if (locationId && machineClassId) {
     try {
-      const jobsCount = await Jobs.find({
-        locationId: req.query.locationId,
-        factoryId: req.query.factoryId,
-        partId: req.query.partId,
+      const machinesCountByClass = await Machines.find({
+        locationId,
+        machineClassId,
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
-      const getJobs = await Jobs.find({
-        locationId: req.query.locationId,
-        factoryId: req.query.factoryId,
-        partId: req.query.partId,
+      const getMachineByClass = await Machines.find({
+        locationId,
+        machineClassId,
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       })
       res.json({
         error: false,
+        items: getMachineByClass,
+        count: machinesCountByClass,
         message: null,
-        items: getJobs,
-        itemCount: jobsCount,
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
@@ -38,8 +37,9 @@ export const timerJobs = async (req: Request, res: Response) => {
   } else {
     res.json({
       error: true,
-      itemCount: null,
       message: REQUIRED_VALUES_MISSING,
+      items: null,
+      itemCount: null,
     })
   }
 }

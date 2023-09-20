@@ -1,4 +1,8 @@
-import { API_URL_JOBS, THREE_MINUTES } from "../../helpers/constants"
+import {
+  API_URL_JOBS,
+  REFETCH_ACTIVATED,
+  THREE_MINUTES,
+} from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse, T_Job, T_Part } from "custom-validator"
 import Cookies from "js-cookie"
@@ -39,9 +43,9 @@ function usePaginatedJobs() {
     ["jobs", page, locationId, status],
     () => getAllParts({ page, locationId, status }),
     {
-      staleTime: THREE_MINUTES,
       refetchOnWindowFocus: false,
       enabled: !!locationId && !!page,
+      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
     }
   )
   useEffect(() => {

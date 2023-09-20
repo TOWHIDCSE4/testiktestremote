@@ -15,10 +15,7 @@ export const globalLogs = async (req: Request, res: Response) => {
         ...(machineId && { machineClassId: machineId }),
         ...(machineClassId && { machineClassId: machineClassId }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      })
-        .countDocuments()
-        .skip(5 * (Number(page) - 1))
-        .limit(5)
+      }).countDocuments()
       const getTimerLogs = await TimerLogs.find({
         locationId: locationId,
         ...(factoryId && { factoryId: factoryId }),
@@ -28,9 +25,7 @@ export const globalLogs = async (req: Request, res: Response) => {
       })
         .populate("partId")
         .populate("operator")
-        .sort({
-          createdAt: -1,
-        })
+        .sort({ createdAt: -1 })
         .skip(5 * (Number(page) - 1))
         .limit(5)
       res.json({

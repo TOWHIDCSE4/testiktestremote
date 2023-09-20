@@ -26,6 +26,7 @@ export const ALLOWED_CORPORATE = ["Corporatee"]
 export const ALLOWED_PRODUCTION = ["Production"]
 export const ALLOWED_PERSONNEL = ["Personnel"]
 export const ALLOWED_ALL_ROLES = [
+  "Super",
   "Administrator",
   "Corporatee",
   "Production",

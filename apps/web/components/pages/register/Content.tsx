@@ -10,7 +10,7 @@ import useRegister from "../../../hooks/users/useRegister"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import { T_BackendResponse, T_User } from "custom-validator"
-import { ROLES } from "../../../helpers/constants"
+import { USER_ROLES } from "../../../helpers/constants"
 import useLocations from "../../../hooks/locations/useLocations"
 
 const Content = () => {
@@ -39,7 +39,7 @@ const Content = () => {
         },
       }
 
-      mutate(data, callBackReq)
+      mutate({ ...data, status: "Requested" }, callBackReq)
     } else {
       toast.error("Password doesn't match")
     }
@@ -50,6 +50,16 @@ const Content = () => {
     setPassword("")
     setConfirmPass("")
   }
+
+  const ARR_USER_ROLES = [
+    USER_ROLES.Administrator,
+    USER_ROLES.Production,
+    USER_ROLES.Personnel,
+    USER_ROLES.Corporate,
+    USER_ROLES.HR,
+    USER_ROLES.Accounting,
+    USER_ROLES.Sales,
+  ]
 
   return (
     <>
@@ -129,7 +139,7 @@ const Content = () => {
                       <option className="uppercase" value="">
                         Select Department
                       </option>
-                      {Object.keys(ROLES).map((key: string) => (
+                      {ARR_USER_ROLES.map((key: string) => (
                         <option className="uppercase" key={key} value={key}>
                           {key}
                         </option>

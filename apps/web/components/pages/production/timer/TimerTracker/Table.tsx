@@ -32,7 +32,12 @@ const Table = ({
     isRefetching: isPaginatedRefetching,
     page,
     setPage,
-  } = useGetAllTimerLogs({ timerId, locationId, paginated: true })
+  } = useGetAllTimerLogs({
+    timerId,
+    locationId,
+    paginated: true,
+    countPerPage: 5,
+  })
   const { data } = useGetAllTimerLogs({ timerId, locationId })
 
   const pathName = usePathname()
@@ -47,7 +52,7 @@ const Table = ({
   return (
     <>
       <div
-        className={`w-full overflow-hidden ${
+        className={`w-full overflow-hidden h-[30rem] ${
           paginated ? "overflow-hidden" : "overflow-x-auto"
         }`}
       >
@@ -277,19 +282,26 @@ const Table = ({
                   </td>
                 </tr>
               ))}
-            {isPaginatedLoading ? (
-              <div className="flex items-center justify-center my-4">
-                <div
-                  className="animate-spin inline-block w-5 h-5 border-2 border-current border-t-transparent text-dark-blue rounded-full my-1"
-                  role="status"
-                  aria-label="loading"
-                >
-                  <span className="sr-only">Loading...</span>
-                </div>
-              </div>
-            ) : null}
           </tbody>
         </table>
+        {isPaginatedLoading ? (
+          <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
+            <div
+              className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
+              role="status"
+              aria-label="loading"
+            >
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        ) : null}
+        {!isPaginatedLoading && paginated?.items.length === 0 ? (
+          <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
+            <div className="text-gray-500 text-lg font-semibold">
+              No logs found
+            </div>
+          </div>
+        ) : null}
       </div>
       <Footer
         page={typeof page === "number" ? page : 0}

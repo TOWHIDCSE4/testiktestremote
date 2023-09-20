@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState, useMemo } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import {
@@ -11,7 +11,7 @@ import {
 } from "custom-validator"
 import useFactoryMachineClasses from "../../../../../hooks/factories/useFactoryMachineClasses"
 import { useForm } from "react-hook-form"
-import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/useGetMachinesByLocation"
+import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/useGetMachineByMachineClassLocation"
 import useGetPartByMachineClassLocation from "../../../../../hooks/parts/useGetPartByMachineClassLocation"
 import usePart from "../../../../../hooks/parts/useGetPart"
 import toast from "react-hot-toast"
@@ -21,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
+import useTimersByLocation from "../../../../../hooks/timers/useTimersByLocation"
 
 interface NewModalProps {
   isOpen: boolean
@@ -38,21 +39,26 @@ const NewModal = ({
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
-  const { data: machineClasses, isLoading: isMachineClassesLoading } =
-    useMachineClasses()
   const [selectedMachine, setSelectedMachine] = useState<T_Machine | null>(null)
+  const [machineQuery, setMachineQuery] = useState("")
   const [partQuery, setPartQuery] = useState("")
   const [selectedPart, setSelectedPart] = useState({
     id: "",
     name: "",
   })
-  const { data: machines, isLoading: isMachinesLoading } =
-    useGetMachinesByMachineClassLocation(locationId as string)
+  const { data: machineClasses, isLoading: isMachineClassesLoading } =
+    useMachineClasses()
+  const {
+    data: machines,
+    isLoading: isMachinesLoading,
+    setSelectedMachineClassId: setSelectedMachineMachineClassId,
+    setSelectedLocationId: setSelectedMachineLocationId,
+  } = useGetMachinesByMachineClassLocation()
   const {
     data: parts,
     isLoading: isPartsLoading,
-    setSelectedMachineClassId,
-    setSelectedLocationId,
+    setSelectedMachineClassId: setSelectedPartMachineClassId,
+    setSelectedLocationId: setSelectedPartLocationId,
   } = useGetPartByMachineClassLocation()
   const { data: specificPart, isLoading: isSpecificPartLoading } = usePart(
     selectedPart.id
@@ -60,7 +66,25 @@ const NewModal = ({
 
   const { register, handleSubmit, reset, setValue } = useForm<T_Timer>()
   const { mutate, isLoading: isMutateLoading } = useAddTimer()
-
+  const {
+    data: timersByLocation,
+    isLoading: isTimersByLocationLoading,
+    setLocationId: setTimersLocationId,
+  } = useTimersByLocation()
+  const setSelectedLocationId = (locationId: string) => {
+    setSelectedMachineLocationId(locationId)
+    setSelectedPartLocationId(locationId)
+    setTimersLocationId(locationId)
+  }
+  const setSelectedMachineClassId = (locationId: string) => {
+    setSelectedMachineMachineClassId(locationId)
+    setSelectedPartMachineClassId(locationId)
+    setSelectedMachine(null)
+    setSelectedPart({
+      id: "",
+      name: "",
+    })
+  }
   const onSubmit = (data: T_Timer) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
@@ -99,7 +123,26 @@ const NewModal = ({
   const closeModal = () => {
     onClose()
   }
+  const filteredMachinesByTimerExist = useMemo(() => {
+    return machines?.items?.filter((machine) => {
+      if (timersByLocation) {
+        return (
+          timersByLocation?.items?.filter((timer) => {
+            return (timer.machineId as string) == (machine._id as string)
+          })?.length == 0
+        )
+      } else return false
+    })
+  }, [machines, timersByLocation])
 
+  const filteredMachines =
+    machineQuery === ""
+      ? filteredMachinesByTimerExist?.slice(0, 30) || []
+      : filteredMachinesByTimerExist
+          ?.filter((timer) => {
+            return timer.name.toLowerCase().includes(machineQuery.toLowerCase())
+          })
+          ?.slice(0, 30) || []
   const filteredParts =
     partQuery === ""
       ? parts?.items?.slice(0, 30) || []
@@ -108,17 +151,17 @@ const NewModal = ({
             return timer.name.toLowerCase().includes(partQuery.toLowerCase())
           })
           ?.slice(0, 30) || []
-
+  useEffect(() => {
+    setSelectedLocationId(locationId as string)
+  }, [locationId])
   useEffect(() => {
     if (selectedPart.id) {
       setValue("partId", selectedPart.id)
     }
   }, [selectedPart])
-
   useEffect(() => {
-    if (selectedMachine) {
-      setSelectedLocationId(locationId as string)
-      setSelectedMachineClassId(selectedMachine.machineClassId as string)
+    if (selectedMachine?._id) {
+      setValue("machineId", selectedMachine?._id as string)
     }
   }, [selectedMachine])
 
@@ -175,14 +218,21 @@ const NewModal = ({
                         id="machineClass"
                         required
                         className={`block mt-2 md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                        defaultValue="Machine Class"
+                        disabled={isMachineClassesLoading}
+                        defaultValue="Select Machine Class"
+                        onChange={(e) =>
+                          setSelectedMachineClassId(e.target.value)
+                        }
                       >
-                        <option value="">Machine Class</option>
+                        <option value="">Select Machine Class</option>
                         {machineClasses?.items?.map(
-                          (machine: T_MachineClass, index: number) => {
+                          (machineClass: T_MachineClass, index: number) => {
                             return (
-                              <option key={index} value={machine._id as string}>
-                                {machine.name}
+                              <option
+                                key={index}
+                                value={machineClass._id as string}
+                              >
+                                {machineClass.name}
                               </option>
                             )
                           }
@@ -196,30 +246,66 @@ const NewModal = ({
                       >
                         Machine / Process
                       </label>
-                      <select
-                        id="machine-process"
-                        {...register("machineId")}
-                        className={`block mt-2 md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                        defaultValue="Select Machine"
-                        disabled={isMutateLoading || isMachinesLoading}
-                        onChange={(event) => {
-                          const machine = machines?.items.find((item) => {
-                            return item._id === event.target.value
-                          })
-                          setSelectedMachine(machine as T_Machine)
-                        }}
-                      >
-                        <option disabled>Select Machine</option>
-                        {machines?.items?.map(
-                          (item: T_Machine, index: number) => {
-                            return (
-                              <option key={index} value={item._id as string}>
-                                {item.name}
-                              </option>
-                            )
+                      <div className="block md:w-[60%] w-full">
+                        <Combobox
+                          as="div"
+                          value={selectedMachine}
+                          onChange={(item: T_Machine) => {
+                            setSelectedMachine(item)
+                            setSelectedPart({
+                              id: "",
+                              name: "",
+                            })
+                          }}
+                          disabled={
+                            isMutateLoading || filteredMachines?.length === 0
                           }
-                        )}
-                      </select>
+                        >
+                          <div className="relative w-full">
+                            <Combobox.Input
+                              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
+                              displayValue={(selected: {
+                                id: string
+                                name: string
+                              }) => {
+                                return selected ? selected.name : ""
+                              }}
+                              required
+                              onChange={(event) =>
+                                setMachineQuery(event.target.value)
+                              }
+                              placeholder="Search Machine"
+                              autoComplete="off"
+                            />
+                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                              <ChevronUpDownIcon
+                                className={`h-5 w-5 ${
+                                  filteredMachines?.length === 0
+                                    ? "text-gray-300"
+                                    : "text-gray-500"
+                                }`}
+                                aria-hidden="true"
+                              />
+                            </Combobox.Button>
+
+                            {filteredMachines && filteredMachines.length > 0 ? (
+                              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                {filteredMachines.map(
+                                  (item: T_Machine, index: number) => (
+                                    <Combobox.Option
+                                      key={index}
+                                      value={item}
+                                      className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
+                                    >
+                                      <span className="block">{item.name}</span>
+                                    </Combobox.Option>
+                                  )
+                                )}
+                              </Combobox.Options>
+                            ) : null}
+                          </div>
+                        </Combobox>
+                      </div>
                     </div>
                     <div className="md:flex items-center mt-4">
                       <label
@@ -233,17 +319,13 @@ const NewModal = ({
                           as="div"
                           value={selectedPart}
                           onChange={setSelectedPart}
+                          disabled={
+                            isMutateLoading || filteredParts?.length === 0
+                          }
                         >
                           <div className="relative w-full">
                             <Combobox.Input
-                              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 ${
-                                isMutateLoading
-                                  ? "opacity-50 cursor-not-allowed"
-                                  : ""
-                              } ${
-                                filteredParts?.length === 0 &&
-                                "opacity-70 cursor-not-allowed"
-                              }`}
+                              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
                               displayValue={(selected: {
                                 id: string
                                 name: string
