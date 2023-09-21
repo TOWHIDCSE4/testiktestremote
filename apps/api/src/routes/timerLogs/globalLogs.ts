@@ -6,21 +6,52 @@ import {
 import TimerLogs from "../../models/timerLogs"
 
 export const globalLogs = async (req: Request, res: Response) => {
-  const { locationId, factoryId, machineId, machineClassId, page } = req.query
+  const {
+    locationId,
+    factoryId,
+    machineId,
+    machineClassId,
+    partId,
+    page,
+    startDate,
+    endDate,
+  } = req.query
+
   if (locationId) {
     try {
       const timerLogsCount = await TimerLogs.find({
         locationId: locationId,
         ...(factoryId && { factoryId: factoryId }),
+        ...(partId && { partId: partId }),
         ...(machineId && { machineClassId: machineId }),
         ...(machineClassId && { machineClassId: machineClassId }),
+        ...(startDate &&
+          endDate && {
+            createdAt: {
+              $gte: new Date(startDate as string),
+              $lt: new Date(endDate as string),
+            },
+          }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
+
       const getTimerLogs = await TimerLogs.find({
         locationId: locationId,
         ...(factoryId && { factoryId: factoryId }),
+        ...(partId && { partId: partId }),
         ...(machineId && { machineClassId: machineId }),
         ...(machineClassId && { machineClassId: machineClassId }),
+        createdAt: {
+          $gte: new Date(startDate as string) || undefined,
+          $lt: new Date(endDate as string) || undefined,
+        },
+        ...(startDate &&
+          endDate && {
+            createdAt: {
+              $gte: new Date(startDate as string),
+              $lt: new Date(endDate as string),
+            },
+          }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       })
         .populate("partId")
@@ -28,6 +59,7 @@ export const globalLogs = async (req: Request, res: Response) => {
         .sort({ createdAt: -1 })
         .skip(5 * (Number(page) - 1))
         .limit(5)
+
       res.json({
         error: false,
         items: getTimerLogs,
