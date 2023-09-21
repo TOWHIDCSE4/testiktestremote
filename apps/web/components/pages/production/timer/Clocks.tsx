@@ -47,7 +47,7 @@ const Clocks = ({
     useGetLocation(locationId)
 
   const currentDate = dayjs
-    .tz(dayjs(), !isLocationLoading ? location.item.timeZone : "")
+    .tz(dayjs(), !isLocationLoading ? location?.item.timeZone : "")
     .format("MMM DD YYYY")
 
   const handleOnChange = () => {
@@ -163,7 +163,11 @@ const Clocks = ({
           onClick={() => openProductionModal()}
         >
           <h5 className="text-lg text-gray-700 uppercase font-bold">
-            {!isLocationLoading ? location.item.productionTime : "0"} Hours
+            {!isLocationLoading ? location?.item.productionTime : "0"}{" "}
+            {location?.item?.productionTime &&
+            location?.item?.productionTime > 1
+              ? "Hours"
+              : "Hour"}
           </h5>
           <h6 className="uppercase text-gray-400 font-medium text-sm">
             Production Time
@@ -176,7 +180,7 @@ const Clocks = ({
         onClose={() => setOpenProduction(false)}
         currentLocationTabName={currentLocationTabName}
         locationProductionTime={
-          !isLocationLoading ? location.item.productionTime : "0"
+          !isLocationLoading ? String(location?.item.productionTime) : "0"
         }
       />
     </>

@@ -34,6 +34,7 @@ import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLog
 import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer"
 import { useQueryClient } from "@tanstack/react-query"
 import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTimerByTimerId"
+import { set } from "mongoose"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -79,6 +80,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const [endMenu, setEndMenu] = useState(false)
   const [progress, setProgress] = useState(100)
   const [unitsCreated, setUnitsCreated] = useState(0)
+  const [totalCycle, setTotalCycle] = useState(0)
   const [totals, setTotals] = useState({
     unitsPerHour: 0,
     tonsPerHour: 0,
@@ -271,16 +273,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
               ? "Gain"
               : "Loss",
           stopReason: ["Unit Created"],
-          cycle: unitsCreated + 1,
+          cycle: totalCycle + 1,
         },
         callBackReqAddTimerLog
       )
       setTimeout(function () {
         setCycleClockInSeconds(0)
         setIsCycleClockStopping(false)
-        if (!!stopReasons.length) {
-          setUnitsCreated(unitsCreated + 1)
-        }
+        setUnitsCreated(unitsCreated + 1)
         if (timerDetailData?.item?.partId.time === 0) {
           setProgress(100)
         } else {
@@ -311,7 +311,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
               ? "Gain"
               : "Loss",
           stopReason: stopReasons,
-          cycle: unitsCreated,
+          cycle: totalCycle + 1,
         },
         callBackReqAddTimerLog
       )
@@ -385,7 +385,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   useEffect(() => {
     if (timerLogs?.items && timerLogs?.items?.length > 0) {
-      setUnitsCreated(timerLogs.itemCount as number)
+      const unitsCreatedCount = timerLogs?.items?.filter((item) =>
+        item.stopReason.includes("Unit Created")
+      ).length
+      setUnitsCreated(unitsCreatedCount as number)
+      setTotalCycle(timerLogs.itemCount as number)
     }
   }, [timerLogs])
 
@@ -397,16 +401,18 @@ const Controller = ({ timerId }: { timerId: string }) => {
       timerLogs?.items?.length > 0 &&
       timerClockInSeconds > 0
     ) {
+      const unitsCreatedCount = timerLogs?.items?.filter((item) =>
+        item.stopReason.includes("Unit Created")
+      ).length
       const hoursLapse =
         timerClockInSeconds > 3600 ? timerClockInSeconds / 3600 : 1
       setTotals({
-        unitsPerHour: timerLogs?.itemCount / hoursLapse,
+        unitsPerHour: unitsCreatedCount / hoursLapse,
         tonsPerHour:
-          (timerLogs?.itemCount *
-            (timerDetailData?.item?.partId.tons as number)) /
+          (unitsCreatedCount * (timerDetailData?.item?.partId.tons as number)) /
           hoursLapse,
         totalTons:
-          timerLogs?.itemCount * (timerDetailData?.item?.partId.tons as number),
+          unitsCreatedCount * (timerDetailData?.item?.partId.tons as number),
       })
     }
   }, [timerLogs, timerDetailData])

@@ -25,6 +25,9 @@ const Details = ({
   timerId: string
   machineClassId: string
 }) => {
+  const unitsCreated = logs.filter((item) =>
+    item.stopReason.includes("Unit Created")
+  )
   const { data: overallUnitTons, isLoading: isOverallUnitTonsLoading } =
     useGetOverallTotal({
       locationId,
@@ -115,7 +118,7 @@ const Details = ({
                     : "text-sm"
                 } uppercase font-semibold text-gray-700 leading-6`}
               >
-                {timerMachine} Total Units: {logCount}
+                {timerMachine} Total Units: {unitsCreated.length}
               </h6>
               <h6
                 className={`${
@@ -125,8 +128,8 @@ const Details = ({
                 } uppercase font-semibold text-gray-700 leading-6`}
               >
                 {timerMachine} Total Tons:{" "}
-                {logs
-                  ? logs
+                {unitsCreated
+                  ? unitsCreated
                       .reduce(
                         (acc, log) =>
                           acc +
