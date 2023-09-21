@@ -79,6 +79,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
         const job = await Jobs.findOne({ _id: req.body.jobId })
         const targetCountJob = job?.count
         const currCountJob = await TimerLogs.find({
+          status: { $in: ["Unit Created"] },
           jobId: req.body.jobId,
         }).countDocuments()
         if (targetCountJob && currCountJob === targetCountJob) {

@@ -15,6 +15,7 @@ export const groupByDate = async (req: Request, res: Response) => {
           $match: {
             $and: [
               { jobId: new mongoose.Types.ObjectId(jobId as string) },
+              { status: { $in: ["Unit Created"] } },
               { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
             ],
           },

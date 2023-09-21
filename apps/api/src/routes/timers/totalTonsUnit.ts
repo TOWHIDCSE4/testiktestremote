@@ -33,6 +33,7 @@ export const totalTonsUnit = async (req: Request, res: Response) => {
       if (getDayController) {
         const getDayControllerLogs = await TimerLogs.find({
           timerId: req.query.timerId,
+          status: { $in: ["Unit Created"] },
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
         }).populate("partId")
         const logTotalCount = getDayControllerLogs.length

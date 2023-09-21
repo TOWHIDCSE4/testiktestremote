@@ -10,6 +10,7 @@ export const productInventory = async (req: Request, res: Response) => {
     try {
       const logsCount = await TimerLogs.find({
         partId: req.params.partId,
+        status: { $in: ["Unit Created"] },
         jobId: { $exists: true },
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
