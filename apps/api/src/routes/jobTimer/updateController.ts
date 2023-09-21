@@ -23,7 +23,7 @@ export const updateController = async (req: Request, res: Response) => {
         const job = await Jobs.findOne({ _id: getJobTimer?.jobId?.toString() })
         const targetCount = job?.count || 0
         const currLogCount = await TimerLogs.find({
-          status: { $in: ["Unit Created"] },
+          stopReason: { $in: ["Unit Created"] },
           jobId: getJobTimer?.jobId?.toString(),
         }).countDocuments()
         await Jobs.findOneAndUpdate(
