@@ -103,6 +103,7 @@ const NewModal = ({
           closeModal()
           reset()
           setPartQuery("")
+          setSelectedMachine(null)
           setSelectedPart({
             id: "",
             name: "",
@@ -466,6 +467,11 @@ const NewModal = ({
                       onClick={() => {
                         closeModal()
                         reset()
+                        setSelectedMachine(null)
+                        setSelectedPart({
+                          id: "",
+                          name: "",
+                        })
                       }}
                       ref={cancelButtonRef}
                     >

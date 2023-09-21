@@ -34,8 +34,16 @@ const Details = ({
   const unitsCreated = data?.items
     ? data?.items.filter((item) => item.stopReason.includes("Unit Created"))
     : []
-  const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([])
-  const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([])
+  const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([
+    "00",
+    "00",
+    "00",
+  ])
+  const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([
+    "00",
+    "00",
+    "00",
+  ])
 
   useEffect(() => {
     if (data?.items && data?.items.length > 0) {
