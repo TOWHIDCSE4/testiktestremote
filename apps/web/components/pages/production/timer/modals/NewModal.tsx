@@ -18,7 +18,11 @@ import toast from "react-hot-toast"
 import useAddTimer from "../../../../../hooks/timers/useAddTimer"
 import useProfile from "../../../../../hooks/users/useProfile"
 import { useQueryClient } from "@tanstack/react-query"
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  FaceSmileIcon,
+} from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
 import useTimersByLocation from "../../../../../hooks/timers/useTimersByLocation"
@@ -87,6 +91,7 @@ const NewModal = ({
       name: "",
     })
   }
+  // TODO: this is a temporary fix to here
   const onSubmit = (data: T_Timer) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
@@ -145,6 +150,7 @@ const NewModal = ({
             return timer.name.toLowerCase().includes(machineQuery.toLowerCase())
           })
           ?.slice(0, 30) || []
+  // TODO: this is a temporary fix to here
   const filteredParts =
     partQuery === ""
       ? parts?.items?.slice(0, 30) || []
