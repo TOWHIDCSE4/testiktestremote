@@ -27,7 +27,6 @@ const Footer = ({
 }) => {
   const pathName = usePathname()
   const path = pathName.substring(0, 25)
-
   return (
     <div className="w-full">
       <div
