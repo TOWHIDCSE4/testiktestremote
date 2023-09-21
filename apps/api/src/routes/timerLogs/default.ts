@@ -64,10 +64,15 @@ export const addTimeLog = async (req: Request, res: Response) => {
   const parsedTimerLog = ZTimerLog.safeParse(req.body)
   if (parsedTimerLog.success) {
     try {
-      const timerLogsCount = await TimerLogs.find().countDocuments()
+      const checkIfHasData = await TimerLogs.findOne()
+      const lastTimerLog = await TimerLogs.find()
+        .limit(1)
+        .sort({ $natural: -1 })
       const newTimerLog = new TimerLogs({
         ...req.body,
-        globalCycle: timerLogsCount + 1,
+        globalCycle: !checkIfHasData
+          ? 100000
+          : (lastTimerLog[0].globalCycle ? lastTimerLog[0].globalCycle : 0) + 1,
       })
       const createTimerLog = await newTimerLog.save()
       if (req.body.jobId) {

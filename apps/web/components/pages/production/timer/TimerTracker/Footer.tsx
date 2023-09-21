@@ -29,7 +29,7 @@ const Footer = ({
   const path = pathName.substring(0, 25)
 
   return (
-    <div className="w-full mt-52">
+    <div className="w-full">
       <div
         className={`${
           path === "/production/timer/tracker"
