@@ -109,7 +109,7 @@ export const addJob = async (req: Request, res: Response) => {
             factoryId: req.body.factoryId,
             name: req.body.name,
             drawingNumber: req.body.drawingNumber,
-            userId: req.body.user,
+            userId: req.body.userId,
             status: "Pending",
             isStock: true,
           })

@@ -111,16 +111,18 @@ export const addTimeLog = async (req: Request, res: Response) => {
             ],
             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
           })
-          const newTimerLog = new TimerLogs({
-            ...req.body,
-            jobId: getStockJob?._id,
-            globalCycle: !checkIfHasData
-              ? 100000
-              : (lastTimerLog[0].globalCycle
-                  ? lastTimerLog[0].globalCycle
-                  : 0) + 1,
-          })
-          await newTimerLog.save()
+          if (getStockJob) {
+            const newTimerLog = new TimerLogs({
+              ...req.body,
+              jobId: getStockJob?._id,
+              globalCycle: !checkIfHasData
+                ? 100000
+                : (lastTimerLog[0].globalCycle
+                    ? lastTimerLog[0].globalCycle
+                    : 0) + 1,
+            })
+            await newTimerLog.save()
+          }
           res.json({
             error: true,
             item: null,
