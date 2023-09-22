@@ -45,6 +45,7 @@ const timerLogs = new Schema({
     type: [String],
     enum: [
       "Unit Created",
+      "Production Ended",
       "Machine Error",
       "Material Low",
       "Worker Break",
