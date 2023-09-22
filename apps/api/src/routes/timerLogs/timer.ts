@@ -38,15 +38,7 @@ export const timer = async (req: Request, res: Response) => {
             timerId,
             createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-          })
-            .countDocuments()
-            .sort({
-              createdAt: -1,
-            })
-            .skip(
-              (countPerPage ? Number(countPerPage) : 3) * (Number(page) - 1)
-            )
-            .limit(countPerPage ? Number(countPerPage) : 3)
+          }).countDocuments()
           getTimerLogs = await TimerLogs.find({
             timerId,
             createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
@@ -75,6 +67,7 @@ export const timer = async (req: Request, res: Response) => {
             .populate("partId")
             .populate("operator")
         }
+        console.log("sdsds", timerLogsCount)
         res.json({
           error: false,
           items: getTimerLogs,
