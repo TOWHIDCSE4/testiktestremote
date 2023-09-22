@@ -67,7 +67,6 @@ export const timer = async (req: Request, res: Response) => {
             .populate("partId")
             .populate("operator")
         }
-        console.log("sdsds", timerLogsCount)
         res.json({
           error: false,
           items: getTimerLogs,
