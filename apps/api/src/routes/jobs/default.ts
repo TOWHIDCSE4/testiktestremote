@@ -68,7 +68,10 @@ export const addJob = async (req: Request, res: Response) => {
           partId: req.body.partId,
           factoryId: req.body.factoryId,
           isStock: true,
-          status: { $ne: "Deleted" },
+          $and: [
+            { status: { $ne: "Deleted" } },
+            { status: { $ne: "Archived" } },
+          ],
           $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
         })
         if (!getStockJob) {
@@ -88,6 +91,30 @@ export const addJob = async (req: Request, res: Response) => {
           })
         }
       } else {
+        const getStockJob = await Jobs.findOne({
+          locationId: req.body.locationId,
+          partId: req.body.partId,
+          factoryId: req.body.factoryId,
+          isStock: true,
+          $and: [
+            { status: { $ne: "Deleted" } },
+            { status: { $ne: "Archived" } },
+          ],
+          $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        })
+        if (!getStockJob) {
+          const newStockJob = new Jobs({
+            locationId: req.body.locationId,
+            partId: req.body.partId,
+            factoryId: req.body.factoryId,
+            name: req.body.name,
+            drawingNumber: req.body.drawingNumber,
+            userId: req.body.user,
+            status: "Pending",
+            isStock: true,
+          })
+          await newStockJob.save()
+        }
         const createJob = await newJob.save()
         res.json({
           error: false,
