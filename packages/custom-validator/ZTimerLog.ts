@@ -17,6 +17,7 @@ export const ZTimerStopReason = z.enum([
   "Worker Break",
   "Maintenance",
   "Change Part",
+  "Production Ended",
 ])
 
 export const ZTimerLog = z.object({
