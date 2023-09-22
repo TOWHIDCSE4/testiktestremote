@@ -63,7 +63,7 @@ const Footer = ({
                 } text-gray-700`}
               >
                 Showing <span className="font-medium">{logs.length}</span> of{" "}
-                <span className="font-medium">{Math.ceil(logCount / 3)}</span>{" "}
+                <span className="font-medium">{Math.ceil(logCount)}</span>{" "}
                 result{Math.ceil(logCount / 3) > 1 ? "s" : ""}
               </p>
             </div>
