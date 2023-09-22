@@ -51,11 +51,7 @@ const Table = ({
 
   return (
     <>
-      <div
-        className={`w-full overflow-hidden h-[30rem] ${
-          paginated ? "overflow-hidden" : "overflow-x-auto"
-        }`}
-      >
+      <div className={`w-full overflow-auto h-[30rem]`}>
         <table className="w-full divide-y divide-gray-300">
           <thead>
             <tr>
