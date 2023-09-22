@@ -237,7 +237,7 @@ const Machine = ({
             </div>
           ) : allMachines?.itemCount === 0 ? (
             <h6 className="font-bold mt-7 text-lg text-gray-800">
-              No parts found
+              No machines found
             </h6>
           ) : (
             <h6 className="font-bold text-lg text-gray-800">
@@ -358,7 +358,7 @@ const Machine = ({
                             <Image
                               className="h-60"
                               src="/no-image.png"
-                              alt="Part Image"
+                              alt="Machine Image"
                               width={400}
                               height={400}
                             />

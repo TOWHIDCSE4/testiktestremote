@@ -28,7 +28,7 @@ const DeleteMachineModal = ({ isOpen, onClose, _id }: DeleteModalProps) => {
             queryKey: ["machine-location-counts"],
           })
           onClose()
-          toast.success("Part was deleted")
+          toast.success("Machine was deleted")
         }
       } else {
         toast.error(returnData.message as string)
