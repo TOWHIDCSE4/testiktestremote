@@ -11,14 +11,18 @@ import useUsers from "../../../../../hooks/users/useUsers"
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import PartDetailsModal from "../../product-list/modals/PartDetailsModal"
+import { USER_ROLES } from "../../../../../helpers/constants"
+import useStoreSession from "../../../../../store/useStoreSession"
 
 interface DetailsModalProps {
   isOpen: boolean
   onClose: () => void
   id?: string
 }
+const NOT_PART_EDITABLE_USERS = [USER_ROLES.Personnel]
 
 const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
+  const storeSession = useStoreSession((state) => state)
   const queryClient = useQueryClient()
   const closeButtonRef = useRef(null)
   const searchRef = useRef(null)
@@ -300,16 +304,22 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                         </div>
                       </div>
                       <div className="w-full bg-gray-100 mt-16 lg:mt-7 px-4 py-3 sm:flex sm:justify-between sm:px-6">
-                        <button
-                          type="button"
-                          className="uppercase inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-70 sm:w-auto"
-                          disabled={
-                            isTimerDetailDataLoading || isUpdateTimerLoading
-                          }
-                          onClick={() => setOpenDetailsModal(true)}
-                        >
-                          Edit Part
-                        </button>
+                        {!NOT_PART_EDITABLE_USERS.includes(
+                          storeSession.role
+                        ) ? (
+                          <button
+                            type="button"
+                            className="uppercase inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-70 sm:w-auto"
+                            disabled={
+                              isTimerDetailDataLoading || isUpdateTimerLoading
+                            }
+                            onClick={() => setOpenDetailsModal(true)}
+                          >
+                            Edit Part
+                          </button>
+                        ) : (
+                          <div></div>
+                        )}
                         <div>
                           <button
                             type="button"
