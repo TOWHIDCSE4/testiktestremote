@@ -1,8 +1,15 @@
 "use client"
+import { useEffect } from "react"
+import useLocation from "../../../hooks/locations/useLocation"
 import useProfile from "../../../hooks/users/useProfile"
 
 const Content = () => {
   const { data, isLoading: basicInfoLoading } = useProfile()
+  const { data: location, setSelectedLocationId } = useLocation()
+  useEffect(() => {
+    if (data?.item.locationId)
+      setSelectedLocationId(data?.item.locationId as string)
+  }, [data])
   return (
     <>
       <div className={`my-20 pb-10`}>
@@ -21,7 +28,7 @@ const Content = () => {
           <h4 className="uppercase text-sm text-gray-500 font-medium tracking-widest mt-2">
             Profile Home
             <span className="text-black mx-2">&gt;</span>
-            <span className="text-red-500">Conroe</span>
+            <span className="text-red-500">{location?.item.name}</span>
           </h4>
           <div className="w-full h-0.5 bg-gray-200 mt-6"></div>
         </div>
