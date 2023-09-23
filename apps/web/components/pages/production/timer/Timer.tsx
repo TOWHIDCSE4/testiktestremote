@@ -139,13 +139,14 @@ const Timer = ({
           ?.slice(0, 30)
 
   useEffect(() => {
-    if (selectedPart.id && selectedPart.id !== timer.partId) {
-      const timerCopy = { ...timer }
-      // Needed to remove parts because of 413 error
-      delete timerCopy.parts
-      mutate({ ...timerCopy, partId: selectedPart.id }, callBackReq)
+    if (timer.part) {
+      setSelectedPart({
+        id:
+          typeof timer.partId === "string" && timer.partId ? timer.partId : "",
+        name: timer?.part ? timer?.part?.name : "",
+      })
     }
-  }, [selectedPart])
+  }, [timer])
 
   return (
     <div
@@ -156,7 +157,13 @@ const Timer = ({
         <Combobox
           as="div"
           value={selectedPart}
-          onChange={setSelectedPart}
+          onChange={(e) => {
+            setSelectedPart(e)
+            const timerCopy = { ...timer }
+            // Needed to remove parts because of 413 error
+            delete timerCopy.parts
+            mutate({ ...timerCopy, partId: e.id }, callBackReq)
+          }}
           disabled={isUpdateTimerLoading}
         >
           <div className="relative">
