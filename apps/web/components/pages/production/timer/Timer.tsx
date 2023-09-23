@@ -129,10 +129,13 @@ const Timer = ({
     }
   }, [cycleTimer])
   useEffect(() => {
-    setSelectedPart({
-      id: typeof timer.partId === "string" && timer.partId ? timer.partId : "",
-      name: timer?.part ? timer?.part?.name : "",
-    })
+    if (timer.part) {
+      setSelectedPart({
+        id:
+          typeof timer.partId === "string" && timer.partId ? timer.partId : "",
+        name: timer?.part ? timer?.part?.name : "",
+      })
+    }
   }, [timer])
 
   const filteredParts =
@@ -145,7 +148,7 @@ const Timer = ({
           ?.slice(0, 30)
 
   const updateTimerPart = ({ id, name }: { id: string; name: string }) => {
-    // setSelectedPart({id, name})
+    setSelectedPart({ id, name })
     if (id && id !== timer.partId) {
       const timerCopy = { ...timer }
       // Needed to remove parts because of 413 error
