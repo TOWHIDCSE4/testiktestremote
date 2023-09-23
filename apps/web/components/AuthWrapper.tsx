@@ -3,6 +3,7 @@ import React, { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import useSession from "../hooks/users/useSession"
 import useStoreSession from "../store/useStoreSession"
+import Cookies from "js-cookie"
 
 type Props = {
   children: React.ReactNode
@@ -19,6 +20,7 @@ const AuthWrapper = ({ children }: Props) => {
   }, [isLoading, data, updateStoreSession])
 
   if (!isLoading && data.error) {
+    Cookies.remove("tfl")
     router.push("/")
     return <>{children}</>
   } else if (isLoading) {
