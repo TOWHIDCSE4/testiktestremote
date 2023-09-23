@@ -29,7 +29,7 @@ const isUserLoggedIn = async (
         if (user && user.deletedAt) {
           throw new Error("We cannot find your account in our system")
         }
-        if (user && user.blockedAt) {
+        if (user && user.status === "Blocked") {
           throw new Error(
             "Your account was banned, all actions and requested data was prohibited"
           )
@@ -44,23 +44,19 @@ const isUserLoggedIn = async (
           .status(401)
           .json({ error: true, message: "Invalid authentication credentials" })
       } else if (message === "jwt expired") {
-        res
-          .status(403)
-          .json({
-            error: true,
-            message: "Authentication is expired, please login again",
-          })
+        res.status(403).json({
+          error: true,
+          message: "Authentication is expired, please login again",
+        })
       } else {
         res.status(403).json({ error: true, message: message })
       }
     }
   } else {
-    res
-      .status(401)
-      .json({
-        error: true,
-        message: `You are not authorized to perform this action`,
-      })
+    res.status(401).json({
+      error: true,
+      message: `You are not authorized to perform this action`,
+    })
   }
 }
 

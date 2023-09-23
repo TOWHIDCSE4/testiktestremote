@@ -47,9 +47,7 @@ const Content = () => {
   if (!PRODUCTION_TRACKER_ADMIN_ROLES.includes(storeSession.role))
     return (
       <div className="mt-28">
-        <h2 className="text-center">
-          You are not authorize to access this page.
-        </h2>
+        <h2 className="text-center">Not authorized to access this page.</h2>
       </div>
     )
   return (
