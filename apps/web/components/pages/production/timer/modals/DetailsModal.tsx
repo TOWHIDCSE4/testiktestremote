@@ -113,7 +113,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
         name: `${timerDetailData?.item?.operator?.firstName} ${timerDetailData?.item?.operator?.lastName}`,
       })
     }
-  }, [timerDetailData])
+  }, [timerDetailData, isOpen])
 
   useEffect(() => {
     if (selectedOperator.id) {
