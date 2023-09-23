@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import Cookies from "js-cookie"
 import { T_BackendResponse } from "custom-validator"
+import { useEffect } from "react"
 
 const Content = () => {
   const { register, handleSubmit } = useForm<{
@@ -36,6 +37,13 @@ const Content = () => {
     }
     mutate(data, callBackReq)
   }
+
+  useEffect(() => {
+    const tlf = Cookies.get("tfl")
+    if (tlf) {
+      router.push(`/profile-home`)
+    }
+  }, [router])
 
   return (
     <>
