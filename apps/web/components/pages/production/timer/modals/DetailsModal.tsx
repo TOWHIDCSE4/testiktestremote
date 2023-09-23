@@ -338,11 +338,19 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                           </button>
                           <button
                             type="submit"
-                            className="uppercase inline-flex w-full items-center justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 disabled:opacity-70 sm:w-auto"
+                            className={`uppercase inline-flex w-full items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 disabled:opacity-70 sm:w-auto ${
+                              isTimerDetailDataLoading ||
+                              isUpdateTimerLoading ||
+                              timerDetailData?.item?.operator?._id ===
+                                selectedOperator.id
+                                ? ` bg-gray-400 hover:bg-gray-500`
+                                : "bg-green-800 hover:bg-green-700"
+                            }`}
                             disabled={
                               isTimerDetailDataLoading ||
                               isUpdateTimerLoading ||
-                              !isDirty
+                              timerDetailData?.item?.operator?._id ===
+                                selectedOperator.id
                             }
                           >
                             {isUpdateTimerLoading ? (
