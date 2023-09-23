@@ -19,7 +19,7 @@ const isUserLoggedIn = async (
       if (user && user.deletedAt) {
         throw new Error("We cannot find your account in our system")
       }
-      if (user && user.blockedAt) {
+      if (user && user.status === "Blocked") {
         throw new Error(
           "Your account was banned, all actions and requested data was prohibited"
         )
