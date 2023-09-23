@@ -2,6 +2,7 @@ import { T_TimerLog } from "custom-validator"
 import React, { Dispatch, useEffect, useState } from "react"
 import { hourMinuteSecond } from "../../../../../../helpers/timeConverter"
 import { usePathname } from "next/navigation"
+import useGetAllTimerLogs from "../../../../../../hooks/timerLogs/useGetAllTimerLogs"
 
 const Details = ({
   page,
@@ -24,38 +25,53 @@ const Details = ({
   timerId: string
   machineClassId: string
 }) => {
-  const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([])
-  const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([])
-  const [floatTimeArray, setFloatTimeArray] = useState<Array<number | string>>(
-    []
-  )
-
-  const openReport = () => {
-    window.open(
-      `/production/timer/report/${locationId}/${timerId}`,
-      "Timer Tracker",
-      "location,status,scrollbars,resizable,width=800, height=800"
-    )
-  }
+  const { data, isLoading } = useGetAllTimerLogs({
+    timerId,
+    locationId,
+    paginated: false,
+  })
+  const unitsCreated = data?.items
+    ? data?.items.filter((item) => item.stopReason.includes("Unit Created"))
+    : []
+  const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([
+    "00",
+    "00",
+    "00",
+  ])
+  const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([
+    "00",
+    "00",
+    "00",
+  ])
 
   useEffect(() => {
-    setGainTimeArray(
-      hourMinuteSecond(
-        logs.reduce(
-          (acc, log) => acc + (log.status === "Gain" ? Number(log.time) : 0),
-          0
+    if (data?.items && data?.items.length > 0) {
+      setGainTimeArray(
+        hourMinuteSecond(
+          data?.items.reduce(
+            (acc, log) =>
+              acc +
+              (log.status === "Gain" && log.stopReason.includes("Unit Created")
+                ? Number(log.time)
+                : 0),
+            0
+          )
         )
       )
-    )
-    setLossTimeArray(
-      hourMinuteSecond(
-        logs.reduce(
-          (acc, log) => acc + (log.status === "Loss" ? Number(log.time) : 0),
-          0
+      setLossTimeArray(
+        hourMinuteSecond(
+          data?.items.reduce(
+            (acc, log) =>
+              acc +
+              (log.status === "Loss" && log.stopReason.includes("Unit Created")
+                ? Number(log.time)
+                : 0),
+            0
+          )
         )
       )
-    )
-  }, [logs])
+    }
+  }, [data])
 
   const pathName = usePathname()
   const path = pathName.substring(0, 25)
@@ -73,10 +89,18 @@ const Details = ({
               }
                 uppercase font-semibold text-gray-700 leading-6`}
             >
-              Total Gain:{" "}
-              <span className="text-green-500">
-                {gainTimeArray[0]}:{gainTimeArray[1]}:{gainTimeArray[2]}
-              </span>
+              {isLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-4 w-28 rounded bg-slate-200"></div>
+                </div>
+              ) : (
+                <>
+                  Total Gain:{" "}
+                  <span className="text-green-500">
+                    {gainTimeArray[0]}:{gainTimeArray[1]}:{gainTimeArray[2]}
+                  </span>
+                </>
+              )}
             </h6>
             <h6
               className={`${
@@ -85,10 +109,18 @@ const Details = ({
                   : "text-lg"
               } uppercase font-semibold text-gray-700 leading-6`}
             >
-              Total Loss:{" "}
-              <span className="text-red-500">
-                {lossTimeArray[0]}:{lossTimeArray[1]}:{lossTimeArray[2]}
-              </span>
+              {isLoading ? (
+                <div className="animate-pulse flex space-x-4 mt-2">
+                  <div className="h-4 w-28 rounded bg-slate-200"></div>
+                </div>
+              ) : (
+                <>
+                  Total Loss:{" "}
+                  <span className="text-red-500">
+                    {lossTimeArray[0]}:{lossTimeArray[1]}:{lossTimeArray[2]}
+                  </span>
+                </>
+              )}
             </h6>
             <h6
               className={`${
@@ -97,7 +129,15 @@ const Details = ({
                   : "text-lg"
               } uppercase font-semibold text-gray-700 leading-6`}
             >
-              Total Float: <span className="text-amber-600">00:00:00</span>
+              {isLoading ? (
+                <div className="animate-pulse flex space-x-4 mt-2">
+                  <div className="h-4 w-28 rounded bg-slate-200"></div>
+                </div>
+              ) : (
+                <>
+                  Total Float: <span className="text-amber-600">00:00:00</span>
+                </>
+              )}
             </h6>
           </div>
           <div>
@@ -109,7 +149,15 @@ const Details = ({
                     : "text-lg"
                 } uppercase font-semibold text-gray-700 leading-6`}
               >
-                {timerMachine} Total Units: {logCount}
+                {isLoading ? (
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="h-4 w-36 rounded bg-slate-200"></div>
+                  </div>
+                ) : (
+                  <>
+                    {timerMachine} Total Unit: {unitsCreated.length}
+                  </>
+                )}
               </h6>
               <h6
                 className={`${
@@ -118,55 +166,30 @@ const Details = ({
                     : "text-lg"
                 } uppercase font-semibold text-gray-700 leading-6`}
               >
-                {timerMachine} Total Tons:{" "}
-                {logs
-                  ? logs
-                      .reduce(
-                        (acc, log) =>
-                          acc +
-                          (typeof log.partId === "object"
-                            ? Number(log.partId.tons)
-                            : 0),
-                        0
-                      )
-                      .toFixed(3)
-                  : "0.000"}
+                {isLoading ? (
+                  <div className="animate-pulse flex space-x-4 mt-2">
+                    <div className="h-4 w-36 rounded bg-slate-200"></div>
+                  </div>
+                ) : (
+                  <>
+                    {timerMachine} Total Tons:{" "}
+                    {unitsCreated
+                      ? unitsCreated
+                          .reduce(
+                            (acc, log) =>
+                              acc +
+                              (typeof log.partId === "object"
+                                ? Number(log.partId.tons)
+                                : 0),
+                            0
+                          )
+                          .toFixed(3)
+                      : "0.000"}
+                  </>
+                )}
               </h6>
             </div>
-            {/* <div>
-              <h6
-                className={`${
-                  path === "/production/timer/tracker"
-                    ? "text-lg xl:text-xl 2xl:text-2xl"
-                    : "text-lg"
-                } uppercase font-bold text-gray-700 leading-6`}
-              >
-                Global Units: 0
-              </h6>
-              <h6
-                className={`${
-                  path === "/production/timer/tracker"
-                    ? "text-lg xl:text-xl 2xl:text-2xl"
-                    : "text-lg"
-                } uppercase font-bold text-gray-700 leading-6`}
-              >
-                Global Tons: 0.000
-              </h6>
-            </div> */}
           </div>
-          {/* <div>
-            <button
-              className={`
-              ${
-                path === "/production/timer/tracker"
-                  ? "text-lg xl:text-xl 2xl:text-2xl"
-                  : "text-lg"
-              } relative mt-3 md:mt-0 inline-flex items-center rounded-md bg-blue-950 px-3 py-2 font-semibold text-white focus-visible:outline-offset-0`}
-              onClick={openReport}
-            >
-              View Report
-            </button>
-          </div> */}
         </div>
       </div>
     </>

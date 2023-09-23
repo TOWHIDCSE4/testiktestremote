@@ -34,6 +34,7 @@ import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLog
 import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer"
 import { useQueryClient } from "@tanstack/react-query"
 import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTimerByTimerId"
+import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -52,6 +53,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
     useAddCycleTimer()
   const { mutate: endAddCycleTimer, isLoading: isEndAddCycleTimerLoading } =
     useEndAddCycleTimer()
+  const { mutate: endControllerTimer, isLoading: isEndControllerTimerLoading } =
+    useEndControllerTimer()
   const { mutate: endCycleTimer, isLoading: isEndCycleTimerLoading } =
     useEndCycleTimer()
 
@@ -79,6 +82,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const [endMenu, setEndMenu] = useState(false)
   const [progress, setProgress] = useState(100)
   const [unitsCreated, setUnitsCreated] = useState(0)
+  const [totalCycle, setTotalCycle] = useState(0)
   const [totals, setTotals] = useState({
     unitsPerHour: 0,
     tonsPerHour: 0,
@@ -160,6 +164,34 @@ const Controller = ({ timerId }: { timerId: string }) => {
       setIsTimerClockRunning(false)
       setProgress(100)
       setIsTimerControllerEnded(true)
+      endControllerTimer(timerId, callBackReq)
+      if (isCycleClockRunning) {
+        addTimerLogs(
+          {
+            timerId,
+            machineId: timerDetailData?.item?.machineId._id as string,
+            machineClassId: timerDetailData?.item?.machineClassId._id as string,
+            locationId: timerDetailData?.item?.locationId._id as string,
+            factoryId: timerDetailData?.item?.factoryId._id as string,
+            jobId: jobTimer?.item.jobId as string,
+            partId: timerDetailData?.item?.partId._id as string,
+            time: cycleClockInSeconds,
+            operator: timerDetailData?.item?.operator._id as string,
+            status:
+              (timerDetailData?.item?.partId.time as number) >
+              cycleClockInSeconds
+                ? "Gain"
+                : "Loss",
+            stopReason: ["Unit Created", "Production Ended"],
+            cycle: totalCycle + 1,
+          },
+          callBackReqAddTimerLog
+        )
+        setStopReasons([])
+        setStopMenu(false)
+        setEndMenu(false)
+        setUnitsCreated(unitsCreated + 1)
+      }
     }, 3000)
   }
 
@@ -271,16 +303,16 @@ const Controller = ({ timerId }: { timerId: string }) => {
               ? "Gain"
               : "Loss",
           stopReason: ["Unit Created"],
-          cycle: unitsCreated + 1,
+          cycle: totalCycle + 1,
         },
         callBackReqAddTimerLog
       )
       setTimeout(function () {
         setCycleClockInSeconds(0)
         setIsCycleClockStopping(false)
-        if (!!stopReasons.length) {
-          setUnitsCreated(unitsCreated + 1)
-        }
+        setUnitsCreated(unitsCreated + 1)
+        setStopMenu(false)
+        setEndMenu(false)
         if (timerDetailData?.item?.partId.time === 0) {
           setProgress(100)
         } else {
@@ -311,7 +343,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
               ? "Gain"
               : "Loss",
           stopReason: stopReasons,
-          cycle: unitsCreated,
+          cycle: totalCycle + 1,
         },
         callBackReqAddTimerLog
       )
@@ -319,6 +351,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setProgress(100)
         setStopReasons([])
         setStopMenu(false)
+        setEndMenu(false)
         setCycleClockInSeconds(0)
         setIsCycleClockRunning(false)
       }, 3000)
@@ -385,7 +418,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   useEffect(() => {
     if (timerLogs?.items && timerLogs?.items?.length > 0) {
-      setUnitsCreated(timerLogs.itemCount as number)
+      const unitsCreatedCount = timerLogs?.items?.filter((item) =>
+        item.stopReason.includes("Unit Created")
+      ).length
+      setUnitsCreated(unitsCreatedCount as number)
+      setTotalCycle(timerLogs.itemCount as number)
     }
   }, [timerLogs])
 
@@ -397,16 +434,18 @@ const Controller = ({ timerId }: { timerId: string }) => {
       timerLogs?.items?.length > 0 &&
       timerClockInSeconds > 0
     ) {
+      const unitsCreatedCount = timerLogs?.items?.filter((item) =>
+        item.stopReason.includes("Unit Created")
+      ).length
       const hoursLapse =
         timerClockInSeconds > 3600 ? timerClockInSeconds / 3600 : 1
       setTotals({
-        unitsPerHour: timerLogs?.itemCount / hoursLapse,
+        unitsPerHour: unitsCreatedCount / hoursLapse,
         tonsPerHour:
-          (timerLogs?.itemCount *
-            (timerDetailData?.item?.partId.tons as number)) /
+          (unitsCreatedCount * (timerDetailData?.item?.partId.tons as number)) /
           hoursLapse,
         totalTons:
-          timerLogs?.itemCount * (timerDetailData?.item?.partId.tons as number),
+          unitsCreatedCount * (timerDetailData?.item?.partId.tons as number),
       })
     }
   }, [timerLogs, timerDetailData])
