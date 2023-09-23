@@ -20,6 +20,7 @@ import ModalMediaList from "./ModalMediaList"
 import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
 import useGetProductLogs from "../../../../../hooks/timerLogs/useGetProductLogs"
+const _ = require("lodash")
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -53,9 +54,22 @@ const PartDetailsModal = ({
   const { data: productLogs, isLoading: isProductLogsLoading } =
     useGetProductLogs(id)
   const { mutate, isLoading: isUpdatePartLoading } = useUpdatePart()
-  const { register, handleSubmit } = useForm<T_Part>({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { isDirty },
+  } = useForm<T_Part>({
     values: partDetails?.item,
   })
+  const [factoryId, setFactoryId] = useState(partDetails?.item?.factoryId)
+
+  const isFactoryNotChanged: boolean =
+    partDetails?.item?.factoryId && factoryId
+      ? partDetails?.item?.factoryId === factoryId
+      : true
+  const anyChange = !(isDirty || !isFactoryNotChanged)
+
   const onSubmit = (data: T_Part) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
@@ -169,6 +183,7 @@ const PartDetailsModal = ({
                     {...register("factoryId", { required: true })}
                     onChange={(e) => {
                       setSelectedFactoryId(e.target.value)
+                      setFactoryId(e.target.value)
                     }}
                   >
                     <option disabled>Factory</option>
@@ -388,12 +403,17 @@ const PartDetailsModal = ({
           <div className="bg-gray-100 mt-7 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
             <button
               type="submit"
-              className="ml-3 uppercase flex items-center rounded-md bg-green-700 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
+              className={`ml-3 uppercase flex items-center rounded-md  mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-70 ${
+                !anyChange
+                  ? "bg-green-700 focus-visible:outline-green-900 hover:bg-green-800"
+                  : "bg-gray-400 hover:bg-gray-500"
+              }`}
               disabled={
                 isUpdatePartLoading ||
                 isPartDetailsLoading ||
                 isFactoriesLoading ||
-                isUploadMediaFilesLoading
+                isUploadMediaFilesLoading ||
+                anyChange
               }
             >
               {isUpdatePartLoading || isUploadMediaFilesLoading ? (
