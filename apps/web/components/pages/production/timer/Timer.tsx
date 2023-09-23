@@ -128,16 +128,6 @@ const Timer = ({
       setIsCycleClockRunning(false)
     }
   }, [cycleTimer])
-
-  const filteredParts =
-    partQuery === ""
-      ? timer?.parts?.slice(0, 30)
-      : timer?.parts
-          ?.filter((timer) => {
-            return timer.name.toLowerCase().includes(partQuery.toLowerCase())
-          })
-          ?.slice(0, 30)
-
   useEffect(() => {
     if (timer.part) {
       setSelectedPart({
@@ -148,6 +138,24 @@ const Timer = ({
     }
   }, [timer])
 
+  const filteredParts =
+    partQuery === ""
+      ? timer?.parts?.slice(0, 30)
+      : timer?.parts
+          ?.filter((timer) => {
+            return timer.name.toLowerCase().includes(partQuery.toLowerCase())
+          })
+          ?.slice(0, 30)
+
+  const updateTimerPart = ({ id, name }: { id: string; name: string }) => {
+    setSelectedPart({ id, name })
+    if (id && id !== timer.partId) {
+      const timerCopy = { ...timer }
+      // Needed to remove parts because of 413 error
+      delete timerCopy.parts
+      mutate({ ...timerCopy, partId: id }, callBackReq)
+    }
+  }
   return (
     <div
       key={timer._id as string}
@@ -157,13 +165,7 @@ const Timer = ({
         <Combobox
           as="div"
           value={selectedPart}
-          onChange={(e) => {
-            setSelectedPart(e)
-            const timerCopy = { ...timer }
-            // Needed to remove parts because of 413 error
-            delete timerCopy.parts
-            mutate({ ...timerCopy, partId: e.id }, callBackReq)
-          }}
+          onChange={updateTimerPart}
           disabled={isUpdateTimerLoading}
         >
           <div className="relative">
