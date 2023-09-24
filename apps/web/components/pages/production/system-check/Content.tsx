@@ -7,7 +7,7 @@ const Content = () => {
         <div className="content px-4 md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mx-auto mt-28">
           <h1 className="text-gray-800 text-3xl font-bold">System Check</h1>
           <h4 className="uppercase text-sm text-gray-500 font-medium tracking-widest mt-2">
-            Productions
+            Production
             <span className="text-black mx-2">&gt;</span>
             <span className="text-red-500">System Check</span>
           </h4>
