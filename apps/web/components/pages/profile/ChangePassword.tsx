@@ -1,4 +1,5 @@
 import { Roboto } from "next/font/google"
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 import useProfile from "../../../hooks/users/useProfile"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
@@ -13,8 +14,15 @@ const roboto = Roboto({
 })
 
 const ChangePassword = () => {
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const { data, isLoading: basicInfoLoading } = useProfile()
-
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword)
+  }
   const { register, handleSubmit, reset } = useForm<T_UserPassword>({
     values: { _id: data?.item._id, password: "" },
   })
@@ -59,12 +67,12 @@ const ChangePassword = () => {
                 </h4>
               </div>
               <div className="col-span-4 md:col-span-3 mt-2 md:mt-0">
-                <div>
+                <div className="relative">
                   <label htmlFor="new-password" className="sr-only">
                     New Password
                   </label>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     {...register("password", { required: true })}
                     disabled={updateInfoLoading}
@@ -73,9 +81,21 @@ const ChangePassword = () => {
                     onChange={(e) => setPassword(e.currentTarget.value)}
                     minLength={8}
                   />
+                  {showPassword ? (
+                    <EyeSlashIcon
+                      onClick={togglePasswordVisibility}
+                      className="h-5 w-5 absolute inset-y-0 right-0 pr-2 mt-2 text-gray-400 cursor-pointer"
+                    />
+                  ) : (
+                    <EyeIcon
+                      onClick={togglePasswordVisibility}
+                      className="h-5 w-5 absolute inset-y-0 right-0 pr-2 mt-2 text-gray-400 cursor-pointer"
+                    />
+                  )}
                 </div>
               </div>
             </div>
+            {/* Confirm Password */}
             <div className="grid grid-cols-4 px-6 py-4 items-center border-t border-gray-200">
               <div className="col-span-4 md:col-span-1">
                 <h4 className="text-sm uppercase text-gray-800 font-semibold tracking-wider">
@@ -83,19 +103,30 @@ const ChangePassword = () => {
                 </h4>
               </div>
               <div className="col-span-4 md:col-span-3 mt-2 md:mt-0">
-                <div>
+                <div className="relative">
                   <label htmlFor="confirm-password" className="sr-only">
                     Confirm Password
                   </label>
                   <input
-                    type="password"
+                    type={showConfirmPassword ? "text" : "password"}
                     required
                     disabled={updateInfoLoading}
                     className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${roboto.className}`}
                     placeholder="Confirm new password"
-                    onChange={(e) => setConfirmPassword(e.currentTarget.value)}
+                    onChange={(e) => setPassword(e.currentTarget.value)}
                     minLength={8}
                   />
+                  {showConfirmPassword ? (
+                    <EyeSlashIcon
+                      onClick={toggleConfirmPasswordVisibility}
+                      className="h-5 w-5 absolute inset-y-0 right-0 pr-2 mt-2 text-gray-400 cursor-pointer"
+                    />
+                  ) : (
+                    <EyeIcon
+                      onClick={toggleConfirmPasswordVisibility}
+                      className="h-5 w-5 absolute inset-y-0 right-0 pr-2 mt-2 text-gray-400 cursor-pointer"
+                    />
+                  )}
                 </div>
               </div>
             </div>
