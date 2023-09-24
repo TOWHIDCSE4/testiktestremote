@@ -1,5 +1,6 @@
 "use client"
 import { HeartIcon } from "@heroicons/react/24/solid"
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 import Image from "next/image"
 import Link from "next/link"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
@@ -10,13 +11,17 @@ import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import Cookies from "js-cookie"
 import { T_BackendResponse } from "custom-validator"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 const Content = () => {
+  const [showPassword, setShowPassword] = useState(false)
   const { register, handleSubmit } = useForm<{
     email: string
     password: string
   }>()
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
   const router = useRouter()
   const { mutate, isLoading } = useLogin()
   const onSubmit = (data: { email: string; password: string }) => {
@@ -93,16 +98,29 @@ const Content = () => {
                       Password
                     </label>
                     <div className="mt-2">
-                      <input
-                        id="password"
-                        {...register("password", { required: true })}
-                        name="password"
-                        type="password"
-                        autoComplete="current-password"
-                        disabled={isLoading}
-                        required
-                        className="block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                      />
+                      <div className="mt-2 relative rounded-md shadow-sm">
+                        <input
+                          id="password"
+                          {...register("password", { required: true })}
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          autoComplete="current-password"
+                          disabled={isLoading}
+                          required
+                          className="block w-full rounded-md border-0 py-1.5 pr-12 pl-4 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                        />
+                        {showPassword ? (
+                          <EyeSlashIcon
+                            onClick={togglePasswordVisibility}
+                            className="h-5 w-5 absolute inset-y-0 right-0 pr-2 mt-2 text-gray-400 cursor-pointer"
+                          />
+                        ) : (
+                          <EyeIcon
+                            onClick={togglePasswordVisibility}
+                            className="h-5 w-5 absolute inset-y-0 right-0 pr-2 mt-2 text-gray-400 cursor-pointer"
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="md:flex items-center justify-between">
