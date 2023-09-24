@@ -159,7 +159,7 @@ const Timer = ({
   return (
     <div
       key={timer._id as string}
-      className="bg-white rounded-md border border-gray-200 drop-shadow-lg"
+      className="bg-white rounded-md border border-gray-200 drop-shadow-lg w-[300px]"
     >
       <div className="px-4 py-4 border-b border-gray-200 flex items-center gap-2">
         <Combobox
