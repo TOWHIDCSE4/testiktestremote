@@ -450,6 +450,7 @@ const NewModal = ({
                               isProfileLoading ||
                               isUpdateJobTimerLoading
                             }
+                            min={new Date().toISOString().split("T")[0]}
                           />
                         </div>
                       </>
