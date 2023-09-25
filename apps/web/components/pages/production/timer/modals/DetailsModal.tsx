@@ -46,6 +46,9 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
     id: "",
     name: "",
   })
+  const change =
+    timerDetailData?.item?.operator?._id === selectedOperator.id ||
+    (!timerDetailData?.item?.operator?._id && !selectedOperator.id)
   const onSubmit = (data: T_Timer) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
@@ -113,7 +116,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
         name: `${timerDetailData?.item?.operator?.firstName} ${timerDetailData?.item?.operator?.lastName}`,
       })
     }
-  }, [timerDetailData])
+  }, [timerDetailData, isOpen])
 
   useEffect(() => {
     if (selectedOperator.id) {
@@ -338,11 +341,17 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                           </button>
                           <button
                             type="submit"
-                            className="uppercase inline-flex w-full items-center justify-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-800 sm:ml-3 disabled:opacity-70 sm:w-auto"
+                            className={`uppercase inline-flex w-full items-center justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 disabled:opacity-70 sm:w-auto ${
+                              isTimerDetailDataLoading ||
+                              isUpdateTimerLoading ||
+                              change
+                                ? ` bg-gray-400 hover:bg-gray-500`
+                                : "bg-green-800 hover:bg-green-700"
+                            }`}
                             disabled={
                               isTimerDetailDataLoading ||
                               isUpdateTimerLoading ||
-                              !isDirty
+                              change
                             }
                           >
                             {isUpdateTimerLoading ? (

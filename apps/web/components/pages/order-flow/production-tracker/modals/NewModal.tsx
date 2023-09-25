@@ -201,6 +201,10 @@ const NewModal = ({
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
                         Job Name
+                        <span className="text-red-500 top-[-3px] relative">
+                          {" "}
+                          *
+                        </span>
                       </label>
                       <input
                         type="text"
@@ -221,6 +225,10 @@ const NewModal = ({
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
                         Factory
+                        <span className="text-red-500 top-[-3px] relative">
+                          {" "}
+                          *
+                        </span>
                       </label>
                       <select
                         disabled={
@@ -258,6 +266,10 @@ const NewModal = ({
                         className="uppercase font-semibold text-gray-800 md:w-[8.5rem]"
                       >
                         Part
+                        <span className="text-red-500 top-[-3px] relative">
+                          {" "}
+                          *
+                        </span>
                       </label>
                       <div className="block w-full">
                         <Combobox
@@ -324,6 +336,10 @@ const NewModal = ({
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
                         Drawing Number
+                        <span className="text-red-500 top-[-3px] relative">
+                          {" "}
+                          *
+                        </span>
                       </label>
                       <input
                         type="text"
@@ -377,6 +393,10 @@ const NewModal = ({
                             className="uppercase font-semibold text-gray-800 md:w-36"
                           >
                             Count
+                            <span className="text-red-500 top-[-3px] relative">
+                              {" "}
+                              *
+                            </span>
                           </label>
                           <input
                             type="number"
@@ -400,6 +420,10 @@ const NewModal = ({
                             className="uppercase font-semibold text-gray-800 md:w-36"
                           >
                             Due Date
+                            <span className="text-red-500 top-[-3px] relative">
+                              {" "}
+                              *
+                            </span>
                           </label>
                           <input
                             type="date"

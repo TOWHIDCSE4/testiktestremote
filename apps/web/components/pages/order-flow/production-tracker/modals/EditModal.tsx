@@ -125,6 +125,10 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
                         Job Name
+                        <span className="text-red-500 top-[-3px] relative">
+                          {" "}
+                          *
+                        </span>
                       </label>
                       <input
                         type="text"
@@ -141,6 +145,10 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
                         Factory
+                        <span className="text-red-500 top-[-3px] relative">
+                          {" "}
+                          *
+                        </span>
                       </label>
                       <select
                         disabled={isFactoriesLoading}
@@ -167,6 +175,10 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
                         Part
+                        <span className="text-red-500 top-[-3px] relative">
+                          {" "}
+                          *
+                        </span>
                       </label>
                       <select
                         id="machine-part"
@@ -188,6 +200,10 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
                         Drawing Number
+                        <span className="text-red-500 top-[-3px] relative">
+                          {" "}
+                          *
+                        </span>
                       </label>
                       <input
                         type="text"
@@ -226,6 +242,10 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                             className="uppercase font-semibold text-gray-800 md:w-36"
                           >
                             Count
+                            <span className="text-red-500 top-[-3px] relative">
+                              {" "}
+                              *
+                            </span>
                           </label>
                           <input
                             type="number"
@@ -242,6 +262,10 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                             className="uppercase font-semibold text-gray-800 md:w-36"
                           >
                             Due Date
+                            <span className="text-red-500 top-[-3px] relative">
+                              {" "}
+                              *
+                            </span>
                           </label>
                           <input
                             type="date"

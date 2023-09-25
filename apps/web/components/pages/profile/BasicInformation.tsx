@@ -148,59 +148,52 @@ const BasicInformation = () => {
           </div>
         </div>
         {userProfile?.item.role !== "Super" && (
-          <div
-            className={`grid grid-cols-${
-              isFactoryUser ? "8" : "4"
-            } border-t border-gray-200 px-6 py-4 items-center`}
-          >
+          <div className="grid grid-cols-4 border-t border-gray-200 px-6 py-4 items-center">
             <div className="col-span-4 md:col-span-1">
               <h4 className="text-sm uppercase text-gray-800 font-semibold tracking-wider">
                 City
               </h4>
             </div>
-            <div
-              className={`col-span-4 md:col-span-3 mt-2 md:mt-0 mr-${
-                isFactoryUser ? "4" : "0"
-              }`}
-            >
+            <div className="col-span-4 md:col-span-3 mt-2 md:mt-0">
               <div>
-                <label htmlFor="factory" className="sr-only">
+                <label htmlFor="last-name" className="sr-only">
                   City
+                </label>
+                <input
+                  type="text"
+                  placeholder="Your City name..."
+                  {...register("locationId", { required: true })}
+                  disabled
+                  className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                  defaultValue={userProfile?.item.lastName}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+        {userProfile?.item.role !== "Super" && isFactoryUser ? (
+          <div className="grid grid-cols-4 border-t border-gray-200 px-6 py-4 items-center">
+            <div className="col-span-4 md:col-span-1">
+              <h4 className="text-sm uppercase text-gray-800 font-semibold tracking-wider">
+                Factory
+              </h4>
+            </div>
+            <div className="col-span-4 md:col-span-3 mt-2 md:mt-0">
+              <div>
+                <label htmlFor="last-name" className="sr-only">
+                  Factory
                 </label>
                 <input
                   type="text"
                   disabled
                   className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                  placeholder="Your City name..."
-                  {...register("locationId", { required: true })}
+                  value={factory}
+                  placeholder="Your Factory name..."
                 />
               </div>
             </div>
-            {isFactoryUser && (
-              <>
-                <div className="col-span-4 md:col-span-1 ml-4">
-                  <h4 className="text-sm uppercase text-gray-800 font-semibold tracking-wider">
-                    Factory
-                  </h4>
-                </div>
-                <div className="col-span-4 md:col-span-3 mt-2 md:mt-0">
-                  <div>
-                    <label htmlFor="factory" className="sr-only">
-                      Factory
-                    </label>
-                    <input
-                      type="text"
-                      disabled
-                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                      placeholder="Your factory name..."
-                      value={factory}
-                    />
-                  </div>
-                </div>
-              </>
-            )}
           </div>
-        )}
+        ) : null}
         <div className="md:flex justify-between items-center bg-light-blue py-4 px-6">
           <div>
             <h4 className="text-lg text-gray-900 text-center md:text-left">

@@ -132,11 +132,13 @@ function TimerCards({
             <span className="font-semibold">{timerByMachineClass.name}</span>
           </p>
         )}
-        <DetailsModal
-          isOpen={openDetailsModal}
-          onClose={() => setOpenDetailsModal(false)}
-          id={selectedTimerId}
-        />
+        {openDetailsModal && (
+          <DetailsModal
+            isOpen={openDetailsModal}
+            onClose={() => setOpenDetailsModal(false)}
+            id={selectedTimerId}
+          />
+        )}
         <DeleteModal
           isOpen={openDeleteModal}
           onClose={() => setOpenDeleteModal(false)}
