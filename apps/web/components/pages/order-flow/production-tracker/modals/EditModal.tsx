@@ -89,7 +89,9 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
   const { register, handleSubmit, reset, watch, setValue } = useForm<T_Job>({
     values: {
       ...jobData?.item,
-      dueDate: dayjs(jobData?.item.dueDate).format("YYYY-MM-DD"),
+      ...(jobData?.item?.isStock === false
+        ? { dueDate: dayjs(jobData?.item.dueDate).format("YYYY-MM-DD") }
+        : {}),
     },
   })
   const onSubmit = (data: T_Job) => {
