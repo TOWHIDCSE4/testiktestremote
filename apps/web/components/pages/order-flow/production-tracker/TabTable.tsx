@@ -3,6 +3,7 @@ import { Menu, Transition } from "@headlessui/react"
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronDownIcon,
   EllipsisVerticalIcon,
   ChartBarIcon,
 } from "@heroicons/react/24/solid"
@@ -15,6 +16,8 @@ import useProfile from "../../../../hooks/users/useProfile"
 import Image from "next/image"
 import combineClasses from "../../../../helpers/combineClasses"
 import JobDetails from "./modals/JobDetails"
+import { useCollapse } from "react-collapsed"
+import TabTableDetail from "./TabTable-detail"
 
 const TabTable = ({
   tab,
@@ -35,11 +38,18 @@ const TabTable = ({
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
 
   const [editModal, setEditModal] = useState(false)
-  const [detailsModal, setDetailsModal] = useState(false)
+  const [selectedJob, setSelectedJob] = useState<T_Job | undefined>(undefined)
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [jobId, setJobId] = useState("")
   const [jobName, setJobName] = useState("")
   const [deleteModal, setDeleteModal] = useState(false)
+  const [expandedRows, setExpandedRows] = useState<Array<boolean>>([])
+
+  const toggleRowExpansion = (index: number) => {
+    const newExpandedRows = [...expandedRows]
+    newExpandedRows[index] = !newExpandedRows[index]
+    setExpandedRows(newExpandedRows)
+  }
 
   useEffect(() => {
     if (tab) {
@@ -68,6 +78,7 @@ const TabTable = ({
         <table className="w-full divide-y divide-gray-300 table-fixed">
           <thead>
             <tr>
+              <th scope="col" className="w-4"></th>
               <th
                 scope="col"
                 className="py-3.5 pl-5 md:pl-7 lg:pl-9 text-left text-sm font-semibold text-gray-900 w-20 uppercase"
@@ -141,67 +152,77 @@ const TabTable = ({
           <tbody className="bg-white">
             {jobs?.items?.map((job: T_Job, index) => {
               return (
-                <tr
-                  className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
-                  key={index}
-                  onClick={() => {
-                    setJobId(job._id as string)
-                    setJobName(job.name as string)
-                    setDetailsModal(true)
-                  }}
-                >
-                  <td className="py-3 pl-4 text-sm sm:pl-6 lg:pl-8">
-                    <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
-                      {typeof job?.user === "object" &&
-                      job?.user?.profile?.photo ? (
-                        <Image
-                          className="rounded-full"
-                          src={`/files/${job?.user?.profile?.photo}`}
-                          alt="Profile image"
-                          fill
-                        />
-                      ) : typeof job?.user === "object" &&
-                        !job?.user?.profile?.photo ? (
-                        <Image
-                          className="rounded-full"
-                          src={`https://ui-avatars.com/api/?name=${job?.user?.firstName}+${job?.user?.lastName}`}
-                          alt="Profile image"
-                          fill
-                        />
+                <Fragment key={index}>
+                  <tr
+                    className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
+                    onClick={() => {
+                      setJobId(job._id as string)
+                      setJobName(job.name as string)
+                      setSelectedJob(job)
+                      toggleRowExpansion(index)
+                    }}
+                  >
+                    <td className="m-0 pl-3 w-1/5 mt-4 pt-12">
+                      {expandedRows[index] ? (
+                        <ChevronDownIcon className="w-4 h-4 stroke-2 stroke-blue-950" />
                       ) : (
-                        <div className="animate-pulse flex space-x-4">
-                          <div className="h-11 w-11 rounded-full bg-slate-200"></div>
-                        </div>
+                        <ChevronRightIcon className="w-4 h-4 stroke-2 stroke-blue-950" />
                       )}
-                    </div>
-                  </td>
-                  <td className="py-3 text-sm text-gray-800 pl-4">
-                    {typeof job?.factory === "object" ? job?.factory?.name : ""}
-                  </td>
-                  <td className="py-3 pl-6 text-sm text-gray-800">
-                    {job?.name}
-                  </td>
-                  <td className="py-3 pl-6 text-sm text-gray-800">
-                    {job?.part?.name}
-                  </td>
-                  <td className="py-3 pl-6 text-sm text-gray-800">
-                    {job?.drawingNumber}
-                  </td>
-                  <td className="py-3 pl-6 text-sm text-gray-800">
-                    <div className="flex items-center">
-                      {job?.count ? (
-                        <>
-                          {job.timerLogs ? job.timerLogs.length : 0}/
-                          {job?.count}
-                        </>
-                      ) : (
-                        <span className="text-2xl">∞</span>
-                      )}{" "}
-                      <br />
-                    </div>
-                  </td>
-                  <td className="py-3 pl-6 text-sm text-gray-800">
-                    {/* <ChartBarIcon
+                    </td>
+                    <td className="py-3 pl-4 text-sm sm:pl-6 lg:pl-8">
+                      <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
+                        {typeof job?.user === "object" &&
+                        job?.user?.profile?.photo ? (
+                          <Image
+                            className="rounded-full"
+                            src={`/files/${job?.user?.profile?.photo}`}
+                            alt="Profile image"
+                            fill
+                          />
+                        ) : typeof job?.user === "object" &&
+                          !job?.user?.profile?.photo ? (
+                          <Image
+                            className="rounded-full"
+                            src={`https://ui-avatars.com/api/?name=${job?.user?.firstName}+${job?.user?.lastName}`}
+                            alt="Profile image"
+                            fill
+                          />
+                        ) : (
+                          <div className="animate-pulse flex space-x-4">
+                            <div className="h-11 w-11 rounded-full bg-slate-200"></div>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3 text-sm text-gray-800 pl-4">
+                      {typeof job?.factory === "object"
+                        ? job?.factory?.name
+                        : ""}
+                    </td>
+                    <td className="py-3 pl-6 text-sm text-gray-800">
+                      {job?.name}
+                    </td>
+                    <td className="py-3 pl-6 text-sm text-gray-800">
+                      {job?.part?.name}
+                    </td>
+                    <td className="py-3 pl-6 text-sm text-gray-800">
+                      {job?.drawingNumber}
+                    </td>
+                    <td className="py-3 pl-6 text-sm text-gray-800">
+                      <div className="flex items-center">
+                        {job?.count ? (
+                          <>
+                            {job.timerLogs ? job.timerLogs.length : 0}/
+                            {job?.count}
+                          </>
+                        ) : (
+                          <span className="text-2xl">∞</span>
+                        )}{" "}
+                        <br />
+                      </div>
+                    </td>
+                    <td className="py-3 pl-6 text-sm text-gray-800">
+                      {/* <ChartBarIcon
                       className={`h-5 w-5 ${
                         job?.priorityStatus === "High"
                           ? "text-red-500"
@@ -213,124 +234,133 @@ const TabTable = ({
                       }`}
                     /> */}
 
-                    <div className="flex bars mt-2">
-                      <div
-                        className={`h-3 rounded-t-full rounded-b-full w-1 first-bar ${
-                          job?.priorityStatus === "High"
-                            ? "bg-red-500"
-                            : job?.priorityStatus === "Medium"
-                            ? "bg-orange-500"
-                            : job?.priorityStatus === "Low"
-                            ? "bg-yellow-500"
-                            : "bg-gray-400"
-                        }`}
-                      ></div>
-                      <div
-                        className={`h-4 rounded-t-full rounded-b-full w-1 second-bar ml-0.5 -translate-y-1 ${
-                          job?.priorityStatus === "High"
-                            ? "bg-red-500"
-                            : job?.priorityStatus === "Medium"
-                            ? "bg-orange-500"
-                            : "bg-gray-400"
-                        }`}
-                      ></div>
-                      <div
-                        className={`h-5 rounded-t-full rounded-b-full w-1 bg-gray-400 third-bar ml-0.5 -translate-y-2 ${
-                          job?.priorityStatus === "High"
-                            ? "bg-red-500"
-                            : "bg-gray-400"
-                        }`}
-                      ></div>
-                    </div>
-                  </td>
-                  <td className="py-3 pl-6 text-sm text-gray-800">
-                    {job?.dueDate ? (
-                      dayjs(job?.dueDate).format("DD/MM/YYYY")
-                    ) : (
-                      <span className="text-2xl">∞</span>
-                    )}{" "}
-                    <br />
-                    <span className="text-red-500 hidden">Overdue</span>
-                  </td>
-                  <td className="py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
-                    <Menu as="div">
-                      <Menu.Button onClick={(e) => e.stopPropagation()}>
-                        <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
-                      </Menu.Button>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items className="absolute right-9 z-10 mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          <div className="py-1">
-                            <Menu.Item>
-                              {({ active }) => (
-                                <span
-                                  className={combineClasses(
-                                    active
-                                      ? "bg-gray-100 text-gray-900"
-                                      : "text-gray-700",
-                                    "block px-4 py-2 text-sm cursor-pointer text-left"
-                                  )}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setDetailsModal(true)
-                                    setJobId(job._id as string)
-                                  }}
-                                >
-                                  Details
-                                </span>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <span
-                                  className={combineClasses(
-                                    active
-                                      ? "bg-gray-100 text-gray-900"
-                                      : "text-gray-700",
-                                    "block px-4 py-2 text-sm cursor-pointer text-left"
-                                  )}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setEditModal(true)
-                                    setJobId(job._id as string)
-                                  }}
-                                >
-                                  Edit
-                                </span>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <span
-                                  className={combineClasses(
-                                    active
-                                      ? "bg-gray-100 text-gray-900"
-                                      : "text-gray-700",
-                                    "block px-4 py-2 text-sm cursor-pointer text-left"
-                                  )}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setDeleteModal(true)
-                                    setJobId(job._id as string)
-                                  }}
-                                >
-                                  Delete
-                                </span>
-                              )}
-                            </Menu.Item>
-                          </div>
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
-                  </td>
-                </tr>
+                      <div className="flex bars mt-2">
+                        <div
+                          className={`h-3 rounded-t-full rounded-b-full w-1 first-bar ${
+                            job?.priorityStatus === "High"
+                              ? "bg-red-500"
+                              : job?.priorityStatus === "Medium"
+                              ? "bg-orange-500"
+                              : job?.priorityStatus === "Low"
+                              ? "bg-yellow-500"
+                              : "bg-gray-400"
+                          }`}
+                        ></div>
+                        <div
+                          className={`h-4 rounded-t-full rounded-b-full w-1 second-bar ml-0.5 -translate-y-1 ${
+                            job?.priorityStatus === "High"
+                              ? "bg-red-500"
+                              : job?.priorityStatus === "Medium"
+                              ? "bg-orange-500"
+                              : "bg-gray-400"
+                          }`}
+                        ></div>
+                        <div
+                          className={`h-5 rounded-t-full rounded-b-full w-1 bg-gray-400 third-bar ml-0.5 -translate-y-2 ${
+                            job?.priorityStatus === "High"
+                              ? "bg-red-500"
+                              : "bg-gray-400"
+                          }`}
+                        ></div>
+                      </div>
+                    </td>
+                    <td className="py-3 pl-6 text-sm text-gray-800">
+                      {job?.dueDate ? (
+                        dayjs(job?.dueDate).format("DD/MM/YYYY")
+                      ) : (
+                        <span className="text-2xl">∞</span>
+                      )}{" "}
+                      <br />
+                      <span className="text-red-500 hidden">Overdue</span>
+                    </td>
+                    <td className="py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
+                      <Menu as="div">
+                        <Menu.Button onClick={(e) => e.stopPropagation()}>
+                          <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
+                        </Menu.Button>
+                        <Transition
+                          as={Fragment}
+                          enter="transition ease-out duration-100"
+                          enterFrom="transform opacity-0 scale-95"
+                          enterTo="transform opacity-100 scale-100"
+                          leave="transition ease-in duration-75"
+                          leaveFrom="transform opacity-100 scale-100"
+                          leaveTo="transform opacity-0 scale-95"
+                        >
+                          <Menu.Items className="absolute right-9 z-10 mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                            <div className="py-1">
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <span
+                                    className={combineClasses(
+                                      active
+                                        ? "bg-gray-100 text-gray-900"
+                                        : "text-gray-700",
+                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                    )}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setSelectedJob(job)
+                                      setJobId(job._id as string)
+                                    }}
+                                  >
+                                    Details
+                                  </span>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <span
+                                    className={combineClasses(
+                                      active
+                                        ? "bg-gray-100 text-gray-900"
+                                        : "text-gray-700",
+                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                    )}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setEditModal(true)
+                                      setJobId(job._id as string)
+                                    }}
+                                  >
+                                    Edit
+                                  </span>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <span
+                                    className={combineClasses(
+                                      active
+                                        ? "bg-gray-100 text-gray-900"
+                                        : "text-gray-700",
+                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                    )}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setDeleteModal(true)
+                                      setJobId(job._id as string)
+                                    }}
+                                  >
+                                    Delete
+                                  </span>
+                                )}
+                              </Menu.Item>
+                            </div>
+                          </Menu.Items>
+                        </Transition>
+                      </Menu>
+                    </td>
+                  </tr>
+
+                  {expandedRows[index] && (
+                    <tr>
+                      <td colSpan={10}>
+                        <TabTableDetail job={job} selectedJob={selectedJob} />
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
               )
             })}
           </tbody>
@@ -343,7 +373,7 @@ const TabTable = ({
           </div>
         </div>
       )}
-      <div className="absolute inset-x-0 bottom-0">
+      <div className="inset-x-0">
         <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
           <div className="h-10 z-[-1] sm:hidden">
             <a
@@ -418,12 +448,7 @@ const TabTable = ({
           </div>
         </div>
       </div>
-      <JobDetails
-        isOpen={detailsModal}
-        onClose={() => setDetailsModal(false)}
-        jobId={jobId}
-        jobName={jobName}
-      />
+
       <DeleteModal
         isOpen={deleteModal}
         onClose={() => setDeleteModal(false)}
