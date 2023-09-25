@@ -1,28 +1,16 @@
 import { Fragment, useEffect, useRef, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import {
-  T_BackendResponse,
-  T_Factory,
-  T_Job,
-  T_Machine,
-  T_Part,
-} from "custom-validator"
+import { T_BackendResponse, T_Factory, T_Job } from "custom-validator"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import useFactoryMachineClasses from "../../../../../hooks/factories/useFactoryMachineClasses"
-import useGetMachineByClass from "../../../../../hooks/machines/useGetMachinesByLocation"
-import useGetPartByMachineClass from "../../../../../hooks/parts/useGetPartByMachineClassLocation"
-import usePart from "../../../../../hooks/parts/useGetPart"
-import useAddTimer from "../../../../../hooks/timers/useAddTimer"
 import useFactories from "../../../../../hooks/factories/useFactories"
-import useLocations from "../../../../../hooks/locations/useLocations"
 import useGetJob from "../../../../../hooks/jobs/useGetJob"
-import useGetUser from "../../../../../hooks/users/useGetUser"
-import useUsers from "../../../../../hooks/users/useUsers"
 import useGetPartsByFactoryLocation from "../../../../../hooks/parts/useGetPartsByFactoryLocation"
-import useUpdatePart from "../../../../../hooks/parts/useUpdatePart"
 import useUpdateJob from "../../../../../hooks/jobs/useUpdateJob"
 import { useQueryClient } from "@tanstack/react-query"
+import dayjs from "dayjs"
+import * as timezone from "dayjs/plugin/timezone"
+import * as utc from "dayjs/plugin/utc"
 
 interface EditModalProps {
   isOpen: boolean
@@ -32,6 +20,8 @@ interface EditModalProps {
 }
 
 const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
+  dayjs.extend(utc.default)
+  dayjs.extend(timezone.default)
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
@@ -53,9 +43,11 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
   }, [jobData])
 
   const { register, handleSubmit, reset, watch } = useForm<T_Job>({
-    values: jobData?.item,
+    values: {
+      ...jobData?.item,
+      dueDate: dayjs(jobData?.item.dueDate).format("YYYY-MM-DD"),
+    },
   })
-
   const onSubmit = (data: T_Job) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
@@ -274,6 +266,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             required
                             disabled={jobIsLoading}
+                            min={new Date().toISOString().split("T")[0]}
                           />
                         </div>
                         <div className="md:flex items-center mt-3">
