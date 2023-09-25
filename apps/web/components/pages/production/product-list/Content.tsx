@@ -123,7 +123,7 @@ const Content = () => {
                   aria-hidden="true"
                   className={combineClasses(
                     tab.name === typeState ? "bg-blue-950" : "bg-transparent",
-                    "absolute inset-x-0 bottom-0 h-1"
+                    "inset-x-0"
                   )}
                 />
               </button>

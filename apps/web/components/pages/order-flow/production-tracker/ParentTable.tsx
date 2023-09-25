@@ -110,7 +110,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                           aria-hidden="true"
                           className={combineClasses(
                             tab.current ? "bg-blue-950" : "bg-transparent",
-                            "absolute inset-x-0 bottom-0 h-1"
+                            "inset-x-0"
                           )}
                         />
                       </button>
@@ -120,7 +120,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
               </div>
             </div>
             {/* Table */}
-            <div className="w-full overflow-x-auto h-[30rem] relative">
+            <div className="w-full overflow-x-auto relative">
               <TabTable tab={currentTab} locationId={locationId} />
             </div>
           </div>

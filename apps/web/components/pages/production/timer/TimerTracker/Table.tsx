@@ -51,7 +51,7 @@ const Table = ({
 
   return (
     <>
-      <div className={`w-full overflow-auto h-[30rem]`}>
+      <div className={`w-full overflow-auto`}>
         <table className="w-full divide-y divide-gray-300">
           <thead>
             <tr>
