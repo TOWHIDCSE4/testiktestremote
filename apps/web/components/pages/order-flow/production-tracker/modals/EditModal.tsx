@@ -302,7 +302,28 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                           </select>
                         </div>
                       </>
-                    ) : null}
+                    ) : (
+                      <div className="md:flex items-center mt-3">
+                        <label
+                          htmlFor="priorityStatus"
+                          className="uppercase font-semibold text-gray-800 md:w-36"
+                        >
+                          Priority
+                        </label>
+                        <select
+                          id="priorityStatus"
+                          {...register("priorityStatus", { required: true })}
+                          className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                          defaultValue="High"
+                          required
+                          disabled={jobIsLoading}
+                        >
+                          <option>High</option>
+                          <option>Medium</option>
+                          <option>Low</option>
+                        </select>
+                      </div>
+                    )}
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
