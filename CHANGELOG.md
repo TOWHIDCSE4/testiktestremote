@@ -1,5 +1,53 @@
 # Changelog
 
+## [1.1.0](https://github.com/ieko-media/apms/compare/v1.0.0...v1.1.0) (2023-09-25)
+
+
+### Features
+
+* Added additional info data for Jobs ([b4c82cf](https://github.com/ieko-media/apms/commit/b4c82cf54be5dadf204ccf57dd01baf941ba586c))
+* added api for get machine by location and machineclass filter ([7240b5a](https://github.com/ieko-media/apms/commit/7240b5a30e94e4d3200165efc3b9ecad33eb1d80))
+* added custom hook for get machines by machineclass and location ([393ae9d](https://github.com/ieko-media/apms/commit/393ae9d2a4c967c9e8f0a409307500b7fde79c86))
+* added filter for machineClass in timer creation modal but not work due to hook ([0542425](https://github.com/ieko-media/apms/commit/05424258b5b6b6b38a540f2000c36fd762265f04))
+* added filter on the machine in timer creation which has already assigned timer ([06e6528](https://github.com/ieko-media/apms/commit/06e65287b9fd1f81e502000237c091e9addcbbeb))
+* added machineClass and logic in timercreation modal UX ([49ded50](https://github.com/ieko-media/apms/commit/49ded5053cd1a73dfedb7fbd98703f6ce6d9dfe9))
+* added route for getmachinebymachineclass ([c5fd542](https://github.com/ieko-media/apms/commit/c5fd542bf14ef9dfbd8224bc7e2be7fb2ceb2216))
+
+
+### Bug Fixes
+
+* Added 0 to default globalcycle ([1b6e5d0](https://github.com/ieko-media/apms/commit/1b6e5d0e907bf337e223ba2f9e90bb740110e1ff))
+* Added fix for Jamiel comments sept 12 ([be65664](https://github.com/ieko-media/apms/commit/be65664185ec02f679be7644f0a927ae82bfbf3d))
+* Added overflow for time tracker tables ([3bb400f](https://github.com/ieko-media/apms/commit/3bb400f58f2e99ba698e723407f57da4bfee4de5))
+* Added redirect on login page if logged in ([3bbd27f](https://github.com/ieko-media/apms/commit/3bbd27ffd3544c2434a17837168a407c754a8855))
+* Added status condition for all TimerLogs ([9f66000](https://github.com/ieko-media/apms/commit/9f66000fc3a458ab991ab3997820b3bfeb5f4125))
+* Change unauthorize message ([6a2b11c](https://github.com/ieko-media/apms/commit/6a2b11c80f09b6bc85c2d0372b0d378ada73e87e))
+* Default value of time tracker gain and loss ([4192e45](https://github.com/ieko-media/apms/commit/4192e45eeba593f3316651b777c4be68a6544d12))
+* End cycle timer when controller prod ended ([e693b2e](https://github.com/ieko-media/apms/commit/e693b2e5782fffb7f365b752aa05e941d62a9f66))
+* Fix update of timer job ([e08a497](https://github.com/ieko-media/apms/commit/e08a497f0c04419994b88df66a650581a6e1391b))
+* fixed the location and factory issue in profile and profile home page ([00f3ba8](https://github.com/ieko-media/apms/commit/00f3ba890312fd1541345b8cbe2e65e6b01493f9))
+* General bugs and problems ([cc7590e](https://github.com/ieko-media/apms/commit/cc7590e51fef453db6ae3933b08d9c49d1a3d7ee))
+* Jamiel comments sept 15 ([627ced8](https://github.com/ieko-media/apms/commit/627ced8f4e4d0295dbc5cf6f5111fb4e12013e0c))
+* Jamiel comments sept 18 ([d56b487](https://github.com/ieko-media/apms/commit/d56b4873b6bd4bdf7a8a5c74201e290a39da947c))
+* Jamiels comments sept 11 2023 ([e88de3b](https://github.com/ieko-media/apms/commit/e88de3b84ee9aa5703093bec212b7169eda4f46f))
+* made personnel users can not see edit part button in timers page-&gt; timers details modal ([319da59](https://github.com/ieko-media/apms/commit/319da59f9eca95aa3736ce538f06e227957b111b))
+* Make sure logs will go to stock when target reached ([7ddda97](https://github.com/ieko-media/apms/commit/7ddda97bafee131977a3cd74be1a0557e63c1625))
+* night shift in timer creation modal grayed out ([6724616](https://github.com/ieko-media/apms/commit/6724616b171f2596ad049bffbc9578f9a15854e2))
+* Pagination team members ([791b23a](https://github.com/ieko-media/apms/commit/791b23a9f58cb131ca786877a046e3a1a42ad277))
+* removed custom fonts and exchanged with exo_2 ([e0474c8](https://github.com/ieko-media/apms/commit/e0474c83f95d9480c4fced3672a2fc332630a402))
+* removed fonts in tailwind config ([64a13d1](https://github.com/ieko-media/apms/commit/64a13d105e23aad0cf6a998545ad85d4342df780))
+* Replace part words on machine pages ([2838f9c](https://github.com/ieko-media/apms/commit/2838f9c01eeb7d4919bbe1c9fd3f2d520a481184))
+* Show all rows on pagination results ([3806c1c](https://github.com/ieko-media/apms/commit/3806c1ce83cdfa7df4594ee36cacb94a6a89ff6f))
+* style fix of creation modals for part/machine/timer ([077bd31](https://github.com/ieko-media/apms/commit/077bd31e29003b36211aa7c98cad3de600ae5c1d))
+* style fixed for timer page and content in system check page ([4952e96](https://github.com/ieko-media/apms/commit/4952e96c556e69461fd9378e7db71e8d615f773e))
+* Super admin access to timers ([99391a9](https://github.com/ieko-media/apms/commit/99391a961fce59a5e59018badd7f592484354b02))
+* Time tracker data get all not by page ([4c63144](https://github.com/ieko-media/apms/commit/4c631442c779b90919bc5cd9c2b0afa323be1eec))
+* Timer data reset only on midnight ([258f79c](https://github.com/ieko-media/apms/commit/258f79cd32db3478d9caf7077320d76915c3bd17))
+* UI for factory and location for user profile ([1f91b78](https://github.com/ieko-media/apms/commit/1f91b786b70c5b34b8df05271f36a08de19673de))
+* update Part and selected part on timer card fixed ([0d7f636](https://github.com/ieko-media/apms/commit/0d7f63616efcf48638c1338d73bf056ae37fae53))
+* Update timer part when changing location ([dfe32ab](https://github.com/ieko-media/apms/commit/dfe32ab5a77570ff8bed43fa21e1f84a8b3ab0f7))
+* User id for adding new jobs ([bd6b5f9](https://github.com/ieko-media/apms/commit/bd6b5f97396be7f834f892a0243b59174cbdf953))
+
 ## 1.0.0 (2023-09-10)
 
 
