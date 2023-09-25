@@ -81,17 +81,17 @@ const ChangePassword = () => {
                     onChange={(e) => setPassword(e.currentTarget.value)}
                     minLength={8}
                   />
-                  {showPassword ? (
-                    <EyeSlashIcon
-                      onClick={togglePasswordVisibility}
-                      className="h-5 w-5 absolute inset-y-0 right-0 pr-2 mt-2 text-gray-400 cursor-pointer"
-                    />
-                  ) : (
-                    <EyeIcon
-                      onClick={togglePasswordVisibility}
-                      className="h-5 w-5 absolute inset-y-0 right-0 pr-2 mt-2 text-gray-400 cursor-pointer"
-                    />
-                  )}
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                    ) : (
+                      <EyeIcon className="h-5 w-5 text-gray-400" />
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
@@ -116,17 +116,17 @@ const ChangePassword = () => {
                     onChange={(e) => setPassword(e.currentTarget.value)}
                     minLength={8}
                   />
-                  {showConfirmPassword ? (
-                    <EyeSlashIcon
-                      onClick={toggleConfirmPasswordVisibility}
-                      className="h-5 w-5 absolute inset-y-0 right-0 pr-2 mt-2 text-gray-400 cursor-pointer"
-                    />
-                  ) : (
-                    <EyeIcon
-                      onClick={toggleConfirmPasswordVisibility}
-                      className="h-5 w-5 absolute inset-y-0 right-0 pr-2 mt-2 text-gray-400 cursor-pointer"
-                    />
-                  )}
+                  <button
+                    type="button"
+                    onClick={toggleConfirmPasswordVisibility}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center focus:outline-none"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeSlashIcon className="h-5 w-5 text-gray-400" />
+                    ) : (
+                      <EyeIcon className="h-5 w-5 text-gray-400" />
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
