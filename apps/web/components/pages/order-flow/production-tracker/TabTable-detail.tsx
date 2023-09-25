@@ -29,7 +29,7 @@ const TabTableDetail: FC<{ job: T_Job; selectedJob?: T_Job }> = ({
         </div>
         <div className="flex flex-wrap space-x-1 text-sm">
           <div>QA APPROVED :</div>
-          <div>asd</div>
+          <div>Pending</div>
         </div>
       </div>
       <div className="w-[5px] mr-2 mt-1 mb-1 rounded-lg bg-gray-400 flex justify-center items-center">
@@ -58,13 +58,13 @@ const TabTableDetail: FC<{ job: T_Job; selectedJob?: T_Job }> = ({
                     new Date(log.createdAt).toLocaleDateString()} */}
               </td>
               <td>
-                asas
+                Steel and Pipe
                 {/* {typeof log.factoryId === "string"
                     ? log.factoryId
                     : log.factoryId.name} */}
               </td>
               <td>
-                asdk
+                Tornado
                 {/* {typeof log.machineId === "string"
                     ? log.machineId
                     : log.machineId.name} */}
@@ -72,7 +72,7 @@ const TabTableDetail: FC<{ job: T_Job; selectedJob?: T_Job }> = ({
               {/* <td>{job.count}</td> */}
               <td>4</td>
               <td>
-                sadkj
+                Pat Keo
                 {/* {typeof log.operator === "string"
                     ? log.operator
                     : log.operator.firstName} */}
@@ -87,13 +87,13 @@ const TabTableDetail: FC<{ job: T_Job; selectedJob?: T_Job }> = ({
                     new Date(log.createdAt).toLocaleDateString()} */}
               </td>
               <td>
-                asas
+                Steel and Pipe
                 {/* {typeof log.factoryId === "string"
                     ? log.factoryId
                     : log.factoryId.name} */}
               </td>
               <td>
-                asdk
+                Tornado
                 {/* {typeof log.machineId === "string"
                     ? log.machineId
                     : log.machineId.name} */}
@@ -101,7 +101,7 @@ const TabTableDetail: FC<{ job: T_Job; selectedJob?: T_Job }> = ({
               {/* <td>{job.count}</td> */}
               <td>4</td>
               <td>
-                sadkj
+                Pat Keo
                 {/* {typeof log.operator === "string"
                     ? log.operator
                     : log.operator.firstName} */}
