@@ -287,8 +287,7 @@ const NewModal = ({
                             isPartsLoading ||
                             isAddNewJobLoading ||
                             isProfileLoading ||
-                            isUpdateJobTimerLoading ||
-                            filteredParts?.length === 0
+                            isUpdateJobTimerLoading
                           }
                         >
                           <div className="relative w-full">
