@@ -439,6 +439,7 @@ const NewModal = ({
                               isProfileLoading ||
                               isUpdateJobTimerLoading
                             }
+                            min={new Date().toISOString().split("T")[0]}
                           />
                         </div>
                         <div className="md:flex items-center mt-3">
