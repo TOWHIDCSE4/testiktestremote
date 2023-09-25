@@ -162,11 +162,11 @@ const TabTable = ({
                       toggleRowExpansion(index)
                     }}
                   >
-                    <td className="m-0 pl-3 w-1/5">
+                    <td className="m-0 pl-3 w-1/5 mt-4 pt-12">
                       {expandedRows[index] ? (
-                        <ChevronDownIcon className="w-4 h-4" />
+                        <ChevronDownIcon className="w-4 h-4 stroke-2 stroke-blue-950" />
                       ) : (
-                        <ChevronRightIcon className="w-4 h-4" />
+                        <ChevronRightIcon className="w-4 h-4 stroke-2 stroke-blue-950" />
                       )}
                     </td>
                     <td className="py-3 pl-4 text-sm sm:pl-6 lg:pl-8">
