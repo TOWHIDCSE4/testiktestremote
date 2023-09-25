@@ -51,7 +51,6 @@ const NewModal = ({
   const [selectedPart, setSelectedPart] = useState({
     id: "",
     name: "",
-    factoryId: "",
   })
   const {
     data: parts,
@@ -125,7 +124,6 @@ const NewModal = ({
         status: "Pending",
         locationId: locationId as string,
         userId: userProfile?.item._id as string,
-        factoryId: selectedPart.factoryId as string,
       },
       callBackReq
     )
@@ -239,14 +237,14 @@ const NewModal = ({
                         id="machineClass"
                         required
                         className={`block mt-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                        disabled={isMachineClassesLoading}
+                        disabled={isMachineClassesLoading || isAddNewJobLoading}
+                        {...register("machineClassId", { required: true })}
                         defaultValue="Select Machine Class"
                         onChange={(e) => {
                           {
                             setSelectedPart({
                               id: "",
                               name: "",
-                              factoryId: "",
                             })
                             setSelectedMachineClassId(e.target.value)
                           }
@@ -286,8 +284,8 @@ const NewModal = ({
                           disabled={
                             isPartsLoading ||
                             isAddNewJobLoading ||
-                            isProfileLoading ||
-                            isUpdateJobTimerLoading
+                            isUpdateJobTimerLoading ||
+                            parts?.items?.length === 0
                           }
                         >
                           <div className="relative w-full">
@@ -505,6 +503,10 @@ const NewModal = ({
                         closeModal()
                         reset()
                         setIsStock(false)
+                        setSelectedPart({
+                          id: "",
+                          name: "",
+                        })
                       }}
                       ref={cancelButtonRef}
                     >

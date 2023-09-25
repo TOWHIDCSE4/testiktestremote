@@ -40,11 +40,9 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
   const { mutate, isLoading: isMutateLoading } = useUpdateJob()
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses()
-  const [selectedMachineClassId, setSelectedMachineClassId] = useState("")
   const [selectedPart, setSelectedPart] = useState({
     id: "",
     name: "",
-    factoryId: "",
   })
   const [partQuery, setPartQuery] = useState("")
   const {
@@ -53,34 +51,17 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
     setSelectedMachineClassId: setPartsMachineClassId,
     setSelectedLocationId: setLocationId,
   } = useGetPartByMachineClassLocation()
-  const {
-    data: parts_Factory,
-    setFactoryId,
-    setLocationId: setFactoryLocationId,
-  } = useGetPartsByFactoryLocation()
 
   useEffect(() => {
     if (jobData) {
-      setFactoryId(jobData.item.factoryId)
+      setSelectedPart({
+        id: jobData.item?.partId?._id,
+        name: jobData.item?.partId?.name as string,
+      })
       setLocationId(jobData.item.locationId)
-      setFactoryLocationId(jobData.item.locationId)
+      setPartsMachineClassId(jobData.item.machineClassId)
     }
   }, [jobData])
-
-  useEffect(() => {
-    if (parts_Factory && jobData) {
-      const _v = parts_Factory?.items?.find(
-        (item) => item._id === jobData.item.partId
-      )
-      setSelectedMachineClassId(_v?.machineClassId as string)
-      setPartsMachineClassId(_v?.machineClassId as string)
-      setSelectedPart({
-        id: jobData.item.partId,
-        name: _v?.name as string,
-        factoryId: jobData.item.factoryId,
-      })
-    }
-  }, [parts_Factory, jobData])
 
   useEffect(() => {
     setValue("partId", selectedPart.id as string)
@@ -89,9 +70,10 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
   const { register, handleSubmit, reset, watch, setValue } = useForm<T_Job>({
     values: {
       ...jobData?.item,
-      ...(jobData?.item?.isStock === false
+      ...(!jobData?.item?.isStock
         ? { dueDate: dayjs(jobData?.item.dueDate).format("YYYY-MM-DD") }
         : {}),
+      ...(!jobData?.item?.isStock ? { isStock: "false" } : { isStock: "true" }),
     },
   })
   const onSubmit = (data: T_Job) => {
@@ -112,10 +94,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
         toast.error(String(err))
       },
     }
-    mutate(
-      { ...data, factoryId: selectedPart.factoryId as string },
-      callBackReq
-    )
+    mutate(data, callBackReq)
   }
 
   const closeModal = () => {
@@ -202,16 +181,18 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         id="machineClass"
                         required
                         className={`block mt-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                        disabled={isMachineClassesLoading}
-                        value={selectedMachineClassId}
+                        disabled={
+                          isMachineClassesLoading ||
+                          isMutateLoading ||
+                          jobIsLoading
+                        }
+                        {...register("machineClassId", { required: true })}
                         onChange={(e) => {
                           {
                             setSelectedPart({
                               id: "",
                               name: "",
-                              factoryId: "",
                             })
-                            setSelectedMachineClassId(e.target.value)
                             setPartsMachineClassId(e.target.value)
                           }
                         }}
@@ -247,7 +228,12 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                           as="div"
                           value={selectedPart}
                           onChange={setSelectedPart}
-                          disabled={isPartsLoading}
+                          disabled={
+                            isPartsLoading ||
+                            jobIsLoading ||
+                            isMutateLoading ||
+                            parts?.items?.length === 0
+                          }
                         >
                           <div className="relative w-full">
                             <Combobox.Input
@@ -443,6 +429,10 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                       onClick={() => {
                         closeModal()
                         reset()
+                        setSelectedPart({
+                          id: "",
+                          name: "",
+                        })
                       }}
                       ref={cancelButtonRef}
                     >
