@@ -6,6 +6,7 @@ import {
   T_Job,
   T_JobTimer,
   T_Machine,
+  T_MachineClass,
   T_Part,
   T_User,
 } from "custom-validator"
@@ -19,6 +20,8 @@ import { useQueryClient } from "@tanstack/react-query"
 import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
+import useGetPartByMachineClassLocation from "../../../../../hooks/parts/useGetPartByMachineClassLocation"
+import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
 
 interface NewModalProps {
   isOpen: boolean
@@ -26,7 +29,6 @@ interface NewModalProps {
   locationId: string | null
   onClose: () => void
   jobTimer?: T_JobTimer
-  factoryId?: string
   partId?: string
 }
 
@@ -36,7 +38,6 @@ const NewModal = ({
   locationId,
   onClose,
   jobTimer,
-  factoryId,
   partId,
 }: NewModalProps) => {
   const queryClient = useQueryClient()
@@ -45,6 +46,8 @@ const NewModal = ({
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const [isStock, setIsStock] = useState(false)
   const [partQuery, setPartQuery] = useState("")
+  const { data: machineClasses, isLoading: isMachineClassesLoading } =
+    useMachineClasses()
   const [selectedPart, setSelectedPart] = useState({
     id: "",
     name: "",
@@ -52,9 +55,9 @@ const NewModal = ({
   const {
     data: parts,
     isLoading: isPartsLoading,
-    setLocationId,
-    setFactoryId,
-  } = useGetPartsByFactoryLocation()
+    setSelectedMachineClassId,
+    setSelectedLocationId: setLocationId,
+  } = useGetPartByMachineClassLocation()
 
   const { register, handleSubmit, reset, watch, setValue } = useForm<T_Job>()
   const { mutate: addNewJob, isLoading: isAddNewJobLoading } = useAddJob()
@@ -67,7 +70,7 @@ const NewModal = ({
         onSuccess: (data: T_BackendResponse) => {
           if (!data.error) {
             queryClient.invalidateQueries({
-              queryKey: ["timer-jobs", locationId, factoryId, partId],
+              queryKey: ["timer-jobs", locationId, partId],
             })
             queryClient.invalidateQueries({
               queryKey: ["job-timer-timer"],
@@ -140,12 +143,12 @@ const NewModal = ({
   }, [selectedPart])
 
   useEffect(() => {
-    if (factoryId) {
-      setFactoryId(factoryId)
-      setValue("factoryId", factoryId as string)
+    if (locationId) {
+      setLocationId(locationId)
+      setValue("locationId", locationId as string)
       setValue("partId", partId as string)
     }
-  }, [factoryId])
+  }, [locationId])
 
   // TODO: this is a temporary fix to here
   const filteredParts =
@@ -221,39 +224,41 @@ const NewModal = ({
                     </div>
                     <div className="md:flex items-center mt-3">
                       <label
-                        htmlFor="factory"
+                        htmlFor="machine-process"
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
-                        Factory
+                        Machine Class
                         <span className="text-red-500 top-[-3px] relative">
                           {" "}
                           *
                         </span>
                       </label>
                       <select
-                        disabled={
-                          isFactoriesLoading ||
-                          isAddNewJobLoading ||
-                          isProfileLoading ||
-                          isUpdateJobTimerLoading ||
-                          !!factoryId
-                        }
-                        id="factory"
+                        id="machineClass"
                         required
-                        {...register("factoryId", { required: true })}
-                        defaultValue="Select Factory"
-                        className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                        className={`block mt-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                        disabled={isMachineClassesLoading || isAddNewJobLoading}
+                        {...register("machineClassId", { required: true })}
+                        defaultValue="Select Machine Class"
                         onChange={(e) => {
-                          setFactoryId(e.target.value)
+                          {
+                            setSelectedPart({
+                              id: "",
+                              name: "",
+                            })
+                            setSelectedMachineClassId(e.target.value)
+                          }
                         }}
-                        value={factoryId}
                       >
-                        <option value="">Select Factory</option>
-                        {factories?.items?.map(
-                          (item: T_Factory, index: number) => {
+                        <option value="">Select Machine Class</option>
+                        {machineClasses?.items?.map(
+                          (machineClass: T_MachineClass, index: number) => {
                             return (
-                              <option key={index} value={item._id as string}>
-                                {item.name}
+                              <option
+                                key={index}
+                                value={machineClass._id as string}
+                              >
+                                {machineClass.name}
                               </option>
                             )
                           }
@@ -279,9 +284,8 @@ const NewModal = ({
                           disabled={
                             isPartsLoading ||
                             isAddNewJobLoading ||
-                            isProfileLoading ||
                             isUpdateJobTimerLoading ||
-                            filteredParts?.length === 0
+                            parts?.items?.length === 0
                           }
                         >
                           <div className="relative w-full">
@@ -290,6 +294,7 @@ const NewModal = ({
                               displayValue={(selected: {
                                 id: string
                                 name: string
+                                factoryId: string
                               }) => {
                                 return selected ? selected.name : ""
                               }}
@@ -317,7 +322,11 @@ const NewModal = ({
                                   (item: T_Part, index: number) => (
                                     <Combobox.Option
                                       key={index}
-                                      value={{ id: item._id, name: item.name }}
+                                      value={{
+                                        id: item._id,
+                                        name: item.name,
+                                        factoryId: item.factoryId,
+                                      }}
                                       className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
                                     >
                                       <span className="block">{item.name}</span>
@@ -442,57 +451,33 @@ const NewModal = ({
                             min={new Date().toISOString().split("T")[0]}
                           />
                         </div>
-                        <div className="md:flex items-center mt-3">
-                          <label
-                            htmlFor="priorityStatus"
-                            className="uppercase font-semibold text-gray-800 md:w-36"
-                          >
-                            Priority
-                          </label>
-                          <select
-                            id="priorityStatus"
-                            {...register("priorityStatus", { required: true })}
-                            className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                            defaultValue="High"
-                            required
-                            disabled={
-                              isAddNewJobLoading ||
-                              isProfileLoading ||
-                              isUpdateJobTimerLoading
-                            }
-                          >
-                            <option>High</option>
-                            <option>Medium</option>
-                            <option>Low</option>
-                          </select>
-                        </div>
                       </>
-                    ) : (
-                      <div className="md:flex items-center mt-3">
-                        <label
-                          htmlFor="priorityStatus"
-                          className="uppercase font-semibold text-gray-800 md:w-36"
-                        >
-                          Priority
-                        </label>
-                        <select
-                          id="priorityStatus"
-                          {...register("priorityStatus", { required: true })}
-                          className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                          defaultValue="High"
-                          required
-                          disabled={
-                            isAddNewJobLoading ||
-                            isProfileLoading ||
-                            isUpdateJobTimerLoading
-                          }
-                        >
-                          <option>High</option>
-                          <option>Medium</option>
-                          <option>Low</option>
-                        </select>
-                      </div>
-                    )}
+                    ) : null}
+
+                    <div className="md:flex items-center mt-3">
+                      <label
+                        htmlFor="priorityStatus"
+                        className="uppercase font-semibold text-gray-800 md:w-36"
+                      >
+                        Priority
+                      </label>
+                      <select
+                        id="priorityStatus"
+                        {...register("priorityStatus", { required: true })}
+                        className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                        defaultValue="High"
+                        required
+                        disabled={
+                          isAddNewJobLoading ||
+                          isProfileLoading ||
+                          isUpdateJobTimerLoading
+                        }
+                      >
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                      </select>
+                    </div>
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
@@ -518,6 +503,10 @@ const NewModal = ({
                         closeModal()
                         reset()
                         setIsStock(false)
+                        setSelectedPart({
+                          id: "",
+                          name: "",
+                        })
                       }}
                       ref={cancelButtonRef}
                     >

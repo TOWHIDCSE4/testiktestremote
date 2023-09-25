@@ -15,6 +15,10 @@ const jobs = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Part",
   },
+  machineClassId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "MachineClass",
+  },
   factoryId: {
     type: mongoose.Schema.ObjectId,
     ref: "Factory",

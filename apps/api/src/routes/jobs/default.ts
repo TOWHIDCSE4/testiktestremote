@@ -8,6 +8,7 @@ import {
   REQUIRED_VALUES_MISSING,
 } from "../../utils/constants"
 import { ZJob } from "custom-validator"
+import Parts from "../../models/parts"
 
 export const getAllJobs = async (req: Request, res: Response) => {
   try {
@@ -39,7 +40,7 @@ export const getJob = async (req: Request, res: Response) => {
     const getJob = await Jobs.findOne({
       _id: req.params.id,
       $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-    })
+    }).populate("partId")
     res.json({
       error: false,
       message: null,
@@ -60,13 +61,19 @@ export const getJob = async (req: Request, res: Response) => {
 export const addJob = async (req: Request, res: Response) => {
   const parsedJob = ZJob.safeParse(req.body)
   if (parsedJob.success) {
-    const newJob = new Jobs(req.body)
+    const part = await Parts.findOne({
+      _id: req.body.partId,
+    })
+    const newJob = new Jobs({
+      ...req.body,
+      factoryId: part?.factoryId,
+    })
     try {
       if (req.body.isStock) {
         const getStockJob = await Jobs.findOne({
           locationId: req.body.locationId,
           partId: req.body.partId,
-          factoryId: req.body.factoryId,
+          factoryId: part?.factoryId,
           isStock: true,
           $and: [
             { status: { $ne: "Deleted" } },
@@ -94,7 +101,7 @@ export const addJob = async (req: Request, res: Response) => {
         const getStockJob = await Jobs.findOne({
           locationId: req.body.locationId,
           partId: req.body.partId,
-          factoryId: req.body.factoryId,
+          factoryId: part?.factoryId,
           isStock: true,
           $and: [
             { status: { $ne: "Deleted" } },
@@ -106,7 +113,7 @@ export const addJob = async (req: Request, res: Response) => {
           const newStockJob = new Jobs({
             locationId: req.body.locationId,
             partId: req.body.partId,
-            factoryId: req.body.factoryId,
+            factoryId: part?.factoryId,
             name: req.body.name,
             drawingNumber: req.body.drawingNumber,
             userId: req.body.userId,
