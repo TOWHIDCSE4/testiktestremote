@@ -110,7 +110,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                           aria-hidden="true"
                           className={combineClasses(
                             tab.current ? "bg-blue-950" : "bg-transparent",
-                            "absolute inset-x-0 bottom-0 h-1"
+                            "inset-x-0"
                           )}
                         />
                       </button>
@@ -119,8 +119,47 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                 </div>
               </div>
             </div>
+            <div
+              className={`flex justify-between items-center px-4 md:px-0 mt-2 pb-2 m md:mt-0 shadow`}
+            >
+              <div className="md:flex items-center mt-2">
+                <label
+                  htmlFor="JobSelector"
+                  className="uppercase font-semibold text-lg text-gray-800 md:w-[70%] text-right mr-3"
+                >
+                  JOB SELECTOR
+                </label>
+                <select
+                  className={`block mt-2  bg-white dark:bg-gray-300 font-semibold md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                >
+                  <option value="">CLIENT</option>
+                  <option value="US">UNITED STATES</option>
+                  <option value="CA">CANADA</option>
+                  <option value="FR">FRANCE</option>
+                  <option value="DE">GERMANY</option>
+                </select>
+              </div>
+              <div></div>
+              <div className={`mt-2 mx-2`}>
+                <div className="flex">
+                  <button className="px-3 py-1 rounded-md  text-gray-800 font-semibold text-lg">
+                    SEARCH
+                  </button>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"></div>
+                    <input
+                      id="search"
+                      name="search"
+                      className={`block w-56 rounded-md border-0 bg-white dark:bg-gray-300  py-1.5  pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6`}
+                      placeholder="TYPE HERE"
+                      type="search"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
             {/* Table */}
-            <div className="w-full overflow-x-auto h-[30rem] relative">
+            <div className="w-full overflow-x-auto relative">
               <TabTable tab={currentTab} locationId={locationId} />
             </div>
           </div>

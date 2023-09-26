@@ -88,7 +88,7 @@ const Accordion = (props: {
                     subItem.href === pathname
                       ? "text-white"
                       : "hover:text-white",
-                    pathname === subItem.href ? "pl-4" : "ml-10",
+                    pathname === subItem.href ? "pl-[14px]" : "ml-10",
                     "block rounded-md py-2 pr-2 leading-6 text-gray-500 font-medium"
                   )}
                 >

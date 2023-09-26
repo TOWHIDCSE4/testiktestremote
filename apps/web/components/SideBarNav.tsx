@@ -260,7 +260,8 @@ const SideBarNav = () => {
                             item.href === pathname
                               ? "text-white"
                               : "hover:text-white text-gray-500",
-                            "group flex gap-x-3 rounded-md p-2 leading-6 font-medium uppercase ml-2"
+                            item.href === pathname ? "ml-[6px]" : "ml-2",
+                            "group flex gap-x-3 rounded-md p-2 leading-6 font-medium uppercase"
                           )}
                         >
                           {item.href === pathname ? (

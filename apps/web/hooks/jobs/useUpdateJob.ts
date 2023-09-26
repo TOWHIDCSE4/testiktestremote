@@ -1,38 +1,13 @@
 import { T_Job, T_Part } from "custom-validator"
-import { API_URL_JOBS, API_URL_PARTS } from "../../helpers/constants"
+import { API_URL_JOBS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 
-export async function updateJob({
-  _id,
-  name,
-  factoryId,
-  locationId,
-  userId,
-  partId,
-  drawingNumber,
-  count,
-  priorityStatus,
-  status,
-  isStock,
-  dueDate,
-}: T_Job) {
+export async function updateJob(props: T_Job) {
   const token = Cookies.get("tfl")
-  const res = await fetch(`${API_URL_JOBS}/${_id}`, {
+  const res = await fetch(`${API_URL_JOBS}/${props._id}`, {
     method: "PATCH",
-    body: JSON.stringify({
-      name,
-      factoryId,
-      locationId,
-      userId,
-      partId,
-      drawingNumber,
-      count,
-      priorityStatus,
-      status,
-      isStock,
-      dueDate,
-    }),
+    body: JSON.stringify(props),
     headers: {
       "content-type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -42,37 +17,7 @@ export async function updateJob({
 }
 
 function useUpdateJob() {
-  const query = useMutation(
-    ({
-      _id,
-      name,
-      factoryId,
-      locationId,
-      userId,
-      partId,
-      drawingNumber,
-      count,
-      priorityStatus,
-      status,
-      isStock,
-      dueDate,
-    }: T_Job) =>
-      updateJob({
-        _id,
-        name,
-        factoryId,
-        locationId,
-        userId,
-        partId,
-        drawingNumber,
-        count,
-        priorityStatus,
-        status,
-        isStock,
-        dueDate,
-      })
-  )
-
+  const query = useMutation((props: T_Job) => updateJob(props))
   return query
 }
 

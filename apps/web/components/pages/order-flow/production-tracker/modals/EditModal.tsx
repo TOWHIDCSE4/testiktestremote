@@ -5,24 +5,23 @@ import {
   T_Factory,
   T_Job,
   T_Machine,
+  T_MachineClass,
   T_Part,
 } from "custom-validator"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import useFactoryMachineClasses from "../../../../../hooks/factories/useFactoryMachineClasses"
-import useGetMachineByClass from "../../../../../hooks/machines/useGetMachinesByLocation"
-import useGetPartByMachineClass from "../../../../../hooks/parts/useGetPartByMachineClassLocation"
-import usePart from "../../../../../hooks/parts/useGetPart"
-import useAddTimer from "../../../../../hooks/timers/useAddTimer"
 import useFactories from "../../../../../hooks/factories/useFactories"
-import useLocations from "../../../../../hooks/locations/useLocations"
 import useGetJob from "../../../../../hooks/jobs/useGetJob"
-import useGetUser from "../../../../../hooks/users/useGetUser"
-import useUsers from "../../../../../hooks/users/useUsers"
 import useGetPartsByFactoryLocation from "../../../../../hooks/parts/useGetPartsByFactoryLocation"
-import useUpdatePart from "../../../../../hooks/parts/useUpdatePart"
 import useUpdateJob from "../../../../../hooks/jobs/useUpdateJob"
 import { useQueryClient } from "@tanstack/react-query"
+import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import { Combobox } from "@headlessui/react"
+import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
+import useGetPartByMachineClassLocation from "../../../../../hooks/parts/useGetPartByMachineClassLocation"
+import dayjs from "dayjs"
+import * as timezone from "dayjs/plugin/timezone"
+import * as utc from "dayjs/plugin/utc"
 
 interface EditModalProps {
   isOpen: boolean
@@ -32,30 +31,51 @@ interface EditModalProps {
 }
 
 const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
+  dayjs.extend(utc.default)
+  dayjs.extend(timezone.default)
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
-  const { data: factories, isLoading: isFactoriesLoading } = useFactories()
 
   const { data: jobData, isLoading: jobIsLoading } = useGetJob(jobId)
   const { mutate, isLoading: isMutateLoading } = useUpdateJob()
-
+  const { data: machineClasses, isLoading: isMachineClassesLoading } =
+    useMachineClasses()
+  const [selectedPart, setSelectedPart] = useState({
+    id: "",
+    name: "",
+  })
+  const [partQuery, setPartQuery] = useState("")
   const {
-    data: partsData,
-    isLoading: partsIsLoading,
-    setFactoryId,
-    setLocationId,
-  } = useGetPartsByFactoryLocation()
+    data: parts,
+    isLoading: isPartsLoading,
+    setSelectedMachineClassId: setPartsMachineClassId,
+    setSelectedLocationId: setLocationId,
+  } = useGetPartByMachineClassLocation()
+
   useEffect(() => {
-    if (jobData && !jobIsLoading) {
+    if (jobData) {
+      setSelectedPart({
+        id: jobData.item?.partId?._id,
+        name: jobData.item?.partId?.name as string,
+      })
       setLocationId(jobData.item.locationId)
-      setFactoryId(jobData.item.factoryId)
+      setPartsMachineClassId(jobData.item.machineClassId)
     }
   }, [jobData])
 
-  const { register, handleSubmit, reset, watch } = useForm<T_Job>({
-    values: jobData?.item,
-  })
+  useEffect(() => {
+    setValue("partId", selectedPart.id as string)
+  }, [selectedPart])
 
+  const { register, handleSubmit, reset, watch, setValue } = useForm<T_Job>({
+    values: {
+      ...jobData?.item,
+      ...(!jobData?.item?.isStock
+        ? { dueDate: dayjs(jobData?.item.dueDate).format("YYYY-MM-DD") }
+        : {}),
+      ...(!jobData?.item?.isStock ? { isStock: "false" } : { isStock: "true" }),
+    },
+  })
   const onSubmit = (data: T_Job) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
@@ -80,7 +100,14 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
   const closeModal = () => {
     onClose()
   }
-
+  const filteredParts =
+    partQuery === ""
+      ? parts?.items?.slice(0, 30) || []
+      : parts?.items
+          ?.filter((timer) => {
+            return timer.name.toLowerCase().includes(partQuery.toLowerCase())
+          })
+          ?.slice(0, 30) || []
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
@@ -141,28 +168,44 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                     </div>
                     <div className="md:flex items-center mt-3">
                       <label
-                        htmlFor="factory"
+                        htmlFor="machine-process"
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
-                        Factory
+                        Machine Class
                         <span className="text-red-500 top-[-3px] relative">
                           {" "}
                           *
                         </span>
                       </label>
                       <select
-                        disabled={isFactoriesLoading}
-                        id="factory"
+                        id="machineClass"
                         required
-                        {...register("factoryId", { required: true })}
-                        className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                        className={`block mt-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                        disabled={
+                          isMachineClassesLoading ||
+                          isMutateLoading ||
+                          jobIsLoading
+                        }
+                        {...register("machineClassId", { required: true })}
+                        onChange={(e) => {
+                          {
+                            setSelectedPart({
+                              id: "",
+                              name: "",
+                            })
+                            setPartsMachineClassId(e.target.value)
+                          }
+                        }}
                       >
-                        <option value="">Select Factory</option>
-                        {factories?.items?.map(
-                          (item: T_Factory, index: number) => {
+                        <option value="">Select Machine Class</option>
+                        {machineClasses?.items?.map(
+                          (machineClass: T_MachineClass, index: number) => {
                             return (
-                              <option key={index} value={item._id as string}>
-                                {item.name}
+                              <option
+                                key={index}
+                                value={machineClass._id as string}
+                              >
+                                {machineClass.name}
                               </option>
                             )
                           }
@@ -180,19 +223,68 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                           *
                         </span>
                       </label>
-                      <select
-                        id="machine-part"
-                        className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                        required
-                        {...register("partId", { required: true })}
-                      >
-                        <option value="">Select Product</option>
-                        {partsData?.items.map((key, index) => (
-                          <option key={index} value={key._id as string}>
-                            {key.name}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="block w-full">
+                        <Combobox
+                          as="div"
+                          value={selectedPart}
+                          onChange={setSelectedPart}
+                          disabled={
+                            isPartsLoading ||
+                            jobIsLoading ||
+                            isMutateLoading ||
+                            parts?.items?.length === 0
+                          }
+                        >
+                          <div className="relative w-full">
+                            <Combobox.Input
+                              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
+                              displayValue={(selected: {
+                                id: string
+                                name: string
+                                factoryId: string
+                              }) => {
+                                return selected ? selected.name : ""
+                              }}
+                              required
+                              onChange={(event) =>
+                                setPartQuery(event.target.value)
+                              }
+                              placeholder="Search Part"
+                              autoComplete="off"
+                            />
+                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                              <ChevronUpDownIcon
+                                className={`h-5 w-5 ${
+                                  filteredParts?.length === 0
+                                    ? "text-gray-300"
+                                    : "text-gray-500"
+                                }`}
+                                aria-hidden="true"
+                              />
+                            </Combobox.Button>
+
+                            {filteredParts && filteredParts.length > 0 ? (
+                              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                {filteredParts.map(
+                                  (item: T_Part, index: number) => (
+                                    <Combobox.Option
+                                      key={index}
+                                      value={{
+                                        id: item._id,
+                                        name: item.name,
+                                        factoryId: item.factoryId,
+                                      }}
+                                      className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
+                                    >
+                                      <span className="block">{item.name}</span>
+                                    </Combobox.Option>
+                                  )
+                                )}
+                              </Combobox.Options>
+                            ) : null}
+                          </div>
+                        </Combobox>
+                      </div>
                     </div>
                     <div className="md:flex items-center mt-3">
                       <label
@@ -224,10 +316,22 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                       <select
                         id="isStock"
                         {...register("isStock", { required: true })}
-                        className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                        className={`block w-full rounded-md border-0 ${
+                          jobData
+                            ? jobData.item.isStock
+                              ? "cursor-not-allowed"
+                              : "cursor-auto"
+                            : "cursor-auto"
+                        } py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         defaultValue="No"
                         required
-                        disabled={jobIsLoading}
+                        disabled={
+                          jobData
+                            ? jobData.item.isStock
+                              ? true
+                              : false
+                            : jobIsLoading
+                        }
                       >
                         <option value="false">No</option>
                         <option value="true">Yes</option>
@@ -274,30 +378,32 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             required
                             disabled={jobIsLoading}
+                            min={new Date().toISOString().split("T")[0]}
                           />
-                        </div>
-                        <div className="md:flex items-center mt-3">
-                          <label
-                            htmlFor="priorityStatus"
-                            className="uppercase font-semibold text-gray-800 md:w-36"
-                          >
-                            Priority
-                          </label>
-                          <select
-                            id="priorityStatus"
-                            {...register("priorityStatus", { required: true })}
-                            className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                            defaultValue="High"
-                            required
-                            disabled={jobIsLoading}
-                          >
-                            <option>High</option>
-                            <option>Medium</option>
-                            <option>Low</option>
-                          </select>
                         </div>
                       </>
                     ) : null}
+
+                    <div className="md:flex items-center mt-3">
+                      <label
+                        htmlFor="priorityStatus"
+                        className="uppercase font-semibold text-gray-800 md:w-36"
+                      >
+                        Priority
+                      </label>
+                      <select
+                        id="priorityStatus"
+                        {...register("priorityStatus", { required: true })}
+                        className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                        defaultValue="High"
+                        required
+                        disabled={jobIsLoading}
+                      >
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                      </select>
+                    </div>
                   </div>
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
@@ -323,6 +429,10 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                       onClick={() => {
                         closeModal()
                         reset()
+                        setSelectedPart({
+                          id: "",
+                          name: "",
+                        })
                       }}
                       ref={cancelButtonRef}
                     >
