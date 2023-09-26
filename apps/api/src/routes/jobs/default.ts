@@ -117,7 +117,7 @@ export const addJob = async (req: Request, res: Response) => {
             name: req.body.name,
             drawingNumber: req.body.drawingNumber,
             userId: req.body.userId,
-            status: "Pending",
+            status: "Active",
             isStock: true,
           })
           await newStockJob.save()

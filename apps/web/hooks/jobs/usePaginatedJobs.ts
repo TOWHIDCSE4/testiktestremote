@@ -16,14 +16,20 @@ export async function getAllParts({
   page,
   locationId,
   status,
+  search,
+  jobType,
 }: {
   page: number
   locationId: string
   status?: string
+  search?: string
+  jobType?: string
 }) {
   const token = Cookies.get("tfl")
+  // console.log(search, "Job" , jobType)
+  console.log("🚀 ~ file: usePaginatedJobs.ts:30 ~ jobType:", jobType)
   const res = await fetch(
-    `${API_URL_JOBS}/paginated?page=${page}&locationId=${locationId}&status=${status}`,
+    `${API_URL_JOBS}/paginated?page=${page}&locationId=${locationId}&status=${status}&search=${search}&selectedjob=${jobType}`,
     {
       method: "GET",
       headers: {
@@ -39,9 +45,11 @@ function usePaginatedJobs() {
   const [page, setPage] = useState(1)
   const [locationId, setLocationId] = useState("")
   const [status, setStatus] = useState("")
+  const [search, setSearch] = useState("")
+  const [jobType, setJobType] = useState("")
   const query = useQuery(
-    ["jobs", page, locationId, status],
-    () => getAllParts({ page, locationId, status }),
+    ["jobs", page, locationId, status, search, jobType],
+    () => getAllParts({ page, locationId, status, search, jobType }),
     {
       refetchOnWindowFocus: false,
       enabled: !!locationId && !!page,
@@ -49,10 +57,10 @@ function usePaginatedJobs() {
     }
   )
   useEffect(() => {
-    if (locationId && page) {
+    if (locationId && page && search && jobType) {
       query.refetch()
     }
-  }, [page, locationId])
+  }, [page, locationId, search, jobType])
 
   return {
     ...query,
@@ -62,6 +70,10 @@ function usePaginatedJobs() {
     setLocationId,
     status,
     setStatus,
+    search,
+    setSearch,
+    jobType,
+    setJobType,
   }
 }
 export default usePaginatedJobs
