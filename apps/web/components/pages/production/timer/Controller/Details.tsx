@@ -321,7 +321,6 @@ const Details = ({
         locationId={locationId}
         onClose={() => setOpenNewJobModal(false)}
         jobTimer={jobTimer}
-        factoryId={factoryId}
         partId={partId}
       />
     </div>
