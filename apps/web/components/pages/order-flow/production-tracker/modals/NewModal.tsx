@@ -344,30 +344,6 @@ const NewModal = ({
                         htmlFor="drawingNumber"
                         className="uppercase font-semibold text-gray-800 md:w-36"
                       >
-                        Drawing Number
-                        <span className="text-red-500 top-[-3px] relative">
-                          {" "}
-                          *
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        {...register("drawingNumber")}
-                        id="drawingNumber"
-                        required
-                        className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                        disabled={
-                          isAddNewJobLoading ||
-                          isProfileLoading ||
-                          isUpdateJobTimerLoading
-                        }
-                      />
-                    </div>
-                    <div className="md:flex items-center mt-3">
-                      <label
-                        htmlFor="drawingNumber"
-                        className="uppercase font-semibold text-gray-800 md:w-36"
-                      >
                         Is Stock?
                       </label>
                       <select
@@ -394,6 +370,32 @@ const NewModal = ({
                         <option value="true">Yes</option>
                       </select>
                     </div>
+                    {isStock ? null : (
+                      <div className="md:flex items-center mt-3">
+                        <label
+                          htmlFor="drawingNumber"
+                          className="uppercase font-semibold text-gray-800 md:w-36"
+                        >
+                          Drawing Number
+                          <span className="text-red-500 top-[-3px] relative">
+                            {" "}
+                            *
+                          </span>
+                        </label>
+                        <input
+                          type="text"
+                          {...register("drawingNumber")}
+                          id="drawingNumber"
+                          required
+                          className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                          disabled={
+                            isAddNewJobLoading ||
+                            isProfileLoading ||
+                            isUpdateJobTimerLoading
+                          }
+                        />
+                      </div>
+                    )}
                     {!isStock ? (
                       <>
                         <div className="md:flex items-center mt-3">

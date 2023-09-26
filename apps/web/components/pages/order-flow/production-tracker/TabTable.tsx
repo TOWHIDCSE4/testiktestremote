@@ -22,9 +22,13 @@ import TabTableDetail from "./TabTable-detail"
 const TabTable = ({
   tab,
   locationId,
+  jobSelection,
+  searchInput,
 }: {
   tab: T_JobStatus
   locationId: string
+  jobSelection: any
+  searchInput: string
 }) => {
   const {
     data: jobs,
@@ -32,6 +36,10 @@ const TabTable = ({
     setLocationId,
     setStatus,
     setPage,
+    setSearch,
+    search,
+    setJobType,
+    jobType,
     page,
   } = usePaginatedJobs()
 
@@ -54,11 +62,13 @@ const TabTable = ({
   useEffect(() => {
     if (tab) {
       setStatus(tab)
+      setSearch(searchInput)
+      setJobType(jobSelection)
     }
     if (locationId) {
       setLocationId(locationId)
     }
-  }, [tab, locationId])
+  }, [tab, locationId, searchInput, jobSelection])
 
   const numberOfPages = Math.ceil((jobs?.itemCount as number) / 5)
 
