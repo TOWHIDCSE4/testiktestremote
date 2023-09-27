@@ -297,8 +297,11 @@ const TabTable = ({
                           leaveFrom="transform opacity-100 scale-100"
                           leaveTo="transform opacity-0 scale-95"
                         >
-                          <Menu.Items className="absolute right-9 z-10 mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                            <div className="py-1">
+                          <Menu.Items
+                            className="absolute right-9 z-50 -mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                            style={{ overflow: "visible" }}
+                          >
+                            <div className="">
                               <Menu.Item>
                                 {({ active }) => (
                                   <span
