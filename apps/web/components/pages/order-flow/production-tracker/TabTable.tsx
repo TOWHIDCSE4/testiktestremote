@@ -6,6 +6,8 @@ import {
   ChevronDownIcon,
   EllipsisVerticalIcon,
   ChartBarIcon,
+  LockClosedIcon,
+  LockOpenIcon,
 } from "@heroicons/react/24/solid"
 import { T_Job, T_JobStatus } from "custom-validator"
 import usePaginatedJobs from "../../../../hooks/jobs/usePaginatedJobs"
@@ -52,11 +54,29 @@ const TabTable = ({
   const [jobName, setJobName] = useState("")
   const [deleteModal, setDeleteModal] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Array<boolean>>([])
+  const [locked, setLocked] = useState<boolean>(false)
+  const [expandedRowsCount, setExpandedRowsCount] = useState<number>(0) // Track the number of expanded rows
 
   const toggleRowExpansion = (index: number) => {
-    const newExpandedRows = [...expandedRows]
-    newExpandedRows[index] = !newExpandedRows[index]
-    setExpandedRows(newExpandedRows)
+    if (locked) {
+      // If locked, expand only one row at a time
+      const newExpandedRows = [...expandedRows]
+      newExpandedRows.fill(false) // Collapse all rows
+      newExpandedRows[index] = !expandedRows[index] // Toggle the clicked row
+      setExpandedRows(newExpandedRows)
+    } else {
+      // If not locked, toggle multiple rows
+      const newExpandedRows = [...expandedRows]
+      // newExpandedRows.fill(false); // Collapse all rows
+      newExpandedRows[index] = !newExpandedRows[index] // Toggle the clicked row
+      setExpandedRows(newExpandedRows)
+      setExpandedRowsCount(newExpandedRows.length)
+      console.log(newExpandedRows, expandedRowsCount)
+    }
+  }
+
+  const toggleLock = () => {
+    setLocked(locked ? false : true)
   }
 
   useEffect(() => {
@@ -155,7 +175,17 @@ const TabTable = ({
                 scope="col"
                 className="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8 w-16"
               >
-                <span className="sr-only">Edit</span>
+                {locked ? (
+                  <LockClosedIcon
+                    className="w-[1.5rxxem] h-[1.5rem]"
+                    onClick={() => toggleLock()}
+                  />
+                ) : (
+                  <LockOpenIcon
+                    className="w-[1.5rem] h-[1.5rem]"
+                    onClick={() => toggleLock()}
+                  />
+                )}
               </th>
             </tr>
           </thead>
