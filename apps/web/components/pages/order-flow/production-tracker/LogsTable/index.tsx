@@ -129,7 +129,56 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         }`}
       >
         <div className="px-6 py-4">
-          <h3 className="text-2xl font-semibold">Global Logs</h3>
+          <div className="flex">
+            <div className=" w-[32%]">
+              <h3 className="text-2xl font-semibold pr-2">GLOBAL PRODUCTION</h3>
+              <div className="w-full flex justify-center items-center">
+                <select
+                  id="filterBy"
+                  name="filterBy"
+                  className="mt-2 w-[10rem] block rounded-lg border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                  onChange={(e) => setFilterBy(e.target.value)}
+                >
+                  <option value="BatchAction">Batch action</option>
+                  <option value="Factories">Factory</option>
+                  <option value="Machine Classes">Machine Class</option>
+                  <option value="Machines">Machine</option>
+                </select>
+              </div>
+            </div>
+            <div className="w-[68%] tracking-wide">
+              <div className="flex justify-between items-center">
+                <span className="flex w-[10rem] text-[11px] font-semibold">
+                  <p className="flex justify-end w-2/3">CITY :</p>
+                  <p className="w-1/3"></p>
+                </span>
+                <span className="flex  w-[12rem] text-[11px] font-semibold">
+                  <p className="flex justify-end w-2/3">MACHINE CLASS :</p>
+                  <p className="w-1/3"></p>
+                </span>
+                <span className="flex  w-[12.5rem] text-[11px] font-semibold">
+                  <p className="flex justify-end w-2/3">DATE RANGE :</p>
+                  <p className="w-1/2"></p>
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="flex  w-[10rem] text-[11px] font-semibold">
+                  <p className="flex justify-end w-2/3">MACHINE :</p>
+                  <p className="w-1/3"></p>
+                </span>
+                <span className="flex  w-[12rem] text-[11px] font-semibold">
+                  <p className="flex justify-end w-2/3">PART SELECTOR :</p>
+                  <p className="w-1/3"></p>
+                </span>
+                <span className="flex  w-[12.5rem] text-[10px] font-semibold">
+                  <p className="flex justify-end w-2/3 p-2 border rounded-lg border-1 border-black bg-red-700 text-slate-50">
+                    GENERATE REPORT
+                  </p>
+                  <p className="w-1/3"></p>
+                </span>
+              </div>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <label
