@@ -19,6 +19,16 @@ import { set } from "mongoose"
 import useGetMachinesByLocation from "../../../../../hooks/machines/useGetMachinesByLocation"
 
 const LogsTable = ({ locationId }: { locationId: string }) => {
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null)
+
+  const toggleAccordion = (id: string) => {
+    if (openAccordion === id) {
+      setOpenAccordion(null)
+    } else {
+      setOpenAccordion(id)
+    }
+  }
+
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
@@ -121,6 +131,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
       )
     }
   }
+
   return (
     <>
       <div
@@ -130,8 +141,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
       >
         <div className="px-6 py-4">
           <div className="flex">
-            <div className=" w-[32%]">
-              <h3 className="text-2xl font-semibold pr-2">GLOBAL PRODUCTION</h3>
+            <div className=" w-[35%] whitespace-nowrap">
+              <h3 className="text-2xl font-semibold pr-1">GLOBAL PRODUCTION</h3>
               <div className="w-full flex justify-center items-center">
                 <select
                   id="filterBy"
@@ -148,38 +159,45 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
             </div>
             <div className="w-[68%] tracking-wide">
               <div className="flex justify-between items-center">
-                <span className="flex w-[10rem] text-[11px] font-semibold">
-                  <p className="flex justify-end w-2/3">CITY :</p>
-                  <p className="w-1/3"></p>
+                <span className="flex w-[10rem] text-[11px] ">
+                  <p className="flex justify-end w-2/3 font-semibold">CITY :</p>
+                  <p className="w-1/3">NY</p>
                 </span>
-                <span className="flex  w-[12rem] text-[11px] font-semibold">
-                  <p className="flex justify-end w-2/3">MACHINE CLASS :</p>
-                  <p className="w-1/3"></p>
+                <span className="flex  w-[12rem] text-[11px]">
+                  <p className="flex justify-end w-2/3 font-semibold">
+                    MACHINE CLASS :
+                  </p>
+                  <p className="w-1/3">High</p>
                 </span>
-                <span className="flex  w-[12.5rem] text-[11px] font-semibold">
-                  <p className="flex justify-end w-2/3">DATE RANGE :</p>
-                  <p className="w-1/2"></p>
+                <span className="flex  w-[12.5rem] text-[11px] ">
+                  <p className="flex justify-end w-2/3 font-semibold">
+                    DATE RANGE :
+                  </p>
+                  <p className="w-1/2">9/25/2023</p>
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="flex  w-[10rem] text-[11px] font-semibold">
-                  <p className="flex justify-end w-2/3">MACHINE :</p>
-                  <p className="w-1/3"></p>
+                <span className="flex  w-[10rem] text-[11px] ">
+                  <p className="flex justify-end w-2/3 font-semibold">
+                    MACHINE :
+                  </p>
+                  <p className="w-1/3">Tornado</p>
                 </span>
-                <span className="flex  w-[12rem] text-[11px] font-semibold">
-                  <p className="flex justify-end w-2/3">PART SELECTOR :</p>
-                  <p className="w-1/3"></p>
+                <span className="flex  w-[12rem] text-[11px] ">
+                  <p className="flex justify-end w-2/3 font-semibold">
+                    PART SELECTOR :
+                  </p>
+                  <p className="w-1/3">CL3</p>
                 </span>
-                <span className="flex  w-[12.5rem] text-[10px] font-semibold">
-                  <p className="flex justify-end w-2/3 p-2 border rounded-lg border-1 border-black bg-red-700 text-slate-50">
+                <span className="flex  w-[12.5rem] text-[10px] font-semibold pl-7 pt-2">
+                  <p className="flex justify-end w-4/5 p-2 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
                     GENERATE REPORT
                   </p>
-                  <p className="w-1/3"></p>
                 </span>
               </div>
             </div>
           </div>
-          <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
@@ -285,10 +303,35 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 </tr>
               </thead>
               {/* table body starts here */}
-              <tbody className="">
-                <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="w-4 p-4">
+              <tbody data-accordion="open">
+                <tr
+                  className={`bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 ${
+                    openAccordion === "accordion-arrow-icon-body-1"
+                      ? "open"
+                      : ""
+                  }`}
+                  data-accordion-target="#accordion-arrow-icon-body-1"
+                  aria-expanded={
+                    openAccordion === "accordion-arrow-icon-body-1"
+                  }
+                  aria-controls="accordion-arrow-icon-body-1"
+                  onClick={() => toggleAccordion("accordion-arrow-icon-body-1")}
+                >
+                  <td className=" pr-6">
                     <div className="flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        aria-hidden="true"
+                        className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
+                          clip-rule="evenodd"
+                        ></path>
+                      </svg>
                       <input
                         id="checkbox-table-search-1"
                         type="checkbox"
@@ -306,14 +349,53 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    Apple MacBook Pro 17"
+                    9/25/2023
                   </th>
-                  <td className="px-6 py-4">Silver</td>
-                  <td className="px-6 py-4">Laptop</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">$2999</td>
+                  <td className="px-6 py-4">Tornado</td>
+                  <td className="px-6 py-4">CL3</td>
+                  <td className="px-6 py-4">200</td>
+                  <td className="px-6 py-4">Good</td>
+                  <td className="px-6 py-4">12/12/2014</td>
                 </tr>
+
+                {openAccordion === "accordion-arrow-icon-body-1" && (
+                  <tr
+                    id="accordion-arrow-icon-body-1"
+                    aria-labelledby="accordion-arrow-icon-heading-1"
+                    className={`${
+                      openAccordion === "accordion-arrow-icon-body-1"
+                        ? "open"
+                        : ""
+                    }`}
+                  >
+                    <td colSpan={7}>
+                      <div className=" border border-b-0 border-gray-200 bg-slate-200 text-slate-950 dark:bg-gray-900">
+                        <div className="w-[53%]">
+                          <div className="flex justify-between">
+                            <span className="flex w-[27rem] text-[14px] font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                              <p className="w-2/3 text-right">
+                                ADDITIONAL INFO
+                              </p>
+                            </span>
+
+                            <span className="flex w-[22rem] text-[13px] ">
+                              <p className="w-2/3 text-right pr-3">
+                                OPERATOR :
+                              </p>
+                              <p className="w-2/3 uppercase">Mike Tyson</p>
+                            </span>
+                            <span className="flex w-[22rem] text-[13px]">
+                              <p className="w-2/3 text-right pr-2">
+                                STOP REASON :
+                              </p>
+                              <p className="w-1/3 uppercase">None</p>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
                 <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                   <td className="w-4 p-4">
                     <div className="flex items-center">
@@ -334,17 +416,17 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    Microsoft Surface Pro
+                    9/25/2023
                   </th>
-                  <td className="px-6 py-4">White</td>
-                  <td className="px-6 py-4">Laptop PC</td>
-                  <td className="px-6 py-4">No</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">$1999</td>
+                  <td className="px-6 py-4">Tornado</td>
+                  <td className="px-6 py-4">CL3</td>
+                  <td className="px-6 py-4">200</td>
+                  <td className="px-6 py-4">Good</td>
+                  <td className="px-6 py-4">12/12/2014</td>
                 </tr>
                 <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                   <td className="w-4 p-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center pl-6">
                       <input
                         id="checkbox-table-search-3"
                         type="checkbox"
@@ -362,17 +444,45 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    Magic Mouse 2
+                    9/25/2023
                   </th>
-                  <td className="px-6 py-4">Black</td>
-                  <td className="px-6 py-4">Accessories</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">No</td>
-                  <td className="px-6 py-4">$99</td>
+                  <td className="px-6 py-4">Tornado</td>
+                  <td className="px-6 py-4">CL3</td>
+                  <td className="px-6 py-4">200</td>
+                  <td className="px-6 py-4">Good</td>
+                  <td className="px-6 py-4">12/12/2014</td>
                 </tr>
                 <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                   <td className="w-4 p-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center pl-6">
+                      <input
+                        id="checkbox-table-search-3"
+                        type="checkbox"
+                        className=" w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        htmlFor="checkbox-table-search-3"
+                        className="sr-only"
+                      >
+                        checkbox
+                      </label>
+                    </div>
+                  </td>
+                  <th
+                    scope="row"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    9/25/2023
+                  </th>
+                  <td className="px-6 py-4">Tornado</td>
+                  <td className="px-6 py-4">CL3</td>
+                  <td className="px-6 py-4">200</td>
+                  <td className="px-6 py-4">Good</td>
+                  <td className="px-6 py-4">12/12/2014</td>
+                </tr>
+                <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                  <td className="w-4 p-4">
+                    <div className="flex items-center pl-6">
                       <input
                         id="checkbox-table-search-3"
                         type="checkbox"
@@ -390,17 +500,17 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    Apple Watch
+                    9/25/2023
                   </th>
-                  <td className="px-6 py-4">Black</td>
-                  <td className="px-6 py-4">Watches</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">No</td>
-                  <td className="px-6 py-4">$199</td>
+                  <td className="px-6 py-4">Tornado</td>
+                  <td className="px-6 py-4">CL3</td>
+                  <td className="px-6 py-4">200</td>
+                  <td className="px-6 py-4">Good</td>
+                  <td className="px-6 py-4">12/12/2014</td>
                 </tr>
                 <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                   <td className="w-4 p-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center pl-6">
                       <input
                         id="checkbox-table-search-3"
                         type="checkbox"
@@ -418,17 +528,73 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    Apple iMac
+                    9/25/2023
                   </th>
-                  <td className="px-6 py-4">Silver</td>
-                  <td className="px-6 py-4">PC</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">$2999</td>
+                  <td className="px-6 py-4">Tornado</td>
+                  <td className="px-6 py-4">CL3</td>
+                  <td className="px-6 py-4">200</td>
+                  <td className="px-6 py-4">Good</td>
+                  <td className="px-6 py-4">12/12/2014</td>
                 </tr>
                 <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                   <td className="w-4 p-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center pl-6">
+                      <input
+                        id="checkbox-table-search-3"
+                        type="checkbox"
+                        className=" w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        htmlFor="checkbox-table-search-3"
+                        className="sr-only"
+                      >
+                        checkbox
+                      </label>
+                    </div>
+                  </td>
+                  <th
+                    scope="row"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    9/25/2023
+                  </th>
+                  <td className="px-6 py-4">Tornado</td>
+                  <td className="px-6 py-4">CL3</td>
+                  <td className="px-6 py-4">200</td>
+                  <td className="px-6 py-4">Good</td>
+                  <td className="px-6 py-4">12/12/2014</td>
+                </tr>
+                <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                  <td className="w-4 p-4">
+                    <div className="flex items-center pl-6">
+                      <input
+                        id="checkbox-table-search-3"
+                        type="checkbox"
+                        className=" w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        htmlFor="checkbox-table-search-3"
+                        className="sr-only"
+                      >
+                        checkbox
+                      </label>
+                    </div>
+                  </td>
+                  <th
+                    scope="row"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    9/25/2023
+                  </th>
+                  <td className="px-6 py-4">Tornado</td>
+                  <td className="px-6 py-4">CL3</td>
+                  <td className="px-6 py-4">200</td>
+                  <td className="px-6 py-4">Good</td>
+                  <td className="px-6 py-4">12/12/2014</td>
+                </tr>
+                <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                  <td className="w-4 p-4">
+                    <div className="flex items-center pl-6">
                       <input
                         id="checkbox-table-search-3"
                         type="checkbox"
@@ -446,17 +612,17 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    Apple AirPods
+                    9/25/2023
                   </th>
-                  <td className="px-6 py-4">White</td>
-                  <td className="px-6 py-4">Accessories</td>
-                  <td className="px-6 py-4">No</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">$399</td>
+                  <td className="px-6 py-4">Tornado</td>
+                  <td className="px-6 py-4">CL3</td>
+                  <td className="px-6 py-4">200</td>
+                  <td className="px-6 py-4">Good</td>
+                  <td className="px-6 py-4">12/12/2014</td>
                 </tr>
                 <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                   <td className="w-4 p-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center pl-6">
                       <input
                         id="checkbox-table-search-3"
                         type="checkbox"
@@ -474,97 +640,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    iPad Pro
+                    9/25/2023
                   </th>
-                  <td className="px-6 py-4">Gold</td>
-                  <td className="px-6 py-4">Tablet</td>
-                  <td className="px-6 py-4">No</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">$699</td>
-                </tr>
-                <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="w-4 p-4">
-                    <div className="flex items-center">
-                      <input
-                        id="checkbox-table-search-3"
-                        type="checkbox"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <label
-                        htmlFor="checkbox-table-search-3"
-                        className="sr-only"
-                      >
-                        checkbox
-                      </label>
-                    </div>
-                  </td>
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    Magic Keyboard
-                  </th>
-                  <td className="px-6 py-4">Black</td>
-                  <td className="px-6 py-4">Accessories</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">$99</td>
-                </tr>
-                <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="w-4 p-4">
-                    <div className="flex items-center">
-                      <input
-                        id="checkbox-table-search-3"
-                        type="checkbox"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <label
-                        htmlFor="checkbox-table-search-3"
-                        className="sr-only"
-                      >
-                        checkbox
-                      </label>
-                    </div>
-                  </td>
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    Apple TV 4K
-                  </th>
-                  <td className="px-6 py-4">Black</td>
-                  <td className="px-6 py-4">TV</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">No</td>
-                  <td className="px-6 py-4">$179</td>
-                </tr>
-                <tr className="bg-white border-b even:bg-slate-300 odd:bg-slate-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="w-4 p-4">
-                    <div className="flex items-center">
-                      <input
-                        id="checkbox-table-search-3"
-                        type="checkbox"
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <label
-                        htmlFor="checkbox-table-search-3"
-                        className="sr-only"
-                      >
-                        checkbox
-                      </label>
-                    </div>
-                  </td>
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    AirTag
-                  </th>
-                  <td className="px-6 py-4">Silver</td>
-                  <td className="px-6 py-4">Accessories</td>
-                  <td className="px-6 py-4">Yes</td>
-                  <td className="px-6 py-4">No</td>
-                  <td className="px-6 py-4">$29</td>
+                  <td className="px-6 py-4">Tornado</td>
+                  <td className="px-6 py-4">CL3</td>
+                  <td className="px-6 py-4">200</td>
+                  <td className="px-6 py-4">Good</td>
+                  <td className="px-6 py-4">12/12/2014</td>
                 </tr>
               </tbody>
             </table>
