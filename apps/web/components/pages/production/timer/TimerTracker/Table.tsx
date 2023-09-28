@@ -51,9 +51,9 @@ const Table = ({
 
   return (
     <>
-      <div className={`w-full overflow-auto`}>
+      <div className="w-full overflow-y-hidden">
         <table className="w-full divide-y divide-gray-300">
-          <thead>
+          <thead className="">
             <tr>
               <th
                 scope="col"

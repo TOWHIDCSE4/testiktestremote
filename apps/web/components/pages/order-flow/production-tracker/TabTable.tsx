@@ -55,28 +55,63 @@ const TabTable = ({
   const [deleteModal, setDeleteModal] = useState(false)
   const [expandedRows, setExpandedRows] = useState<Array<boolean>>([])
   const [locked, setLocked] = useState<boolean>(false)
-  const [expandedRowsCount, setExpandedRowsCount] = useState<number>(0) // Track the number of expanded rows
+  const [expandedRowsCount, setExpandedRowsCount] = useState<Array<Object>>([])
 
-  const toggleRowExpansion = (index: number) => {
+  const toggleRowExpansion = (index: number, job: any) => {
+    const newExpandedRows = [...expandedRows]
+
     if (locked) {
       // If locked, expand only one row at a time
-      const newExpandedRows = [...expandedRows]
-      newExpandedRows.fill(false) // Collapse all rows
-      newExpandedRows[index] = !expandedRows[index] // Toggle the clicked row
-      setExpandedRows(newExpandedRows)
+      newExpandedRows.fill(false)
+      newExpandedRows[index] = true
     } else {
       // If not locked, toggle multiple rows
-      const newExpandedRows = [...expandedRows]
-      // newExpandedRows.fill(false); // Collapse all rows
-      newExpandedRows[index] = !newExpandedRows[index] // Toggle the clicked row
-      setExpandedRows(newExpandedRows)
-      setExpandedRowsCount(newExpandedRows.length)
-      console.log(newExpandedRows, expandedRowsCount)
+      newExpandedRows[index] = !newExpandedRows[index]
+    }
+
+    setExpandedRows(newExpandedRows)
+
+    // Update expandedRowsCount based on the expansion state
+    if (locked) {
+      // When locked, replace the previous item with the new one
+      setExpandedRowsCount([job])
+    } else if (newExpandedRows[index]) {
+      // Row is expanded, add it to the expandedRowsCount
+      setExpandedRowsCount([...expandedRowsCount, job])
+    } else {
+      // Row is collapsed, remove it from the expandedRowsCount
+      setExpandedRowsCount(
+        expandedRowsCount.filter((expandedJob: any) => expandedJob !== job)
+      )
     }
   }
 
+  // Use useEffect to log the updated state
+  useEffect(() => {
+    console.log(expandedRows, expandedRowsCount)
+  }, [expandedRowsCount])
+
+  // const toggleRowExpansion = (index: number, job: any) => {
+  //   if (locked) {
+  //     // If locked, expand only one row at a time
+  //     const newExpandedRows = [...expandedRows]
+  //     newExpandedRows.fill(false)
+  //     newExpandedRows[index] = !expandedRows[index]
+  //     setExpandedRows(newExpandedRows)
+  //   } else {
+  //     // If not locked, toggle multiple rows
+  //     const newExpandedRows = [...expandedRows]
+  //     newExpandedRows[index] = !newExpandedRows[index]
+  //     setExpandedRows(newExpandedRows)
+  //     setExpandedRowsCount([...expandedRowsCount, job])
+  //     console.log(newExpandedRows, setExpandedRowsCount)
+  //   }
+  // }
+
   const toggleLock = () => {
     setLocked(locked ? false : true)
+    setExpandedRows([false])
+    setExpandedRowsCount([""])
   }
 
   useEffect(() => {
@@ -199,7 +234,7 @@ const TabTable = ({
                       setJobId(job._id as string)
                       setJobName(job.name as string)
                       setSelectedJob(job)
-                      toggleRowExpansion(index)
+                      toggleRowExpansion(index, job)
                     }}
                   >
                     <td className="m-0 pl-3 w-1/5 mt-4 pt-12">
@@ -396,13 +431,28 @@ const TabTable = ({
                     </td>
                   </tr>
 
-                  {expandedRows[index] && (
-                    <tr>
-                      <td colSpan={10}>
-                        <TabTableDetail job={job} selectedJob={selectedJob} />
-                      </td>
-                    </tr>
-                  )}
+                  {locked
+                    ? expandedRows[index] && (
+                        <tr>
+                          <td colSpan={10}>
+                            <TabTableDetail
+                              job={job}
+                              selectedJob={selectedJob}
+                            />
+                          </td>
+                        </tr>
+                      )
+                    : expandedRows[index] &&
+                      expandedRowsCount.map((item, index) => (
+                        <tr key={index}>
+                          <td colSpan={10}>
+                            <TabTableDetail
+                              job={item}
+                              selectedJob={selectedJob}
+                            />
+                          </td>
+                        </tr>
+                      ))}
                 </Fragment>
               )
             })}
