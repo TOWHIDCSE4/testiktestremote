@@ -2,14 +2,14 @@ import { T_Job } from "custom-validator"
 import React, { FC } from "react"
 import { useCollapse } from "react-collapsed"
 
-const TabTableDetail: FC<{ job: T_Job; selectedJob?: T_Job }> = ({
+const TabTableDetail: FC<{ job: any; selectedJob?: T_Job }> = ({
   job,
   selectedJob,
 }) => {
   const { getCollapseProps } = useCollapse({
     isExpanded: job._id === selectedJob?._id,
   })
-
+  console.log(selectedJob?._id)
   return (
     <div
       {...getCollapseProps({})}

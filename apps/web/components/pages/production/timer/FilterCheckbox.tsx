@@ -36,7 +36,7 @@ const FilterCheckbox = ({
     <div className="relative px-4 py-0.5 flex items-start">
       <div className="flex h-6 items-center">
         <input
-          id="pipe-box"
+          id={machineClass.name}
           aria-describedby="pipe-box-description"
           name={machineClass._id as string}
           type="checkbox"
@@ -46,7 +46,7 @@ const FilterCheckbox = ({
         />
       </div>
       <div className="ml-3 text-sm leading-6">
-        <label htmlFor="pipe-box" className="text-gray-700">
+        <label htmlFor={machineClass.name} className="text-gray-700">
           {machineClass.name}
         </label>
       </div>
