@@ -7,21 +7,41 @@ import {
 import mongoose from "mongoose"
 
 export const paginated = async (req: Request, res: Response) => {
-  const { page, locationId, status } = req.query
+  const { page, locationId, status, selectedjob, search } = req.query
   if (page && locationId) {
     try {
       const jobsCount = await Jobs.find({
         locationId: locationId,
         ...(status && { status: status }),
+        ...(selectedjob &&
+          selectedjob?.length && {
+            isStock: selectedjob === "STOCK" ? true : false,
+          }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
       const getAllJobs = await Jobs.aggregate([
         {
           $match: {
             $and: [
+              {
+                ...(selectedjob &&
+                  selectedjob?.length && {
+                    isStock: selectedjob === "STOCK" ? true : false,
+                  }),
+              },
               { locationId: new mongoose.Types.ObjectId(locationId as string) },
               ...(status ? [{ status }] : []),
               { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
+              {
+                $or: [
+                  {
+                    name: {
+                      $regex: new RegExp(search as string),
+                      $options: "i",
+                    },
+                  }, // Case-insensitive name search
+                ],
+              },
             ],
           },
         },
@@ -113,6 +133,7 @@ export const paginated = async (req: Request, res: Response) => {
         message: null,
       })
     } catch (err: any) {
+      console.log(err)
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       res.json({
         error: true,

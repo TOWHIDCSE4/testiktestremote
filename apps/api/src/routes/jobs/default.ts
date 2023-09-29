@@ -64,8 +64,11 @@ export const addJob = async (req: Request, res: Response) => {
     const part = await Parts.findOne({
       _id: req.body.partId,
     })
+    const { status, drawingNumber, ...rest } = req.body
     const newJob = new Jobs({
-      ...req.body,
+      ...rest,
+      status: req.body.isStock ? "Active" : req.body.status,
+      drawingNumber: req.body.isStock ? undefined : req.body.drawingNumber,
       factoryId: part?.factoryId,
     })
     try {
@@ -117,7 +120,7 @@ export const addJob = async (req: Request, res: Response) => {
             name: req.body.name,
             drawingNumber: req.body.drawingNumber,
             userId: req.body.userId,
-            status: "Pending",
+            status: "Active",
             isStock: true,
           })
           await newStockJob.save()

@@ -4,6 +4,7 @@ import {
   UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
 import TimerLogs from "../../models/timerLogs"
+import mongoose from "mongoose"
 
 export const globalLogs = async (req: Request, res: Response) => {
   const {
@@ -20,11 +21,19 @@ export const globalLogs = async (req: Request, res: Response) => {
   if (locationId) {
     try {
       const timerLogsCount = await TimerLogs.find({
-        locationId: locationId,
-        ...(factoryId && { factoryId: factoryId }),
-        ...(partId && { partId: partId }),
-        ...(machineId && { machineClassId: machineId }),
-        ...(machineClassId && { machineClassId: machineClassId }),
+        locationId: new mongoose.Types.ObjectId(locationId as string),
+        ...(factoryId && {
+          factoryId: new mongoose.Types.ObjectId(factoryId as string),
+        }),
+        ...(partId && {
+          partId: new mongoose.Types.ObjectId(partId as string),
+        }),
+        ...(machineId && {
+          machineClassId: new mongoose.Types.ObjectId(machineId as string),
+        }),
+        ...(machineClassId && {
+          machineClassId: new mongoose.Types.ObjectId(machineClassId as string),
+        }),
         ...(startDate &&
           endDate && {
             createdAt: {
@@ -36,15 +45,19 @@ export const globalLogs = async (req: Request, res: Response) => {
       }).countDocuments()
 
       const getTimerLogs = await TimerLogs.find({
-        locationId: locationId,
-        ...(factoryId && { factoryId: factoryId }),
-        ...(partId && { partId: partId }),
-        ...(machineId && { machineClassId: machineId }),
-        ...(machineClassId && { machineClassId: machineClassId }),
-        createdAt: {
-          $gte: new Date(startDate as string) || undefined,
-          $lt: new Date(endDate as string) || undefined,
-        },
+        locationId: new mongoose.Types.ObjectId(locationId as string),
+        ...(factoryId && {
+          factoryId: new mongoose.Types.ObjectId(factoryId as string),
+        }),
+        ...(partId && {
+          partId: new mongoose.Types.ObjectId(partId as string),
+        }),
+        ...(machineId && {
+          machineClassId: new mongoose.Types.ObjectId(machineId as string),
+        }),
+        ...(machineClassId && {
+          machineClassId: new mongoose.Types.ObjectId(machineClassId as string),
+        }),
         ...(startDate &&
           endDate && {
             createdAt: {

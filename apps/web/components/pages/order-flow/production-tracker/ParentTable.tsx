@@ -17,6 +17,8 @@ import usePartLocationCount from "../../../../hooks/parts/useGetPartLocationCoun
 
 const ParentTable = ({ locationId }: { locationId: string }) => {
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
+  const [selectedValue, setSelectedValue] = useState<string>("")
+  const [inputValue, setInputValue] = useState<string>("")
   const [deleteModal, setDeleteModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
 
@@ -29,6 +31,16 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
     { name: "Archived", count: 0, current: currentTab === "Archived" },
     { name: "Deleted", count: 0, current: currentTab === "Deleted" },
   ]
+
+  const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedOption = e.currentTarget.value
+    setSelectedValue(selectedOption)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.currentTarget.value
+    setInputValue(newValue)
+  }
 
   useEffect(() => {
     if (locationId) {
@@ -122,25 +134,27 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
             <div
               className={`flex justify-between items-center px-4 md:px-0 mt-2 pb-2 m md:mt-0 shadow`}
             >
-              <div className="md:flex items-center mt-2">
-                <label
-                  htmlFor="JobSelector"
-                  className="uppercase font-semibold text-lg text-gray-800 md:w-[70%] text-right mr-3"
-                >
-                  JOB SELECTOR
-                </label>
-                <select
-                  className={`block mt-2  bg-white dark:bg-gray-300 font-semibold md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                >
-                  <option value="">CLIENT</option>
-                  <option value="US">UNITED STATES</option>
-                  <option value="CA">CANADA</option>
-                  <option value="FR">FRANCE</option>
-                  <option value="DE">GERMANY</option>
-                </select>
-              </div>
+              {currentTab === "Active" ? (
+                <div className="md:flex items-center mt-2 w-[18rem]">
+                  <label
+                    htmlFor="JobSelector"
+                    className="uppercase font-semibold text-lg text-gray-800 md:w-[70%] text-right mr-3"
+                  >
+                    JOB SELECTOR
+                  </label>
+                  <select
+                    className={`block mt-2  bg-white dark:bg-gray-300 font-semibold md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                    onChange={handleDropdownChange}
+                  >
+                    <option value="CLIENT">CLIENT</option>
+                    <option value="STOCK">STOCK</option>
+                  </select>
+                </div>
+              ) : (
+                <div></div>
+              )}
               <div></div>
-              <div className={`mt-2 mx-2`}>
+              <div className={`mt-2 mr-5`}>
                 <div className="flex">
                   <button className="px-3 py-1 rounded-md  text-gray-800 font-semibold text-lg">
                     SEARCH
@@ -153,6 +167,8 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                       className={`block w-56 rounded-md border-0 bg-white dark:bg-gray-300  py-1.5  pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6`}
                       placeholder="TYPE HERE"
                       type="search"
+                      value={inputValue}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
@@ -160,7 +176,12 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
             </div>
             {/* Table */}
             <div className="w-full overflow-x-auto relative">
-              <TabTable tab={currentTab} locationId={locationId} />
+              <TabTable
+                tab={currentTab}
+                locationId={locationId}
+                searchInput={inputValue}
+                jobSelection={currentTab === "Active" ? selectedValue : ""}
+              />
             </div>
           </div>
         </div>
