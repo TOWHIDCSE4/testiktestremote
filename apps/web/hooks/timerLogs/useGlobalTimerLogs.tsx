@@ -14,16 +14,21 @@ export async function getGlobalTimerLogs({
   machineId,
   machineClassId,
   page,
+  sortType,
+  keyword,
 }: {
   locationId: string
   factoryId: string
   machineId: string
   machineClassId: string
   page: number
+  sortType: string
+  keyword: string
 }) {
   const token = Cookies.get("tfl")
+  console.log(sortType, keyword)
   const res = await fetch(
-    `${API_URL_TIMER_LOGS}/global?locationId=${locationId}&factoryId=${factoryId}&machineId=${machineId}&machineClassId=${machineClassId}&page=${page}`,
+    `${API_URL_TIMER_LOGS}/global?locationId=${locationId}&factoryId=${factoryId}&machineId=${machineId}&machineClassId=${machineClassId}&page=${page}&key=${keyword}&sort=${sortType}`,
     {
       method: "GET",
       headers: {
@@ -35,7 +40,11 @@ export async function getGlobalTimerLogs({
   return (await res.json()) as T_DBReturn
 }
 
-function useGlobalTimerLogs(locationId: string) {
+function useGlobalTimerLogs(
+  locationId: string,
+  sortType: string,
+  keyword: string
+) {
   const [page, setPage] = useState(1)
   const [factoryId, setFactoryId] = useState("")
   const [machineId, setMachineId] = useState("")
@@ -48,6 +57,8 @@ function useGlobalTimerLogs(locationId: string) {
       machineId,
       machineClassId,
       page,
+      sortType,
+      keyword,
     ],
     () =>
       getGlobalTimerLogs({
@@ -56,6 +67,8 @@ function useGlobalTimerLogs(locationId: string) {
         machineId,
         machineClassId,
         page,
+        sortType,
+        keyword,
       }),
     {
       refetchOnWindowFocus: false,
