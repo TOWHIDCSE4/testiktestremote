@@ -521,7 +521,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               </tbody>
             </table>
           </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
+          {/* <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <label
                 htmlFor="filterBy"
@@ -550,7 +550,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               </label>
               {filterInputs()}
             </div>
-          </div>
+          </div> */}
         </div>
         {isPaginatedLoading ? (
           <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
@@ -563,7 +563,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
             </div>
           </div>
         ) : null}
-        {!isPaginatedLoading &&
+        {/* {!isPaginatedLoading &&
         paginated?.items &&
         paginated?.items.length > 0 ? (
           <table className="w-full divide-y divide-gray-300 border-t border-gray-300">
@@ -756,7 +756,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 ))}
             </tbody>
           </table>
-        ) : null}
+        ) : null} */}
         {!isPaginatedLoading &&
         paginated?.items &&
         paginated?.items.length === 0 ? (

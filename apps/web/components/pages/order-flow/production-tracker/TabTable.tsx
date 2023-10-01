@@ -60,7 +60,10 @@ const TabTable = ({
       if (selected) return setSelectedJob([])
       return setSelectedJob([job])
     } else {
-      setSelectedJob((prev) => [...prev, job])
+      if (selected)
+        return setSelectedJob((prev) => prev.filter((i) => i._id !== job._id))
+      // return setSelectedJob([job])
+      return setSelectedJob((prev) => [...prev, job])
     }
   }
   const toggleLock = () => {
@@ -184,7 +187,6 @@ const TabTable = ({
           <tbody className="bg-white">
             {jobs?.items?.map((job: T_Job, index) => {
               const selected = selectedJob.some((i) => i._id === job._id)
-              console.log(selected, "selected")
               return (
                 <Fragment key={index}>
                   <tr

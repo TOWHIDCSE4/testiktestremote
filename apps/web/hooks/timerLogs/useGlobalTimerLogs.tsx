@@ -26,7 +26,6 @@ export async function getGlobalTimerLogs({
   keyword: string
 }) {
   const token = Cookies.get("tfl")
-  console.log(sortType, keyword)
   const res = await fetch(
     `${API_URL_TIMER_LOGS}/global?locationId=${locationId}&factoryId=${factoryId}&machineId=${machineId}&machineClassId=${machineClassId}&page=${page}&key=${keyword}&sort=${sortType}`,
     {
