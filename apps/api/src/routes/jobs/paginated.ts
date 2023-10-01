@@ -5,6 +5,7 @@ import {
   UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
 import mongoose from "mongoose"
+import { groupBy, map } from "lodash"
 
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, status, selectedjob, search } = req.query
@@ -19,6 +20,8 @@ export const paginated = async (req: Request, res: Response) => {
           }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
+
+      //jobs find aggregation
       const getAllJobs = await Jobs.aggregate([
         {
           $match: {
@@ -60,6 +63,32 @@ export const paginated = async (req: Request, res: Response) => {
               },
             ],
             as: "timerLogs",
+          },
+        },
+        {
+          $lookup: {
+            from: "timerlogs",
+            localField: "_id",
+            foreignField: "jobId",
+            as: "timerLogs",
+            pipeline: [
+              {
+                $match: {
+                  stopReason: "Unit Created",
+                },
+              },
+              {
+                $lookup: {
+                  from: "machines",
+                  localField: "machineId",
+                  foreignField: "_id",
+                  as: "machineId",
+                },
+              },
+              {
+                $unwind: "$machineId",
+              },
+            ],
           },
         },
         {
@@ -123,8 +152,29 @@ export const paginated = async (req: Request, res: Response) => {
         },
         { $sort: { createdAt: -1 } },
         { $skip: 5 * (Number(page) - 1) },
-        { $limit: 5 },
+        { $limit: 50 },
       ])
+
+      const groupedData = map(getAllJobs, (item) => {
+        // Group timerLogs by the date part of createdAt
+        const groupedTimerLogs = groupBy(item.timerLogs, (timerLog) => {
+          const createdAtDate = new Date(
+            timerLog.createdAt
+          ).toLocaleDateString()
+          return createdAtDate
+        })
+
+        // Create an array of objects with date and items
+        const timerLogsByDate = map(groupedTimerLogs, (logs, date) => {
+          return {
+            date,
+            items: logs,
+          }
+        })
+
+        item.timerLogs = timerLogsByDate
+        return item
+      })
 
       res.json({
         error: false,
