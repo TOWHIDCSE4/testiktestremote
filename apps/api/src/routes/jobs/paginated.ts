@@ -152,7 +152,7 @@ export const paginated = async (req: Request, res: Response) => {
         },
         { $sort: { createdAt: -1 } },
         { $skip: 5 * (Number(page) - 1) },
-        { $limit: 50 },
+        { $limit: 5 },
       ])
 
       const groupedData = map(getAllJobs, (item) => {
