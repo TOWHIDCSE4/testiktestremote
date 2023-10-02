@@ -56,8 +56,8 @@ const Machine = ({
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
-  const [factoryIdFilter, setFactoryIdFilter] = useState("")
-  const [machineClassIdFilter, setMachineClassIdFilter] = useState("")
+  const [factoryIdFilter, setFactoryIdFilter] = useState("all")
+  const [machineClassIdFilter, setMachineClassIdFilter] = useState("all")
   const [nameFilter, setNameFilter] = useState("")
   const [selectedPartId, setSelectedMachineId] = useState<string | undefined>(
     ""
@@ -72,6 +72,9 @@ const Machine = ({
 
   useEffect(() => {
     if (factoryIdFilter) {
+      if (factoryIdFilter === "all") {
+        setMachineClassIdFilter("all")
+      }
       setSelectedFactoryId(factoryIdFilter)
     }
   }, [factoryIdFilter, setSelectedFactoryId])
@@ -92,6 +95,14 @@ const Machine = ({
   useEffect(() => {
     setMachineLocationIds(locationTabs.map((tab) => tab._id) as string[])
   }, [locationTabs])
+
+  const setFactoryFilter = (value: any) => {
+    setFactoryIdFilter(value)
+  }
+
+  const setMachineFilter = (value: any) => {
+    setMachineClassIdFilter(value)
+  }
 
   const locationsCount = machineLocationCount
     ? machineLocationCount?.map((machineLocation) => {
@@ -172,7 +183,7 @@ const Machine = ({
               className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
               onChange={(e) => setFactoryIdFilter(e.target.value)}
             >
-              <option value={""}>All</option>
+              <option value={"all"}>All</option>
               {factories?.items?.map((item: T_Factory, index: number) => {
                 return (
                   <option key={index} value={item._id as string}>
@@ -201,7 +212,7 @@ const Machine = ({
                 isMachineClassesRefetching
               }
             >
-              <option value={""}>All</option>
+              <option value={"all"}>All</option>
               {machineClasses?.items?.map(
                 (machine: T_MachineClass, index: number) => {
                   return (

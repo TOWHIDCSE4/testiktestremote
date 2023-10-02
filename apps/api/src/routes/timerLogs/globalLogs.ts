@@ -69,6 +69,7 @@ export const globalLogs = async (req: Request, res: Response) => {
       })
         .populate("partId")
         .populate("operator")
+        .populate("machineId")
         .sort({ createdAt: -1 })
         .skip(5 * (Number(page) - 1))
         .limit(5)

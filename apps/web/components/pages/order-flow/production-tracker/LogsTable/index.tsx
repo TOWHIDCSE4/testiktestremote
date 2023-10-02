@@ -277,249 +277,306 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
             </div>
           </div>
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
-            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
-              <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-slate-900">
-                    CYCLE
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-slate-900">
-                    <div className="flex items-center">
-                      DATE
-                      <button onClick={(e) => handleInputChange(e, "date")}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-slate-900">
-                    <div className="flex items-center">
-                      MACHINE
-                      <button onClick={(e) => handleInputChange(e, "machine")}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-slate-900">
-                    <div className="flex items-center">
-                      PART
-                      <button onClick={(e) => handleInputChange(e, "part")}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-slate-900">
-                    <div className="flex items-center">
-                      ID
-                      <button onClick={(e) => handleInputChange(e, "id")}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-slate-900">
-                    <div className="flex items-center">
-                      STATUS
-                      <button onClick={(e) => handleInputChange(e, "machine")}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-slate-900">
-                    <div className="flex items-center ">
-                      TIME
-                      <button onClick={(e) => handleInputChange(e, "machine")}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              {/* table body starts here */}
-              <tbody data-accordion="open">
-                {GlobalTableProduction.map((item, index) => {
-                  const rowClass =
-                    index % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
-                  const isAccordionOpen =
-                    openAccordion === `accordion-arrow-icon-body-${index}`
-                  return (
-                    <React.Fragment key={item.id}>
-                      {index === 0 ? ( // Add accordion to the first row (index 0)
-                        <tr
-                          className={`bg-gray text-slate-900 font-medium border-b ${rowClass} ${
-                            isAccordionOpen ? "open" : ""
-                          }`}
-                          data-accordion-target={`#accordion-arrow-icon-body-${index}`}
-                          aria-expanded={isAccordionOpen}
-                          aria-controls={`accordion-arrow-icon-body-${index}`}
-                          onClick={() =>
-                            toggleAccordion(
-                              `accordion-arrow-icon-body-${index}`
-                            )
-                          }
-                        >
-                          <td className="pr-6">
-                            <div className="flex items-center">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                aria-hidden="true"
-                                className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800"
-                              >
-                                <path
-                                  fill-rule="evenodd"
-                                  d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
-                                  clip-rule="evenodd"
-                                ></path>
-                              </svg>
-                              <input
-                                id={`checkbox-table-search-${index}`}
-                                type="checkbox"
-                                className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
-                              />
-                              <label
-                                htmlFor={`checkbox-table-search-${index}`}
-                                className="sr-only"
-                              >
-                                checkbox
-                              </label>
-                            </div>
-                          </td>
-                          <th
-                            scope="row"
-                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+            {!isPaginatedLoading &&
+            paginated?.items &&
+            paginated?.items.length > 0 ? (
+              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
+                <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      CYCLE
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center">
+                        DATE
+                        <button onClick={(e) => handleInputChange(e, "date")}>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            {item.date}
-                          </th>
-                          <td className="px-6 py-4">{item.machineName}</td>
-                          <td className="px-6 py-4">{item.partName}</td>
-                          <td className="px-6 py-4">{item.id}</td>
-                          <td className="px-6 py-4">{item.status}</td>
-                          <td className="px-6 py-4">{item.time}</td>
-                        </tr>
-                      ) : (
-                        <tr
-                          className={`bg-gray text-slate-900 font-medium border-b ${rowClass}`}
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center">
+                        MACHINE
+                        <button
+                          onClick={(e) => handleInputChange(e, "machine")}
                         >
-                          <td className="w-4 p-4">
-                            <div className="flex items-center pl-6">
-                              <input
-                                id="checkbox-table-search-3"
-                                type="checkbox"
-                                className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
-                              />
-                              <label
-                                htmlFor="checkbox-table-search-3"
-                                className="sr-only"
-                              >
-                                checkbox
-                              </label>
-                            </div>
-                          </td>
-                          <th
-                            scope="row"
-                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap "
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            9/25/2023
-                          </th>
-                          <td className="px-6 py-4">Tornado</td>
-                          <td className="px-6 py-4">CL3</td>
-                          <td className="px-6 py-4">200</td>
-                          <td className="px-6 py-4">Good</td>
-                          <td className="px-6 py-4">12/12/2014</td>
-                        </tr>
-                      )}
-
-                      {isAccordionOpen && index === 0 && (
-                        <tr
-                          id={`accordion-arrow-icon-body-${index}`}
-                          aria-labelledby={`accordion-arrow-icon-heading-${index}`}
-                          className={`${isAccordionOpen ? "open" : ""}`}
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center">
+                        PART
+                        <button onClick={(e) => handleInputChange(e, "part")}>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center">
+                        ID
+                        <button onClick={(e) => handleInputChange(e, "id")}>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center">
+                        STATUS
+                        <button
+                          onClick={(e) => handleInputChange(e, "machine")}
                         >
-                          <td colSpan={7}>
-                            <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
-                              <div className="w-[73%]">
-                                <div className="flex justify-between">
-                                  <span className="flex w-[27rem] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
-                                    <p className="w-2/3 text-right">
-                                      ADDITIONAL INFO
-                                    </p>
-                                  </span>
-
-                                  <span className="flex w-[22rem] text-[13px] ">
-                                    <p className="w-2/3 text-right pr-3 text-slate-900 font-semibold ">
-                                      OPERATOR :
-                                    </p>
-                                    <p className="w-2/3 uppercase text-slate-900 font-semibold">
-                                      Mike Tyson
-                                    </p>
-                                  </span>
-                                  <span className="flex w-[22rem] text-[13px] text-slate-900 ">
-                                    <p className="w-2/3 text-right pr-2 text-slate-900 font-semibold ">
-                                      STOP REASON :
-                                    </p>
-                                    <p className="w-1/3 uppercase text-slate-900 font-semibold">
-                                      None
-                                    </p>
-                                  </span>
-                                </div>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center ">
+                        TIME
+                        <button
+                          onClick={(e) => handleInputChange(e, "machine")}
+                        >
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                {/* table body starts here */}
+                <tbody data-accordion="open">
+                  {paginated?.items &&
+                    paginated?.items.map((item, idx) => {
+                      const rowClass =
+                        idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
+                      const isAccordionOpen =
+                        openAccordion === `accordion-arrow-icon-body-${idx}`
+                      return (
+                        <React.Fragment key={item._id}>
+                          {/* {idx === 0 ? ( // Add accordion to the first row (index 0) */}
+                          <tr
+                            key={idx}
+                            className={`bg-gray text-slate-900 font-medium border-b ${rowClass} ${
+                              isAccordionOpen ? "open" : ""
+                            } ${!item.jobId ? "bg-red-50" : ""}`}
+                            data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
+                            aria-expanded={isAccordionOpen}
+                            aria-controls={`accordion-arrow-icon-body-${idx}`}
+                            onClick={() =>
+                              toggleAccordion(
+                                `accordion-arrow-icon-body-${idx}`
+                              )
+                            }
+                          >
+                            <td className="pr-6">
+                              <div className="flex items-center">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="currentColor"
+                                  aria-hidden="true"
+                                  className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800"
+                                >
+                                  <path
+                                    fill-rule="evenodd"
+                                    d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
+                                    clip-rule="evenodd"
+                                  ></path>
+                                </svg>
+                                <input
+                                  id={`checkbox-table-search-${idx}`}
+                                  type="checkbox"
+                                  className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                                />
+                                <label
+                                  htmlFor={`checkbox-table-search-${idx}`}
+                                  className="sr-only"
+                                >
+                                  {item.cycle}
+                                </label>
                               </div>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  )
-                })}
-              </tbody>
-            </table>
+                            </td>
+                            <th
+                              scope="row"
+                              className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                            >
+                              {dayjs
+                                .tz(dayjs(item.createdAt), "America/Chicago")
+                                .format("MM/DD/YYYY")}
+                            </th>
+                            {/* @ts-expect-error */}
+                            <td className="px-6 py-4">
+                              {item?.machineId.name}
+                            </td>
+                            <td
+                              className={`px-6 py-4 text-sm text-gray-500 flex flex-col ${
+                                item.jobId ? "text-gray-900" : "text-red-500"
+                              }`}
+                            >
+                              {typeof item.partId === "object"
+                                ? item.partId.name
+                                : ""}
+                            </td>
+                            <td className="px-6 py-4">
+                              {item.globalCycle ? item.globalCycle : ""}
+                            </td>
+                            <td className="px-6 py-4">
+                              {item.status === "Gain" ? (
+                                <span
+                                  className={`font-bold ${
+                                    item.jobId
+                                      ? "text-green-500"
+                                      : "text-red-500"
+                                  }`}
+                                >
+                                  {item.status}
+                                </span>
+                              ) : (
+                                <span className="font-bold text-red-500">
+                                  {item.status}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-4">
+                              {item.status === "Gain" ? (
+                                <span
+                                  className={`font-bold ${
+                                    item.jobId
+                                      ? "text-green-500"
+                                      : "text-red-500"
+                                  }`}
+                                >
+                                  {item.time.toFixed(2)}s
+                                </span>
+                              ) : (
+                                <span className="font-bold text-red-500">
+                                  {item.time.toFixed(2)}s
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                          {/* ) : null} */}
+
+                          {isAccordionOpen && (
+                            <tr
+                              id={`accordion-arrow-icon-body-${idx}`}
+                              aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
+                              className={`${isAccordionOpen ? "open" : ""}`}
+                            >
+                              <td colSpan={7}>
+                                <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
+                                  <div className="w-[73%]">
+                                    <div className="flex justify-between">
+                                      <span className="flex w-[27rem] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                        <p className="w-2/3 text-right">
+                                          ADDITIONAL INFO
+                                        </p>
+                                      </span>
+
+                                      <span className="flex w-[22rem] text-[13px] ">
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
+                                            item.jobId
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          OPERATOR :
+                                        </p>
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 ${
+                                            item.jobId
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          {typeof item.operator === "object"
+                                            ? item.operator?.firstName
+                                            : ""}{" "}
+                                          {typeof item.operator === "object"
+                                            ? item.operator?.lastName
+                                            : ""}
+                                        </p>
+                                      </span>
+                                      <span className="flex w-[22rem] text-[13px] text-slate-900 ">
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
+                                            item.jobId
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          STOP REASON :
+                                        </p>
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 ${
+                                            item.jobId
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          {item.stopReason.join(", ")}
+                                        </p>
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      )
+                    })}
+                </tbody>
+              </table>
+            ) : null}
           </div>
           {/* <div className="grid grid-cols-2 gap-4 mt-4">
             <div>

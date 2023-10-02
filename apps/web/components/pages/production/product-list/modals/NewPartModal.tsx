@@ -309,6 +309,7 @@ const NewPartModal = ({
                         <input
                           id="weight"
                           required
+                          checked={true}
                           disabled={
                             isAddPartLoading || isUploadMediaFilesLoading
                           }
@@ -329,6 +330,7 @@ const NewPartModal = ({
                         <input
                           id="weight"
                           required
+                          checked={true}
                           disabled={
                             isAddPartLoading || isUploadMediaFilesLoading
                           }
@@ -349,6 +351,7 @@ const NewPartModal = ({
                         <input
                           id="weight"
                           required
+                          checked={true}
                           disabled={
                             isAddPartLoading || isUploadMediaFilesLoading
                           }
