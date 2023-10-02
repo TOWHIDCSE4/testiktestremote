@@ -1,15 +1,15 @@
 import { T_Job } from "custom-validator"
-import React, { FC } from "react"
+import React, { FC, useState } from "react"
 import { useCollapse } from "react-collapsed"
 
-const TabTableDetail: FC<{ job: any; selectedJob?: T_Job }> = ({
+const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
   job,
-  selectedJob,
+  selected,
 }) => {
   const { getCollapseProps } = useCollapse({
-    isExpanded: job._id === selectedJob?._id,
+    isExpanded: selected,
   })
-  console.log(selectedJob?._id)
+
   return (
     <div
       {...getCollapseProps({})}
@@ -35,8 +35,8 @@ const TabTableDetail: FC<{ job: any; selectedJob?: T_Job }> = ({
       <div className="w-[5px] mr-2 mt-1 mb-1 rounded-lg bg-gray-400 flex justify-center items-center">
         <div className="w-full border-3 border-gray-400"></div>
       </div>
-      <div className="w-[41rem] h-[70px]">
-        <div className="max-h-full overflow-y-scroll">
+      <div className="w-[70%] h-[70px]">
+        <div className="max-h-full overflow-y-auto">
           <table className="w-full text-center overflow-y-auto">
             <thead className="border-b-2 border-black  text-sm">
               <tr>

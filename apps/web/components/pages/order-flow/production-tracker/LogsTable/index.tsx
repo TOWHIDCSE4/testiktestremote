@@ -96,6 +96,18 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }
   }
 
+  const [sortType, setSortType] = useState<string>("")
+  const [keyword, setKeyword] = useState<string>("")
+
+  const handleInputChange = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    key: string
+  ) => {
+    const newValue = e.currentTarget.value
+    setKeyword(key)
+    setSortType(sortType === "asc" ? "dsc" : "asc")
+  }
+
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
@@ -113,7 +125,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setFactoryId,
     setMachineClassId,
     setMachineId,
-  } = useGlobalTimerLogs(locationId)
+  } = useGlobalTimerLogs(locationId, sortType, keyword)
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
   const filterInputs = () => {
     if (filterBy === "Factories") {
@@ -207,7 +219,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         }`}
       >
         <div className="px-6 py-4">
-          <div className="flex">
+          <div className="flex pb-10">
             <div className=" w-[35%] whitespace-nowrap">
               <h3 className="text-2xl font-semibold pr-1">GLOBAL PRODUCTION</h3>
               <div className="w-full flex justify-center items-center">
@@ -274,7 +286,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   <th scope="col" className="px-6 py-3 text-slate-900">
                     <div className="flex items-center">
                       DATE
-                      <a href="#">
+                      <button onClick={(e) => handleInputChange(e, "date")}>
                         <svg
                           className="w-3 h-3 ml-1.5"
                           aria-hidden="true"
@@ -284,13 +296,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         >
                           <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                         </svg>
-                      </a>
+                      </button>
                     </div>
                   </th>
                   <th scope="col" className="px-6 py-3 text-slate-900">
                     <div className="flex items-center">
                       MACHINE
-                      <a href="#">
+                      <button onClick={(e) => handleInputChange(e, "machine")}>
                         <svg
                           className="w-3 h-3 ml-1.5"
                           aria-hidden="true"
@@ -300,13 +312,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         >
                           <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                         </svg>
-                      </a>
+                      </button>
                     </div>
                   </th>
                   <th scope="col" className="px-6 py-3 text-slate-900">
                     <div className="flex items-center">
                       PART
-                      <a href="#">
+                      <button onClick={(e) => handleInputChange(e, "part")}>
                         <svg
                           className="w-3 h-3 ml-1.5"
                           aria-hidden="true"
@@ -316,13 +328,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         >
                           <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                         </svg>
-                      </a>
+                      </button>
                     </div>
                   </th>
                   <th scope="col" className="px-6 py-3 text-slate-900">
                     <div className="flex items-center">
                       ID
-                      <a href="#">
+                      <button onClick={(e) => handleInputChange(e, "id")}>
                         <svg
                           className="w-3 h-3 ml-1.5"
                           aria-hidden="true"
@@ -332,13 +344,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         >
                           <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                         </svg>
-                      </a>
+                      </button>
                     </div>
                   </th>
                   <th scope="col" className="px-6 py-3 text-slate-900">
                     <div className="flex items-center">
                       STATUS
-                      <a href="#">
+                      <button onClick={(e) => handleInputChange(e, "machine")}>
                         <svg
                           className="w-3 h-3 ml-1.5"
                           aria-hidden="true"
@@ -348,13 +360,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         >
                           <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                         </svg>
-                      </a>
+                      </button>
                     </div>
                   </th>
                   <th scope="col" className="px-6 py-3 text-slate-900">
                     <div className="flex items-center ">
                       TIME
-                      <a href="#">
+                      <button onClick={(e) => handleInputChange(e, "machine")}>
                         <svg
                           className="w-3 h-3 ml-1.5"
                           aria-hidden="true"
@@ -364,7 +376,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         >
                           <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                         </svg>
-                      </a>
+                      </button>
                     </div>
                   </th>
                 </tr>
@@ -509,7 +521,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               </tbody>
             </table>
           </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
+          {/* <div className="grid grid-cols-2 gap-4 mt-4">
             <div>
               <label
                 htmlFor="filterBy"
@@ -538,7 +550,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               </label>
               {filterInputs()}
             </div>
-          </div>
+          </div> */}
         </div>
         {isPaginatedLoading ? (
           <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
@@ -551,7 +563,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
             </div>
           </div>
         ) : null}
-        {!isPaginatedLoading &&
+        {/* {!isPaginatedLoading &&
         paginated?.items &&
         paginated?.items.length > 0 ? (
           <table className="w-full divide-y divide-gray-300 border-t border-gray-300">
@@ -744,7 +756,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 ))}
             </tbody>
           </table>
-        ) : null}
+        ) : null} */}
         {!isPaginatedLoading &&
         paginated?.items &&
         paginated?.items.length === 0 ? (

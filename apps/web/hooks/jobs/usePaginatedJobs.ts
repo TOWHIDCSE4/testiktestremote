@@ -27,7 +27,6 @@ export async function getAllParts({
 }) {
   const token = Cookies.get("tfl")
   // console.log(search, "Job" , jobType)
-  console.log("🚀 ~ file: usePaginatedJobs.ts:30 ~ jobType:", jobType)
   const res = await fetch(
     `${API_URL_JOBS}/paginated?page=${page}&locationId=${locationId}&status=${status}&search=${search}&selectedjob=${jobType}`,
     {

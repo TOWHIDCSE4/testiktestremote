@@ -88,11 +88,15 @@ const Details = ({
       setPartId(partId)
       setSelectedOperator({
         id:
-          typeof timerDetails?.operator === "object"
-            ? (timerDetails?.operator._id as string)
+          typeof timerDetails?.operator === "object" &&
+          timerDetails?.operator != null &&
+          timerDetails?.operator != undefined
+            ? (timerDetails?.operator?._id as string)
             : "",
         name:
-          typeof timerDetails?.operator === "object"
+          typeof timerDetails?.operator === "object" &&
+          timerDetails?.operator != null &&
+          timerDetails?.operator != undefined
             ? `${timerDetails?.operator?.firstName} ${timerDetails?.operator?.lastName}`
             : "",
       })
