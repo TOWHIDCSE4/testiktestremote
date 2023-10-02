@@ -50,7 +50,7 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
             </thead>
             <tbody className="text-xs overflow-scroll">
               {job.timerLogs?.map((log: any, index: any) => (
-                <tr className="odd:bg-gray-100 even:bg-white">
+                <tr key={log._id} className="odd:bg-gray-100 even:bg-white">
                   <td>{index + 1}.</td>
                   {/* <td>1.</td> */}
                   <td>
