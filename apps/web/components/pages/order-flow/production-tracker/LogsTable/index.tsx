@@ -219,7 +219,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         }`}
       >
         <div className="px-6 py-4">
-          <div className="flex">
+          <div className="flex pb-10">
             <div className=" w-[35%] whitespace-nowrap">
               <h3 className="text-2xl font-semibold pr-1">GLOBAL PRODUCTION</h3>
               <div className="w-full flex justify-center items-center">
