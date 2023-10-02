@@ -451,8 +451,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                 .tz(dayjs(item.createdAt), "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
-                            {/* @ts-expect-error */}
                             <td className="px-6 py-4">
+                              {/* @ts-expect-error */}
                               {item?.machineId.name}
                             </td>
                             <td
