@@ -14,14 +14,27 @@ export const globalLogs = async (req: Request, res: Response) => {
     machineClassId,
     partId,
     page,
+    sort,
+    key,
     startDate,
     endDate,
   } = req.query
 
+  const sortObj = {}
+  if (sort && key) {
+    //@ts-expect-error
+    sortObj[`${key}`] = sort
+  } else {
+    //@ts-expect-error
+    sortObj["createdAt"] = "desc"
+  }
+
   if (locationId) {
     try {
       const timerLogsCount = await TimerLogs.find({
-        locationId: new mongoose.Types.ObjectId(locationId as string),
+        ...(locationId && {
+          locationId: new mongoose.Types.ObjectId(locationId as string),
+        }),
         ...(factoryId && {
           factoryId: new mongoose.Types.ObjectId(factoryId as string),
         }),
@@ -29,7 +42,7 @@ export const globalLogs = async (req: Request, res: Response) => {
           partId: new mongoose.Types.ObjectId(partId as string),
         }),
         ...(machineId && {
-          machineClassId: new mongoose.Types.ObjectId(machineId as string),
+          machineId: new mongoose.Types.ObjectId(machineId as string),
         }),
         ...(machineClassId && {
           machineClassId: new mongoose.Types.ObjectId(machineClassId as string),
@@ -45,7 +58,10 @@ export const globalLogs = async (req: Request, res: Response) => {
       }).countDocuments()
 
       const getTimerLogs = await TimerLogs.find({
-        locationId: new mongoose.Types.ObjectId(locationId as string),
+        // locationId: new mongoose.Types.ObjectId(locationId as string),
+        ...(locationId && {
+          locationId: new mongoose.Types.ObjectId(locationId as string),
+        }),
         ...(factoryId && {
           factoryId: new mongoose.Types.ObjectId(factoryId as string),
         }),
@@ -53,7 +69,7 @@ export const globalLogs = async (req: Request, res: Response) => {
           partId: new mongoose.Types.ObjectId(partId as string),
         }),
         ...(machineId && {
-          machineClassId: new mongoose.Types.ObjectId(machineId as string),
+          machineId: new mongoose.Types.ObjectId(machineId as string),
         }),
         ...(machineClassId && {
           machineClassId: new mongoose.Types.ObjectId(machineClassId as string),
@@ -70,7 +86,7 @@ export const globalLogs = async (req: Request, res: Response) => {
         .populate("partId")
         .populate("operator")
         .populate("machineId")
-        .sort({ createdAt: -1 })
+        .sort({ ...sortObj })
         .skip(5 * (Number(page) - 1))
         .limit(5)
 
