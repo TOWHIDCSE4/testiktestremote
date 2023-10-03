@@ -1,10 +1,12 @@
 "use client"
+import { DatePicker, Space } from "antd"
 import {
   ChevronUpDownIcon,
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/solid"
 import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
 import dayjs from "dayjs"
+
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import { usePathname } from "next/navigation"
@@ -17,6 +19,8 @@ import useMachineClasses from "../../../../../hooks/machineClasses/useMachineCla
 import useMachines from "../../../../../hooks/machines/useMachines"
 import { set } from "mongoose"
 import useGetMachinesByLocation from "../../../../../hooks/machines/useGetMachinesByLocation"
+
+const { RangePicker } = DatePicker
 
 const GlobalTableProduction = [
   {
@@ -218,7 +222,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
           paginated ? "overflow-hidden" : "overflow-x-auto"
         }`}
       >
-        <div className="px-1 py-4">
+        <div className="px-6 py-4">
           <div className="flex pb-10">
             <div className=" w-[35%] whitespace-nowrap">
               <h3 className="text-2xl font-semibold pr-1">GLOBAL PRODUCTION</h3>
@@ -226,7 +230,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 <select
                   id="filterBy"
                   name="filterBy"
-                  className="mt-2 w-[10rem] block rounded-lg border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                  className=" mt-2 w-20% block rounded-lg border-0 py-1 px-2 pl-2 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
                   onChange={(e) => setFilterBy(e.target.value)}
                 >
                   <option value="BatchAction">Batch action</option>
@@ -236,43 +240,162 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 </select>
               </div>
             </div>
-            <div className="w-[68%] tracking-wide">
-              <div className="flex justify-between items-center">
-                <span className="flex w-[10rem] text-[11px] ">
-                  <p className="flex justify-end w-2/3 font-semibold">CITY :</p>
-                  <p className="w-1/3">NY</p>
-                </span>
-                <span className="flex  w-[12rem] text-[11px]">
-                  <p className="flex justify-end w-2/3 font-semibold">
-                    MACHINE CLASS :
+            <div className=" w-[85%] tracking-wide mx-auto">
+              <div className="flex pl-12 mb-3">
+                <div className="flex w-[10rem] text-[11px] items-center">
+                  <p className="flex justify-start font-semibold">CITY</p>
+                  <p className="w-[5rem] pl-4">
+                    <select
+                      id="filterBy"
+                      name="filterBy"
+                      className=" flex items-center w-[8rem] px-2 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                      onChange={(e) => setFilterBy(e.target.value)}
+                    >
+                      <option className="text-12"></option>
+                      <option value="Albania" className="text-12">
+                        Albania
+                      </option>
+                      <option value="United States" className="text-12">
+                        United States
+                      </option>
+                      <option value="New York" className="text-12">
+                        New York
+                      </option>
+                      <option value="India" className="text-12">
+                        India
+                      </option>
+                    </select>
                   </p>
-                  <p className="w-1/3">High</p>
-                </span>
-                <span className="flex  w-[12.5rem] text-[11px] ">
-                  <p className="flex justify-end w-2/3 font-semibold">
-                    DATE RANGE :
+                </div>
+                <div className="flex  w-[14rem] text-[11px] items-center">
+                  <p className="flex justify-end w-[8rem] font-semibold ">
+                    MACHINE CLASS
                   </p>
-                  <p className="w-1/2">9/25/2023</p>
-                </span>
+                  <p className="w-[5rem] pl-2">
+                    <select
+                      id="filterBy"
+                      name="filterBy"
+                      className="flex items-center w-[8rem] px-1 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                      onChange={(e) => setFilterBy(e.target.value)}
+                    >
+                      <option className="text-12"></option>
+                      <option value="BatchAction" className="text-12">
+                        High
+                      </option>
+                      <option value="Factories" className="text-12">
+                        Medium
+                      </option>
+                      <option value="Machine Classes" className="text-12">
+                        Low
+                      </option>
+                      <option value="Machines" className="text-12">
+                        Lowest
+                      </option>
+                    </select>
+                  </p>
+                </div>
+                {/* <span className="flex  w-[15rem] text-[11px] pl-0">
+                  <p className="flex items-center justify-start w-[5.5rem] font-semibold pl-1">
+                    DATE RANGE
+                  </p>
+                  <p className="w-[5.5rem]">
+                    <div>
+                      <Space direction="vertical" className=" flex items-center w-[7rem] px-1 py-0 rounded-lg " size={11}>
+                        <RangePicker />
+                        <RangePicker showTime />
+                        <RangePicker picker="week" />
+                        <RangePicker picker="month" />
+                        <RangePicker picker="quarter" />
+                        <RangePicker picker="year" />
+                      </Space>
+                    </div>
+                  </p>
+                </span> */}
               </div>
-              <div className="flex justify-between items-center">
-                <span className="flex  w-[10rem] text-[11px] ">
-                  <p className="flex justify-end w-2/3 font-semibold">
-                    MACHINE :
+              <div className="flex pl-6 mb-3">
+                <div className="flex w-[12.5rem] text-[11px] items-center">
+                  <p className="flex justify-start w-[3rem] font-semibold">
+                    MACHINE
                   </p>
-                  <p className="w-1/3">Tornado</p>
-                </span>
-                <span className="flex  w-[12rem] text-[11px] ">
-                  <p className="flex justify-end w-2/3 font-semibold">
-                    PART SELECTOR :
+                  <p className="w-3/1 pl-5">
+                    <select
+                      id="filterBy"
+                      name="filterBy"
+                      className="flex items-center w-[8rem] px-1 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                      onChange={(e) => setFilterBy(e.target.value)}
+                    >
+                      <option className="text-12"></option>
+                      <option value="BatchAction" className="text-12">
+                        High
+                      </option>
+                      <option value="Factories" className="text-12">
+                        Medium
+                      </option>
+                      <option value="Machine Classes" className="text-12">
+                        Low
+                      </option>
+                      <option value="Machines" className="text-12">
+                        Lowest
+                      </option>
+                    </select>
                   </p>
-                  <p className="w-1/3">CL3</p>
-                </span>
-                <span className="flex  w-[12.5rem] text-[10px] font-semibold pl-7 pt-2">
-                  <p className="flex justify-end w-4/5 p-2 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
+                </div>
+                <div className="flex  w-[14rem] text-[11px] items-center pl-5 ">
+                  <p className="flex justify-end w-3/2 font-semibold items-center pl-3">
+                    PART SELECTOR
+                  </p>
+                  <p className="w-1/3 pl-2">
+                    <select
+                      id="filterBy"
+                      name="filterBy"
+                      className="flex items-center w-[8rem] px-1 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                      onChange={(e) => setFilterBy(e.target.value)}
+                    >
+                      <option className="text-12"></option>
+                      <option value="BatchAction" className="text-12">
+                        High
+                      </option>
+                      <option value="Factories" className="text-12">
+                        Medium
+                      </option>
+                      <option value="Machine Classes" className="text-12">
+                        Low
+                      </option>
+                      <option value="Machines" className="text-12">
+                        Lowest
+                      </option>
+                    </select>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center mb-3">
+                <div className="flex  w-[15rem] text-[11px] pl-0">
+                  <p className="flex items-center justify-start w-[5.5rem] font-semibold pl-1">
+                    DATE RANGE
+                  </p>
+                  <p className="w-[5rem]">
+                    <div>
+                      <Space
+                        direction="vertical"
+                        className=" flex items-center w-[15rem] px-1 py-0 rounded-lg "
+                        size={11}
+                      >
+                        <RangePicker />
+                        {/* <RangePicker showTime />
+                        <RangePicker picker="week" />
+                        <RangePicker picker="month" />
+                        <RangePicker picker="quarter" />
+                        <RangePicker picker="year" /> */}
+                      </Space>
+                    </div>
+                  </p>
+                </div>
+                <div className="flex w-[14.5rem] text-[10px] justify-end pl-10">
+                  <p className="flex justify-center w-4/3 p-1 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
                     GENERATE REPORT
                   </p>
-                </span>
+                </div>
               </div>
             </div>
           </div>
