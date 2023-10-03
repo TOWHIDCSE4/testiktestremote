@@ -13,6 +13,10 @@ export async function getGlobalTimerLogs({
   factoryId,
   machineId,
   machineClassId,
+  cityId,
+  partId,
+  startDateRange,
+  endDateRange,
   page,
   sortType,
   keyword,
@@ -21,6 +25,10 @@ export async function getGlobalTimerLogs({
   factoryId: string
   machineId: string
   machineClassId: string
+  cityId: string
+  partId: string
+  startDateRange: string
+  endDateRange: string
   page: number
   sortType: string
   keyword: string
@@ -48,6 +56,10 @@ function useGlobalTimerLogs(
   const [factoryId, setFactoryId] = useState("")
   const [machineId, setMachineId] = useState("")
   const [machineClassId, setMachineClassId] = useState("")
+  const [cityId, setCityId] = useState("")
+  const [partId, setPartId] = useState("")
+  const [startDateRange, setStartDateRange] = useState("")
+  const [endDateRange, setEndDateRange] = useState("")
   const query = useQuery(
     [
       "global-timer-logs",
@@ -56,6 +68,10 @@ function useGlobalTimerLogs(
       machineId,
       machineClassId,
       page,
+      cityId,
+      partId,
+      startDateRange,
+      endDateRange,
       sortType,
       keyword,
     ],
@@ -66,6 +82,10 @@ function useGlobalTimerLogs(
         machineId,
         machineClassId,
         page,
+        cityId,
+        partId,
+        startDateRange,
+        endDateRange,
         sortType,
         keyword,
       }),
@@ -79,7 +99,17 @@ function useGlobalTimerLogs(
     if (page && page > 1) {
       query.refetch()
     }
-  }, [page, locationId, factoryId, machineId, machineClassId])
+  }, [
+    page,
+    locationId,
+    factoryId,
+    machineId,
+    machineClassId,
+    cityId,
+    partId,
+    startDateRange,
+    endDateRange,
+  ])
   return {
     ...query,
     page,
@@ -87,6 +117,10 @@ function useGlobalTimerLogs(
     setFactoryId,
     setMachineId,
     setMachineClassId,
+    setCityId,
+    setPartId,
+    setStartDateRange,
+    setEndDateRange,
   }
 }
 export default useGlobalTimerLogs

@@ -1,8 +1,9 @@
 "use client"
-import { DatePicker, Space } from "antd"
+import { DatePicker, Space, Select } from "antd"
 import {
   ChevronUpDownIcon,
   EllipsisVerticalIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/solid"
 import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
 import dayjs from "dayjs"
@@ -13,81 +14,22 @@ import { usePathname } from "next/navigation"
 import React, { Dispatch, useEffect, useState } from "react"
 import useGlobalTimerLogs from "../../../../../hooks/timerLogs/useGlobalTimerLogs"
 import useFactories from "../../../../../hooks/factories/useFactories"
-import { T_Factory, T_Machine, T_MachineClass } from "custom-validator"
+import {
+  T_Factory,
+  T_Machine,
+  T_MachineClass,
+  T_Part,
+  T_Locations,
+} from "custom-validator"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
 import useMachines from "../../../../../hooks/machines/useMachines"
 import { set } from "mongoose"
 import useGetMachinesByLocation from "../../../../../hooks/machines/useGetMachinesByLocation"
+import useLocations from "../../../../../hooks/locations/useLocations"
+import usePaginatedParts from "../../../../../hooks/parts/usePaginatedParts"
 
 const { RangePicker } = DatePicker
-
-const GlobalTableProduction = [
-  {
-    date: "9/25/2023",
-    machineName: "Tornado",
-    partName: "CL3",
-    id: "200",
-    status: "Good",
-    time: "12/12/2014",
-  },
-  {
-    date: "9/25/2023",
-    machineName: "Tornado",
-    partName: "CL3",
-    id: "200",
-    status: "Good",
-    time: "12/12/2014",
-  },
-  {
-    date: "9/25/2023",
-    machineName: "Tornado",
-    partName: "CL3",
-    id: "200",
-    status: "Good",
-    time: "12/12/2014",
-  },
-  {
-    date: "9/25/2023",
-    machineName: "Tornado",
-    partName: "CL3",
-    id: "200",
-    status: "Good",
-    time: "12/12/2014",
-  },
-  {
-    date: "9/25/2023",
-    machineName: "Tornado",
-    partName: "CL3",
-    id: "200",
-    status: "Good",
-    time: "12/12/2014",
-  },
-  {
-    date: "9/25/2023",
-    machineName: "Tornado",
-    partName: "CL3",
-    id: "200",
-    status: "Good",
-    time: "12/12/2014",
-  },
-  {
-    date: "9/25/2023",
-    machineName: "Tornado",
-    partName: "CL3",
-    id: "200",
-    status: "Good",
-    time: "12/12/2014",
-  },
-  {
-    date: "9/25/2023",
-    machineName: "Tornado",
-    partName: "CL3",
-    id: "200",
-    status: "Good",
-    time: "12/12/2014",
-  },
-]
 
 const LogsTable = ({ locationId }: { locationId: string }) => {
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
@@ -102,6 +44,29 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   const [sortType, setSortType] = useState<string>("")
   const [keyword, setKeyword] = useState<string>("")
+  const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
+  const [batchAction, setBatchAction] = useState<string>("")
+  const [city, setCity] = useState<string>("64d5814fb996589a945a6402")
+  const [machineClass, setMachineClass] = useState<string>("")
+  const [dateRange, setDateRange] = useState<string>("")
+  const [partSelector, setPartSelector] = useState<string>("")
+  const [machine, setMachine] = useState<string>("")
+  const [search, setSearch] = useState<string>("")
+
+  useEffect(() => {
+    // Function to update the window width when the window is resized
+    const handleResize = () => {
+      setMinWidth(window.innerWidth)
+    }
+
+    // Add an event listener for the "resize" event
+    window.addEventListener("resize", handleResize)
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [])
 
   const handleInputChange = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -119,6 +84,39 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     useMachineClasses()
   const { data: machines, isLoading: isMachinesLoading } =
     useGetMachinesByLocation(locationId)
+  const { data: locations, isLoading: isLocationsLoading } = useLocations()
+  const {
+    data: allParts,
+    isLoading: isGetAllPartsLoading,
+    setLocationId,
+    setPage: setPartsPage,
+    page: partsPage,
+    setName,
+  } = usePaginatedParts()
+
+  useEffect(() => {
+    setLocationId(city)
+    setPage(2)
+  }, [city, setLocationId])
+
+  useEffect(() => {
+    setName(search)
+  }, [search, setName])
+
+  const onChange = (value: string) => {
+    console.log(`selected ${value}`)
+  }
+
+  const onSearch = (value: string) => {
+    setSearch(value)
+  }
+
+  // Filter `option.label` match the user type `input`
+  const filterOption = (
+    input: string,
+    option?: { label: string; value: string }
+  ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+
   const [filterBy, setFilterBy] = useState("All")
   const {
     data: paginated,
@@ -222,9 +220,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
           paginated ? "overflow-hidden" : "overflow-x-auto"
         }`}
       >
-        <div className="px-6 py-4">
+        <div className="px-1 py-4">
           <div className="flex pb-10">
-            <div className=" w-[35%] whitespace-nowrap">
+            <div className=" whitespace-nowrap">
               <h3 className="text-2xl font-semibold pr-1">GLOBAL PRODUCTION</h3>
               <div className="w-full flex justify-center items-center">
                 <select
@@ -240,161 +238,135 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 </select>
               </div>
             </div>
-            <div className=" w-[85%] tracking-wide mx-auto">
-              <div className="flex pl-12 mb-3">
-                <div className="flex w-[10rem] text-[11px] items-center">
+            <div className=" grid grid-rows-2 grid-flow-col gap-1">
+              <div className="flex mb-3">
+                <div
+                  className={`flex w-[10rem] ${
+                    minWidth <= 1370 ? "ml-12" : "ml-10"
+                  } text-[11px] items-center`}
+                >
                   <p className="flex justify-start font-semibold">CITY</p>
                   <p className="w-[5rem] pl-4">
                     <select
                       id="filterBy"
                       name="filterBy"
-                      className=" flex items-center w-[8rem] px-2 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                      onChange={(e) => setFilterBy(e.target.value)}
+                      className=" flex items-center w-[6.3rem] px-2 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                      onChange={(e) => setCity(e.target.value)}
                     >
-                      <option className="text-12"></option>
-                      <option value="Albania" className="text-12">
-                        Albania
-                      </option>
-                      <option value="United States" className="text-12">
-                        United States
-                      </option>
-                      <option value="New York" className="text-12">
-                        New York
-                      </option>
-                      <option value="India" className="text-12">
-                        India
-                      </option>
+                      {/* <option value=""></option> */}
+                      {locations?.items?.map(
+                        (item: T_Locations, index: number) => {
+                          return (
+                            <option key={index} value={item._id as string}>
+                              {item.name}
+                            </option>
+                          )
+                        }
+                      )}
                     </select>
                   </p>
                 </div>
-                <div className="flex  w-[14rem] text-[11px] items-center">
-                  <p className="flex justify-end w-[8rem] font-semibold ">
+                <div className="flex text-[11px] items-center">
+                  <p className="flex justify-end font-semibold ">
                     MACHINE CLASS
                   </p>
-                  <p className="w-[5rem] pl-2">
+                  <p className=" pl-2">
                     <select
                       id="filterBy"
                       name="filterBy"
-                      className="flex items-center w-[8rem] px-1 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                      onChange={(e) => setFilterBy(e.target.value)}
+                      className="flex items-center px-1 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                      onChange={(e) => setMachineClass(e.target.value)}
                     >
-                      <option className="text-12"></option>
-                      <option value="BatchAction" className="text-12">
-                        High
-                      </option>
-                      <option value="Factories" className="text-12">
-                        Medium
-                      </option>
-                      <option value="Machine Classes" className="text-12">
-                        Low
-                      </option>
-                      <option value="Machines" className="text-12">
-                        Lowest
-                      </option>
+                      <option value=""></option>
+                      {machineClasses?.items?.map(
+                        (item: T_MachineClass, index: number) => {
+                          return (
+                            <option key={index} value={item._id as string}>
+                              {item.name}
+                            </option>
+                          )
+                        }
+                      )}
                     </select>
                   </p>
                 </div>
-                {/* <span className="flex  w-[15rem] text-[11px] pl-0">
-                  <p className="flex items-center justify-start w-[5.5rem] font-semibold pl-1">
-                    DATE RANGE
-                  </p>
-                  <p className="w-[5.5rem]">
-                    <div>
-                      <Space direction="vertical" className=" flex items-center w-[7rem] px-1 py-0 rounded-lg " size={11}>
-                        <RangePicker />
-                        <RangePicker showTime />
-                        <RangePicker picker="week" />
-                        <RangePicker picker="month" />
-                        <RangePicker picker="quarter" />
-                        <RangePicker picker="year" />
-                      </Space>
-                    </div>
-                  </p>
-                </span> */}
-              </div>
-              <div className="flex pl-6 mb-3">
-                <div className="flex w-[12.5rem] text-[11px] items-center">
-                  <p className="flex justify-start w-[3rem] font-semibold">
+                <div className="flex text-[11px] items-center">
+                  <p className="flex justify-start w-[3rem] ml-4 font-semibold">
                     MACHINE
                   </p>
                   <p className="w-3/1 pl-5">
                     <select
                       id="filterBy"
                       name="filterBy"
-                      className="flex items-center w-[8rem] px-1 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                      className="flex items-center px-1 py-0 w-[6.3rem] rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
                       onChange={(e) => setFilterBy(e.target.value)}
                     >
-                      <option className="text-12"></option>
-                      <option value="BatchAction" className="text-12">
-                        High
-                      </option>
-                      <option value="Factories" className="text-12">
-                        Medium
-                      </option>
-                      <option value="Machine Classes" className="text-12">
-                        Low
-                      </option>
-                      <option value="Machines" className="text-12">
-                        Lowest
-                      </option>
-                    </select>
-                  </p>
-                </div>
-                <div className="flex  w-[14rem] text-[11px] items-center pl-5 ">
-                  <p className="flex justify-end w-3/2 font-semibold items-center pl-3">
-                    PART SELECTOR
-                  </p>
-                  <p className="w-1/3 pl-2">
-                    <select
-                      id="filterBy"
-                      name="filterBy"
-                      className="flex items-center w-[8rem] px-1 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                      onChange={(e) => setFilterBy(e.target.value)}
-                    >
-                      <option className="text-12"></option>
-                      <option value="BatchAction" className="text-12">
-                        High
-                      </option>
-                      <option value="Factories" className="text-12">
-                        Medium
-                      </option>
-                      <option value="Machine Classes" className="text-12">
-                        Low
-                      </option>
-                      <option value="Machines" className="text-12">
-                        Lowest
-                      </option>
+                      <option value=""></option>
+                      {machines?.items?.map(
+                        (item: T_Machine, index: number) => {
+                          return (
+                            <option key={index} value={item._id as string}>
+                              {item.name}
+                            </option>
+                          )
+                        }
+                      )}
                     </select>
                   </p>
                 </div>
               </div>
-
-              <div className="flex items-center mb-3">
-                <div className="flex  w-[15rem] text-[11px] pl-0">
-                  <p className="flex items-center justify-start w-[5.5rem] font-semibold pl-1">
+              <div className="flex flex-wrap mb-3">
+                <div className="flex text-[11px] pl-0">
+                  <p className="flex items-center justify-start font-semibold pl-1">
                     DATE RANGE
                   </p>
-                  <p className="w-[5rem]">
-                    <div>
-                      <Space
-                        direction="vertical"
-                        className=" flex items-center w-[15rem] px-1 py-0 rounded-lg "
-                        size={11}
-                      >
-                        <RangePicker />
-                        {/* <RangePicker showTime />
-                        <RangePicker picker="week" />
-                        <RangePicker picker="month" />
-                        <RangePicker picker="quarter" />
-                        <RangePicker picker="year" /> */}
-                      </Space>
-                    </div>
-                  </p>
+                  <div className="pl-2">
+                    <Space
+                      direction="vertical"
+                      className=" flex items-center w-[12rem] rounded-lg "
+                      size={12}
+                    >
+                      <RangePicker />
+                    </Space>
+                  </div>
                 </div>
-                <div className="flex w-[14.5rem] text-[10px] justify-end pl-10">
-                  <p className="flex justify-center w-4/3 p-1 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
-                    GENERATE REPORT
+                <div className="flex text-[11px] items-center pl-2 ">
+                  <p className="flex justify-end font-semibold items-center">
+                    PART SELECTOR
                   </p>
+                  <Select
+                    // id="filterBy"
+                    // name="filterBy
+                    onSelect={(e) => setPartSelector(e.toString())}
+                    showSearch
+                    placeholder="Select a part"
+                    optionFilterProp="children"
+                    onChange={onChange}
+                    onSearch={onSearch}
+                    // filterOption={filterOption}
+                    className="flex items-center w-[15rem] ml-2 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                  >
+                    {allParts?.items?.map((item: T_Part, index: number) => {
+                      return (
+                        <option key={index} value={item._id as string}>
+                          {item.name}
+                        </option>
+                      )
+                    })}
+                  </Select>
+                </div>
+                <div className="flex items-center">
+                  <div
+                    className={`flex ${
+                      minWidth >= 1370 ? "xl:w-[14.5rem] xl:pl-10 mt-4" : "pl-2"
+                    } ${
+                      minWidth <= 1295 ? "mt-4" : ""
+                    } text-[10px] justify-end `}
+                  >
+                    <p className="flex justify-center w-4/3 p-1 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
+                      GENERATE REPORT
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -966,8 +938,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 Next
               </a>
             </div>
-            <div className="h-12 flex items-center w-full">
-              <div className="flex-1">
+            <div className="h-12 flex items-center justify-between w-full">
+              <div className="">
                 <p className="text-sm text-gray-700">
                   Showing{" "}
                   <span className="font-medium">
@@ -980,8 +952,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   results
                 </p>
               </div>
-              <div className="h-12 flex items-center ">
-                <div className="flex-1 mr-40 pr-40">
+              <div className="h-12 text-end flex items-center ">
+                <div className="">
                   <p className="text-sm text-gray-700">Global Total Units :</p>
                   <p className="text-sm text-gray-700">Global Total Tons :</p>
                   <p className="text-sm text-gray-700">
@@ -992,7 +964,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   </p>
                 </div>
               </div>
-
+              <button className="flex justify-center items-center p-2 text-lg">
+                PAUSE
+              </button>
               <div>
                 {isPaginatedLoading ? (
                   <div className="animate-pulse flex space-x-4">
