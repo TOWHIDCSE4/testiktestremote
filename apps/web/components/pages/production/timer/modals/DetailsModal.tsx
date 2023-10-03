@@ -173,7 +173,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
                 <Dialog.Panel
-                  className={`relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full md:max-w-2xl lg:max-w-xl sm:max-w-lg`}
+                  className={`relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full md:max-w-2xl lg:max-w-xl sm:max-w-lg`}
                 >
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="bg-white">
