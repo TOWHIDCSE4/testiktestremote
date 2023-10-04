@@ -52,6 +52,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   const [sortType, setSortType] = useState<string>("")
   const [keyword, setKeyword] = useState<string>("")
+  const [process, setProcess] = useState<boolean>(false)
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [batchAction, setBatchAction] = useState<string>("")
   const [city, setCity] = useState<string>("64d5814fb996589a945a6402")
@@ -84,6 +85,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     const newValue = e.currentTarget.value
     setKeyword(key)
     setSortType(sortType === "asc" ? "desc" : "asc")
+  }
+
+  const handleProcess = () => {
+    setProcess(process ? false : true)
   }
 
   dayjs.extend(utc.default)
@@ -167,7 +172,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setFactoryId,
     setMachineClassId,
     setMachineId,
-  } = useGlobalTimerLogs(locationId, sortType, keyword)
+  } = useGlobalTimerLogs(locationId, sortType, keyword, process)
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
   const filterInputs = () => {
     if (filterBy === "Factories") {
@@ -989,8 +994,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   </p>
                 </div>
               </div>
-              <button className="flex justify-center items-center p-2 text-lg">
-                PAUSE
+              <button
+                className="flex justify-center items-center p-2 text-lg"
+                onClick={() => handleProcess()}
+              >
+                {process ? "RESUME" : "PAUSE"}
               </button>
               <div>
                 {isPaginatedLoading ? (
