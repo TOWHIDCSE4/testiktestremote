@@ -87,6 +87,21 @@ const TabTable = ({
 
   const numberOfPages = Math.ceil((jobs?.itemCount as number) / 5)
 
+  // create a function that takes array of objects declare an empty array and check if items avaiable then take that array and call it by passing that array if items is not present then take cycle and sum up and store into empty array and return sum of all elements in array
+  function calculateCountSum(arr: any) {
+    let sum = 0
+
+    for (const obj of arr) {
+      if ("items" in obj) {
+        sum += obj.items.length
+      } else if (Array.isArray(obj)) {
+        sum += obj.length
+      }
+    }
+
+    return sum
+  }
+
   return (
     <>
       {isJobsLoading ? (
@@ -247,8 +262,11 @@ const TabTable = ({
                       <div className="flex items-center">
                         {job?.count ? (
                           <>
-                            {job.timerLogs ? job.timerLogs.length : 0}/
-                            {job?.count}
+                            {/* {console.log(sumOfElements(job.timerLogs))} */}
+                            {job.timerLogs
+                              ? calculateCountSum(job.timerLogs)
+                              : 0}
+                            /{job?.count}
                           </>
                         ) : (
                           <span className="text-2xl">∞</span>

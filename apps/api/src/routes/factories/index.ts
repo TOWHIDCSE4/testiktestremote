@@ -8,7 +8,7 @@ import {
   updateFactory,
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
-import { machineClasses } from "./machineClasses"
+import { machineClasses, machineClassesV2 } from "./machineClasses"
 import isRoleAllowed from "../../helpers/isRoleAllowed"
 import { ALLOWED_ALL_ROLES } from "../../utils/constants"
 
@@ -25,6 +25,7 @@ router.patch("/:id", isUserLoggedIn, updateFactory)
 router.delete("/:id", isUserLoggedIn, delteFactory)
 
 //custom
+router.get("/machine-classes-all/v2", isUserLoggedIn, machineClassesV2)
 router.get("/machine-classes/:factoryId", isUserLoggedIn, machineClasses)
 
 export default router

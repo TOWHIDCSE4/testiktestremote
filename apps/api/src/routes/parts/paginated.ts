@@ -7,14 +7,21 @@ import {
 
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, factoryId, machineClassId, name } = req.query
+  console.log("🚀 ~ file: paginated.ts:10 ~ paginated ~ name:", name)
   if (page && locationId) {
     const isNotAssigned = factoryId === "Not Assigned"
     try {
       const partsCount = await Parts.find({
         locationId: locationId,
-        ...(factoryId && !isNotAssigned ? { factoryId: factoryId } : {}),
-        ...(machineClassId && { machineClassId: machineClassId }),
-        ...(name && { name: { $regex: `.*${name}.*`, $options: "i" } }),
+        ...(factoryId && !isNotAssigned && factoryId != "all"
+          ? { factoryId: factoryId }
+          : {}),
+        ...(machineClassId &&
+          machineClassId != "all" && { machineClassId: machineClassId }),
+        ...(name &&
+          name != "all" && {
+            name: { $regex: new RegExp(name as string), $options: "i" },
+          }),
         $and: [
           { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
           ...(isNotAssigned ? [{ $or: [{ time: 0 }, { tons: 0 }] }] : []),
@@ -22,9 +29,15 @@ export const paginated = async (req: Request, res: Response) => {
       }).countDocuments()
       const getAllParts = await Parts.find({
         locationId: locationId,
-        ...(factoryId && !isNotAssigned ? { factoryId: factoryId } : {}),
-        ...(machineClassId && { machineClassId: machineClassId }),
-        ...(name && { name: { $regex: `.*${name}.*`, $options: "i" } }),
+        ...(factoryId && !isNotAssigned && factoryId != "all"
+          ? { factoryId: factoryId }
+          : {}),
+        ...(machineClassId &&
+          machineClassId != "all" && { machineClassId: machineClassId }),
+        ...(name &&
+          name != "all" && {
+            name: { $regex: new RegExp(name as string), $options: "i" },
+          }),
         $and: [
           { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
           ...(isNotAssigned ? [{ $or: [{ time: 0 }, { tons: 0 }] }] : []),
@@ -35,6 +48,10 @@ export const paginated = async (req: Request, res: Response) => {
         })
         .skip(6 * (Number(page) - 1))
         .limit(6)
+      console.log(
+        "🚀 ~ file: paginated.ts:47 ~ paginated ~ getAllParts:",
+        getAllParts
+      )
       res.json({
         error: false,
         items: getAllParts,

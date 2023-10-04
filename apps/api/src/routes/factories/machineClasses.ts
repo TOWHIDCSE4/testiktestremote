@@ -4,7 +4,7 @@ import Machines from "../../models/machines"
 import MachineClasses from "../../models/machineClasses"
 
 export const machineClasses = async (req: Request, res: Response) => {
-  if (req.params.factoryId) {
+  if (req.params.factoryId && req.params.factoryId !== "all") {
     try {
       const getAllMachines = await Machines.distinct("machineClassId", {
         factoryId: req.params.factoryId,
@@ -24,10 +24,36 @@ export const machineClasses = async (req: Request, res: Response) => {
         message: String(error),
       })
     }
-  } else {
+  } else if (!req?.params?.factoryId) {
     res.json({
       error: true,
       message: REQUIRED_VALUES_MISSING,
+    })
+  } else {
+    res.json({
+      error: false,
+      message: null,
+      items: [],
+      itemCount: 0,
+    })
+  }
+}
+export const machineClassesV2 = async (req: Request, res: Response) => {
+  console.log(
+    "🚀 ~ file: machineClasses.ts:52 ~ machineClassesV2 ~ machineClassesV2:"
+  )
+  try {
+    const getAllMachinesClasses = await MachineClasses.find({})
+    res.json({
+      error: false,
+      message: null,
+      items: getAllMachinesClasses,
+      itemCount: getAllMachinesClasses.length,
+    })
+  } catch (error) {
+    res.json({
+      error: true,
+      message: String(error),
     })
   }
 }

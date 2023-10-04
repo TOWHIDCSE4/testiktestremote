@@ -17,17 +17,17 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
     >
       <div className="w-3/12">
         <div className="text-sm font-semibold">ADDITIONAL INFO</div>
-        <div className="flex flex-wrap space-x-1 text-sm">
+        <div className="flex flex-wrap space-x-1 text-[13px]">
           <div>DRAWING :</div>
           <div>{job.drawingNumber}</div>
         </div>
-        <div className="flex flex-wrap space-x-1 text-sm">
+        <div className="flex flex-wrap space-x-1 text-[13px]">
           <div>DATE CREATED :</div>
           <div>
             {job.createdAt && new Date(job.createdAt).toLocaleDateString()}
           </div>
         </div>
-        <div className="flex flex-wrap space-x-1 text-sm">
+        <div className="flex flex-wrap space-x-1 text-[13px]">
           <div>QA APPROVED :</div>
           <div>Pending</div>
         </div>
@@ -49,124 +49,36 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
               </tr>
             </thead>
             <tbody className="text-xs overflow-scroll">
-              {/* {job.timerLogs?.map((log, index) => ( */}
-              <tr className="odd:bg-gray-100 even:bg-white">
-                {/* <td>{index}.</td> */}
-                <td>1.</td>
-                <td>
-                  12/12/2014
-                  {/* {log.createdAt &&
-                    new Date(log.createdAt).toLocaleDateString()} */}
-                </td>
-                <td>
-                  Steel and Pipe
-                  {/* {typeof log.factoryId === "string"
-                    ? log.factoryId
-                    : log.factoryId.name} */}
-                </td>
-                <td>
-                  Tornado
-                  {/* {typeof log.machineId === "string"
-                    ? log.machineId
-                    : log.machineId.name} */}
-                </td>
-                {/* <td>{job.count}</td> */}
-                <td>4</td>
-                <td>
-                  Pat Keo
-                  {/* {typeof log.operator === "string"
-                    ? log.operator
-                    : log.operator.firstName} */}
-                </td>
-              </tr>
-              <tr className="odd:bg-gray-100 even:bg-white">
-                {/* <td>{index}.</td> */}
-                <td>2.</td>
-                <td>
-                  12/12/2014
-                  {/* {log.createdAt &&
-                    new Date(log.createdAt).toLocaleDateString()} */}
-                </td>
-                <td>
-                  Steel and Pipe
-                  {/* {typeof log.factoryId === "string"
-                    ? log.factoryId
-                    : log.factoryId.name} */}
-                </td>
-                <td>
-                  Tornado
-                  {/* {typeof log.machineId === "string"
-                    ? log.machineId
-                    : log.machineId.name} */}
-                </td>
-                {/* <td>{job.count}</td> */}
-                <td>4</td>
-                <td>
-                  Pat Keo
-                  {/* {typeof log.operator === "string"
-                    ? log.operator
-                    : log.operator.firstName} */}
-                </td>
-              </tr>
-              <tr className="odd:bg-gray-100 even:bg-white">
-                {/* <td>{index}.</td> */}
-                <td>2.</td>
-                <td>
-                  12/12/2014
-                  {/* {log.createdAt &&
-                    new Date(log.createdAt).toLocaleDateString()} */}
-                </td>
-                <td>
-                  Steel and Pipe
-                  {/* {typeof log.factoryId === "string"
-                    ? log.factoryId
-                    : log.factoryId.name} */}
-                </td>
-                <td>
-                  Tornado
-                  {/* {typeof log.machineId === "string"
-                    ? log.machineId
-                    : log.machineId.name} */}
-                </td>
-                {/* <td>{job.count}</td> */}
-                <td>4</td>
-                <td>
-                  Pat Keo
-                  {/* {typeof log.operator === "string"
-                    ? log.operator
-                    : log.operator.firstName} */}
-                </td>
-              </tr>
-              <tr className="odd:bg-gray-100 even:bg-white">
-                {/* <td>{index}.</td> */}
-                <td>2.</td>
-                <td>
-                  12/12/2014
-                  {/* {log.createdAt &&
-                    new Date(log.createdAt).toLocaleDateString()} */}
-                </td>
-                <td>
-                  Steel and Pipe
-                  {/* {typeof log.factoryId === "string"
-                    ? log.factoryId
-                    : log.factoryId.name} */}
-                </td>
-                <td>
-                  Tornado
-                  {/* {typeof log.machineId === "string"
-                    ? log.machineId
-                    : log.machineId.name} */}
-                </td>
-                {/* <td>{job.count}</td> */}
-                <td>4</td>
-                <td>
-                  Pat Keo
-                  {/* {typeof log.operator === "string"
-                    ? log.operator
-                    : log.operator.firstName} */}
-                </td>
-              </tr>
-              {/* ))} */}
+              {job.timerLogs?.map((log: any, index: any) => (
+                <tr key={log._id} className="odd:bg-gray-100 even:bg-white">
+                  <td>{index + 1}.</td>
+                  {/* <td>1.</td> */}
+                  <td>
+                    {/* 12/12/2014 */}
+                    {log.date}
+                  </td>
+                  <td>
+                    {/* Steel and Pipe */}
+                    {typeof job.factory === "string"
+                      ? job.factory
+                      : job.factory?.name}
+                  </td>
+                  <td>
+                    {/* Tornado */}
+                    {typeof log.items[0].machineId === "string"
+                      ? log.items[0].machineId
+                      : log.items[0].machineId?.name}
+                  </td>
+                  <td>{log.items.length}</td>
+                  {/* <td>4</td> */}
+                  <td>
+                    {/* Pat Keo */}
+                    {typeof log.items[0].operator === "string"
+                      ? log.items[0].operator
+                      : log.items[0].operator?.firstName}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

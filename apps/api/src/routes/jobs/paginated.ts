@@ -21,7 +21,7 @@ export const paginated = async (req: Request, res: Response) => {
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
 
-      //jobs find aggregation
+      // jobs find aggregation
       const getAllJobs = await Jobs.aggregate([
         {
           $match: {
@@ -87,6 +87,17 @@ export const paginated = async (req: Request, res: Response) => {
               },
               {
                 $unwind: "$machineId",
+              },
+              {
+                $lookup: {
+                  from: "users",
+                  localField: "operator",
+                  foreignField: "_id",
+                  as: "operator",
+                },
+              },
+              {
+                $unwind: "$operator",
               },
             ],
           },

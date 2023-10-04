@@ -56,8 +56,8 @@ const Part = ({
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [selectedPartId, setSelectedPartId] = useState<string | undefined>("")
-  const [factoryIdFilter, setFactoryIdFilter] = useState("")
-  const [machineClassIdFilter, setMachineClassIdFilter] = useState("")
+  const [factoryIdFilter, setFactoryIdFilter] = useState("all")
+  const [machineClassIdFilter, setMachineClassIdFilter] = useState("all")
   const [nameFilter, setNameFilter] = useState("")
 
   useEffect(() => {
@@ -69,7 +69,11 @@ const Part = ({
 
   useEffect(() => {
     if (factoryIdFilter) {
+      if (factoryIdFilter === "all") {
+        setMachineClassIdFilter("all")
+      }
       setSelectedFactoryId(factoryIdFilter)
+      console.log("factoryIdFilter", factoryIdFilter)
     }
   }, [factoryIdFilter, setSelectedFactoryId])
 
@@ -97,6 +101,14 @@ const Part = ({
         }
       })
     : []
+
+  const setFactoryFilter = (value: any) => {
+    setFactoryIdFilter(value)
+  }
+
+  const setMachineFilter = (value: any) => {
+    setMachineClassIdFilter(value)
+  }
 
   return (
     <div className={`mt-6 my-10 pb-16`}>
@@ -167,9 +179,9 @@ const Part = ({
               id="location"
               name="location"
               className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-              onChange={(e) => setFactoryIdFilter(e.target.value)}
+              onChange={(e) => setFactoryFilter(e.target.value)}
             >
-              <option value={""}>All</option>
+              <option value={"all"}>All</option>
               {factories?.items?.map((item: T_Factory, index: number) => {
                 return (
                   <option key={index} value={item._id as string}>
@@ -191,14 +203,14 @@ const Part = ({
               id="location"
               name="location"
               className="mt-2 disabled:opacity-70 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-              onChange={(e) => setMachineClassIdFilter(e.target.value)}
+              onChange={(e) => setMachineFilter(e.target.value)}
               disabled={
                 isLocationsLoading ||
                 isFactoriesLoading ||
                 isMachineClassesRefetching
               }
             >
-              <option value={""}>All</option>
+              <option value={"all"}>All</option>
               {machineClasses?.items?.map(
                 (machine: T_MachineClass, index: number) => {
                   return (

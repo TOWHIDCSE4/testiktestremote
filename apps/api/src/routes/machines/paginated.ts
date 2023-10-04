@@ -11,16 +11,20 @@ export const paginated = async (req: Request, res: Response) => {
     try {
       const partsCount = await Machines.find({
         locationId: locationId,
-        ...(factoryId && { factoryId: factoryId }),
-        ...(machineClassId && { machineClassId: machineClassId }),
-        ...(name && { name: { $regex: `.*${name}.*`, $options: "i" } }),
+        ...(factoryId && factoryId != "all" && { factoryId: factoryId }),
+        ...(machineClassId &&
+          machineClassId != "all" && { machineClassId: machineClassId }),
+        ...(name &&
+          name != "all" && { name: { $regex: `.*${name}.*`, $options: "i" } }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
       const getAllParts = await Machines.find({
         locationId: locationId,
-        ...(factoryId && { factoryId: factoryId }),
-        ...(machineClassId && { machineClassId: machineClassId }),
-        ...(name && { name: { $regex: `.*${name}.*`, $options: "i" } }),
+        ...(factoryId && factoryId != "all" && { factoryId: factoryId }),
+        ...(machineClassId &&
+          machineClassId != "all" && { machineClassId: machineClassId }),
+        ...(name &&
+          name != "all" && { name: { $regex: `.*${name}.*`, $options: "i" } }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       })
         .sort({

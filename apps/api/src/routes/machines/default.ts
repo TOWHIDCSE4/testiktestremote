@@ -115,36 +115,29 @@ export const updateMachine = async (req: Request, res: Response) => {
     deletedAt: { $exists: false },
   })
   const condition = req.body
-  if (getMachine.length === 0) {
-    if (!isEmpty(condition)) {
-      try {
-        const updateMachine = await Machines.findByIdAndUpdate(
-          req.params.id,
-          {
-            $set: req.body,
-            updatedAt: Date.now(),
-          },
-          { new: true }
-        )
-        res.json({
-          error: false,
-          item: updateMachine,
-          itemCount: 1,
-          message: UPDATE_SUCCESS_MESSAGE,
-        })
-      } catch (err: any) {
-        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-        res.json({
-          error: true,
-          message: message,
-          items: null,
-          itemCount: null,
-        })
-      }
-    } else {
+  //TODO: investigate this
+  // if (getMachine.length === 0) {
+  if (!isEmpty(condition)) {
+    try {
+      const updateMachine = await Machines.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: req.body,
+          updatedAt: Date.now(),
+        },
+        { new: true }
+      )
+      res.json({
+        error: false,
+        item: updateMachine,
+        itemCount: 1,
+        message: UPDATE_SUCCESS_MESSAGE,
+      })
+    } catch (err: any) {
+      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       res.json({
         error: true,
-        message: "Machine cannot be found",
+        message: message,
         items: null,
         itemCount: null,
       })
@@ -152,11 +145,19 @@ export const updateMachine = async (req: Request, res: Response) => {
   } else {
     res.json({
       error: true,
-      message: "Machine does not exist",
+      message: "Machine cannot be found",
       items: null,
       itemCount: null,
     })
   }
+  // } else {
+  //   res.json({
+  //     error: true,
+  //     message: "Machine does not exist",
+  //     items: null,
+  //     itemCount: null,
+  //   })
+  // }
 }
 
 export const deleteMachine = async (req: Request, res: Response) => {
