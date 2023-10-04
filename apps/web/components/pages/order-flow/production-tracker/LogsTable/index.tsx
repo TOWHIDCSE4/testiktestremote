@@ -7,6 +7,14 @@ import {
 } from "@heroicons/react/24/solid"
 import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
 import dayjs from "dayjs"
+import { AsyncPaginate } from "react-select-async-paginate"
+import type { GroupBase, OptionsOrGroups } from "react-select"
+import moment from "moment"
+
+export type OptionType = {
+  value: number
+  label: string
+}
 
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
@@ -52,6 +60,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [partSelector, setPartSelector] = useState<string>("")
   const [machine, setMachine] = useState<string>("")
   const [search, setSearch] = useState<string>("")
+  const today = moment()
 
   useEffect(() => {
     // Function to update the window width when the window is resized
@@ -74,7 +83,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   ) => {
     const newValue = e.currentTarget.value
     setKeyword(key)
-    setSortType(sortType === "asc" ? "dsc" : "asc")
+    setSortType(sortType === "asc" ? "desc" : "asc")
   }
 
   dayjs.extend(utc.default)
@@ -96,21 +105,52 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     setLocationId(city)
-    setPage(2)
+    // setPage(2)
   }, [city, setLocationId])
 
   useEffect(() => {
     setName(search)
   }, [search, setName])
 
-  const onChange = (value: string) => {
-    console.log(`selected ${value}`)
-  }
-
   const onSearch = (value: string) => {
     setSearch(value)
   }
 
+  const customStyles = {
+    control: (provided: any, state: any) => ({
+      ...provided,
+      width: "15rem",
+      borderRadius: "15px",
+      border: "1px solid #ccc",
+      marginLeft: "5px",
+      boxShadow: state.isFocused ? "0 0 0 2px #ccc" : null,
+    }),
+    option: (provided: any, state: any) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "#3699FF" : null,
+      color: state.isFocused ? "white" : null,
+    }),
+  }
+
+  const loadOptions = (inputValue: string) => {
+    // Assuming the response is an array of items
+    const options = allParts?.items?.map((item: T_Part) => ({
+      value: item._id as string,
+      label: item.name,
+    }))
+    setPartsPage(partsPage + 1)
+    return {
+      options: options || [],
+      hasMore: true,
+    }
+  }
+  useEffect(() => {
+    setPartsPage(partsPage + 1)
+  }, [])
+
+  const disabledDate = (current: any) => {
+    return current && current > today
+  }
   // Filter `option.label` match the user type `input`
   const filterOption = (
     input: string,
@@ -315,9 +355,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   </p>
                 </div>
               </div>
-              <div className="flex flex-wrap mb-3">
+              <div className="flex flex-wrap">
                 <div className="flex text-[11px] pl-0">
-                  <p className="flex items-center justify-start font-semibold pl-1">
+                  <p className="flex items-center justify-start font-semibold">
                     DATE RANGE
                   </p>
                   <div className="pl-2">
@@ -326,34 +366,21 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       className=" flex items-center w-[12rem] rounded-lg "
                       size={12}
                     >
-                      <RangePicker />
+                      <RangePicker disabledDate={disabledDate} />
                     </Space>
                   </div>
                 </div>
-                <div className="flex text-[11px] items-center pl-2 ">
+                <div className="flex w-1/2 text-[11px] items-center pl-2 ">
                   <p className="flex justify-end font-semibold items-center">
                     PART SELECTOR
                   </p>
-                  <Select
-                    // id="filterBy"
-                    // name="filterBy
-                    onSelect={(e) => setPartSelector(e.toString())}
-                    showSearch
-                    placeholder="Select a part"
-                    optionFilterProp="children"
-                    onChange={onChange}
-                    onSearch={onSearch}
-                    // filterOption={filterOption}
-                    className="flex items-center w-[15rem] ml-2 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                  >
-                    {allParts?.items?.map((item: T_Part, index: number) => {
-                      return (
-                        <option key={index} value={item._id as string}>
-                          {item.name}
-                        </option>
-                      )
-                    })}
-                  </Select>
+                  <AsyncPaginate
+                    debounceTimeout={1}
+                    placeholder={"Select"}
+                    onChange={onSearch}
+                    loadOptions={loadOptions}
+                    styles={customStyles}
+                  />
                 </div>
                 <div className="flex items-center">
                   <div
@@ -384,7 +411,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <th scope="col" className="px-6 py-3 text-slate-900">
                       <div className="flex items-center">
                         DATE
-                        <button onClick={(e) => handleInputChange(e, "date")}>
+                        <button
+                          onClick={(e) => handleInputChange(e, "createdAt")}
+                        >
                           <svg
                             className="w-3 h-3 ml-1.5"
                             aria-hidden="true"
@@ -450,9 +479,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <th scope="col" className="px-6 py-3 text-slate-900">
                       <div className="flex items-center">
                         STATUS
-                        <button
-                          onClick={(e) => handleInputChange(e, "machine")}
-                        >
+                        <button onClick={(e) => handleInputChange(e, "status")}>
                           <svg
                             className="w-3 h-3 ml-1.5"
                             aria-hidden="true"
@@ -468,9 +495,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <th scope="col" className="px-6 py-3 text-slate-900">
                       <div className="flex items-center ">
                         TIME
-                        <button
-                          onClick={(e) => handleInputChange(e, "machine")}
-                        >
+                        <button onClick={(e) => handleInputChange(e, "time")}>
                           <svg
                             className="w-3 h-3 ml-1.5"
                             aria-hidden="true"
