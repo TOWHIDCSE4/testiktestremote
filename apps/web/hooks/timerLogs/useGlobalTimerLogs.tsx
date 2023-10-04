@@ -50,7 +50,8 @@ export async function getGlobalTimerLogs({
 function useGlobalTimerLogs(
   locationId: string,
   sortType: string,
-  keyword: string
+  keyword: string,
+  process: boolean
 ) {
   const [page, setPage] = useState(1)
   const [factoryId, setFactoryId] = useState("")
@@ -60,6 +61,7 @@ function useGlobalTimerLogs(
   const [partId, setPartId] = useState("")
   const [startDateRange, setStartDateRange] = useState("")
   const [endDateRange, setEndDateRange] = useState("")
+  // const [process, setProcess] = useState(true)
   const query = useQuery(
     [
       "global-timer-logs",
@@ -91,13 +93,15 @@ function useGlobalTimerLogs(
       }),
     {
       refetchOnWindowFocus: false,
-      enabled: !!locationId,
+      enabled: !!locationId && !process,
       refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
     }
   )
   useEffect(() => {
     if (page && page > 1) {
-      query.refetch()
+      if (process === false) {
+        query.refetch()
+      }
     }
   }, [
     page,
@@ -109,6 +113,7 @@ function useGlobalTimerLogs(
     partId,
     startDateRange,
     endDateRange,
+    process,
   ])
   return {
     ...query,

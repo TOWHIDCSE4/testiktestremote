@@ -52,6 +52,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   const [sortType, setSortType] = useState<string>("")
   const [keyword, setKeyword] = useState<string>("")
+  const [process, setProcess] = useState<boolean>(false)
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [batchAction, setBatchAction] = useState<string>("")
   const [city, setCity] = useState<string>("64d5814fb996589a945a6402")
@@ -60,6 +61,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [partSelector, setPartSelector] = useState<string>("")
   const [machine, setMachine] = useState<string>("")
   const [search, setSearch] = useState<string>("")
+  const [loadedOptions, setLoadedOptions] = useState<
+    { value: string; label: string }[]
+  >([])
   const today = moment()
 
   useEffect(() => {
@@ -86,6 +90,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setSortType(sortType === "asc" ? "desc" : "asc")
   }
 
+  const handleProcess = () => {
+    setProcess(process ? false : true)
+  }
+
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
@@ -110,9 +118,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     setName(search)
+    // console.log("the setName",search)
+    // setPartsPage(0)
   }, [search, setName])
 
-  const onSearch = (value: string) => {
+  const onSearch = (value: any) => {
+    // console.log('the on Saearcb', value)
     setSearch(value)
   }
 
@@ -132,21 +143,33 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }),
   }
 
+  // const loadOptions = (inputValue: string) => {
+  //   // Assuming the response is an array of items
+  //   const options = allParts?.items?.map((item: T_Part) => ({
+  //     value: item._id as string,
+  //     label: item.name,
+  //   }))
+  //   // setPartsPage(partsPage + 1)
+  //   // console.log(options)
+  //   return {
+  //     options: options || [],
+  //     hasMore: true,
+  //   }
+  // }
+
   const loadOptions = (inputValue: string) => {
     // Assuming the response is an array of items
-    const options = allParts?.items?.map((item: T_Part) => ({
-      value: item._id as string,
-      label: item.name,
-    }))
+    const newOptions =
+      allParts?.items?.map((item: T_Part) => ({
+        value: item._id as string,
+        label: item.name,
+      })) || []
     setPartsPage(partsPage + 1)
     return {
-      options: options || [],
+      options: newOptions || [],
       hasMore: true,
     }
   }
-  useEffect(() => {
-    setPartsPage(partsPage + 1)
-  }, [])
 
   const disabledDate = (current: any) => {
     return current && current > today
@@ -167,7 +190,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setFactoryId,
     setMachineClassId,
     setMachineId,
-  } = useGlobalTimerLogs(locationId, sortType, keyword)
+  } = useGlobalTimerLogs(locationId, sortType, keyword, process)
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
   const filterInputs = () => {
     if (filterBy === "Factories") {
@@ -375,9 +398,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     PART SELECTOR
                   </p>
                   <AsyncPaginate
-                    debounceTimeout={1}
+                    debounceTimeout={search ? 0 : 300}
                     placeholder={"Select"}
-                    onChange={onSearch}
+                    onInputChange={(e) => onSearch(e)}
                     loadOptions={loadOptions}
                     styles={customStyles}
                   />
@@ -989,8 +1012,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   </p>
                 </div>
               </div>
-              <button className="flex justify-center items-center p-2 text-lg">
-                PAUSE
+              <button
+                className="flex justify-center items-center p-2 text-lg"
+                onClick={() => handleProcess()}
+              >
+                {process ? "RESUME" : "PAUSE"}
               </button>
               <div>
                 {isPaginatedLoading ? (
