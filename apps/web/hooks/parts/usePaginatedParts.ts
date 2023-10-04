@@ -21,6 +21,7 @@ export async function getAllParts({
   machineClassId?: string
   name?: string
 }) {
+  console.log("before api call", name)
   const token = Cookies.get("tfl")
   const res = await fetch(
     `${API_URL_PARTS}/paginated?page=${page}&locationId=${locationId}&factoryId=${factoryId}&machineClassId=${machineClassId}&name=${name}`,

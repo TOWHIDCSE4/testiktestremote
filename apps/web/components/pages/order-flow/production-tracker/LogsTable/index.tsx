@@ -61,6 +61,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [partSelector, setPartSelector] = useState<string>("")
   const [machine, setMachine] = useState<string>("")
   const [search, setSearch] = useState<string>("")
+  const [loadedOptions, setLoadedOptions] = useState<
+    { value: string; label: string }[]
+  >([])
   const today = moment()
 
   useEffect(() => {
@@ -115,9 +118,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     setName(search)
+    // console.log("the setName",search)
+    // setPartsPage(0)
   }, [search, setName])
 
-  const onSearch = (value: string) => {
+  const onSearch = (value: any) => {
+    // console.log('the on Saearcb', value)
     setSearch(value)
   }
 
@@ -137,21 +143,33 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }),
   }
 
+  // const loadOptions = (inputValue: string) => {
+  //   // Assuming the response is an array of items
+  //   const options = allParts?.items?.map((item: T_Part) => ({
+  //     value: item._id as string,
+  //     label: item.name,
+  //   }))
+  //   // setPartsPage(partsPage + 1)
+  //   // console.log(options)
+  //   return {
+  //     options: options || [],
+  //     hasMore: true,
+  //   }
+  // }
+
   const loadOptions = (inputValue: string) => {
     // Assuming the response is an array of items
-    const options = allParts?.items?.map((item: T_Part) => ({
-      value: item._id as string,
-      label: item.name,
-    }))
+    const newOptions =
+      allParts?.items?.map((item: T_Part) => ({
+        value: item._id as string,
+        label: item.name,
+      })) || []
     setPartsPage(partsPage + 1)
     return {
-      options: options || [],
+      options: newOptions || [],
       hasMore: true,
     }
   }
-  useEffect(() => {
-    setPartsPage(partsPage + 1)
-  }, [])
 
   const disabledDate = (current: any) => {
     return current && current > today
@@ -380,9 +398,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     PART SELECTOR
                   </p>
                   <AsyncPaginate
-                    debounceTimeout={1}
+                    debounceTimeout={search ? 0 : 300}
                     placeholder={"Select"}
-                    onChange={onSearch}
+                    onInputChange={(e) => onSearch(e)}
                     loadOptions={loadOptions}
                     styles={customStyles}
                   />

@@ -14,12 +14,12 @@ const AuthWrapper = ({ children }: Props) => {
   const router = useRouter()
   const updateStoreSession = useStoreSession((state) => state.update)
   useEffect(() => {
-    if (!isLoading && !data.error && data.item) {
-      updateStoreSession(data.item)
+    if (!isLoading && !data?.error && data?.item) {
+      updateStoreSession(data?.item)
     }
   }, [isLoading, data, updateStoreSession])
 
-  if (!isLoading && data.error) {
+  if (!isLoading && data?.error) {
     Cookies.remove("tfl")
     router.push("/")
     return <>{children}</>
