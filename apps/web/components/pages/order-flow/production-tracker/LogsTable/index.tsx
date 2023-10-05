@@ -120,7 +120,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   useEffect(() => {
     setName(search)
     // console.log("the setName",search)
-    // setPartsPage(0)
+    setPage(1)
   }, [search, setName])
 
   const onSearch = (value: any) => {
@@ -210,26 +210,32 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     setMachineClassId(machineClass)
+    setPage(1)
   }, [machineClass, setFactoryId])
 
   useEffect(() => {
     setMachineId(machine)
+    setPage(1)
   }, [machine, setMachineId])
   //TODO: remove ts expect error
   useEffect(() => {
     //@ts-expect-error
     setPartId(partSelector)
+    setPage(1)
   }, [partSelector, setPartId])
 
-  useEffect(() => {
-    setStartDateRange(dateRange)
-  }, [dateRange, setStartDateRange])
+  // useEffect(() => {
+  //   setStartDateRange(dateRange)
+  //   setPage(1)
+  // }, [dateRange, setStartDateRange])
 
-  useEffect(() => {
-    setEndDateRange(dateRange)
-  }, [dateRange, setEndDateRange])
+  // useEffect(() => {
+  //   setEndDateRange(dateRange)
+  //   setPage(1)
+  // }, [dateRange, setEndDateRange])
 
   const datePick = (inputValue: any) => {
+    setPage(1)
     if (inputValue && inputValue[0] && inputValue[1]) {
       // If both start and end dates are provided, format them
       setStartDateRange(
@@ -243,12 +249,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }
   }
 
-  useEffect(() => {
-    console.log("the date range", dateRange)
-  }, [dateRange])
+  // useEffect(() => {
+  //   console.log("the date range", dateRange)
+  // }, [dateRange])
 
   useEffect(() => {
-    console.log(filterBy)
+    // console.log(filterBy)
     const filterInputs = () => {
       if (filterBy === "Factories") {
         return (
