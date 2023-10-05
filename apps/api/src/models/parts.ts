@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose, { Types } from "mongoose"
 const { Schema } = mongoose
 
 const parts = new Schema({
@@ -23,6 +23,10 @@ const parts = new Schema({
   locationId: {
     type: mongoose.Schema.ObjectId,
     ref: "Location",
+  },
+  verified: {
+    type: Boolean,
+    default: false,
   },
   createdAt: {
     type: Date,

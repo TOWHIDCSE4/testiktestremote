@@ -8,25 +8,37 @@ import {
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, factoryId, machineClassId, name } = req.query
   if (page && locationId) {
+    console.log(
+      "🚀 ~ file: paginated.ts:10 ~ paginated ~ factoryId:",
+      factoryId
+    )
+    const verified = !((factoryId as string)?.toLowerCase() === "not verified")
+    console.log("🚀 ~ file: paginated.ts:16 ~ paginated ~ verified:", verified)
     try {
-      const partsCount = await Machines.find({
+      const query = {
         locationId: locationId,
-        ...(factoryId && factoryId != "all" && { factoryId: factoryId }),
+        ...(factoryId &&
+          factoryId != "all" &&
+          verified && { factoryId: factoryId }),
         ...(machineClassId &&
           machineClassId != "all" && { machineClassId: machineClassId }),
         ...(name &&
           name != "all" && { name: { $regex: `.*${name}.*`, $options: "i" } }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      }).countDocuments()
-      const getAllParts = await Machines.find({
-        locationId: locationId,
-        ...(factoryId && factoryId != "all" && { factoryId: factoryId }),
-        ...(machineClassId &&
-          machineClassId != "all" && { machineClassId: machineClassId }),
-        ...(name &&
-          name != "all" && { name: { $regex: `.*${name}.*`, $options: "i" } }),
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      })
+        $and: [
+          ...(verified
+            ? [{ verified: true }]
+            : [
+                {
+                  $or: [{ verified: { $exists: false } }, { verified: false }],
+                },
+              ]),
+        ],
+      }
+      console.log("🚀 ~ file: paginated.ts:48 ~ paginated ~ query:", query)
+      const partsCount = await Machines.find(query).countDocuments()
+
+      const getAllParts = await Machines.find(query)
         .sort({
           createdAt: -1,
         })

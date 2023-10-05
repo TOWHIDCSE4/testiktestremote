@@ -9,6 +9,7 @@ import {
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZMachine } from "custom-validator"
+import mongoose from "mongoose"
 
 export const getAllMachines = async (req: Request, res: Response) => {
   try {
@@ -181,6 +182,43 @@ export const deleteMachine = async (req: Request, res: Response) => {
     } else {
       throw new Error("Machine is already deleted")
     }
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    res.json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
+  }
+}
+export const verifyOrUnverify = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+    if (!id) throw new Error("Machine id is required")
+    let isVerified = false
+    const getMachine = await Machines.findOne({
+      _id: id,
+      $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+    })
+    if (!getMachine) throw new Error("Machine not found")
+    const verified = getMachine?.verified
+    if (!verified) {
+      isVerified = true
+    }
+    await Machines.updateOne(
+      { _id: new mongoose.Types.ObjectId(id) },
+      { $set: { verified: isVerified } }
+    )
+    res.json({
+      error: false,
+      message: `Machine ${isVerified ? "verified" : "unverfied"} successfully`,
+      data: {
+        verified: isVerified,
+      },
+      item: null,
+      itemCount: null,
+    })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
     res.json({

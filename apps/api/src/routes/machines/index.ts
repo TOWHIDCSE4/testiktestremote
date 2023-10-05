@@ -6,6 +6,7 @@ import {
   getAllMachines,
   getMachine,
   updateMachine,
+  verifyOrUnverify,
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { locationCount } from "./locationCount"
@@ -25,5 +26,6 @@ router.get("/:id", isUserLoggedIn, getMachine)
 router.post("/", isUserLoggedIn, addMachine)
 router.patch("/:id", isUserLoggedIn, updateMachine)
 router.delete("/:id", isUserLoggedIn, deleteMachine)
+router.post("/verify/:id", isUserLoggedIn, verifyOrUnverify)
 
 export default router
