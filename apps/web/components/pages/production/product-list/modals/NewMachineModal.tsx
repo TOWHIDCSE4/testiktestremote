@@ -38,18 +38,18 @@ const NewMachineModal = ({
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const { mutate: uploadMediaFiles, isLoading: isUploadMediaFilesLoading } =
     useUploadMediaFiles()
-  // const {
-  //   data: machineClasses,
-  //   isLoading: isMachineClassesLoading,
-  //   isRefetching: isMachineClassesRefetching,
-  //   setSelectedFactoryId,
-  // } = useFactoryMachineClasses()
   const {
     data: machineClasses,
     isLoading: isMachineClassesLoading,
     isRefetching: isMachineClassesRefetching,
-    // setSelectedFactoryId,
-  } = useMachineClasses()
+    setSelectedFactoryId,
+  } = useFactoryMachineClasses()
+  // const {
+  //   data: machineClasses,
+  //   isLoading: isMachineClassesLoading,
+  //   isRefetching: isMachineClassesRefetching,
+  //   // setSelectedFactoryId,
+  // } = useMachineClasses()
   const { mutate, isLoading: isAddMachineLoading } = useAddMachine()
 
   const [files, setFiles] = useState<FileWithPath[]>([])
@@ -200,7 +200,7 @@ const NewMachineModal = ({
                         className={`block mt-2 md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         onChange={(e) => {
                           setSelectedFactory(e.target.value)
-                          // setSelectedFactoryId(e.target.value)
+                          setSelectedFactoryId(e.target.value)
                           setValue("machineClassId", "")
                         }}
                       >
