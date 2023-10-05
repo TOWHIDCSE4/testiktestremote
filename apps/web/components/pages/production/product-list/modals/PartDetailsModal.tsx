@@ -450,9 +450,11 @@ const PartDetailsModal = ({
             </div>
             <button
               type="button"
-              className="uppercase mt-3 inline-flex w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
+              className={`uppercase mt-3 inline-flex w-full rounded-md ${
+                partDetails?.item.isVerified !== "" ? "" : "hover:bg-green-500"
+              } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
             >
-              Verify
+              {partDetails?.item.isVerified !== "" ? "Verify" : "Verified"}
             </button>
           </div>
         </div>
