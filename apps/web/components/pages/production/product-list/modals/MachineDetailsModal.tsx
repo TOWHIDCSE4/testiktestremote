@@ -51,6 +51,7 @@ const MachineDetailsModal = ({
   } = useFactoryMachineClasses()
   const { mutate, isLoading: isUpdateMachineLoading } = useUpdateMachine()
   const { mutate: toVerify, isLoading: isVerifyLoading } =
+    //@ts-expect-error
     useVerifiedMachine(id)
 
   const [isVerifiedMachine, setIsVerifiedMachine] = useState(
