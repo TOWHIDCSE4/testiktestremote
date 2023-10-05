@@ -17,6 +17,7 @@ import useGetMachine from "../../../../../hooks/machines/useGetMachine"
 import useUpdateMachine from "../../../../../hooks/machines/useUpdateMachine"
 import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
+import useVerifiedMachine from "../../../../../hooks/machines/useUpdateVerifiedMachine"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -47,6 +48,14 @@ const MachineDetailsModal = ({
     setSelectedFactoryId,
   } = useFactoryMachineClasses()
   const { mutate, isLoading: isUpdateMachineLoading } = useUpdateMachine()
+  const { mutate: toVerify, isLoading: isVerifyLoading } =
+    useVerifiedMachine(id)
+
+  const [isVerifiedMachine, setIsVerifiedMachine] = useState(toVerify?.verified)
+
+  const handleButton = () => {
+    setIsVerifiedMachine(isVerifiedMachine ? false : true)
+  }
 
   const { register, handleSubmit } = useForm<T_Machine>({
     values: machineDetails?.item,
@@ -301,8 +310,9 @@ const MachineDetailsModal = ({
                   ? " "
                   : "hover:bg-green-500"
               } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
+              onClick={() => handleButton()}
             >
-              {machineDetails?.item.isVerified !== "" ? "Verify" : "Verified"}
+              {isVerifiedMachine !== true ? "Verify" : "Verified"}
             </button>
           </div>
         </div>
