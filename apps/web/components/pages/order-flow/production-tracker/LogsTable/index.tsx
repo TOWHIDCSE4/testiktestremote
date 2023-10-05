@@ -110,6 +110,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     page: partsPage,
     setName,
   } = usePaginatedParts()
+  const numberOfPartsPages = Math.ceil((allParts?.itemCount as number) / 6)
 
   useEffect(() => {
     setLocationId(city)
@@ -145,20 +146,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }),
   }
 
-  // const loadOptions = (inputValue: string) => {
-  //   // Assuming the response is an array of items
-  //   const options = allParts?.items?.map((item: T_Part) => ({
-  //     value: item._id as string,
-  //     label: item.name,
-  //   }))
-  //   // setPartsPage(partsPage + 1)
-  //   // console.log(options)
-  //   return {
-  //     options: options || [],
-  //     hasMore: true,
-  //   }
-  // }
-
   const loadOptions = (inputValue: string) => {
     // Assuming the response is an array of items
     const newOptions =
@@ -172,9 +159,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
     // Check if the map function has reached the end of allParts
     if (newOptions.length === allParts?.items?.length) {
-      console.log("Finished")
-      // Increment partsPage by 1 when mapping is finished
-      setPartsPage(partsPage + 1)
+      if (numberOfPartsPages > partsPage) {
+        // Increment partsPage by 1 when mapping is finished
+        setPartsPage(partsPage + 1)
+      }
     }
 
     return {
