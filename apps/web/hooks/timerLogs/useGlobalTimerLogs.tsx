@@ -59,7 +59,7 @@ function useGlobalTimerLogs(
   const [machineId, setMachineId] = useState("")
   const [machineClassId, setMachineClassId] = useState("")
   const [cityId, setCityId] = useState("")
-  const [partId, setPartId] = useState("")
+  const [partId, setPartId] = useState<string>("")
   const [startDateRange, setStartDateRange] = useState("")
   const [endDateRange, setEndDateRange] = useState("")
   // const [process, setProcess] = useState(true)
