@@ -21,6 +21,8 @@ import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
 import useGetProductLogs from "../../../../../hooks/timerLogs/useGetProductLogs"
 import useVerifiedPart from "../../../../../hooks/parts/useUpdateVerifiedPart"
+import Cookies from "js-cookie"
+import { API_URL_VERIFIED_PART } from "../../../../../helpers/constants"
 const _ = require("lodash")
 
 interface DetailsModalProps {
@@ -47,7 +49,8 @@ const PartDetailsModal = ({
 
   const { data: partDetails, isLoading: isPartDetailsLoading } = useGetPart(id)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const { mutate: toVerify, isLoading: isVerifyLoading } = useVerifiedPart()
+  // const { mutate: toVerify, isLoading: isVerifyLoading } = useVerifiedPart(id as string)
+  // const {mutate: toVerify, isLoading: isVerifyLoading } = useVerifiedPart(id as string);
   const {
     data: machineClasses,
     isRefetching: isMachineClassesRefetching,
@@ -65,10 +68,21 @@ const PartDetailsModal = ({
     values: partDetails?.item,
   })
   const [factoryId, setFactoryId] = useState(partDetails?.item?.factoryId)
-  const [isVerifiedPart, setIsVerifiedPart] = useState(isVerify?.verified)
+  const [isVerifiedPart, setIsVerifiedPart] = useState(
+    partDetails?.item?.isVerified ? false : true
+  )
 
-  const handleButton = () => {
+  const handleButton = async () => {
     setIsVerifiedPart(isVerifiedPart ? false : true)
+    const token = Cookies.get("tfl")
+    const res = await fetch(`${API_URL_VERIFIED_PART}/${id}`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    return await res.json()
   }
 
   const isFactoryNotChanged: boolean =
@@ -460,8 +474,9 @@ const PartDetailsModal = ({
               className={`uppercase mt-3 inline-flex w-full rounded-md ${
                 partDetails?.item.isVerified !== "" ? "" : "hover:bg-green-500"
               } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
+              onClick={() => handleButton()}
             >
-              {partDetails?.item.isVerified !== "" ? "Verify" : "Verified"}
+              {isVerifiedPart === true ? "Verify" : "Verified"}
             </button>
           </div>
         </div>
