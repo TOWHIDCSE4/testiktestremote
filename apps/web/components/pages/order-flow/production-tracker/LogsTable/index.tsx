@@ -124,6 +124,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   const onSearch = (value: any) => {
     // console.log('the on Saearcb', value)
+    setPartsPage(1)
     setSearch(value)
   }
 
@@ -164,7 +165,17 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         value: item._id as string,
         label: item.name,
       })) || []
-    setPartsPage(partsPage + 1)
+
+    const totalPages = allParts?.itemCount
+    console.log(totalPages)
+
+    // Check if the map function has reached the end of allParts
+    if (newOptions.length === allParts?.items?.length) {
+      console.log("Finished")
+      // Increment partsPage by 1 when mapping is finished
+      setPartsPage(partsPage + 1)
+    }
+
     return {
       options: newOptions || [],
       hasMore: true,
@@ -190,8 +201,40 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setFactoryId,
     setMachineClassId,
     setMachineId,
+    setStartDateRange,
+    setEndDateRange,
+    setPartId,
   } = useGlobalTimerLogs(locationId, sortType, keyword, process)
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
+
+  useEffect(() => {
+    setMachineClassId(machineClass)
+  }, [machineClass, setFactoryId])
+
+  useEffect(() => {
+    setMachineId(machine)
+  }, [machine, setMachineId])
+
+  useEffect(() => {
+    setPartId(partSelector)
+  }, [partSelector, setPartId])
+
+  useEffect(() => {
+    setStartDateRange(dateRange)
+  }, [dateRange, setStartDateRange])
+
+  useEffect(() => {
+    setEndDateRange(dateRange)
+  }, [dateRange, setEndDateRange])
+
+  const datePick = (inputValue: any) => {
+    const dateObject = new Date(Date.UTC(...dateArray))
+
+    // Format the date to ISO 8601 format
+    const formattedDate = dateObject.toISOString()
+    setDateRange(inputValue)
+    console.log(formattedDate)
+  }
   const filterInputs = () => {
     if (filterBy === "Factories") {
       return (
@@ -292,7 +335,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   id="filterBy"
                   name="filterBy"
                   className=" mt-2 w-20% block rounded-lg border-0 py-1 px-2 pl-2 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                  onChange={(e) => setFilterBy(e.target.value)}
+                  onChange={(e) => filterInputs(e.target.value)}
                 >
                   <option value="BatchAction">Batch action</option>
                   <option value="Factories">Factory</option>
@@ -362,7 +405,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       id="filterBy"
                       name="filterBy"
                       className="flex items-center px-1 py-0 w-[6.3rem] rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                      onChange={(e) => setFilterBy(e.target.value)}
+                      onChange={(e) => setMachine(e.target.value)}
                     >
                       <option value=""></option>
                       {machines?.items?.map(
@@ -389,7 +432,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       className=" flex items-center w-[12rem] rounded-lg "
                       size={12}
                     >
-                      <RangePicker disabledDate={disabledDate} />
+                      <RangePicker
+                        disabledDate={disabledDate}
+                        onChange={(e) => datePick(e)}
+                      />
                     </Space>
                   </div>
                 </div>
@@ -402,6 +448,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     placeholder={"Select"}
                     onInputChange={(e) => onSearch(e)}
                     loadOptions={loadOptions}
+                    onChange={(e) => setPartSelector(e?.value)}
                     styles={customStyles}
                   />
                 </div>
