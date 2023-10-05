@@ -51,7 +51,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }
 
   const [sortType, setSortType] = useState<string>("")
-  const [keyword, setKeyword] = useState<string>("")
+  const [keyword, separtsListFiltersImplementedtKeyword] = useState<string>("")
   const [process, setProcess] = useState<boolean>(false)
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [batchAction, setBatchAction] = useState<string>("")
@@ -114,6 +114,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   useEffect(() => {
     setLocationId(city)
     // setPage(2)
+    console.log(city)
   }, [city, setLocationId])
 
   useEffect(() => {
@@ -204,7 +205,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setStartDateRange,
     setEndDateRange,
     setPartId,
-  } = useGlobalTimerLogs(locationId, sortType, keyword, process)
+  } = useGlobalTimerLogs(city, sortType, keyword, process)
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
 
   useEffect(() => {
@@ -228,96 +229,111 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }, [dateRange, setEndDateRange])
 
   const datePick = (inputValue: any) => {
-    const dateObject = new Date(Date.UTC(...dateArray))
-
-    // Format the date to ISO 8601 format
-    const formattedDate = dateObject.toISOString()
-    setDateRange(inputValue)
-    console.log(formattedDate)
-  }
-  const filterInputs = () => {
-    if (filterBy === "Factories") {
-      return (
-        <select
-          id="factories"
-          name="factories"
-          className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-          onChange={(e) => {
-            setFactoryId(e.target.value)
-            setMachineClassId("")
-            setMachineId("")
-          }}
-          disabled={isFactoriesLoading || isFactoriesLoading}
-        >
-          <option value="">Select Factory</option>
-          {factories?.items?.map((item: T_Factory, index: number) => {
-            return (
-              <option key={index} value={item._id as string}>
-                {item.name}
-              </option>
-            )
-          })}
-        </select>
+    if (inputValue && inputValue[0] && inputValue[1]) {
+      // If both start and end dates are provided, format them
+      setStartDateRange(
+        dayjs(inputValue[0]).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
-    } else if (filterBy === "Machine Classes") {
-      return (
-        <select
-          id="machineClasses"
-          name="machineClasses"
-          className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-          onChange={(e) => {
-            setMachineClassId(e.target.value)
-            setFactoryId("")
-            setMachineId("")
-          }}
-          disabled={isMachineClassesLoading || isFactoriesLoading}
-        >
-          <option value="">Select Machine Classes</option>
-          {machineClasses?.items?.map((item: T_MachineClass, index: number) => {
-            return (
-              <option key={index} value={item._id as string}>
-                {item.name}
-              </option>
-            )
-          })}
-        </select>
-      )
-    } else if (filterBy === "Machines") {
-      return (
-        <select
-          id="machines"
-          name="machines"
-          className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-          onChange={(e) => {
-            setMachineId(e.target.value)
-            setMachineClassId("")
-            setFactoryId("")
-          }}
-          disabled={isMachinesLoading || isFactoriesLoading}
-        >
-          <option value="">Select Machines</option>
-          {machines?.items?.map((item: T_Machine, index: number) => {
-            return (
-              <option key={index} value={item._id as string}>
-                {item.name}
-              </option>
-            )
-          })}
-        </select>
-      )
+      setEndDateRange(dayjs(inputValue[1]).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
     } else {
-      return (
-        <select
-          id="all"
-          name="all"
-          className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-          disabled
-        >
-          <option></option>
-        </select>
-      )
+      // Handle the case when one or both dates are empty
+      setStartDateRange("") // Set to an empty string or another default value
+      setEndDateRange("")
     }
   }
+
+  useEffect(() => {
+    console.log("the date range", dateRange)
+  }, [dateRange])
+
+  useEffect(() => {
+    console.log(filterBy)
+    const filterInputs = () => {
+      if (filterBy === "Factories") {
+        return (
+          <select
+            id="factories"
+            name="factories"
+            className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+            onChange={(e) => {
+              setFactoryId(e.target.value)
+              setMachineClassId("")
+              setMachineId("")
+            }}
+            disabled={isFactoriesLoading || isFactoriesLoading}
+          >
+            <option value="">Select Factory</option>
+            {factories?.items?.map((item: T_Factory, index: number) => {
+              return (
+                <option key={index} value={item._id as string}>
+                  {item.name}
+                </option>
+              )
+            })}
+          </select>
+        )
+      } else if (filterBy === "Machine Classes") {
+        return (
+          <select
+            id="machineClasses"
+            name="machineClasses"
+            className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+            onChange={(e) => {
+              setMachineClassId(e.target.value)
+              setFactoryId("")
+              setMachineId("")
+            }}
+            disabled={isMachineClassesLoading || isFactoriesLoading}
+          >
+            <option value="">Select Machine Classes</option>
+            {machineClasses?.items?.map(
+              (item: T_MachineClass, index: number) => {
+                return (
+                  <option key={index} value={item._id as string}>
+                    {item.name}
+                  </option>
+                )
+              }
+            )}
+          </select>
+        )
+      } else if (filterBy === "Machines") {
+        return (
+          <select
+            id="machines"
+            name="machines"
+            className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+            onChange={(e) => {
+              setMachineId(e.target.value)
+              setMachineClassId("")
+              setFactoryId("")
+            }}
+            disabled={isMachinesLoading || isFactoriesLoading}
+          >
+            <option value="">Select Machines</option>
+            {machines?.items?.map((item: T_Machine, index: number) => {
+              return (
+                <option key={index} value={item._id as string}>
+                  {item.name}
+                </option>
+              )
+            })}
+          </select>
+        )
+      } else {
+        return (
+          <select
+            id="all"
+            name="all"
+            className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled
+          >
+            <option></option>
+          </select>
+        )
+      }
+    }
+  }, [filterBy])
 
   return (
     <>
@@ -335,7 +351,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   id="filterBy"
                   name="filterBy"
                   className=" mt-2 w-20% block rounded-lg border-0 py-1 px-2 pl-2 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                  onChange={(e) => filterInputs(e.target.value)}
+                  onChange={(e) => setFilterBy(e.target.value)}
                 >
                   <option value="BatchAction">Batch action</option>
                   <option value="Factories">Factory</option>
