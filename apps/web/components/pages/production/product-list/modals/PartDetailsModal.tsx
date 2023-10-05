@@ -20,6 +20,7 @@ import ModalMediaList from "./ModalMediaList"
 import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
 import useGetProductLogs from "../../../../../hooks/timerLogs/useGetProductLogs"
+import useVerifiedPart from "../../../../../hooks/parts/useUpdateVerifiedPart"
 const _ = require("lodash")
 
 interface DetailsModalProps {
@@ -46,6 +47,7 @@ const PartDetailsModal = ({
 
   const { data: partDetails, isLoading: isPartDetailsLoading } = useGetPart(id)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+  const { mutate: toVerify, isLoading: isVerifyLoading } = useVerifiedPart()
   const {
     data: machineClasses,
     isRefetching: isMachineClassesRefetching,
@@ -63,6 +65,11 @@ const PartDetailsModal = ({
     values: partDetails?.item,
   })
   const [factoryId, setFactoryId] = useState(partDetails?.item?.factoryId)
+  const [isVerifiedPart, setIsVerifiedPart] = useState(isVerify?.verified)
+
+  const handleButton = () => {
+    setIsVerifiedPart(isVerifiedPart ? false : true)
+  }
 
   const isFactoryNotChanged: boolean =
     partDetails?.item?.factoryId && factoryId

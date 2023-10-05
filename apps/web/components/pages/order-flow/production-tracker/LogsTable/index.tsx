@@ -7,7 +7,10 @@ import {
 } from "@heroicons/react/24/solid"
 import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
 import dayjs from "dayjs"
-import { AsyncPaginate } from "react-select-async-paginate"
+import {
+  AsyncPaginate,
+  reduceGroupedOptions,
+} from "react-select-async-paginate"
 import type { GroupBase, OptionsOrGroups } from "react-select"
 import moment from "moment"
 
@@ -61,9 +64,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [partSelector, setPartSelector] = useState<string | undefined>("")
   const [machine, setMachine] = useState<string>("")
   const [search, setSearch] = useState<string>("")
-  const [loadedOptions, setLoadedOptions] = useState<
+  const [loadedListOptions, setLoadedListOptions] = useState<
     { value: string; label: string }[]
   >([])
+  const [loadOptionsCount, setLoadOptionsCount] = useState(0)
+  const [typingTimeout, setTypingTimeout] = useState(null)
   const today = moment()
 
   useEffect(() => {
@@ -119,14 +124,33 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }, [city, setLocationId])
 
   useEffect(() => {
-    setName(search)
-    // console.log("the setName",search)
-    setPage(1)
-  }, [search, setName])
+    // Clear the previous typing timeout if it exists
+    if (typingTimeout) {
+      clearTimeout(typingTimeout)
+    }
+
+    // Set a new timeout for 2 seconds
+    const newTimeout = setTimeout(() => {
+      // This code will run if the user stops typing for 2 seconds
+      setName(search)
+      setPartsPage(1)
+      setPage(1)
+    }, 500)
+
+    // Update the typingTimeout state with the new timeout
+    setTypingTimeout(newTimeout)
+
+    // Cleanup: Clear the timeout when the component unmounts or when 'search' changes
+    return () => {
+      if (newTimeout) {
+        clearTimeout(newTimeout)
+      }
+    }
+  }, [search])
 
   const onSearch = (value: any) => {
     // console.log('the on Saearcb', value)
-    setPartsPage(1)
+    // setPartsPage(1)
     setSearch(value)
   }
 
@@ -146,27 +170,63 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }),
   }
 
+  // const loadOptions = (inputValue: string) => {
+  //   // Assuming the response is an array of items
+  //   const newOptions =
+  //     allParts?.items?.map((item: T_Part) => ({
+  //       value: item._id as string,
+  //       label: item.name,
+  //     })) || []
+
+  //   const totalPages = allParts?.itemCount
+  //   console.log(totalPages)
+
+  //   // Check if the map function has reached the end of allParts
+  //   if (newOptions.length === allParts?.items?.length) {
+  //     if (numberOfPartsPages > partsPage) {
+  //       // Increment partsPage by 1 when mapping is finished
+  //       setPartsPage(partsPage + 1)
+  //     }
+  //   }
+
+  //   return {
+  //     options: newOptions || [],
+  //     hasMore: true,
+  //   }
+  // }
+
   const loadOptions = (inputValue: string) => {
-    // Assuming the response is an array of items
+    // Check if the search box is not empty
+    if (inputValue.trim() !== "") {
+      setLoadOptionsCount(loadOptionsCount + 1)
+      setPartsPage(1) // Reset partsPage to an empty value
+    } else {
+      setLoadOptionsCount(0)
+    }
+    //   // Assuming the response is an array of items
     const newOptions =
       allParts?.items?.map((item: T_Part) => ({
         value: item._id as string,
         label: item.name,
       })) || []
 
-    const totalPages = allParts?.itemCount
-    console.log(totalPages)
+    // Filter options based on the inputValue
+    const filteredOptions = newOptions.filter((option) =>
+      option.label.toLowerCase().includes(inputValue.toLowerCase())
+    )
 
     // Check if the map function has reached the end of allParts
-    if (newOptions.length === allParts?.items?.length) {
+    if (filteredOptions.length === allParts?.items?.length) {
       if (numberOfPartsPages > partsPage) {
         // Increment partsPage by 1 when mapping is finished
         setPartsPage(partsPage + 1)
       }
     }
+    setLoadedListOptions(filteredOptions)
+    console.log("the filteredOptions", loadedListOptions)
 
     return {
-      options: newOptions || [],
+      options: loadedListOptions || [],
       hasMore: true,
     }
   }
@@ -456,11 +516,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   </p>
 
                   <AsyncPaginate
-                    debounceTimeout={search ? 0 : 300}
+                    value={partSelector}
+                    debounceTimeout={1000}
                     placeholder={"Select"}
                     onInputChange={(e) => onSearch(e)}
                     loadOptions={loadOptions}
                     onChange={(e) => setPartSelector(e?.value)}
+                    reduceOptions={reduceGroupedOptions}
                     styles={customStyles}
                   />
                 </div>
