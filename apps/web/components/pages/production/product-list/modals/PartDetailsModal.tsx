@@ -400,51 +400,59 @@ const PartDetailsModal = ({
               />
             </div>
           </div>
-          <div className="bg-gray-100 mt-7 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-            <button
-              type="submit"
-              className={`ml-3 uppercase flex items-center rounded-md  mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-70 ${
-                !anyChange
-                  ? "bg-green-700 focus-visible:outline-green-900 hover:bg-green-800"
-                  : "bg-gray-400 hover:bg-gray-500"
-              }`}
-              disabled={
-                isUpdatePartLoading ||
-                isPartDetailsLoading ||
-                isFactoriesLoading ||
-                isUploadMediaFilesLoading ||
-                anyChange
-              }
-            >
-              {isUpdatePartLoading || isUploadMediaFilesLoading ? (
-                <div
-                  className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
-                  role="status"
-                  aria-label="loading"
-                >
-                  <span className="sr-only">Loading...</span>
-                </div>
-              ) : (
-                "Save"
-              )}
-            </button>
+          <div className="bg-gray-100 mt-7 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 justify-between">
+            <div className="flex items-center space-x-3">
+              <button
+                type="submit"
+                className={`ml-3 uppercase flex items-center rounded-md  mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-70 ${
+                  !anyChange
+                    ? "bg-green-700 focus-visible:outline-green-900 hover:bg-green-800"
+                    : "bg-gray-400 hover:bg-gray-500"
+                }`}
+                disabled={
+                  isUpdatePartLoading ||
+                  isPartDetailsLoading ||
+                  isFactoriesLoading ||
+                  isUploadMediaFilesLoading ||
+                  anyChange
+                }
+              >
+                {isUpdatePartLoading || isUploadMediaFilesLoading ? (
+                  <div
+                    className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
+                    role="status"
+                    aria-label="loading"
+                  >
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                ) : (
+                  "Save"
+                )}
+              </button>
+              <button
+                type="button"
+                className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
+                onClick={() => {
+                  onClose()
+                  setFilesToUpload([])
+                }}
+                ref={closeButtonRef}
+                tabIndex={-1}
+                disabled={
+                  isUpdatePartLoading ||
+                  isPartDetailsLoading ||
+                  isFactoriesLoading ||
+                  isUploadMediaFilesLoading
+                }
+              >
+                Close
+              </button>
+            </div>
             <button
               type="button"
-              className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
-              onClick={() => {
-                onClose()
-                setFilesToUpload([])
-              }}
-              ref={closeButtonRef}
-              tabIndex={-1}
-              disabled={
-                isUpdatePartLoading ||
-                isPartDetailsLoading ||
-                isFactoriesLoading ||
-                isUploadMediaFilesLoading
-              }
+              className="uppercase mt-3 inline-flex w-full rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
             >
-              Close
+              Verify
             </button>
           </div>
         </div>
