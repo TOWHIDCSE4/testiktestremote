@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import useSession from "../hooks/users/useSession"
 import useStoreSession from "../store/useStoreSession"
 import Cookies from "js-cookie"
+import { clarity } from "react-microsoft-clarity"
 
 type Props = {
   children: React.ReactNode
@@ -16,6 +17,7 @@ const AuthWrapper = ({ children }: Props) => {
   useEffect(() => {
     if (!isLoading && !data?.error && data?.item) {
       updateStoreSession(data?.item)
+      clarity.init(process.env.CLARITY_KEY as string)
     }
   }, [isLoading, data, updateStoreSession])
 

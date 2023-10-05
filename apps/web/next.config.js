@@ -31,6 +31,7 @@ module.exports = {
     ],
   },
   env: {
+    CLARITY_KEY: process.env.CLARITY_KEY,
     MEDIA_KEY: process.env.MEDIA_KEY,
   },
 }
