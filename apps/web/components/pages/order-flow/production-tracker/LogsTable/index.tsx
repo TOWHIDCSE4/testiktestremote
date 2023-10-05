@@ -138,7 +138,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }, 500)
 
     // Update the typingTimeout state with the new timeout
-    setTypingTimeout(newTimeout)
+    // setTypingTimeout(newTimeout)
 
     // Cleanup: Clear the timeout when the component unmounts or when 'search' changes
     return () => {
@@ -515,16 +515,16 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     PART SELECTOR
                   </p>
 
-                  <AsyncPaginate
+                  {/* <AsyncPaginate
                     value={partSelector}
                     debounceTimeout={1000}
                     placeholder={"Select"}
                     onInputChange={(e) => onSearch(e)}
-                    loadOptions={loadOptions}
-                    onChange={(e) => setPartSelector(e?.value)}
+                    // loadOptions={loadOptions}
+                    // onChange={(e) => setPartSelector(e?.value)}
                     reduceOptions={reduceGroupedOptions}
                     styles={customStyles}
-                  />
+                  /> */}
                 </div>
                 <div className="flex items-center">
                   <div
