@@ -18,6 +18,8 @@ import useUpdateMachine from "../../../../../hooks/machines/useUpdateMachine"
 import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
 import useVerifiedMachine from "../../../../../hooks/machines/useUpdateVerifiedMachine"
+import Cookies from "js-cookie"
+import { API_URL_VERIFIED_MACHINE } from "../../../../../helpers/constants"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -51,10 +53,21 @@ const MachineDetailsModal = ({
   const { mutate: toVerify, isLoading: isVerifyLoading } =
     useVerifiedMachine(id)
 
-  const [isVerifiedMachine, setIsVerifiedMachine] = useState(toVerify?.verified)
+  const [isVerifiedMachine, setIsVerifiedMachine] = useState(
+    machineDetails?.items?.verified ? false : true
+  )
 
-  const handleButton = () => {
+  const handleButton = async () => {
     setIsVerifiedMachine(isVerifiedMachine ? false : true)
+    const token = Cookies.get("tfl")
+    const res = await fetch(`${API_URL_VERIFIED_MACHINE}/${id}`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    return await res.json()
   }
 
   const { register, handleSubmit } = useForm<T_Machine>({
@@ -312,7 +325,7 @@ const MachineDetailsModal = ({
               } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
               onClick={() => handleButton()}
             >
-              {isVerifiedMachine !== true ? "Verify" : "Verified"}
+              {isVerifiedMachine === true ? "Verify" : "Verified"}
             </button>
           </div>
         </div>
