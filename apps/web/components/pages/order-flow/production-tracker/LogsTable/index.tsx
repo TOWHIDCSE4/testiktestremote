@@ -51,14 +51,14 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }
 
   const [sortType, setSortType] = useState<string>("")
-  const [keyword, separtsListFiltersImplementedtKeyword] = useState<string>("")
+  const [keyword, setKeyword] = useState<string>("")
   const [process, setProcess] = useState<boolean>(false)
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [batchAction, setBatchAction] = useState<string>("")
   const [city, setCity] = useState<string>("64d5814fb996589a945a6402")
   const [machineClass, setMachineClass] = useState<string>("")
   const [dateRange, setDateRange] = useState<string>("")
-  const [partSelector, setPartSelector] = useState<string>("")
+  const [partSelector, setPartSelector] = useState<string | undefined>("")
   const [machine, setMachine] = useState<string>("")
   const [search, setSearch] = useState<string>("")
   const [loadedOptions, setLoadedOptions] = useState<
@@ -113,8 +113,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     setLocationId(city)
-    // setPage(2)
-    console.log(city)
+    setPage(1)
+    // console.log(city)
   }, [city, setLocationId])
 
   useEffect(() => {
@@ -215,8 +215,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   useEffect(() => {
     setMachineId(machine)
   }, [machine, setMachineId])
-
+  //TODO: remove ts expect error
   useEffect(() => {
+    //@ts-expect-error
     setPartId(partSelector)
   }, [partSelector, setPartId])
 
@@ -459,6 +460,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   <p className="flex justify-end font-semibold items-center">
                     PART SELECTOR
                   </p>
+
                   <AsyncPaginate
                     debounceTimeout={search ? 0 : 300}
                     placeholder={"Select"}
