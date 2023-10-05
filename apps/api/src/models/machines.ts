@@ -20,6 +20,10 @@ const machines = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Location",
   },
+  verified: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

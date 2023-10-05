@@ -189,7 +189,8 @@ const Part = ({
                   </option>
                 )
               })}
-              <option>Not Assigned</option>
+              {/* <option>Not Assigned</option> */}
+              <option>Not Verified</option>
             </select>
           </div>
           <div>

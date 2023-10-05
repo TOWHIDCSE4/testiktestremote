@@ -39,9 +39,6 @@ export const machineClasses = async (req: Request, res: Response) => {
   }
 }
 export const machineClassesV2 = async (req: Request, res: Response) => {
-  console.log(
-    "🚀 ~ file: machineClasses.ts:52 ~ machineClassesV2 ~ machineClassesV2:"
-  )
   try {
     const getAllMachinesClasses = await MachineClasses.find({})
     res.json({

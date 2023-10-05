@@ -7,9 +7,21 @@ import {
 
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, factoryId, machineClassId, name } = req.query
-  console.log("🚀 ~ file: paginated.ts:10 ~ paginated ~ name:", name)
+  console.log("🚀 ~ file: paginated.ts:10 ~ paginated ~ factoryId:", factoryId)
+  console.log(
+    "🚀 ~ file: paginated.ts:10 ~ paginated ~ locationId:",
+    locationId
+  )
   if (page && locationId) {
-    const isNotAssigned = factoryId === "Not Assigned"
+    // const isNotAssigned = factoryId === "Not Assigned"
+    const isNotAssigned =
+      (factoryId as string)?.toLowerCase() === "not verified"
+    console.log(
+      "🚀 ~ file: paginated.ts:18 ~ paginated ~ isNotAssigned:",
+      isNotAssigned
+    )
+    const verified = !((factoryId as string)?.toLowerCase() === "not verified")
+    console.log("🚀 ~ file: paginated.ts:16 ~ paginated ~ verified:", verified)
     try {
       const partsCount = await Parts.find({
         locationId: locationId,
@@ -24,7 +36,14 @@ export const paginated = async (req: Request, res: Response) => {
           }),
         $and: [
           { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
-          ...(isNotAssigned ? [{ $or: [{ time: 0 }, { tons: 0 }] }] : []),
+          // ...(isNotAssigned ? [{ $or: [{ time: 0 }, { tons: 0 }] }] : []),
+          ...(verified
+            ? [{ verified: true }]
+            : [
+                {
+                  $or: [{ verified: { $exists: false } }, { verified: false }],
+                },
+              ]),
         ],
       }).countDocuments()
       const getAllParts = await Parts.find({
@@ -40,7 +59,15 @@ export const paginated = async (req: Request, res: Response) => {
           }),
         $and: [
           { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
-          ...(isNotAssigned ? [{ $or: [{ time: 0 }, { tons: 0 }] }] : []),
+          // ...(isNotAssigned ? [{ $or: [{ time: 0 }, { tons: 0 }] }] : []),
+          //verified condition starts from here
+          ...(verified
+            ? [{ verified: true }]
+            : [
+                {
+                  $or: [{ verified: { $exists: false } }, { verified: false }],
+                },
+              ]),
         ],
       })
         .sort({
@@ -48,10 +75,6 @@ export const paginated = async (req: Request, res: Response) => {
         })
         .skip(6 * (Number(page) - 1))
         .limit(6)
-      console.log(
-        "🚀 ~ file: paginated.ts:47 ~ paginated ~ getAllParts:",
-        getAllParts
-      )
       res.json({
         error: false,
         items: getAllParts,

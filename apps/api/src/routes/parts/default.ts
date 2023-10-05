@@ -10,6 +10,7 @@ import {
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZPart } from "custom-validator"
+import mongoose from "mongoose"
 
 export const getAllParts = async (req: Request, res: Response) => {
   try {
@@ -200,6 +201,43 @@ export const deletePart = async (req: Request, res: Response) => {
     } else {
       throw new Error("Part is already deleted")
     }
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    res.json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
+  }
+}
+export const verifyOrUnverify = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+    if (!id) throw new Error("part Id is required")
+    let isVerified = false
+    const getPart = await Parts.findOne({
+      _id: id,
+      $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+    })
+    if (!getPart) throw new Error("Part not found")
+    const verified = getPart?.verified
+    if (!verified) {
+      isVerified = true
+    }
+    await Parts.updateOne(
+      { _id: new mongoose.Types.ObjectId(id) },
+      { $set: { verified: isVerified } }
+    )
+    res.json({
+      error: false,
+      message: `Part ${isVerified ? "verfied" : "unverfied"} successfully`,
+      data: {
+        verified: isVerified,
+      },
+      item: null,
+      itemCount: null,
+    })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
     res.json({
