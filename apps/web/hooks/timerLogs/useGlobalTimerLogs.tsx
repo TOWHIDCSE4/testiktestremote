@@ -33,9 +33,10 @@ export async function getGlobalTimerLogs({
   sortType: string
   keyword: string
 }) {
+  // console.log(startDateRange, endDateRange)
   const token = Cookies.get("tfl")
   const res = await fetch(
-    `${API_URL_TIMER_LOGS}/global?locationId=${locationId}&factoryId=${factoryId}&machineId=${machineId}&machineClassId=${machineClassId}&page=${page}&key=${keyword}&sort=${sortType}`,
+    `${API_URL_TIMER_LOGS}/global?locationId=${locationId}&factoryId=${factoryId}&machineId=${machineId}&machineClassId=${machineClassId}&partId=${partId}&startDate=${startDateRange}&endDate=${endDateRange}&page=${page}&key=${keyword}&sort=${sortType}`,
     {
       method: "GET",
       headers: {
@@ -50,16 +51,18 @@ export async function getGlobalTimerLogs({
 function useGlobalTimerLogs(
   locationId: string,
   sortType: string,
-  keyword: string
+  keyword: string,
+  process: boolean
 ) {
   const [page, setPage] = useState(1)
   const [factoryId, setFactoryId] = useState("")
   const [machineId, setMachineId] = useState("")
   const [machineClassId, setMachineClassId] = useState("")
   const [cityId, setCityId] = useState("")
-  const [partId, setPartId] = useState("")
+  const [partId, setPartId] = useState<string>("")
   const [startDateRange, setStartDateRange] = useState("")
   const [endDateRange, setEndDateRange] = useState("")
+  // const [process, setProcess] = useState(true)
   const query = useQuery(
     [
       "global-timer-logs",
@@ -91,13 +94,15 @@ function useGlobalTimerLogs(
       }),
     {
       refetchOnWindowFocus: false,
-      enabled: !!locationId,
+      enabled: !!locationId && !process,
       refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
     }
   )
   useEffect(() => {
     if (page && page > 1) {
-      query.refetch()
+      if (process === false) {
+        query.refetch()
+      }
     }
   }, [
     page,
@@ -109,6 +114,7 @@ function useGlobalTimerLogs(
     partId,
     startDateRange,
     endDateRange,
+    process,
   ])
   return {
     ...query,

@@ -6,6 +6,7 @@ import {
   getAllParts,
   getPart,
   updatePart,
+  verifyOrUnverify,
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { paginated } from "./paginated"
@@ -24,5 +25,6 @@ router.get("/:id", isUserLoggedIn, getPart)
 router.post("/", isUserLoggedIn, addPart)
 router.patch("/:id", isUserLoggedIn, updatePart)
 router.delete("/:id", isUserLoggedIn, deletePart)
+router.post("/verify/:id", isUserLoggedIn, verifyOrUnverify)
 
 export default router
