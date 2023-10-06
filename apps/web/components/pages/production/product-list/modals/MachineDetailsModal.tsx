@@ -19,7 +19,11 @@ import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
 import useVerifiedMachine from "../../../../../hooks/machines/useUpdateVerifiedMachine"
 import Cookies from "js-cookie"
-import { API_URL_VERIFIED_MACHINE } from "../../../../../helpers/constants"
+import {
+  API_URL_VERIFIED_MACHINE,
+  USER_ROLES,
+} from "../../../../../helpers/constants"
+import useStoreSession from "../../../../../store/useStoreSession"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -27,6 +31,8 @@ interface DetailsModalProps {
   onClose: () => void
   id?: string
 }
+
+const PRODUCTION_ADMIN_ROLES = [USER_ROLES.Administrator, USER_ROLES.Production]
 
 const MachineDetailsModal = ({
   isOpen,
@@ -41,6 +47,7 @@ const MachineDetailsModal = ({
   >([])
   const queryClient = useQueryClient()
   const closeButtonRef = useRef(null)
+  const storeSession = useStoreSession((state) => state)
   const { data: machineDetails, isLoading: isMachineDetailsLoading } =
     useGetMachine(id)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
@@ -50,12 +57,11 @@ const MachineDetailsModal = ({
     setSelectedFactoryId,
   } = useFactoryMachineClasses()
   const { mutate, isLoading: isUpdateMachineLoading } = useUpdateMachine()
-  const { mutate: toVerify, isLoading: isVerifyLoading } =
-    //@ts-expect-error
-    useVerifiedMachine(id)
+  // const { mutate: toVerify, isLoading: isVerifyLoading } =
+  //   useVerifiedMachine(id)
 
   const [isVerifiedMachine, setIsVerifiedMachine] = useState(
-    machineDetails?.items?.verified ? false : true
+    machineDetails?.item.verified ? true : false
   )
 
   const handleButton = async () => {
@@ -317,17 +323,21 @@ const MachineDetailsModal = ({
                 Close
               </button>
             </div>
-            <button
-              type="button"
-              className={`uppercase mt-3 inline-flex w-full rounded-md ${
-                machineDetails?.item.isVerified !== ""
-                  ? " "
-                  : "hover:bg-green-500"
-              } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
-              onClick={() => handleButton()}
-            >
-              {isVerifiedMachine === true ? "Verify" : "Verified"}
-            </button>
+            {!PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ? (
+              ""
+            ) : (
+              <button
+                type="button"
+                className={`uppercase mt-3 inline-flex w-full rounded-md ${
+                  machineDetails?.item.verified !== ""
+                    ? " "
+                    : "hover:bg-green-500"
+                } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
+                onClick={() => handleButton()}
+              >
+                {machineDetails?.item.verified ? "Verified" : "Verify"}
+              </button>
+            )}
           </div>
         </div>
       </form>

@@ -22,7 +22,12 @@ import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
 import useGetProductLogs from "../../../../../hooks/timerLogs/useGetProductLogs"
 import useVerifiedPart from "../../../../../hooks/parts/useUpdateVerifiedPart"
 import Cookies from "js-cookie"
-import { API_URL_VERIFIED_PART } from "../../../../../helpers/constants"
+import {
+  API_URL_VERIFIED_PART,
+  USER_ROLES,
+} from "../../../../../helpers/constants"
+import useStoreSession from "../../../../../store/useStoreSession"
+
 const _ = require("lodash")
 
 interface DetailsModalProps {
@@ -32,6 +37,8 @@ interface DetailsModalProps {
   id?: string
 }
 
+const PRODUCTION_ADMIN_ROLES = [USER_ROLES.Administrator, USER_ROLES.Production]
+
 const PartDetailsModal = ({
   isOpen,
   locationState,
@@ -39,6 +46,7 @@ const PartDetailsModal = ({
   id,
 }: DetailsModalProps) => {
   const queryClient = useQueryClient()
+  const storeSession = useStoreSession((state) => state)
   const closeButtonRef = useRef(null)
   const { mutate: uploadMediaFiles, isLoading: isUploadMediaFilesLoading } =
     useUploadMediaFiles()
@@ -69,7 +77,7 @@ const PartDetailsModal = ({
   })
   const [factoryId, setFactoryId] = useState(partDetails?.item?.factoryId)
   const [isVerifiedPart, setIsVerifiedPart] = useState(
-    partDetails?.item?.isVerified ? false : true
+    partDetails?.item?.verified ? false : true
   )
 
   const handleButton = async () => {
@@ -469,15 +477,21 @@ const PartDetailsModal = ({
                 Close
               </button>
             </div>
-            <button
-              type="button"
-              className={`uppercase mt-3 inline-flex w-full rounded-md ${
-                partDetails?.item.isVerified !== "" ? "" : "hover:bg-green-500"
-              } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
-              onClick={() => handleButton()}
-            >
-              {isVerifiedPart === true ? "Verify" : "Verified"}
-            </button>
+            {!PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ? (
+              ""
+            ) : (
+              <button
+                type="button"
+                className={`uppercase mt-3 inline-flex w-full rounded-md ${
+                  partDetails?.item.isVerified !== ""
+                    ? ""
+                    : "hover:bg-green-500"
+                } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
+                onClick={() => handleButton()}
+              >
+                {partDetails?.item.verified ? "Verified" : "Verify"}
+              </button>
+            )}
           </div>
         </div>
       </form>
