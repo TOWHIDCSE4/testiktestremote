@@ -104,6 +104,7 @@ const Part = ({
 
   const setFactoryFilter = (value: any) => {
     setFactoryIdFilter(value)
+    setPage(1)
   }
 
   const setMachineFilter = (value: any) => {
