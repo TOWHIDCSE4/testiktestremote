@@ -81,6 +81,10 @@ const MachineDetailsModal = ({
     return await res.json()
   }
 
+  useEffect(() => {
+    setIsVerifiedMachine(machineDetails?.item?.verified ? true : false)
+  }, [isVerifiedMachine])
+
   const { register, handleSubmit } = useForm<T_Machine>({
     values: machineDetails?.item,
   })
@@ -332,13 +336,13 @@ const MachineDetailsModal = ({
               <button
                 type="button"
                 className={`uppercase mt-3 inline-flex w-full rounded-md ${
-                  !isVerifiedMachine
+                  isVerifiedMachine
                     ? "bg-red-900 hover:bg-red-800 focus:outline-red-800"
                     : "hover:bg-green-500 bg-green-600 focus:outline-green-800"
                 }  px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white  sm:mt-0 sm:w-auto`}
                 onClick={() => handleButton()}
               >
-                {!isVerifiedMachine ? "Unverify" : "Verify"}
+                {isVerifiedMachine ? "Unverify" : "Verify"}
               </button>
             )}
           </div>
