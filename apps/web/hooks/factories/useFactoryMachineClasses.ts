@@ -39,6 +39,6 @@ function useFactoryMachineClasses() {
     }
   }, [selectedFactoryId])
 
-  return { ...query, setSelectedFactoryId }
+  return { ...query, setSelectedFactoryId, selectedFactoryId }
 }
 export default useFactoryMachineClasses

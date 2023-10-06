@@ -55,7 +55,11 @@ const PartDetailsModal = ({
   >([])
   const [openEditModal, setOpenEditModal] = useState(false)
 
-  const { data: partDetails, isLoading: isPartDetailsLoading } = useGetPart(id)
+  const {
+    data: partDetails,
+    isLoading: isPartDetailsLoading,
+    refetch: refetchPart,
+  } = useGetPart(id)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   // const { mutate: toVerify, isLoading: isVerifyLoading } = useVerifiedPart(id as string)
   // const {mutate: toVerify, isLoading: isVerifyLoading } = useVerifiedPart(id as string);
@@ -77,11 +81,10 @@ const PartDetailsModal = ({
   })
   const [factoryId, setFactoryId] = useState(partDetails?.item?.factoryId)
   const [isVerifiedPart, setIsVerifiedPart] = useState(
-    partDetails?.item?.verified ? false : true
+    partDetails?.item?.verified ? true : false
   )
 
   const handleButton = async () => {
-    setIsVerifiedPart(isVerifiedPart ? false : true)
     const token = Cookies.get("tfl")
     const res = await fetch(`${API_URL_VERIFIED_PART}/${id}`, {
       method: "POST",
@@ -90,8 +93,20 @@ const PartDetailsModal = ({
         Authorization: `Bearer ${token}`,
       },
     })
-    return await res.json()
+    await res.json()
+    setIsVerifiedPart(!isVerifiedPart)
+    console.log(`recalled the api`)
+    refetchPart()
   }
+
+  useEffect(() => {
+    console.log(`refetching...`)
+    console.log(
+      "🚀 ~ file: PartDetailsModal.tsx:101 ~ useEffect ~ partDetails:",
+      partDetails
+    )
+    setIsVerifiedPart(partDetails?.item?.verified ? true : false)
+  }, [partDetails, isVerifiedPart])
 
   const isFactoryNotChanged: boolean =
     partDetails?.item?.factoryId && factoryId
@@ -153,12 +168,6 @@ const PartDetailsModal = ({
       mutate({ ...data, _id: partDetails?.item?._id as string }, callBackReq)
     }
   }
-
-  useEffect(() => {
-    if (partDetails?.item) {
-      setSelectedFactoryId(partDetails?.item?.factoryId)
-    }
-  }, [partDetails])
 
   const partSection = () => {
     return (

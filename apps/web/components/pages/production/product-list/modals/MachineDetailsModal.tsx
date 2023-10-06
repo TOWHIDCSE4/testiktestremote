@@ -48,8 +48,11 @@ const MachineDetailsModal = ({
   const queryClient = useQueryClient()
   const closeButtonRef = useRef(null)
   const storeSession = useStoreSession((state) => state)
-  const { data: machineDetails, isLoading: isMachineDetailsLoading } =
-    useGetMachine(id)
+  const {
+    data: machineDetails,
+    isLoading: isMachineDetailsLoading,
+    refetch: refetchMachine,
+  } = useGetMachine(id)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const {
     data: machineClasses,
@@ -69,7 +72,6 @@ const MachineDetailsModal = ({
   )
 
   const handleButton = async () => {
-    setIsVerifiedMachine(!isVerifiedMachine)
     const token = Cookies.get("tfl")
     const res = await fetch(`${API_URL_VERIFIED_MACHINE}/${id}`, {
       method: "POST",
@@ -78,12 +80,14 @@ const MachineDetailsModal = ({
         Authorization: `Bearer ${token}`,
       },
     })
-    return await res.json()
+    await res.json()
+    setIsVerifiedMachine(!isVerifiedMachine)
+    refetchMachine()
   }
 
   useEffect(() => {
     setIsVerifiedMachine(machineDetails?.item?.verified ? true : false)
-  }, [isVerifiedMachine])
+  }, [isVerifiedMachine, machineDetails])
 
   const { register, handleSubmit } = useForm<T_Machine>({
     values: machineDetails?.item,
