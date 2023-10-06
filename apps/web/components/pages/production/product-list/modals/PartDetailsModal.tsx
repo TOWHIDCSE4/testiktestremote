@@ -361,9 +361,13 @@ const PartDetailsModal = ({
                   </label>
                   <input
                     id="inInventory"
+                    {...register("inInventory")}
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
-                    defaultValue={productLogs?.item ? productLogs?.item : 0}
-                    disabled={true}
+                    defaultValue={
+                      productLogs?.item?.inInverntory
+                        ? productLogs?.item?.inInverntory
+                        : 0
+                    }
                   />
                   <label
                     htmlFor="cage-weight-scrap"
@@ -377,10 +381,15 @@ const PartDetailsModal = ({
                     </div>
                     <input
                       type="text"
-                      id="topSellPrice"
-                      disabled
+                      id="manufactureCost"
+                      {...register("manufactureCost")}
                       className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                       placeholder="0.00"
+                      defaultValue={
+                        productLogs?.item?.manufactureCost
+                          ? productLogs?.item?.manufactureCost
+                          : 0
+                      }
                       aria-describedby="price-currency"
                     />
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
@@ -405,9 +414,14 @@ const PartDetailsModal = ({
                     <input
                       type="text"
                       id="topSellPrice"
-                      disabled
+                      {...register("topSellPrice")}
                       className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                       placeholder="0.00"
+                      defaultValue={
+                        productLogs?.item?.opSellPrice
+                          ? productLogs?.item?.opSellPrice
+                          : 0
+                      }
                       aria-describedby="price-currency"
                     />
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
