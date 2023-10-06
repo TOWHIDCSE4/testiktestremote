@@ -63,6 +63,7 @@ function TimerCards({
           <>
             <div className="mx-auto">
               <div className="mt-7 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 md:gap-x-24 xl:gap-x-18 xl:grid-cols-3 ">
+
                 {isLoading ? (
                   <>
                     <div className="animate-pulse flex space-x-4">
