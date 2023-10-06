@@ -17,7 +17,7 @@ const AuthWrapper = ({ children }: Props) => {
   useEffect(() => {
     if (!isLoading && !data?.error && data?.item) {
       updateStoreSession(data?.item)
-      clarity.init(process.env.CLARITY_KEY as string)
+      // clarity.init(process.env.CLARITY_KEY as string)
     }
   }, [isLoading, data, updateStoreSession])
 
