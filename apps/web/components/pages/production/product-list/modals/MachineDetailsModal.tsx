@@ -60,12 +60,16 @@ const MachineDetailsModal = ({
   // const { mutate: toVerify, isLoading: isVerifyLoading } =
   //   useVerifiedMachine(id)
 
+  console.log(
+    "🚀 ~ file: MachineDetailsModal.tsx:65 ~ machineDetails?.item?.verified:",
+    machineDetails?.item?.verified
+  )
   const [isVerifiedMachine, setIsVerifiedMachine] = useState(
-    machineDetails?.item.verified ? true : false
+    machineDetails?.item?.verified ? true : false
   )
 
   const handleButton = async () => {
-    setIsVerifiedMachine(isVerifiedMachine ? false : true)
+    setIsVerifiedMachine(!isVerifiedMachine)
     const token = Cookies.get("tfl")
     const res = await fetch(`${API_URL_VERIFIED_MACHINE}/${id}`, {
       method: "POST",
@@ -76,6 +80,10 @@ const MachineDetailsModal = ({
     })
     return await res.json()
   }
+
+  useEffect(() => {
+    setIsVerifiedMachine(machineDetails?.item?.verified ? true : false)
+  }, [isVerifiedMachine])
 
   const { register, handleSubmit } = useForm<T_Machine>({
     values: machineDetails?.item,
@@ -257,7 +265,6 @@ const MachineDetailsModal = ({
                   </label>
                   <textarea
                     rows={3}
-                    required
                     id="description"
                     className={`block col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     disabled={
@@ -329,13 +336,13 @@ const MachineDetailsModal = ({
               <button
                 type="button"
                 className={`uppercase mt-3 inline-flex w-full rounded-md ${
-                  machineDetails?.item.verified !== ""
-                    ? " "
-                    : "hover:bg-green-500"
-                } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
+                  isVerifiedMachine
+                    ? "bg-red-900 hover:bg-red-800 focus:outline-red-800"
+                    : "hover:bg-green-500 bg-green-600 focus:outline-green-800"
+                }  px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white  sm:mt-0 sm:w-auto`}
                 onClick={() => handleButton()}
               >
-                {machineDetails?.item.verified ? "Verified" : "Verify"}
+                {isVerifiedMachine ? "Unverify" : "Verify"}
               </button>
             )}
           </div>

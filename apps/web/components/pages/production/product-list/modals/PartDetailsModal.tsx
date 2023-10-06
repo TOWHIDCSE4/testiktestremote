@@ -483,13 +483,13 @@ const PartDetailsModal = ({
               <button
                 type="button"
                 className={`uppercase mt-3 inline-flex w-full rounded-md ${
-                  partDetails?.item.isVerified !== ""
-                    ? ""
-                    : "hover:bg-green-500"
-                } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
+                  isVerifiedPart
+                    ? "bg-red-900 hover:bg-red-800 focus:outline-red-800"
+                    : "hover:bg-green-500 bg-green-600 focus:outline-green-800"
+                }  px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white  sm:mt-0 sm:w-auto`}
                 onClick={() => handleButton()}
               >
-                {partDetails?.item.verified ? "Verified" : "Verify"}
+                {isVerifiedPart ? "Unverify" : "Verify"}
               </button>
             )}
           </div>

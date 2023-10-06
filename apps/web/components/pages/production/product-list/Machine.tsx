@@ -487,14 +487,16 @@ const Machine = ({
         onClose={() => setOpenDeleteModal(false)}
         _id={selectedPartId}
       />
-      <MachineDetailsModal
-        isOpen={openDetailsModal}
-        locationState={
-          currentLocationTabName ? currentLocationTabName : "Loading..."
-        }
-        onClose={() => setOpenDetailsModal(false)}
-        id={selectedPartId}
-      />
+      {openDetailsModal && (
+        <MachineDetailsModal
+          isOpen={openDetailsModal}
+          locationState={
+            currentLocationTabName ? currentLocationTabName : "Loading..."
+          }
+          onClose={() => setOpenDetailsModal(false)}
+          id={selectedPartId}
+        />
+      )}
     </div>
   )
 }
