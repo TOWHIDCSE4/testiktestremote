@@ -23,7 +23,7 @@ const TIMER_ADMIN_ROLES = [
   USER_ROLES.Production,
   USER_ROLES.Personnel,
 ]
-const TIMER_CITY_ROLES = [USER_ROLES.Personnel, USER_ROLES.Production]
+const TIMER_CITY_ROLES = [USER_ROLES.Personnel]
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -161,6 +161,9 @@ const Content = () => {
                     aria-describedby="compare-description"
                     name="compare"
                     type="checkbox"
+                    disabled={
+                      isTimerCityRoles && tab.name !== location?.item.name
+                    }
                     className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
                   />
                 </div>

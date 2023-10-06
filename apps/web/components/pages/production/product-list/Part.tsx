@@ -104,6 +104,7 @@ const Part = ({
 
   const setFactoryFilter = (value: any) => {
     setFactoryIdFilter(value)
+    setPage(1)
   }
 
   const setMachineFilter = (value: any) => {
@@ -495,14 +496,16 @@ const Part = ({
         onClose={() => setOpenDeleteModal(false)}
         _id={selectedPartId}
       />
-      <PartDetailsModal
-        isOpen={openDetailsModal}
-        locationState={
-          currentLocationTabName ? currentLocationTabName : "Loading..."
-        }
-        onClose={() => setOpenDetailsModal(false)}
-        id={selectedPartId}
-      />
+      {openDetailsModal && (
+        <PartDetailsModal
+          isOpen={openDetailsModal}
+          locationState={
+            currentLocationTabName ? currentLocationTabName : "Loading..."
+          }
+          onClose={() => setOpenDetailsModal(false)}
+          id={selectedPartId}
+        />
+      )}
     </div>
   )
 }

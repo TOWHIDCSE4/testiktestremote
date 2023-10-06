@@ -22,7 +22,12 @@ import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
 import useGetProductLogs from "../../../../../hooks/timerLogs/useGetProductLogs"
 import useVerifiedPart from "../../../../../hooks/parts/useUpdateVerifiedPart"
 import Cookies from "js-cookie"
-import { API_URL_VERIFIED_PART } from "../../../../../helpers/constants"
+import {
+  API_URL_VERIFIED_PART,
+  USER_ROLES,
+} from "../../../../../helpers/constants"
+import useStoreSession from "../../../../../store/useStoreSession"
+
 const _ = require("lodash")
 
 interface DetailsModalProps {
@@ -32,6 +37,8 @@ interface DetailsModalProps {
   id?: string
 }
 
+const PRODUCTION_ADMIN_ROLES = [USER_ROLES.Administrator, USER_ROLES.Production]
+
 const PartDetailsModal = ({
   isOpen,
   locationState,
@@ -39,6 +46,7 @@ const PartDetailsModal = ({
   id,
 }: DetailsModalProps) => {
   const queryClient = useQueryClient()
+  const storeSession = useStoreSession((state) => state)
   const closeButtonRef = useRef(null)
   const { mutate: uploadMediaFiles, isLoading: isUploadMediaFilesLoading } =
     useUploadMediaFiles()
@@ -47,7 +55,11 @@ const PartDetailsModal = ({
   >([])
   const [openEditModal, setOpenEditModal] = useState(false)
 
-  const { data: partDetails, isLoading: isPartDetailsLoading } = useGetPart(id)
+  const {
+    data: partDetails,
+    isLoading: isPartDetailsLoading,
+    refetch: refetchPart,
+  } = useGetPart(id)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   // const { mutate: toVerify, isLoading: isVerifyLoading } = useVerifiedPart(id as string)
   // const {mutate: toVerify, isLoading: isVerifyLoading } = useVerifiedPart(id as string);
@@ -69,11 +81,10 @@ const PartDetailsModal = ({
   })
   const [factoryId, setFactoryId] = useState(partDetails?.item?.factoryId)
   const [isVerifiedPart, setIsVerifiedPart] = useState(
-    partDetails?.item?.isVerified ? false : true
+    partDetails?.item?.verified ? true : false
   )
 
   const handleButton = async () => {
-    setIsVerifiedPart(isVerifiedPart ? false : true)
     const token = Cookies.get("tfl")
     const res = await fetch(`${API_URL_VERIFIED_PART}/${id}`, {
       method: "POST",
@@ -82,8 +93,20 @@ const PartDetailsModal = ({
         Authorization: `Bearer ${token}`,
       },
     })
-    return await res.json()
+    await res.json()
+    setIsVerifiedPart(!isVerifiedPart)
+    console.log(`recalled the api`)
+    refetchPart()
   }
+
+  useEffect(() => {
+    console.log(`refetching...`)
+    console.log(
+      "🚀 ~ file: PartDetailsModal.tsx:101 ~ useEffect ~ partDetails:",
+      partDetails
+    )
+    setIsVerifiedPart(partDetails?.item?.verified ? true : false)
+  }, [partDetails, isVerifiedPart])
 
   const isFactoryNotChanged: boolean =
     partDetails?.item?.factoryId && factoryId
@@ -145,12 +168,6 @@ const PartDetailsModal = ({
       mutate({ ...data, _id: partDetails?.item?._id as string }, callBackReq)
     }
   }
-
-  useEffect(() => {
-    if (partDetails?.item) {
-      setSelectedFactoryId(partDetails?.item?.factoryId)
-    }
-  }, [partDetails])
 
   const partSection = () => {
     return (
@@ -353,9 +370,13 @@ const PartDetailsModal = ({
                   </label>
                   <input
                     id="inInventory"
+                    {...register("inInventory")}
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
-                    defaultValue={productLogs?.item ? productLogs?.item : 0}
-                    disabled={true}
+                    defaultValue={
+                      productLogs?.item?.inInverntory
+                        ? productLogs?.item?.inInverntory
+                        : 0
+                    }
                   />
                   <label
                     htmlFor="cage-weight-scrap"
@@ -369,10 +390,15 @@ const PartDetailsModal = ({
                     </div>
                     <input
                       type="text"
-                      id="topSellPrice"
-                      disabled
+                      id="manufactureCost"
+                      {...register("manufactureCost")}
                       className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                       placeholder="0.00"
+                      defaultValue={
+                        productLogs?.item?.manufactureCost
+                          ? productLogs?.item?.manufactureCost
+                          : 0
+                      }
                       aria-describedby="price-currency"
                     />
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
@@ -397,9 +423,14 @@ const PartDetailsModal = ({
                     <input
                       type="text"
                       id="topSellPrice"
-                      disabled
+                      {...register("topSellPrice")}
                       className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                       placeholder="0.00"
+                      defaultValue={
+                        productLogs?.item?.opSellPrice
+                          ? productLogs?.item?.opSellPrice
+                          : 0
+                      }
                       aria-describedby="price-currency"
                     />
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
@@ -469,15 +500,21 @@ const PartDetailsModal = ({
                 Close
               </button>
             </div>
-            <button
-              type="button"
-              className={`uppercase mt-3 inline-flex w-full rounded-md ${
-                partDetails?.item.isVerified !== "" ? "" : "hover:bg-green-500"
-              } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
-              onClick={() => handleButton()}
-            >
-              {isVerifiedPart === true ? "Verify" : "Verified"}
-            </button>
+            {!PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ? (
+              ""
+            ) : (
+              <button
+                type="button"
+                className={`uppercase mt-3 inline-flex w-full rounded-md ${
+                  isVerifiedPart
+                    ? "bg-red-900 hover:bg-red-800 focus:outline-red-800"
+                    : "hover:bg-green-500 bg-green-600 focus:outline-green-800"
+                }  px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white  sm:mt-0 sm:w-auto`}
+                onClick={() => handleButton()}
+              >
+                {isVerifiedPart ? "Unverify" : "Verify"}
+              </button>
+            )}
           </div>
         </div>
       </form>

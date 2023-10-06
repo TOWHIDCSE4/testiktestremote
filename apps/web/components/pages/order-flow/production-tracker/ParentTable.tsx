@@ -17,7 +17,7 @@ import usePartLocationCount from "../../../../hooks/parts/useGetPartLocationCoun
 
 const ParentTable = ({ locationId }: { locationId: string }) => {
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
-  const [selectedValue, setSelectedValue] = useState<string>("")
+  const [selectedValue, setSelectedValue] = useState<string>("client")
   const [inputValue, setInputValue] = useState<string>("")
   const [deleteModal, setDeleteModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
@@ -146,7 +146,6 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                     className={`block mt-2  bg-white dark:bg-gray-300 font-semibold md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                     onChange={handleDropdownChange}
                   >
-                    <option value=""></option>
                     <option value="CLIENT">CLIENT</option>
                     <option value="STOCK">STOCK</option>
                   </select>

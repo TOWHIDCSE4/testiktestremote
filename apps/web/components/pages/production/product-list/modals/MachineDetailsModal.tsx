@@ -19,7 +19,11 @@ import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
 import useVerifiedMachine from "../../../../../hooks/machines/useUpdateVerifiedMachine"
 import Cookies from "js-cookie"
-import { API_URL_VERIFIED_MACHINE } from "../../../../../helpers/constants"
+import {
+  API_URL_VERIFIED_MACHINE,
+  USER_ROLES,
+} from "../../../../../helpers/constants"
+import useStoreSession from "../../../../../store/useStoreSession"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -27,6 +31,8 @@ interface DetailsModalProps {
   onClose: () => void
   id?: string
 }
+
+const PRODUCTION_ADMIN_ROLES = [USER_ROLES.Administrator, USER_ROLES.Production]
 
 const MachineDetailsModal = ({
   isOpen,
@@ -41,8 +47,12 @@ const MachineDetailsModal = ({
   >([])
   const queryClient = useQueryClient()
   const closeButtonRef = useRef(null)
-  const { data: machineDetails, isLoading: isMachineDetailsLoading } =
-    useGetMachine(id)
+  const storeSession = useStoreSession((state) => state)
+  const {
+    data: machineDetails,
+    isLoading: isMachineDetailsLoading,
+    refetch: refetchMachine,
+  } = useGetMachine(id)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const {
     data: machineClasses,
@@ -50,16 +60,18 @@ const MachineDetailsModal = ({
     setSelectedFactoryId,
   } = useFactoryMachineClasses()
   const { mutate, isLoading: isUpdateMachineLoading } = useUpdateMachine()
-  const { mutate: toVerify, isLoading: isVerifyLoading } =
-    //@ts-expect-error
-    useVerifiedMachine(id)
+  // const { mutate: toVerify, isLoading: isVerifyLoading } =
+  //   useVerifiedMachine(id)
 
+  console.log(
+    "🚀 ~ file: MachineDetailsModal.tsx:65 ~ machineDetails?.item?.verified:",
+    machineDetails?.item?.verified
+  )
   const [isVerifiedMachine, setIsVerifiedMachine] = useState(
-    machineDetails?.items?.verified ? false : true
+    machineDetails?.item?.verified ? true : false
   )
 
   const handleButton = async () => {
-    setIsVerifiedMachine(isVerifiedMachine ? false : true)
     const token = Cookies.get("tfl")
     const res = await fetch(`${API_URL_VERIFIED_MACHINE}/${id}`, {
       method: "POST",
@@ -68,8 +80,14 @@ const MachineDetailsModal = ({
         Authorization: `Bearer ${token}`,
       },
     })
-    return await res.json()
+    await res.json()
+    setIsVerifiedMachine(!isVerifiedMachine)
+    refetchMachine()
   }
+
+  useEffect(() => {
+    setIsVerifiedMachine(machineDetails?.item?.verified ? true : false)
+  }, [isVerifiedMachine, machineDetails])
 
   const { register, handleSubmit } = useForm<T_Machine>({
     values: machineDetails?.item,
@@ -251,7 +269,6 @@ const MachineDetailsModal = ({
                   </label>
                   <textarea
                     rows={3}
-                    required
                     id="description"
                     className={`block col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     disabled={
@@ -317,17 +334,21 @@ const MachineDetailsModal = ({
                 Close
               </button>
             </div>
-            <button
-              type="button"
-              className={`uppercase mt-3 inline-flex w-full rounded-md ${
-                machineDetails?.item.isVerified !== ""
-                  ? " "
-                  : "hover:bg-green-500"
-              } bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white focus:outline-green-800 sm:mt-0 sm:w-auto`}
-              onClick={() => handleButton()}
-            >
-              {isVerifiedMachine === true ? "Verify" : "Verified"}
-            </button>
+            {!PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ? (
+              ""
+            ) : (
+              <button
+                type="button"
+                className={`uppercase mt-3 inline-flex w-full rounded-md ${
+                  isVerifiedMachine
+                    ? "bg-red-900 hover:bg-red-800 focus:outline-red-800"
+                    : "hover:bg-green-500 bg-green-600 focus:outline-green-800"
+                }  px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-white  sm:mt-0 sm:w-auto`}
+                onClick={() => handleButton()}
+              >
+                {isVerifiedMachine ? "Unverify" : "Verify"}
+              </button>
+            )}
           </div>
         </div>
       </form>
