@@ -28,6 +28,22 @@ const parts = new Schema({
     type: Boolean,
     default: false,
   },
+  //TODO:get from logs
+  inInventory: {
+    type: Number,
+    default: 0,
+    nullable: true,
+  },
+  manufactureCost: {
+    type: Number,
+    default: 0,
+    nullable: true,
+  },
+  topSellPriceL: {
+    type: Number,
+    default: 0,
+    nullable: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

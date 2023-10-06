@@ -15,6 +15,9 @@ export const ZPart = z.object({
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
+  inInventory: z.number().optional(),
+  manufactureCost: z.number().optional(),
+  topSellPrice: z.number().optional(),
 })
 
 export type T_Part = z.infer<typeof ZPart>
