@@ -191,7 +191,7 @@ const Details = ({
           ) : (
             <>
               {typeof timerDetails?.partId === "object"
-                ? timerDetails?.partId.time
+                ? parseInt(timerDetails?.partId.time.toString())
                 : "---"}{" "}
               seconds
             </>

@@ -21,7 +21,7 @@ export const ZJobPriorityStatus = z.enum(["High", "Medium", "Low"])
 export const ZJob = z.object({
   _id: z.string().optional(),
   userId: z.union([z.string(), ZUser]),
-  name: z.string().min(2),
+  name: z.string().optional(),
   locationId: z.union([z.string(), ZLocation]),
   machineClassId: z.union([z.string(), ZMachineClass]),
   factoryId: z.union([z.string(), ZFactory]).optional(),
