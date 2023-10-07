@@ -82,6 +82,9 @@ const MachineDetailsModal = ({
     })
     await res.json()
     setIsVerifiedMachine(!isVerifiedMachine)
+    queryClient.invalidateQueries({
+      queryKey: ["machines"],
+    })
     refetchMachine()
   }
 

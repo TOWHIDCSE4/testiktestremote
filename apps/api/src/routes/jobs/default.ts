@@ -85,6 +85,7 @@ export const addJob = async (req: Request, res: Response) => {
           $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
         })
         if (!getStockJob) {
+          newJob.name = `(Stock) ${part?.name}`
           const createJob = await newJob.save()
           res.json({
             error: false,
@@ -117,7 +118,7 @@ export const addJob = async (req: Request, res: Response) => {
             locationId: req.body.locationId,
             partId: req.body.partId,
             factoryId: part?.factoryId,
-            name: req.body.name,
+            name: `(Stock) ${part?.name}`,
             drawingNumber: req.body.drawingNumber,
             userId: req.body.userId,
             status: "Active",

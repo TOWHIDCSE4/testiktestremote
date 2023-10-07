@@ -315,14 +315,12 @@ const NewPartModal = ({
                         </label>
                         <input
                           id="weight"
-                          required
                           checked={true}
                           disabled={
                             isAddPartLoading || isUploadMediaFilesLoading
                           }
                           className={`mt-2 block w-full rounded-md border-0 py-[0.1em] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-xs sm:leading-6 disabled:opacity-70`}
                           {...register("finishGoodWeight", {
-                            required: true,
                             valueAsNumber: true,
                           })}
                         />
@@ -336,14 +334,12 @@ const NewPartModal = ({
                         </label>
                         <input
                           id="weight"
-                          required
                           checked={true}
                           disabled={
                             isAddPartLoading || isUploadMediaFilesLoading
                           }
                           className={`mt-2 block w-full rounded-md border-0 py-[0.1em] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-xs sm:leading-6 disabled:opacity-70`}
                           {...register("cageWeightScrap", {
-                            required: true,
                             valueAsNumber: true,
                           })}
                         />
@@ -357,14 +353,12 @@ const NewPartModal = ({
                         </label>
                         <input
                           id="weight"
-                          required
                           checked={true}
                           disabled={
                             isAddPartLoading || isUploadMediaFilesLoading
                           }
                           className={`mt-2 block w-full rounded-md border-0 py-[0.1em] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-xs sm:leading-6 disabled:opacity-70`}
                           {...register("cageWeightActual", {
-                            required: true,
                             valueAsNumber: true,
                           })}
                         />
