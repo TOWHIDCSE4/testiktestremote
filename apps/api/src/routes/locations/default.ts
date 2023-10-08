@@ -215,8 +215,8 @@ export const findMachineClassByLocation = async (
     })
   }
 
-  //@ts-expect-error
   const locationToBeFound = locations
+    //@ts-expect-error
     .split(",")
     .map((e: string) => new Types.ObjectId(e))
   try {
@@ -253,10 +253,15 @@ export const findMachineClassByLocation = async (
           machineClass: 1,
         },
       },
+      {
+        $replaceRoot: {
+          newRoot: "$machineClass",
+        },
+      },
     ])
     res.json({
       error: false,
-      item: distinctMachineClasses,
+      items: distinctMachineClasses,
       itemCount: distinctMachineClasses.length,
       message: "Successfully Get",
     })
