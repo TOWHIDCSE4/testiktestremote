@@ -372,6 +372,17 @@ const NewModal = ({
                         </Combobox>
                       </div>
                     </div>
+                    {isStock && (
+                      <div className="md:flex items-center mt-3">
+                        <div className="block w-90">
+                          {selectedPart?.name && (
+                            <p className="text-gray-300 italic ml-22 sm:ml-28">
+                              (STOCK) {selectedPart.name}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     {isStock ? null : (
                       <div className="md:flex items-center mt-3">
                         <label

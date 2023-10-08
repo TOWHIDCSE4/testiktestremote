@@ -6,7 +6,7 @@ export const ZMachine = z.object({
   factoryId: z.string().min(23),
   machineClassId: z.string().min(23),
   files: z.string().array().nullable(),
-  description: z.string().min(3),
+  description: z.string().optional(),
   locationId: z.string().min(23),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
