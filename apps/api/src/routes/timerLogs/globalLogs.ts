@@ -143,46 +143,51 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
       const timerLogsCount = await TimerLogs.find({
         ...(locationId &&
           !!locationId?.length && {
-            //@ts-expect-error
             locationId: {
               $in: locationId
+                //@ts-expect-error
                 ?.split(",")
+                //@ts-expect-error
                 .map((e) => new mongoose.Types.ObjectId(e)),
             },
           }),
         ...(factoryId &&
           !!factoryId?.length && {
-            //@ts-expect-error
             factoryId: {
               $in: factoryId
+                //@ts-expect-error
                 ?.split(",")
+                //@ts-expect-error
                 .map((e) => new mongoose.Types.ObjectId(e)),
             },
           }),
         ...(partId &&
           !!partId?.length && {
-            //@ts-expect-error
             partId: {
               $in: partId
+                //@ts-expect-error
                 ?.split(",")
+                //@ts-expect-error
                 .map((e) => new mongoose.Types.ObjectId(e)),
             },
           }),
         ...(machineId &&
           !!machineId?.length && {
-            //@ts-expect-error
             machineId: {
               $in: machineId
+                //@ts-expect-error
                 ?.split(",")
+                //@ts-expect-error
                 .map((e) => new mongoose.Types.ObjectId(e)),
             },
           }),
         ...(machineClassId &&
           !!machineClassId?.length && {
-            //@ts-expect-error
             machineClassId: {
               $in: machineClassId
+                //@ts-expect-error
                 ?.split(",")
+                //@ts-expect-error
                 .map((e) => new mongoose.Types.ObjectId(e)),
             },
           }),
@@ -200,46 +205,51 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
         // locationId: new mongoose.Types.ObjectId(locationId as string),
         ...(locationId &&
           !!locationId?.length && {
-            //@ts-expect-error
             locationId: {
               $in: locationId
+                //@ts-expect-error
                 ?.split(",")
+                //@ts-expect-error
                 .map((e) => new mongoose.Types.ObjectId(e)),
             },
           }),
         ...(factoryId &&
           !!factoryId?.length && {
-            //@ts-expect-error
             factoryId: {
               $in: factoryId
+                //@ts-expect-error
                 ?.split(",")
+                //@ts-expect-error
                 .map((e) => new mongoose.Types.ObjectId(e)),
             },
           }),
         ...(partId &&
           !!partId?.length && {
-            //@ts-expect-error
             partId: {
               $in: partId
+                //@ts-expect-error
                 ?.split(",")
+                //@ts-expect-error
                 .map((e) => new mongoose.Types.ObjectId(e)),
             },
           }),
         ...(machineId &&
           !!machineId?.length && {
-            //@ts-expect-error
             machineId: {
               $in: machineId
+                //@ts-expect-error
                 ?.split(",")
+                //@ts-expect-error
                 .map((e) => new mongoose.Types.ObjectId(e)),
             },
           }),
         ...(machineClassId &&
           !!machineClassId?.length && {
-            //@ts-expect-error
             machineClassId: {
               $in: machineClassId
+                //@ts-expect-error
                 ?.split(",")
+                //@ts-expect-error
                 .map((e) => new mongoose.Types.ObjectId(e)),
             },
           }),
