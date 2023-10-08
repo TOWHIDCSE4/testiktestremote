@@ -260,7 +260,7 @@ export const findMachineClassByLocation = async (
       // },
     ])
     const data = distinctMachineClasses
-      .map((e) => e.machineClass)
+      .map((e) => e?.machineClass)
       .filter((i) => Boolean(i))
 
     res.json({
