@@ -4,6 +4,8 @@ import {
 } from "../../utils/constants"
 import { Request, Response } from "express"
 import Machines from "../../models/machines"
+import machineClasses from "../../models/machineClasses"
+import { Types } from "mongoose"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
   const { locationId, machineClassId } = req.query
@@ -18,6 +20,50 @@ export const locationMachineClass = async (req: Request, res: Response) => {
         locationId,
         machineClassId,
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+      })
+      res.json({
+        error: false,
+        items: getMachineByClass,
+        count: machinesCountByClass,
+        message: null,
+      })
+    } catch (err: any) {
+      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      res.json({
+        error: true,
+        message: message,
+        items: null,
+        itemCount: null,
+      })
+    }
+  } else {
+    res.json({
+      error: true,
+      message: REQUIRED_VALUES_MISSING,
+      items: null,
+      itemCount: null,
+    })
+  }
+}
+
+export const byMachineClass = async (req: Request, res: Response) => {
+  const { machineClasses } = req.query
+  if (machineClasses && !!machineClasses?.length) {
+    //@ts-expect-error
+    const machineClassesToSearch = machineClasses
+      .split(",")
+      .map((e) => new Types.ObjectId(e))
+    try {
+      const machinesCountByClass = await Machines.distinct("_id", {
+        machineClassId: { $in: machineClassesToSearch },
+        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+      }).countDocuments()
+      const getMachineId = await Machines.distinct("_id", {
+        machineClassId: { $in: machineClassesToSearch },
+        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+      })
+      const getMachineByClass = await Machines.find({
+        _id: { $in: getMachineId },
       })
       res.json({
         error: false,

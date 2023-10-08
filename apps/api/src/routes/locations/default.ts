@@ -10,6 +10,9 @@ import {
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZLocation } from "custom-validator"
+import machineClasses from "../../models/machineClasses"
+import machines from "../../models/machines"
+import { Types } from "mongoose"
 
 export const getAllLocations = async (req: Request, res: Response) => {
   try {
@@ -186,6 +189,77 @@ export const deleteLocation = async (req: Request, res: Response) => {
     } else {
       throw new Error("Location is already deleted")
     }
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    res.json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
+  }
+}
+
+export const findMachineClassByLocation = async (
+  req: Request,
+  res: Response
+) => {
+  const { locations } = req.query
+
+  if (!locations || !locations?.length) {
+    return res.json({
+      error: false,
+      message: null,
+      items: [],
+      itemCount: 0,
+    })
+  }
+
+  //@ts-expect-error
+  const locationToBeFound = locations
+    .split(",")
+    .map((e: string) => new Types.ObjectId(e))
+  try {
+    const distinctMachineClasses = await machines.aggregate([
+      {
+        $match: {
+          // locationId:  new Types.ObjectId(locationId as string),
+          locationId: { $in: locationToBeFound },
+        },
+      },
+      {
+        $group: {
+          _id: "$machineClassId",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: "machineclasses", // Replace with the actual name of your MachineClass collection
+          localField: "_id",
+          foreignField: "_id",
+          as: "machineClass",
+        },
+      },
+      {
+        $unwind: {
+          path: "$machineClass",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          machineClass: 1,
+        },
+      },
+    ])
+    res.json({
+      error: false,
+      item: distinctMachineClasses,
+      itemCount: distinctMachineClasses.length,
+      message: "Successfully Get",
+    })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
     res.json({
