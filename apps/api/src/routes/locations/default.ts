@@ -253,16 +253,20 @@ export const findMachineClassByLocation = async (
           machineClass: 1,
         },
       },
-      {
-        $replaceRoot: {
-          newRoot: "$machineClass",
-        },
-      },
+      // {
+      //   $replaceRoot: {
+      //     newRoot: "$machineClass",
+      //   },
+      // },
     ])
+    const data = distinctMachineClasses
+      .map((e) => e.machineClass)
+      .filter((i) => Boolean(i))
+
     res.json({
       error: false,
-      items: distinctMachineClasses,
-      itemCount: distinctMachineClasses.length,
+      items: data,
+      itemCount: data.length,
       message: "Successfully Get",
     })
   } catch (err: any) {
