@@ -73,7 +73,18 @@ export const addPart = async (req: Request, res: Response) => {
     cageWeightScrap,
     locationId,
   } = req.body
-  const parsedPart = ZPart.safeParse(req.body)
+  const parsedPart = ZPart.safeParse({
+    name,
+    factoryId,
+    machineClassId,
+    files,
+    tons,
+    time,
+    finishGoodWeight: finishGoodWeight !== null ? finishGoodWeight : undefined,
+    cageWeightActual: cageWeightActual !== null ? cageWeightActual : undefined,
+    cageWeightScrap: cageWeightScrap !== null ? cageWeightScrap : undefined,
+    locationId,
+  })
   if (parsedPart.success) {
     const newPart = new Parts({
       name,
@@ -82,13 +93,19 @@ export const addPart = async (req: Request, res: Response) => {
       tons,
       time,
       files,
-      finishGoodWeight,
-      cageWeightActual,
-      cageWeightScrap,
       locationId,
       updatedAt: null,
       deletedAt: null,
     })
+    if (finishGoodWeight) {
+      newPart.finishGoodWeight = finishGoodWeight
+    }
+    if (cageWeightActual) {
+      newPart.cageWeightActual = cageWeightActual
+    }
+    if (cageWeightScrap) {
+      newPart.cageWeightScrap = cageWeightScrap
+    }
     try {
       const getExistingPart = await Parts.find({
         $or: [{ name }],

@@ -64,9 +64,11 @@ const PartDetailsModal = ({
   // const { mutate: toVerify, isLoading: isVerifyLoading } = useVerifiedPart(id as string)
   // const {mutate: toVerify, isLoading: isVerifyLoading } = useVerifiedPart(id as string);
   const {
+    refetch: refetchMachineClasses,
     data: machineClasses,
     isRefetching: isMachineClassesRefetching,
     setSelectedFactoryId,
+    selectedFactoryId,
   } = useFactoryMachineClasses()
   const { data: productLogs, isLoading: isProductLogsLoading } =
     useGetProductLogs(id)
@@ -96,15 +98,13 @@ const PartDetailsModal = ({
     await res.json()
     setIsVerifiedPart(!isVerifiedPart)
     console.log(`recalled the api`)
+    queryClient.invalidateQueries({
+      queryKey: ["parts"],
+    })
     refetchPart()
   }
 
   useEffect(() => {
-    console.log(`refetching...`)
-    console.log(
-      "🚀 ~ file: PartDetailsModal.tsx:101 ~ useEffect ~ partDetails:",
-      partDetails
-    )
     setIsVerifiedPart(partDetails?.item?.verified ? true : false)
   }, [partDetails, isVerifiedPart])
 
@@ -113,6 +113,13 @@ const PartDetailsModal = ({
       ? partDetails?.item?.factoryId === factoryId
       : true
   const anyChange = !(isDirty || !isFactoryNotChanged)
+
+  useEffect(() => {
+    setSelectedFactoryId(
+      isFactoryNotChanged ? partDetails?.item?.factoryId : selectedFactoryId
+    )
+  }),
+    [partDetails, selectedFactoryId]
 
   const onSubmit = (data: T_Part) => {
     const callBackReq = {
