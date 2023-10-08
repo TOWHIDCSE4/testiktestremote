@@ -61,13 +61,15 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
       itemCount: null,
     })
   }
-  //@ts-expect-error
   const machineClassesToSearch = machineClasses
+    //@ts-expect-error
     .split(",")
+    //@ts-expect-error
     .map((e) => new Types.ObjectId(e))
-  //@ts-expect-error
   const locationsToSearch = locations
+    //@ts-expect-error
     .split(",")
+    //@ts-expect-error
     .map((e) => new Types.ObjectId(e))
   try {
     const filter = {
