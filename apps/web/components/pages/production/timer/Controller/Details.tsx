@@ -23,6 +23,7 @@ type T_Props = {
   sectionDiv: React.RefObject<HTMLDivElement>
   jobTimer: T_JobTimer
   isJobTimerLoading: boolean
+  isCycleClockRunning: boolean
 }
 
 const Details = ({
@@ -32,9 +33,12 @@ const Details = ({
   sectionDiv,
   jobTimer,
   isJobTimerLoading,
+  isCycleClockRunning,
 }: T_Props) => {
   const queryClient = useQueryClient()
   const { data: users, isLoading: isUsersLoading } = useUsers()
+  const isComboboxDisabled = isCycleClockRunning
+  console.log(isComboboxDisabled)
   const locationId =
     typeof timerDetails?.locationId === "object" && timerDetails?.locationId._id
       ? timerDetails?.locationId._id
@@ -222,6 +226,7 @@ const Details = ({
         as="div"
         value={selectedOperator}
         onChange={setSelectedOperator}
+        disabled={isComboboxDisabled}
       >
         <div className="relative md:w-60 xl:w-80 2xl:w-[420px]">
           <Combobox.Input

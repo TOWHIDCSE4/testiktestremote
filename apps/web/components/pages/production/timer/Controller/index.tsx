@@ -509,6 +509,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           sectionDiv={sectionDiv}
           jobTimer={jobTimer?.item as T_JobTimer}
           isJobTimerLoading={isJobTimerLoading}
+          isCycleClockRunning={isCycleClockRunning}
         />
         <div className="flex flex-col">
           <CycleClock
