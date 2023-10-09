@@ -46,7 +46,6 @@ export const paginated = async (req: Request, res: Response) => {
               ]),
         ],
       }).countDocuments()
-      console.log(6 * (Number(page) - 1), "page")
       const getAllParts = await Parts.find({
         locationId: locationId,
         ...(factoryId && !isNotAssigned && factoryId != "all"
