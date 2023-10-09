@@ -72,6 +72,7 @@ export const paginated = async (req: Request, res: Response) => {
       })
         .sort({
           createdAt: -1,
+          _id: 1,
         })
         .skip(6 * (Number(page) - 1))
         .limit(6)
