@@ -12,8 +12,11 @@ const Header = ({
   isLoading: boolean
   location: string
 }) => {
+  const toggleTheme = () => {
+    document.documentElement.classList.toggle("dark")
+  }
   return (
-    <div className="flex flex-col md:flex-row justify-center md:justify-between bg-dark-blue py-3 md:py-0 px-4 md:px-12 h-auto items-center">
+    <div className="flex flex-col md:flex-row justify-center md:justify-between  bg-dark-blue py-3 md:py-0 px-4 md:px-12 h-auto items-center">
       {progress > 100 ? (
         <div className="flex items-center h-[90px] w-[190px] xl:h-[120px] xl:w-[230px] 2xl:h-[140px] 2xl:w-[250px] relative">
           <Image src={LogoRed} alt="Logo" />
@@ -23,6 +26,9 @@ const Header = ({
           <Image src={LogoGreen} alt="Logo" />
         </div>
       )}
+      <div className="items-end duration-100 dark:bg-black dark:text-white bg-gray-100 rounded">
+        <button onClick={toggleTheme}>Dark Mode</button>
+      </div>
       <div className="mt-3 md:mt-0">
         <h2 className="uppercase text-2xl md:text-4xl xl:text-5xl 2xl:text-6xl text-white font-semibold text-center">
           {isLoading ? (

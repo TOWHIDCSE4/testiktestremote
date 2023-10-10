@@ -133,13 +133,13 @@ const Details = ({
   }, [selectedOperator])
 
   return (
-    <div className="order-last md:order-none mt-6 md:mt-0">
-      <h4 className="uppercase text-sm text-gray-800 md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-bold">
+    <div className="order-last md:order-none mt-6 md:mt-0 ">
+      <h4 className="uppercase text-sm text-gray-800 md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-bold  dark:bg-black dark:text-white">
         Details
       </h4>
-      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7">
+      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-black dark:text-white">
         Factory:{" "}
-        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
+        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-black dark:text-white">
           {isLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
@@ -153,9 +153,9 @@ const Details = ({
           )}
         </span>
       </h5>
-      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7">
+      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-black dark:text-white">
         Machine:{" "}
-        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
+        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-black dark:text-white">
           {isLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
@@ -169,9 +169,9 @@ const Details = ({
           )}
         </span>
       </h5>
-      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7">
+      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-black dark:text-white">
         Product:{" "}
-        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
+        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-black dark:text-white">
           {isLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>

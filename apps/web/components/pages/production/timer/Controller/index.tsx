@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useRef } from "react"
+import { createContext, useContext, useState, useEffect, useRef } from "react"
 import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
@@ -494,14 +494,43 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }, [timerDetailData])
 
+  // export const DarkModeContext = createContext<{
+  //   darkMode: boolean;
+  //   toggleDarkMode: () => void;
+  // } | undefined>(undefined);
+
+  // const DarkModeProvider: React.FC = ({ children }) => {
+  //   const [darkMode, setDarkMode] = useState(false);
+
+  //   const toggleDarkMode = () => {
+  //     setDarkMode(!darkMode);
+  //   };
+
+  //   return (
+  //     <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
+  //       {children}
+  //     </DarkModeContext.Provider>
+  //   );
+  // };
+
+  // const AppWithDarkMode = () => {
+  //   const darkModeContext = useContext(DarkModeContext);
+
+  //   if (!darkModeContext) {
+  //     throw new Error('useDarkMode must be used within a DarkModeProvider');
+  //   }
+  const toggleTheme = () => {
+    document.documentElement.classList.toggle("dark")
+  }
+
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="h-screen overflow-auto 2xl:text-lg  dark:bg-black dark:text-white">
       <Header
         progress={progress}
         isLoading={isTimerDetailDataLoading}
         location={timerDetailData?.item?.locationId.name}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-12 mt-7">
+      <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-12 mt-7 dark:text-white">
         <Details
           timerDetails={timerDetailData?.item}
           isLoading={isTimerDetailDataLoading}
