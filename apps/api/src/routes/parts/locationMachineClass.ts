@@ -82,10 +82,7 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
       filter.name = { $regex: search, $options: "i" } // Case-insensitive search
     }
 
-    const distinctParts = await Parts.find(filter)
-      .skip(6 * (Number(page) - 1))
-      .limit(6)
-      .exec()
+    const distinctParts = await Parts.find(filter).exec()
 
     const partsCount = await Parts.find(filter).countDocuments()
 
