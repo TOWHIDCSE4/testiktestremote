@@ -230,7 +230,7 @@ const Details = ({
       >
         <div className="relative md:w-60 xl:w-80 2xl:w-[420px]">
           <Combobox.Input
-            className={`block mt-2 md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl sm:xl:leading-7 disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`block mt-2 md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 bg-zinc-100 pr-10 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl sm:xl:leading-7 disabled:opacity-50 disabled:cursor-not-allowed`}
             onChange={(event) => setOperatorQuery(event.target.value)}
             displayValue={(selected: { id: string; name: string }) => {
               return selected ? selected.name : ""
@@ -278,7 +278,7 @@ const Details = ({
         defaultValue="Select Job"
         required
         value={jobTimer?.jobId as string}
-        className={`block mt-2 w-full md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl sm:xl:leading-7`}
+        className={`block mt-2 w-full md:w-60 xl:w-80 2xl:w-[420px] rounded-md border-0 py-1.5 pl-3 pr-10 bg-zinc-100 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl sm:xl:leading-7`}
         onChange={(e) => {
           if (e.target.value === "Add New Job") {
             setOpenNewJobModal(true)
@@ -303,7 +303,7 @@ const Details = ({
         </h4>
         <div className="absolute w-60 md:w-56 xl:w-[220px] 2xl:w-[272px] h-[1px] mt-[26px] md:mt-[32px] xl:mt-[29px] 2xl:mt-[51px] ml-20 md:ml-24 xl:ml-[99px] 2xl:ml-[145px] bg-gray-400"></div>
       </div>
-      <div className="bg-gray-100 h-32 xl:h-40 2xl:h-56 mt-2 w-[321px] 2xl:w-[417px] p-2 text-gray-600 overflow-y-hidden">
+      <div className="bg-gray-100 h-24 xl:h-35 2xl:h-45 mt-2 w-[321px] 2xl:w-[417px] p-2 text-gray-600 overflow-y-hidden">
         <h6 className="text-xs xl:text-[1.2vw] 2xl:text-2xl leading-5">
           Open the timer controller:
         </h6>

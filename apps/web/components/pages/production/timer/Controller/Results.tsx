@@ -46,7 +46,7 @@ const Results = ({
           Units Created
         </h6>
         <div className="flex absolute md:space-x-8 items-end md:right-0 top-0 mt-6">
-          <div className="-translate-y-1.5 md:-translate-y-2 lg:-translate-y-3.5 md:w-[220px] lg:w-auto xl:-translate-y-6">
+          <div className="-translate-y-1.5 md:-translate-y-2 lg:-translate-y-3.5 md:w-[220px] lg:w-[31.25rem] xl:-translate-y-6">
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6 grid-cols-4 grid justify-items-stretch">
               <label className="justify-self-end col-span-3">
                 Units Per Hour&nbsp;:
@@ -73,13 +73,26 @@ const Results = ({
             </h5>
           </div>
           <h1
-            className={`{text-[65px] md:text-[135px] lg:text-[140px] xl:text-[12vw] 2xl:text-[195px] font-semibold  text-gray-300"  text-gray-300 leading-none mt-2}`}
+            className={`{text-[75px] md:text-[150px] lg:text-[155px] xl:text-[14vw] 2xl:text-[210px] font-semibold text-gray-300 leading-none mt-2}`}
           >
-            {unitsCreated < 10
-              ? `00${unitsCreated}`
+            {/* {unitsCreated < 10
+              ?`00${unitsCreated}`
               : unitsCreated < 100
               ? `0${unitsCreated}`
-              : unitsCreated}
+              : unitsCreated} */}
+            {unitsCreated < 10 ? (
+              <>
+                <span className="text-gray-300">00</span>
+                <span className="text-dark-blue">{unitsCreated}</span>
+              </>
+            ) : unitsCreated < 100 ? (
+              <>
+                <span className="text-gray-300">0</span>
+                <span className="text-dark-blue">{unitsCreated}</span>
+              </>
+            ) : (
+              <span className="text-dark-blue">{unitsCreated}</span>
+            )}
           </h1>
         </div>
       </div>
