@@ -215,9 +215,7 @@ export const findMachineClassByLocation = async (
       itemCount: 0,
     })
   }
-  const distinctMachineClassesIds = await timerLogs.distinct("machineClassId", {
-    locationId: locations,
-  })
+  const distinctMachineClassesIds = await timerLogs.distinct("machineClassId")
   const locationToBeFound = locations
     //@ts-expect-error
     .split(",")
