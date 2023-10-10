@@ -13,6 +13,7 @@ import { ZLocation } from "custom-validator"
 import machineClasses from "../../models/machineClasses"
 import machines from "../../models/machines"
 import { Types } from "mongoose"
+import timerLogs from "../../models/timerLogs"
 
 export const getAllLocations = async (req: Request, res: Response) => {
   try {
@@ -214,7 +215,9 @@ export const findMachineClassByLocation = async (
       itemCount: 0,
     })
   }
-
+  const distinctMachineClassesIds = await timerLogs.distinct("machineClassId", {
+    locationId: locations,
+  })
   const locationToBeFound = locations
     //@ts-expect-error
     .split(",")
@@ -225,6 +228,7 @@ export const findMachineClassByLocation = async (
         $match: {
           // locationId:  new Types.ObjectId(locationId as string),
           locationId: { $in: locationToBeFound },
+          _id: { $in: distinctMachineClassesIds },
         },
       },
       {
