@@ -5,6 +5,7 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import Locations from "../../models/location"
+import * as Sentry from "@sentry/node"
 
 export const inProduction = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
@@ -58,6 +59,7 @@ export const inProduction = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,

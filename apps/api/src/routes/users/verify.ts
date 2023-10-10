@@ -5,7 +5,7 @@ import jwt, { Secret } from "jsonwebtoken"
 import { Request, Response } from "express"
 import redisClient from "../../utils/redisClient"
 import dayjs from "dayjs"
-
+import * as Sentry from "@sentry/node"
 export const verify = async (req: Request, res: Response) => {
   if (req.params.token) {
     try {
@@ -37,6 +37,7 @@ export const verify = async (req: Request, res: Response) => {
         })
       }
     } catch (error) {
+      Sentry.captureException(error)
       res.json({
         error: true,
         message: String(error),

@@ -5,6 +5,7 @@ import {
 } from "../../utils/constants"
 import Jobs from "../../models/jobs"
 import JobTimer from "../../models/jobTimer"
+import * as Sentry from "@sentry/node"
 
 export const assignJob = async (req: Request, res: Response) => {
   if (
@@ -106,6 +107,7 @@ export const assignJob = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

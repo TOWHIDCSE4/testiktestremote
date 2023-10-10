@@ -5,6 +5,7 @@ import {
 } from "../../utils/constants"
 import TimerLogs from "../../models/timerLogs"
 import mongoose from "mongoose"
+import * as Sentry from "@sentry/node"
 
 export const globalLogs = async (req: Request, res: Response) => {
   const {
@@ -98,6 +99,7 @@ export const globalLogs = async (req: Request, res: Response) => {
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,
@@ -278,6 +280,7 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     } catch (err: any) {
       console.log(err)
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

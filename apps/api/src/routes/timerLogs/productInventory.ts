@@ -4,6 +4,7 @@ import {
   REQUIRED_VALUES_MISSING,
   UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
+import * as Sentry from "@sentry/node"
 
 export const productInventory = async (req: Request, res: Response) => {
   if (req.params.partId) {
@@ -22,6 +23,7 @@ export const productInventory = async (req: Request, res: Response) => {
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

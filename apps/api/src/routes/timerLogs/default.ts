@@ -13,6 +13,7 @@ import {
 import isEmpty from "lodash/isEmpty"
 import { ZTimerLog } from "custom-validator"
 import Jobs from "../../models/jobs"
+import * as Sentry from "@sentry/node"
 
 export const getAllTimeLogs = async (req: Request, res: Response) => {
   try {
@@ -28,6 +29,7 @@ export const getAllTimeLogs = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -51,6 +53,7 @@ export const getTimeLog = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -149,6 +152,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,
@@ -191,6 +195,7 @@ export const updateTimeLog = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
@@ -242,6 +247,7 @@ export const deleteTimeLog = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
