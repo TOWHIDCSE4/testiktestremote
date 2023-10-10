@@ -25,33 +25,33 @@ const CycleClock = ({
   isAbleToStart,
 }: T_Props) => {
   return (
-    <div className="timer  dark:bg-black dark:text-white">
-      <div className="flex items-center gap-2 justify-end  dark:bg-black dark:text-white">
-        <h6 className="text-center md:text-right uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold">
+    <div className="timer  dark:bg-dark-blue dark:text-white">
+      <div className="flex items-center gap-2 justify-end  dark:bg-dark-blue dark:text-white">
+        <h6 className="text-center md:text-right uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold  dark:bg-dark-blue dark:text-white">
           Time:
         </h6>
-        <div className="flex justify-center items-center  dark:bg-black dark:text-white">
-          <h6 className="text-center uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold w-[24px] xl:w-[28px] 2xl:w-[37px]">
+        <div className="flex justify-center items-center  dark:bg-dark-blue dark:text-white">
+          <h6 className="text-center uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold w-[24px] xl:w-[28px] 2xl:w-[37px]  dark:bg-dark-blue dark:text-white">
             {timerClockTimeArray[0]}
           </h6>
-          <span className="text-center uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold w-[8px] xl:w-[10px]">
+          <span className="text-center uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold w-[8px] xl:w-[10px] dark:bg-dark-blue dark:text-white ">
             :
           </span>
-          <h6 className="text-center uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold w-[24px] xl:w-[28px] 2xl:w-[37px]">
+          <h6 className="text-center uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold w-[24px] xl:w-[28px] 2xl:w-[37px]  dark:bg-dark-blue dark:text-white">
             {timerClockTimeArray[1]}
           </h6>
-          <span className="text-center uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold w-[8px] xl:w-[10px]">
+          <span className="text-center uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold w-[8px] xl:w-[10px]  dark:bg-dark-blue dark:text-white">
             :
           </span>
-          <h6 className="text-center uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold w-[24px] xl:w-[28px] 2xl:w-[37px]">
+          <h6 className="text-center uppercase text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl text-gray-500 font-semibold w-[24px] xl:w-[28px] 2xl:w-[37px]  dark:bg-dark-blue dark:text-white">
             {timerClockTimeArray[2]}
           </h6>
         </div>
       </div>
-      <div className="md:float-right mt-2  dark:bg-black dark:text-white">
+      <div className="md:float-right mt-2  dark:bg-dark-blue dark:text-white">
         <div className="text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl">
           <div
-            className={`countdown-container w-full md:w-[400px] lg:w-[570px] xl:w-[725px] 2xl:w-[950px] rounded-md border-2 border-b-4 border-stone-500 border-b-green-500  bg-[#f1f2e1] pt-2 pb-3.5 px-5  ${
+            className={`countdown-container w-full md:w-[480px] lg:w-[570px] xl:w-[725px] 2xl:w-[950px] rounded-md border-2 border-b-4 border-stone-500 border-b-green-500  bg-[#f1f2e1] pt-2 pb-3.5 px-5  ${
               progress > 100
                 ? "border-red-500"
                 : isCycleClockRunning || isCycleClockStopping

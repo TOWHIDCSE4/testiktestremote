@@ -494,37 +494,12 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }, [timerDetailData])
 
-  // export const DarkModeContext = createContext<{
-  //   darkMode: boolean;
-  //   toggleDarkMode: () => void;
-  // } | undefined>(undefined);
-
-  // const DarkModeProvider: React.FC = ({ children }) => {
-  //   const [darkMode, setDarkMode] = useState(false);
-
-  //   const toggleDarkMode = () => {
-  //     setDarkMode(!darkMode);
-  //   };
-
-  //   return (
-  //     <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
-  //       {children}
-  //     </DarkModeContext.Provider>
-  //   );
-  // };
-
-  // const AppWithDarkMode = () => {
-  //   const darkModeContext = useContext(DarkModeContext);
-
-  //   if (!darkModeContext) {
-  //     throw new Error('useDarkMode must be used within a DarkModeProvider');
-  //   }
-  const toggleTheme = () => {
-    document.documentElement.classList.toggle("dark")
-  }
+  // const toggleTheme = () => {
+  //   document.documentElement.classList.toggle("dark")
+  // }
 
   return (
-    <div className="h-screen overflow-auto 2xl:text-lg  dark:bg-black dark:text-white">
+    <div className="h-screen overflow-auto 2xl:text-lg  dark:bg-dark-blue dark:text-white">
       <Header
         progress={progress}
         isLoading={isTimerDetailDataLoading}

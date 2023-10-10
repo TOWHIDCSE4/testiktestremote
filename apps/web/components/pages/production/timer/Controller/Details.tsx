@@ -134,12 +134,12 @@ const Details = ({
 
   return (
     <div className="order-last md:order-none mt-6 md:mt-0 ">
-      <h4 className="uppercase text-sm text-gray-800 md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-bold  dark:bg-black dark:text-white">
+      <h4 className="uppercase text-sm text-gray-800 md:text-lg xl:text-[1.5vw] 2xl:text-3xl font-bold  dark:bg-dark-blue dark:text-white">
         Details
       </h4>
-      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-black dark:text-white">
+      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Factory:{" "}
-        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-black dark:text-white">
+        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-dark-blue dark:text-white">
           {isLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
@@ -153,9 +153,9 @@ const Details = ({
           )}
         </span>
       </h5>
-      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-black dark:text-white">
+      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Machine:{" "}
-        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-black dark:text-white">
+        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-dark-blue dark:text-white">
           {isLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
@@ -169,9 +169,9 @@ const Details = ({
           )}
         </span>
       </h5>
-      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-black dark:text-white">
+      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Product:{" "}
-        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-black dark:text-white">
+        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-dark-blue dark:text-white">
           {isLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
@@ -185,9 +185,9 @@ const Details = ({
           )}
         </span>
       </h5>
-      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7">
+      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Average Time:{" "}
-        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
+        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-dark-blue dark:text-white">
           {isLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
@@ -202,9 +202,9 @@ const Details = ({
           )}
         </span>
       </h5>
-      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7">
+      <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-3xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Weight:{" "}
-        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
+        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-dark-blue dark:text-white">
           {isLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
@@ -219,7 +219,7 @@ const Details = ({
           )}
         </span>
       </h5>
-      <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
+      <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-dark-blue dark:text-white">
         Operator
       </h4>
       <Combobox
@@ -263,7 +263,7 @@ const Details = ({
           ) : null}
         </div>
       </Combobox>
-      <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
+      <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-dark-blue dark:text-white">
         Job
       </h4>
       <select
@@ -298,16 +298,16 @@ const Details = ({
         <option>Add New Job</option>
       </select>
       <div className="relative flex">
-        <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 md:text-lg xl:text-[1.5vw] 2xl:text-3xl">
+        <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-8 md:text-lg xl:text-[1.5vw] 2xl:text-3xl  dark:bg-dark-blue dark:text-white">
           Readings
         </h4>
-        <div className="absolute w-60 md:w-56 xl:w-[220px] 2xl:w-[272px] h-[1px] mt-[26px] md:mt-[32px] xl:mt-[29px] 2xl:mt-[51px] ml-20 md:ml-24 xl:ml-[99px] 2xl:ml-[145px] bg-gray-400"></div>
+        <div className="absolute w-60 md:w-56 xl:w-[220px] 2xl:w-[272px] h-[1px] mt-[26px] md:mt-[32px] xl:mt-[29px] 2xl:mt-[51px] ml-20 md:ml-24 xl:ml-[99px] 2xl:ml-[145px] bg-gray-400 "></div>
       </div>
       <div className="bg-gray-100 h-24 xl:h-35 2xl:h-45 mt-2 w-[321px] 2xl:w-[417px] p-2 text-gray-600 overflow-y-hidden">
-        <h6 className="text-xs xl:text-[1.2vw] 2xl:text-2xl leading-5">
+        <h6 className="text-xs xl:text-[1.2vw] 2xl:text-2xl leading-5  ">
           Open the timer controller:
         </h6>
-        <div className="text-xs xl:text-[1.2vw] 2xl:text-2xl leading-5">
+        <div className="text-xs xl:text-[1.2vw] 2xl:text-2xl leading-5 ">
           ------<span className="font-medium">OPERATIONS</span>------
         </div>
         {readingMessages.map((item, index) => {
