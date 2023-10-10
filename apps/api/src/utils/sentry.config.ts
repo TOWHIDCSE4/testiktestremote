@@ -10,7 +10,6 @@ const sentryConfig = {
     new Sentry.Integrations.Express(),
     new ProfilingIntegration(),
     ...Sentry.autoDiscoverNodePerformanceMonitoringIntegrations(),
-    new Sentry.Integrations.Http({ tracing: true }),
     new Sentry.Integrations.OnUncaughtException(),
   ],
   // Performance Monitoring
