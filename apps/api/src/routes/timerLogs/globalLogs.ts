@@ -128,6 +128,10 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     startDate,
     endDate,
   } = req.query
+  console.log(
+    "🚀 ~ file: globalLogs.ts:131 ~ globalLogsMulti ~ partId:",
+    partId
+  )
 
   const sortObj = {}
   if (sort && key) {

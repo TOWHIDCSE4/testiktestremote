@@ -253,6 +253,7 @@ export const findMachineClassByLocation = async (
           machineClass: 1,
         },
       },
+      { $sort: { createdAt: -1 } },
       // {
       //   $replaceRoot: {
       //     newRoot: "$machineClass",
