@@ -6,6 +6,7 @@ import { Request, Response } from "express"
 import Parts from "../../models/parts"
 import { Types } from "mongoose"
 import * as Sentry from "@sentry/node"
+import timerLogs from "../../models/timerLogs"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
   const { locationId, machineClassId } = req.query
@@ -74,9 +75,11 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
       .split(",")
       //@ts-expect-error
       .map((e) => new Types.ObjectId(e))
+    const distinctPartsIds = await timerLogs.distinct("partId")
     const filter = {
       machineClassId: { $in: machineClassesToSearch },
       locationId: { $in: locationsToSearch },
+      _id: { $in: distinctPartsIds },
     }
 
     if (search) {
@@ -84,10 +87,7 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
       filter.name = { $regex: search, $options: "i" } // Case-insensitive search
     }
 
-    const distinctParts = await Parts.find(filter)
-      .skip(6 * (Number(page) - 1))
-      .limit(6)
-      .exec()
+    const distinctParts = await Parts.find(filter).exec()
 
     const partsCount = await Parts.find(filter).countDocuments()
 

@@ -6,6 +6,7 @@ import { Request, Response } from "express"
 import Machines from "../../models/machines"
 import machineClasses from "../../models/machineClasses"
 import { Types } from "mongoose"
+import timerLogs from "../../models/timerLogs"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
   const { locationId, machineClassId } = req.query
@@ -55,8 +56,16 @@ export const byMachineClass = async (req: Request, res: Response) => {
         .split(",")
         //@ts-expect-error
         .map((e) => new Types.ObjectId(e))
+
+    const machineClassesToSearch = machineClasses
+      //@ts-expect-error
+      .split(",")
+      //@ts-expect-error
+      .map((e) => new Types.ObjectId(e))
+      const distinctMachineIds = await timerLogs.distinct("machineId")
       const machinesCountByClass = await Machines.distinct("_id", {
         machineClassId: { $in: machineClassesToSearch },
+        machineId: { $in: distinctMachineIds },
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
       const getMachineId = await Machines.distinct("_id", {

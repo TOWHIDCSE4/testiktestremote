@@ -1,5 +1,6 @@
 "use client"
-import { DatePicker, Space, Select } from "antd"
+import { DatePicker, Space } from "antd"
+// import Select from "react-select"
 import {
   ChevronUpDownIcon,
   EllipsisVerticalIcon,
@@ -23,7 +24,7 @@ import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import { usePathname } from "next/navigation"
 import React, { Dispatch, useEffect, useState } from "react"
-import useGlobalTimerLogs from "../../../../../hooks/timerLogs/useGlobalTimerLogs"
+// import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGlobalTimerLogsMultiFilter"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import {
   T_Factory,
@@ -31,18 +32,48 @@ import {
   T_MachineClass,
   T_Part,
   T_Locations,
+  T_BackendResponse,
 } from "custom-validator"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
-import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
-import useMachines from "../../../../../hooks/machines/useMachines"
+// import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClassByLocation"
+// import useGetMachinesByMachineClasses from "../../../../../hooks/machines/useGetMachineByMachineClass"
 import { set } from "mongoose"
 import useGetMachinesByLocation from "../../../../../hooks/machines/useGetMachinesByLocation"
 import useLocations from "../../../../../hooks/locations/useLocations"
 import usePaginatedParts from "../../../../../hooks/parts/usePaginatedParts"
+import { API_URL_PARTS } from "../../../../../helpers/constants"
+import Cookies from "js-cookie"
+import { useQueryClient } from "@tanstack/react-query"
+import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGetGlobalTimerLogsMultiFilter"
+import useGetMachinesByMachineClasses from "../../../../../hooks/machines/useGetMachinesByMachineClasses"
+import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClassesByLocation"
+import CustomSelect from "./CustomSelect"
+import OutlinedInput from "@mui/material/OutlinedInput"
+import InputLabel from "@mui/material/InputLabel"
+import MenuItem from "@mui/material/MenuItem"
+import FormControl from "@mui/material/FormControl"
+import ListItemText from "@mui/material/ListItemText"
+import Select, { SelectChangeEvent } from "@mui/material/Select"
+import Checkbox from "@mui/material/Checkbox"
+import { query } from "express"
+import useGetPartsByMachineClasses from "../../../../../hooks/parts/useGetPartsByMachines"
+
+const ITEM_HEIGHT = 48
+// const ITEM_PADDING_TOP = 2;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5,
+      padding: 0,
+      // width: 200,
+    },
+  },
+}
 
 const { RangePicker } = DatePicker
 
 const LogsTable = ({ locationId }: { locationId: string }) => {
+  const queryClient = useQueryClient()
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
 
   const toggleAccordion = (id: string) => {
@@ -58,17 +89,26 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [process, setProcess] = useState<boolean>(false)
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [batchAction, setBatchAction] = useState<string>("")
-  const [city, setCity] = useState<string>("64d5814fb996589a945a6402")
-  const [machineClass, setMachineClass] = useState<string>("")
+  const [city, setCity] = useState<string[]>(["64d5814fb996589a945a6402"])
+  const [cityLocation, setCityLocation] = useState<string[]>([])
+  const [machineClass, setMachineClass] = useState<string[]>([])
+  const [factoryById, setFactoryById] = useState<string>("")
   const [dateRange, setDateRange] = useState<string>("")
-  const [partSelector, setPartSelector] = useState<string | undefined>("")
-  const [machine, setMachine] = useState<string>("")
+  const [parts, setParts] = useState([])
+  const [partSelector, setPartSelector] = useState<string[]>([])
+  const [partsSelected, setPartsSelected] = useState<string[]>([])
+  const [machine, setMachine] = useState<string[]>([])
   const [search, setSearch] = useState<string>("")
+  const [selectedMachineValues, setSelectedMachineValues] = useState<string[]>()
   const [loadedListOptions, setLoadedListOptions] = useState<
     { value: string; label: string }[]
   >([])
   const [loadOptionsCount, setLoadOptionsCount] = useState(0)
   const [typingTimeout, setTypingTimeout] = useState(null)
+  const [cityCounter, setCityCounter] = useState<number>(city.length)
+  const [machineClassCounter, setMachineClassCounter] = useState<number>()
+  const [machineCounter, setMachineCounter] = useState<number>()
+  const [partsCounter, setPartsCounter] = useState<number>(0)
   const today = moment()
 
   useEffect(() => {
@@ -103,9 +143,15 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   dayjs.extend(timezone.default)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
-    useMachineClasses()
+    useMachineClasses(city)
+
+  // useEffect(() => {
+  //   setMachineClass(machineClasses)
+  // },[city])
+
   const { data: machines, isLoading: isMachinesLoading } =
-    useGetMachinesByLocation(locationId)
+    useGetMachinesByMachineClasses(machineClass)
+  // const {data: partsData, isLoading: IsPartsLoading} = useGetPartsByMachineClasses(city, machineClass)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const {
     data: allParts,
@@ -117,58 +163,72 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   } = usePaginatedParts()
   const numberOfPartsPages = Math.ceil((allParts?.itemCount as number) / 6)
 
+  // useEffect(() => {
+  //   console.log("cityLocation", cityLocation)
+  //   if (locations && locations.items) {
+  //     // Find the matching location objects based on the keys
+  //     const selectedLocations = locations.items.filter((item) => city.includes(item._id));
+
+  //     // Extract the names from the matching location objects
+  //     const selectedNames = selectedLocations.map((location) => location.name);
+
+  //     // Set the selected names to cityLocation
+  //     setCityLocation(selectedNames);
+  //   } else {
+  //     // Handle the case where locations or locations.items is undefined
+  //     // You can set a default value or handle it as needed
+  //     setCityLocation([]); // Set to an empty array as an example
+  //   }
+
+  // },[])
   useEffect(() => {
-    setLocationId(city)
-    setPage(1)
+    setLocationId(city[0])
+    setPartsPage(1)
     // console.log(city)
   }, [city, setLocationId])
 
   useEffect(() => {
-    // Clear the previous typing timeout if it exists
-    if (typingTimeout) {
-      clearTimeout(typingTimeout)
-    }
+    console.log("Selected part", partSelector)
+    queryClient.invalidateQueries({
+      queryKey: ["global-timer-logs"],
+    })
+  }, [partSelector])
 
-    // Set a new timeout for 2 seconds
-    const newTimeout = setTimeout(() => {
-      // This code will run if the user stops typing for 2 seconds
-      setName(search)
-      setPartsPage(1)
-      setPage(1)
-    }, 500)
-
-    // Update the typingTimeout state with the new timeout
-    // setTypingTimeout(newTimeout)
-
-    // Cleanup: Clear the timeout when the component unmounts or when 'search' changes
-    return () => {
-      if (newTimeout) {
-        clearTimeout(newTimeout)
-      }
-    }
-  }, [search])
-
-  const onSearch = (value: any) => {
-    // console.log('the on Saearcb', value)
-    // setPartsPage(1)
-    setSearch(value)
+  const handlePartSelect = (e: any) => {
+    console.log(e)
+    const val = e.map((i) => i)
+    console.log("🚀 ~ file: index.tsx:1681 ~ handlePartSelect ~ obj:", e)
+    setPartSelector(e)
+    console.log(
+      "🚀 ~ file: index.tsx:1676 ~ LogsTable ~ partSelector:",
+      partSelector
+    )
   }
 
-  const customStyles = {
-    control: (provided: any, state: any) => ({
-      ...provided,
-      width: "15rem",
-      borderRadius: "15px",
-      border: "1px solid #ccc",
-      marginLeft: "5px",
-      boxShadow: state.isFocused ? "0 0 0 2px #ccc" : null,
-    }),
-    option: (provided: any, state: any) => ({
-      ...provided,
-      backgroundColor: state.isFocused ? "#3699FF" : null,
-      color: state.isFocused ? "white" : null,
-    }),
-  }
+  useEffect(() => {
+    // console.log("Part selector after update:", partSelector)
+    setPartSelector(partSelector)
+  }, [partSelector])
+
+  // const customStyles = {
+  //   control: (provided: any, state: any) => ({
+  //     ...provided,
+  //     width: "15rem",
+  //     height: "2rem",
+  //     overflow: "hidden",
+  //     flex: "nowrap",
+  //     display: "flex",
+  //     borderRadius: "15px",
+  //     border: "1px solid #ccc",
+  //     marginLeft: "5px",
+  //     boxShadow: state.isFocused ? "0 0 0 2px #ccc" : null,
+  //   }),
+  //   option: (provided: any, state: any) => ({
+  //     ...provided,
+  //     backgroundColor: state.isFocused ? "#3699FF" : null,
+  //     color: state.isFocused ? "white" : null,
+  //   }),
+  // }
 
   // const loadOptions = (inputValue: string) => {
   //   // Assuming the response is an array of items
@@ -195,41 +255,73 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   //   }
   // }
 
-  const loadOptions = (inputValue: string) => {
-    // Check if the search box is not empty
-    if (inputValue.trim() !== "") {
+  // const loadOptions = async (inputValue: string, loadOption: any, {page}:any) => {
+  //   // Check if the search box is not empty
+  //   // if (inputValue.trim() !== "") {
+  //   //   setLoadOptionsCount(loadOptionsCount + 1)
+  //   //   setPartsPage(1) // Reset partsPage to an empty value
+  //   // } else {
+  //   //   setLoadOptionsCount(0)
+  //   // }
+  //   // //   // Assuming the response is an array of items
+  //   const newOptions = await
+  //     allParts?.items?.map((item: T_Part) => ({
+  //       value: item._id as string,
+  //       label: item.name as string,
+  //     })) || []
+
+  //   // // Filter options based on the inputValue
+  //   // const filteredOptions = newOptions.filter((option) =>
+  //   //   option.label.toLowerCase().includes(inputValue.toLowerCase())
+  //   // )
+
+  //   // // Check if the map function has reached the end of allParts
+  //   // if (filteredOptions.length === allParts?.items?.length) {
+  //   //   if (numberOfPartsPages > partsPage) {
+  //   //     // Increment partsPage by 1 when mapping is finished
+  //   //     setPartsPage(partsPage + 1)
+  //   //   }
+  //   // }
+  //   // setLoadedListOptions(filteredOptions)
+  //   console.log("the filteredOptions", newOptions)
+  //   setPage(page + 1)
+  //   return {
+  //     options: newOptions || [],
+  //     hasMore: true,
+  //     additional: {
+  //       page: page,
+  //     }
+  //   }
+  // }
+  // type T_DBReturn = Omit<T_BackendResponse, "items"> & {
+  //   items: T_Part[]
+  // }
+  useEffect(() => {
+    const token = Cookies.get("tfl")
+    const locationsQuery = new URLSearchParams({ locations: city }).toString()
+    const machineClassesQuery = new URLSearchParams({
+      machineClasses: machineClass,
+    }).toString()
+
+    const fetchData = async () => {
+      const res = await fetch(
+        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&search=${search}`,
+        {
+          method: "GET",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      const responseJSON = await res.json()
+      console.log(responseJSON)
+      setParts(responseJSON)
       setLoadOptionsCount(loadOptionsCount + 1)
-      setPartsPage(1) // Reset partsPage to an empty value
-    } else {
-      setLoadOptionsCount(0)
     }
-    //   // Assuming the response is an array of items
-    const newOptions =
-      allParts?.items?.map((item: T_Part) => ({
-        value: item._id as string,
-        label: item.name,
-      })) || []
 
-    // Filter options based on the inputValue
-    const filteredOptions = newOptions.filter((option) =>
-      option.label.toLowerCase().includes(inputValue.toLowerCase())
-    )
-
-    // Check if the map function has reached the end of allParts
-    if (filteredOptions.length === allParts?.items?.length) {
-      if (numberOfPartsPages > partsPage) {
-        // Increment partsPage by 1 when mapping is finished
-        setPartsPage(partsPage + 1)
-      }
-    }
-    setLoadedListOptions(filteredOptions)
-    console.log("the filteredOptions", loadedListOptions)
-
-    return {
-      options: loadedListOptions || [],
-      hasMore: true,
-    }
-  }
+    fetchData()
+  }, [city, machineClass])
 
   const disabledDate = (current: any) => {
     return current && current > today
@@ -253,7 +345,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setStartDateRange,
     setEndDateRange,
     setPartId,
-  } = useGlobalTimerLogs(city, sortType, keyword, process)
+  } = useGlobalTimerLogsMulti(city, sortType, keyword, process)
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
 
   useEffect(() => {
@@ -265,12 +357,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setMachineId(machine)
     setPage(1)
   }, [machine, setMachineId])
-  //TODO: remove ts expect error
+
   useEffect(() => {
-    //@ts-expect-error
-    setPartId(partSelector)
+    console.log("selectparts", partsSelected)
+    setPartId(partsSelected)
     setPage(1)
-  }, [partSelector, setPartId])
+  }, [partsSelected, setPartId])
 
   // useEffect(() => {
   //   setStartDateRange(dateRange)
@@ -297,9 +389,63 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }
   }
 
-  // useEffect(() => {
-  //   console.log("the date range", dateRange)
-  // }, [dateRange])
+  // const { Option } = Select
+
+  const handleLocationChange = (event: any) => {
+    // if(Array.isArray(event.target.value[0])){
+    //   const cityInfo = event.target.value[0]
+    //   console.log("handleLocationChange", cityInfo[0], cityInfo[1] )
+    //   setCity(cityInfo[0])
+    //   setCityLocation([...cityLocation, cityInfo[1]])
+    //   setCounter(selectedValues.length);
+    // }else{
+    //   setCity(event.target.value[0])
+    //   setCityLocation(event.target.value[1])
+    // }
+    setCity(event.target.value)
+  }
+
+  useEffect(() => {
+    setCityCounter(city.length)
+  }, [city])
+
+  const handleMachineClassChange = (event: any) => {
+    // console.log(`selected ${value}`);
+    setMachineClass(event.target.value)
+  }
+
+  useEffect(() => {
+    setMachineClassCounter(machineClass.length)
+  }, [machineClass])
+
+  const handleMachineChange = (event: any) => {
+    // console.log(`selected ${value}`);
+    setSelectedMachineValues(event.target.value)
+    setMachine(event.target.value)
+  }
+
+  useEffect(() => {
+    setMachineCounter(machine.length)
+  }, [machine])
+
+  const handlePartsChange = (event: any) => {
+    // console.log(`selected ${value}`);
+    // setSelectedMachineValues(event.target.value);
+    setPartsSelected(event.target.value)
+  }
+
+  useEffect(() => {
+    setPartsCounter(partsSelected.length)
+  }, [partsSelected])
+
+  // const TextWithCheckbox = (props: any) => {
+  //   return (
+  //     <div className="w-full flex justify-between">
+  //       {props.children}
+  //       <Checkbox checked={props.checked} />
+  //     </div>
+  //   );
+  // };
 
   useEffect(() => {
     // console.log(filterBy)
@@ -311,8 +457,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
             name="factories"
             className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
             onChange={(e) => {
+              //@ts-expect-error
               setFactoryId(e.target.value)
+              //@ts-expect-error
               setMachineClassId("")
+              //@ts-expect-error
               setMachineId("")
             }}
             disabled={isFactoriesLoading || isFactoriesLoading}
@@ -334,8 +483,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
             name="machineClasses"
             className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
             onChange={(e) => {
+              //@ts-expect-error
               setMachineClassId(e.target.value)
+              //@ts-expect-error
               setFactoryId("")
+              //@ts-expect-error
               setMachineId("")
             }}
             disabled={isMachineClassesLoading || isFactoriesLoading}
@@ -359,8 +511,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
             name="machines"
             className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
             onChange={(e) => {
+              //@ts-expect-error
               setMachineId(e.target.value)
+              //@ts-expect-error
               setMachineClassId("")
+              //@ts-expect-error
               setFactoryId("")
             }}
             disabled={isMachinesLoading || isFactoriesLoading}
@@ -397,15 +552,15 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
           paginated ? "overflow-hidden" : "overflow-x-auto"
         }`}
       >
-        <div className="px-1 py-4">
-          <div className="flex pb-10">
+        <div className="px-1 w-full py-4">
+          <div className="flex pb-10 px-2">
             <div className=" whitespace-nowrap">
               <h3 className="text-2xl font-semibold pr-1">GLOBAL PRODUCTION</h3>
               <div className="w-full flex justify-center items-center">
                 <select
                   id="filterBy"
                   name="filterBy"
-                  className=" mt-2 w-20% block rounded-lg border-0 py-1 px-2 pl-2 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                  className=" mt-2 block rounded-lg border-0 py-1 px-2 pl-2 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
                   onChange={(e) => setFilterBy(e.target.value)}
                 >
                   <option value="BatchAction">Batch action</option>
@@ -415,92 +570,301 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 </select>
               </div>
             </div>
-            <div className=" grid grid-rows-2 grid-flow-col gap-1">
-              <div className="flex mb-3">
+            <div className=" w-full">
+              <div className="flex w-full mb-3">
                 <div
-                  className={`flex w-[10rem] ${
-                    minWidth <= 1370 ? "ml-12" : "ml-10"
+                  className={`flex w-1/4 ${
+                    minWidth <= 1370 ? "ml-10" : "ml-14"
                   } text-[11px] items-center`}
                 >
-                  <p className="flex justify-start font-semibold">CITY</p>
-                  <p className="w-[5rem] pl-4">
-                    <select
-                      id="filterBy"
-                      name="filterBy"
-                      className=" flex items-center w-[6.3rem] px-2 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                      onChange={(e) => setCity(e.target.value)}
+                  <p className="flex justify-start mr-[10px] font-semibold">
+                    CITY
+                  </p>
+                  {/* <Select
+                    // defaultValue={[colourOptions[2], colourOptions[3]]}
+                    isMulti
+                    name="colors"
+                    options={[
+                      { value: "chocolate", label: "Chocolate" },
+                      { value: "strawberry", label: "Strawberry" },
+                      { value: "vanilla", label: "Vanilla" },
+                    ]}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                  /> */}
+                  {/* <Space direction="vertical" className="min-w-full">
+                    <Select
+                      mode="multiple"
+                      style={{ width: "100%", height: '32px', overflow: "hidden", whiteSpace: "nowrap" }}
+                      placeholder={"select city"}
+                      defaultValue={[city[0]]}
+                      size="middle"
+                      onChange={(value) => handleLocationChange(value)}
+                      dropdownRender={(menu) => (
+                        <div>
+                          {menu}
+                        </div>
+                      )}
                     >
-                      {/* <option value=""></option> */}
                       {locations?.items?.map(
                         (item: T_Locations, index: number) => {
                           return (
-                            <option key={index} value={item._id as string}>
-                              {item.name}
-                            </option>
+                            <Option
+                              key={index}
+                              value={item._id as string}
+                              label={item.name}
+                            >
+                              <Space>{item.name}</Space>
+                            </Option>
                           )
                         }
                       )}
-                    </select>
-                  </p>
-                </div>
-                <div className="flex text-[11px] items-center">
-                  <p className="flex justify-end font-semibold ">
-                    MACHINE CLASS
-                  </p>
-                  <p className=" pl-2">
-                    <select
-                      id="filterBy"
-                      name="filterBy"
-                      className="flex items-center px-1 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                      onChange={(e) => setMachineClass(e.target.value)}
+                    </Select> */}
+                  <FormControl sx={{ width: "80%", padding: 0 }} size="small">
+                    {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      style={{
+                        width: "100%",
+                        border: "0.3pt solid #ccc",
+                        borderRadius: "15px",
+                        margin: 0,
+                        padding: 0,
+                      }}
+                      value={city}
+                      onChange={(event) => handleLocationChange(event)}
+                      renderValue={() => `${cityCounter} selected`}
+                      MenuProps={MenuProps}
                     >
-                      <option value=""></option>
+                      {locations?.items?.map(
+                        (item: T_Locations, index: number) => (
+                          <MenuItem
+                            key={index}
+                            // value={[item._id, item.name ] as string[]}
+                            value={item._id as string}
+                          >
+                            <ListItemText primary={item.name} />
+                            <Checkbox checked={city.includes(item._id)} />
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                  </FormControl>
+                  {/* </Space> */}
+                </div>
+                <div
+                  className={`flex w-1/3 ${
+                    minWidth <= 1370 ? "ml-2" : ""
+                  } text-[11px] items-center`}
+                >
+                  <p className=" w-[40%] font-semibold">MACHINE CLASS</p>
+                  {/* <Space direction="vertical" className="min-w-full">
+                    <Select
+                      mode="multiple"
+                      style={{ width: "100%" }}
+                      placeholder={"select machine class"}
+                      size="middle"
+                      disabled={city ? false : true}
+                      onChange={(value) => handleMachineClassChange(value)}
+                    >
                       {machineClasses?.items?.map(
                         (item: T_MachineClass, index: number) => {
                           return (
-                            <option key={index} value={item._id as string}>
+                            <Option
+                              key={index}
+                              value={item._id as string}
+                              label={item.name}
+                            >
                               {item.name}
-                            </option>
+                            </Option>
                           )
                         }
                       )}
-                    </select>
-                  </p>
+                    </Select>
+                  </Space> */}
+                  <FormControl sx={{ width: "70%", padding: 0 }} size="small">
+                    {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      style={{
+                        width: "100%",
+                        border: "0.3pt solid #ccc",
+                        borderRadius: "15px",
+                        margin: 0,
+                        padding: 0,
+                      }}
+                      value={machineClass}
+                      onChange={(event) => handleMachineClassChange(event)}
+                      renderValue={() => `${machineClassCounter} selected`}
+                      MenuProps={MenuProps}
+                    >
+                      {machineClasses?.items?.map(
+                        (item: T_MachineClass, index: number) => (
+                          <MenuItem
+                            key={index}
+                            // value={[item._id, item.name ] as string[]}
+                            value={item._id as string}
+                          >
+                            <ListItemText primary={item.name} />
+                            <Checkbox
+                              checked={machineClass.includes(item._id)}
+                            />
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                  </FormControl>
                 </div>
-                <div className="flex text-[11px] items-center">
-                  <p className="flex justify-start w-[3rem] ml-4 font-semibold">
+                <div
+                  className={`flex w-1/3 ${
+                    minWidth <= 1370 ? "ml-2" : "ml-4"
+                  } text-[11px] items-center`}
+                >
+                  <p className="flex justify-start mr-[10px] font-semibold">
                     MACHINE
                   </p>
-                  <p className="w-3/1 pl-5">
-                    <select
-                      id="filterBy"
-                      name="filterBy"
-                      className="flex items-center px-1 py-0 w-[6.3rem] rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                      onChange={(e) => setMachine(e.target.value)}
+                  {/* <Space direction="vertical" className="min-w-full">
+                    <Select
+                      mode="multiple"
+                      style={{ width: "100%" }}
+                      placeholder={"Select machine"}
+                      // value={''}
+                      disabled={machineClass ? false : true}
+                      onChange={(value) => handleMachineChange(value)}
                     >
-                      <option value=""></option>
                       {machines?.items?.map(
                         (item: T_Machine, index: number) => {
                           return (
-                            <option key={index} value={item._id as string}>
-                              {item.name}
-                            </option>
+                            <Option
+                              key={index}
+                              value={item._id as string}
+                              label={item.name}
+                            >
+                              <Space>{item.name}</Space>
+                            </Option>
                           )
                         }
                       )}
-                    </select>
-                  </p>
+                    </Select>
+                    <div>{selectedMachineValues?.length} selected</div>
+                  </Space> */}
+                  <FormControl sx={{ width: "53%", padding: 0 }} size="small">
+                    {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      style={{
+                        width: "100%",
+                        border: "0.3pt solid #ccc",
+                        borderRadius: "15px",
+                        margin: 0,
+                        padding: 0,
+                      }}
+                      value={machine}
+                      onChange={(event) => handleMachineChange(event)}
+                      renderValue={() => `${machineCounter} selected`}
+                      MenuProps={MenuProps}
+                    >
+                      {machines?.items?.map(
+                        (item: T_Machine, index: number) => (
+                          <MenuItem
+                            key={index}
+                            // value={[item._id, item.name ] as string[]}
+                            value={item._id as string}
+                          >
+                            <ListItemText primary={item.name} />
+                            <Checkbox checked={machine.includes(item._id)} />
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                  </FormControl>
                 </div>
               </div>
-              <div className="flex flex-wrap">
-                <div className="flex text-[11px] pl-0">
-                  <p className="flex items-center justify-start font-semibold">
+              <div className="flex w-full mb-3">
+                <div
+                  className={`flex w-1/3 ${
+                    minWidth <= 1370 ? "ml-4" : ""
+                  } text-[11px] items-center`}
+                >
+                  <p className="flex justify-end font-semibold items-center">
+                    PART SELECTOR
+                  </p>
+                  {/* <AsyncPaginate
+                    isMulti
+                    value={partSelector}
+                    isDisabled={machine ? false : true}
+                    debounceTimeout={1000}
+                    placeholder={"Select"}
+                    // onInputChange={(e) => onSearch(e)}
+                    //@ts-expect-error
+                    loadOptions={loadOptions}
+                    onChange={(e) => handlePartSelect(e)}
+                    reduceOptions={reduceGroupedOptions}
+                    styles={customStyles}
+                    additional={{
+                      page: 1,
+                    }}
+                  /> */}
+                  <FormControl
+                    sx={{
+                      width: "60%",
+                      padding: 0,
+                      margin: 0,
+                      marginLeft: "8px",
+                      fontSize: "14px",
+                    }}
+                    size="small"
+                  >
+                    {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      style={{
+                        width: "100%",
+                        border: "0.3pt solid #ccc",
+                        borderRadius: "15px",
+                        margin: 0,
+                        padding: 0,
+                      }}
+                      value={partsSelected}
+                      onChange={(event) => handlePartsChange(event)}
+                      renderValue={() => `${partsCounter} selected`}
+                      MenuProps={MenuProps}
+                    >
+                      {parts?.items?.map((item: T_Part, index: number) => (
+                        <MenuItem
+                          key={index}
+                          // value={[item._id, item.name ] as string[]}
+                          value={item._id as string}
+                        >
+                          <ListItemText primary={item.name} />
+                          <Checkbox
+                            checked={partsSelected.includes(item._id)}
+                          />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div
+                  className={`flex ${
+                    minWidth <= 1370 ? "ml-2" : "ml-2"
+                  } text-[11px] items-center`}
+                >
+                  <p className="flex items-center justify-start mr-[5px] font-semibold">
                     DATE RANGE
                   </p>
                   <div className="pl-2">
                     <Space
                       direction="vertical"
-                      className=" flex items-center w-[12rem] rounded-lg "
+                      className=" flex items-center w-[70%] rounded-lg "
                       size={12}
                     >
                       <RangePicker
@@ -510,31 +874,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     </Space>
                   </div>
                 </div>
-                <div className="flex w-1/2 text-[11px] items-center pl-2 ">
-                  <p className="flex justify-end font-semibold items-center">
-                    PART SELECTOR
-                  </p>
-
-                  {/* <AsyncPaginate
-                    value={partSelector}
-                    debounceTimeout={1000}
-                    placeholder={"Select"}
-                    onInputChange={(e) => onSearch(e)}
-                    // loadOptions={loadOptions}
-                    // onChange={(e) => setPartSelector(e?.value)}
-                    reduceOptions={reduceGroupedOptions}
-                    styles={customStyles}
-                  /> */}
-                </div>
-                <div className="flex items-center">
+                <div className="flex ">
                   <div
-                    className={`flex ${
-                      minWidth >= 1370 ? "xl:w-[14.5rem] xl:pl-10 mt-4" : "pl-2"
-                    } ${
-                      minWidth <= 1295 ? "mt-4" : ""
-                    } text-[10px] justify-end `}
+                    className={`flex ${minWidth >= 1370 ? "-pl-4" : "pl-2"} ${
+                      minWidth <= 1295 ? "-mt-4" : ""
+                    } text-[14px] `}
                   >
-                    <p className="flex justify-center w-4/3 p-1 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
+                    <p className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
                       GENERATE REPORT
                     </p>
                   </div>
@@ -549,10 +895,14 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
-                      CYCLE
+                    <th scope="col" className="w-[10%] pl-10 text-slate-900">
+                      <input
+                        id={`checkbox-table-search`}
+                        type="checkbox"
+                        className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                      />
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th scope="col" className="w-[10%] text-slate-900">
                       <div className="flex items-center">
                         DATE
                         <button
@@ -570,7 +920,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th scope="col" className="w-[10%] text-slate-900">
                       <div className="flex items-center">
                         MACHINE
                         <button
@@ -588,7 +938,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th scope="col" className="w-[40%] py-3 text-slate-900">
                       <div className="flex items-center">
                         PART
                         <button onClick={(e) => handleInputChange(e, "part")}>
@@ -689,12 +1039,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                   viewBox="0 0 24 24"
                                   fill="currentColor"
                                   aria-hidden="true"
-                                  className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800"
+                                  className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800 arrow-icon"
                                 >
                                   <path
-                                    fill-rule="evenodd"
-                                    d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
-                                    clip-rule="evenodd"
+                                    fillRule="evenodd"
+                                    d="M16.28 12.53a.75.75 0 010-1.06l-7.5-7.5a.75.75 0 011.06-1.06L17.69 12l-6.97 6.97a.75.75 0 11-1.06 1.06l7.5-7.5z"
+                                    clipRule="evenodd"
                                   ></path>
                                 </svg>
                                 <input
@@ -713,18 +1063,18 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             </td>
                             <th
                               scope="row"
-                              className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                              className=" py-4 font-medium text-gray-900 whitespace-nowrap"
                             >
                               {dayjs
                                 .tz(dayjs(item.createdAt), "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
-                            <td className="px-6 py-4">
+                            <td className=" py-4">
                               {/* @ts-expect-error */}
                               {item?.machineId.name}
                             </td>
                             <td
-                              className={`px-6 py-4 text-sm text-gray-500 flex flex-col ${
+                              className={` py-4 text-sm text-gray-500 flex flex-col ${
                                 item.jobId ? "text-gray-900" : "text-red-500"
                               }`}
                             >
