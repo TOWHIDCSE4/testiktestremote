@@ -16,7 +16,6 @@ import { Types } from "mongoose"
 import timerLogs from "../../models/timerLogs"
 import * as Sentry from "@sentry/node"
 
-
 export const getAllLocations = async (req: Request, res: Response) => {
   try {
     const locationsCount = await Locations.find().countDocuments()
@@ -222,6 +221,10 @@ export const findMachineClassByLocation = async (
     })
   }
   const distinctMachineClassesIds = await timerLogs.distinct("machineClassId")
+  console.log(
+    "🚀 ~ file: default.ts:225 ~ distinctMachineClassesIds:",
+    distinctMachineClassesIds
+  )
   try {
     const locationToBeFound = locations
       //@ts-expect-error
@@ -232,7 +235,7 @@ export const findMachineClassByLocation = async (
         $match: {
           // locationId:  new Types.ObjectId(locationId as string),
           locationId: { $in: locationToBeFound },
-          _id: { $in: distinctMachineClassesIds },
+          // _id: { $in: distinctMachineClassesIds },
         },
       },
       {
