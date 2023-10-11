@@ -1351,7 +1351,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               </div>
             </div> */}
         </div>
-        {isPaginatedLoading ? (
+        {/* {isPaginatedLoading ? (
           <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
             <div
               className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
@@ -1361,7 +1361,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               <span className="sr-only">Loading...</span>
             </div>
           </div>
-        ) : null}
+        ) : null} */}
         {/* {!isPaginatedLoading &&
           paginated?.items &&
           paginated?.items.length > 0 ? (
@@ -1556,9 +1556,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               </tbody>
             </table>
           ) : null} */}
-        {!isPaginatedLoading &&
-        paginated?.items &&
-        paginated?.items.length === 0 ? (
+        {isPaginatedLoading ||
+        (paginated?.items && paginated?.items.length === 0) ? (
           <div className="flex mb-4 w-full">
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
@@ -1681,7 +1680,191 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-expanded="false"
                     aria-controls="accordion-arrow-icon-body-0"
                   >
-                    <td className="pr-6 py-9">
+                    <td className="pr-6 py-5">
+                      <div className="flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          aria-hidden="true"
+                          className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
+                        <input
+                          id="checkbox-table-search-0"
+                          className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                          type="checkbox"
+                        />
+                        <label
+                          htmlFor="checkbox-table-search-0"
+                          className="sr-only"
+                        ></label>
+                      </div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                    data-accordion-target="#accordion-arrow-icon-body-0"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-0"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          aria-hidden="true"
+                          className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
+                        <input
+                          id="checkbox-table-search-0"
+                          className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                          type="checkbox"
+                        />
+                        <label
+                          htmlFor="checkbox-table-search-0"
+                          className="sr-only"
+                        ></label>
+                      </div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                    data-accordion-target="#accordion-arrow-icon-body-0"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-0"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          aria-hidden="true"
+                          className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
+                        <input
+                          id="checkbox-table-search-0"
+                          className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                          type="checkbox"
+                        />
+                        <label
+                          htmlFor="checkbox-table-search-0"
+                          className="sr-only"
+                        ></label>
+                      </div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                    data-accordion-target="#accordion-arrow-icon-body-0"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-0"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          aria-hidden="true"
+                          className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
+                        <input
+                          id="checkbox-table-search-0"
+                          className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                          type="checkbox"
+                        />
+                        <label
+                          htmlFor="checkbox-table-search-0"
+                          className="sr-only"
+                        ></label>
+                      </div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                    data-accordion-target="#accordion-arrow-icon-body-0"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-0"
+                  >
+                    <td className="pr-6 py-5">
                       <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -1727,7 +1910,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-expanded="false"
                     aria-controls="accordion-arrow-icon-body-1"
                   >
-                    <td className="pr-6 py-9">
+                    <td className="pr-6 py-5">
                       <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -1773,7 +1956,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-expanded="false"
                     aria-controls="accordion-arrow-icon-body-2"
                   >
-                    <td className="pr-6 py-9">
+                    <td className="pr-6 py-5">
                       <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -1819,7 +2002,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-expanded="false"
                     aria-controls="accordion-arrow-icon-body-3"
                   >
-                    <td className="pr-6">
+                    <td className="pr-6 py-5">
                       <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -1849,7 +2032,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       scope="row"
                       className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                     ></th>
-                    <td className="px-6 py-9"></td>
+                    <td className="px-6 py-5"></td>
                     <td className="px-6 text-sm flex flex-col text-gray-900"></td>
                     <td className="px-6 py-4"></td>
                     <td className="px-6 py-4">
@@ -1865,7 +2048,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-expanded="false"
                     aria-controls="accordion-arrow-icon-body-4"
                   >
-                    <td className="pr-6 py-9">
+                    <td className="pr-6 py-5">
                       <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
