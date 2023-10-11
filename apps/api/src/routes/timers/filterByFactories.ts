@@ -4,6 +4,7 @@ import machines from "../../models/machines"
 import Timers from "../../models/timers"
 import { UNKNOWN_ERROR_OCCURRED } from "../../utils/constants"
 import { Request, Response } from "express"
+import * as Sentry from "@sentry/node"
 export const getAllTimersByFactory = async (req: Request, res: Response) => {
   const { factoryId } = req.query
   if (factoryId) {
@@ -45,6 +46,7 @@ export const getAllTimersByFactory = async (req: Request, res: Response) => {
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

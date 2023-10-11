@@ -50,12 +50,18 @@ export const locationMachineClass = async (req: Request, res: Response) => {
 export const byMachineClass = async (req: Request, res: Response) => {
   const { machineClasses } = req.query
   if (machineClasses && !!machineClasses?.length) {
+    try {
+      const machineClassesToSearch = machineClasses
+        //@ts-expect-error
+        .split(",")
+        //@ts-expect-error
+        .map((e) => new Types.ObjectId(e))
+
     const machineClassesToSearch = machineClasses
       //@ts-expect-error
       .split(",")
       //@ts-expect-error
       .map((e) => new Types.ObjectId(e))
-    try {
       const distinctMachineIds = await timerLogs.distinct("machineId")
       const machinesCountByClass = await Machines.distinct("_id", {
         machineClassId: { $in: machineClassesToSearch },

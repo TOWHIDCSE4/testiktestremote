@@ -9,6 +9,7 @@ import * as utc from "dayjs/plugin/utc"
 import Locations from "../../models/location"
 import ControllerTimers from "../../models/controllerTimers"
 import TimerLogs from "../../models/timerLogs"
+import * as Sentry from "@sentry/node"
 
 export const totalTonsUnit = async (req: Request, res: Response) => {
   if (req.query.timerId && req.query.locationId) {
@@ -92,6 +93,7 @@ export const totalTonsUnit = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

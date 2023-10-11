@@ -4,6 +4,7 @@ import { Request, Response } from "express"
 import redisClient from "../../utils/redisClient"
 import jwt, { Secret } from "jsonwebtoken"
 import { keys } from "../../config/keys"
+import * as Sentry from "@sentry/node"
 
 export const logout = async (req: Request, res: Response) => {
   try {
@@ -32,6 +33,7 @@ export const logout = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,

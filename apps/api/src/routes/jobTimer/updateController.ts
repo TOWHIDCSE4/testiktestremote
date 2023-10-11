@@ -7,6 +7,7 @@ import {
 import isEmpty from "lodash/isEmpty"
 import TimerLogs from "../../models/timerLogs"
 import Jobs from "../../models/jobs"
+import * as Sentry from "@sentry/node"
 
 export const updateController = async (req: Request, res: Response) => {
   const condition = req.body
@@ -69,6 +70,7 @@ export const updateController = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

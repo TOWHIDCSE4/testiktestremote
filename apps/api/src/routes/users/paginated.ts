@@ -4,7 +4,7 @@ import {
   UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
 import Users from "../../models/users"
-
+import * as Sentry from "@sentry/node"
 export const paginated = async (req: Request, res: Response) => {
   const { page, role, locationId, status, name, excludeUser } = req.query
   if (page) {
@@ -64,6 +64,7 @@ export const paginated = async (req: Request, res: Response) => {
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

@@ -4,6 +4,7 @@ import {
 } from "../../utils/constants"
 import { Request, Response } from "express"
 import CycleTimers from "../../models/cycleTimers"
+import * as Sentry from "@sentry/node"
 
 export const endByTimerId = async (req: Request, res: Response) => {
   const { timerId } = req.body
@@ -44,6 +45,7 @@ export const endByTimerId = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
