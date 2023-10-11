@@ -56,12 +56,6 @@ export const byMachineClass = async (req: Request, res: Response) => {
         .split(",")
         //@ts-expect-error
         .map((e) => new Types.ObjectId(e))
-
-    const machineClassesToSearch = machineClasses
-      //@ts-expect-error
-      .split(",")
-      //@ts-expect-error
-      .map((e) => new Types.ObjectId(e))
       const distinctMachineIds = await timerLogs.distinct("machineId")
       const machinesCountByClass = await Machines.distinct("_id", {
         machineClassId: { $in: machineClassesToSearch },

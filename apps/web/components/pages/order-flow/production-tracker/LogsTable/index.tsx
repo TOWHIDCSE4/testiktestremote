@@ -209,7 +209,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   const handlePartSelect = (e: any) => {
     console.log(e)
-    const val = e.map((i) => i)
+    const val = e.map((i: any) => i)
     console.log("🚀 ~ file: index.tsx:1681 ~ handlePartSelect ~ obj:", e)
     setPartSelector(e)
     console.log(
@@ -311,7 +311,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   // }
   useEffect(() => {
     const token = Cookies.get("tfl")
+    //@ts-expect-error
     const locationsQuery = new URLSearchParams({ locations: city }).toString()
+    //@ts-expect-error
     const machineClassesQuery = new URLSearchParams({
       machineClasses: machineClass,
     }).toString()
@@ -770,7 +772,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             value={item._id as string}
                           >
                             <ListItemText primary={item.name} />
-                            <Checkbox checked={city.includes(item._id)} />
+                            <Checkbox
+                              //@ts-expect-error
+                              checked={city.includes(item._id)}
+                            />
                           </MenuItem>
                         )
                       )}
@@ -834,6 +839,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           >
                             <ListItemText primary={item.name} />
                             <Checkbox
+                              //@ts-expect-error
                               checked={machineClass.includes(item._id)}
                             />
                           </MenuItem>
@@ -898,7 +904,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             value={item._id as string}
                           >
                             <ListItemText primary={item.name} />
-                            <Checkbox checked={machine.includes(item._id)} />
+                            <Checkbox
+                              //@ts-expect-error
+                              checked={machine.includes(item._id)}
+                            />
                           </MenuItem>
                         )
                       )}
@@ -944,18 +953,22 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       renderValue={() => `${partsCounter} selected`}
                       MenuProps={MenuProps}
                     >
-                      {parts?.items?.map((item: T_Part, index: number) => (
-                        <MenuItem
-                          key={index}
-                          // value={[item._id, item.name ] as string[]}
-                          value={item._id as string}
-                        >
-                          <ListItemText primary={item.name} />
-                          <Checkbox
-                            checked={partsSelected.includes(item._id)}
-                          />
-                        </MenuItem>
-                      ))}
+                      {
+                        //@ts-expect-error
+                        parts?.items?.map((item: T_Part, index: number) => (
+                          <MenuItem
+                            key={index}
+                            // value={[item._id, item.name ] as string[]}
+                            value={item._id as string}
+                          >
+                            <ListItemText primary={item.name} />
+                            <Checkbox
+                              //@ts-expect-error
+                              checked={partsSelected.includes(item._id)}
+                            />
+                          </MenuItem>
+                        ))
+                      }
                     </Select>
                   </FormControl>
                 </div>
@@ -1927,37 +1940,68 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   results
                 </p>
               </div>
-              {globalMetrics?.items?.map((item, index) => (
-                <div key={index} className="h-12 text-end flex items-center ">
-                  <div className="">
-                    <p className="text-sm text-gray-700">
-                      Global Total Units :
-                      {item.totalUnits !== undefined && (
-                        <span>{item.totalUnits}</span>
-                      )}
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      Global Total Tons :
-                      {item.totalTons !== undefined && (
-                        <span>{item.totalTons}</span>
-                      )}
-                    </p>
+              <div className="h-12 text-end flex items-center ">
+                <div className="">
+                  <p className="text-sm text-gray-700">
+                    Global Total Units :
+                    {
+                      //@ts-expect-error
+                      globalMetrics?.items?.totalUnits !== undefined && (
+                        <span>
+                          {
+                            //@ts-expect-error
+                            globalMetrics?.items?.totalUnits
+                          }
+                        </span>
+                      )
+                    }
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    Global Total Tons :
+                    {
+                      //@ts-expect-error
+                      globalMetrics?.items?.totalTons !== undefined && (
+                        <span>
+                          {
+                            //@ts-expect-error
+                            globalMetrics?.items?.totalTons.toFixed(4)
+                          }
+                        </span>
+                      )
+                    }
+                  </p>
 
-                    <p className="text-sm text-gray-700">
-                      Global Units Per Hour :
-                      {item.globalUnitsPerHour !== undefined && (
-                        <span>{item.globalUnitsPerHour}</span>
-                      )}
-                    </p>
-                    <p className="text-sm text-gray-700">
-                      Global Tons Per Hour :
-                      {item.globalTonsPerHour !== undefined && (
-                        <span>{item.globalTonsPerHour}</span>
-                      )}
-                    </p>
-                  </div>
+                  <p className="text-sm text-gray-700">
+                    Global Units Per Hour :
+                    {
+                      //@ts-expect-error
+                      globalMetrics?.items?.globalUnitsPerHour !==
+                        undefined && (
+                        <span>
+                          {
+                            //@ts-expect-error
+                            globalMetrics?.items?.globalUnitsPerHour.toFixed(4)
+                          }
+                        </span>
+                      )
+                    }
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    Global Tons Per Hour :
+                    {
+                      //@ts-expect-error
+                      globalMetrics?.items?.globalTonsPerHour !== undefined && (
+                        <span>
+                          {
+                            //@ts-expect-error
+                            globalMetrics?.items?.globalTonsPerHour.toFixed(4)
+                          }
+                        </span>
+                      )
+                    }
+                  </p>
                 </div>
-              ))}
+              </div>
 
               <button
                 className="flex justify-center items-center p-2 text-lg"
