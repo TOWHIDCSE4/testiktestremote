@@ -38,7 +38,7 @@ function useMachineClasses(locations: string[]) {
     {
       staleTime: ONE_DAY,
       refetchOnWindowFocus: false,
-      refetchInterval: 200,
+      // refetchInterval: 200,
     }
   )
   return query

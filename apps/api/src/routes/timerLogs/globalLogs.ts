@@ -272,8 +272,8 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
         .populate("operator")
         .populate("machineId")
         .sort({ ...sortObj })
-        .skip(5 * (Number(page) - 1))
-        .limit(5)
+        .skip(10 * (Number(page) - 1))
+        .limit(10)
 
       res.json({
         error: false,
