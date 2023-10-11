@@ -21,16 +21,16 @@ const SideMenu = ({
           : "translate-x-[202px] 2xl:translate-x-[345px]"
       } min-h-screen fixed z-20 top-0 right-0 whitespace-nowrap flex items-end pb-24 transition transform duration-1000`}
     >
-      <div className="bg-dark-blue w-56 2xl:w-96 rounded-tl-md rounded-bl-md h-12 xl:h-16 2xl:h-20">
+      <div className="bg-dark-blue w-56 2xl:w-96 rounded-tl-md dark:outline dark:outline-2 dark:outline-white rounded-bl-md h-12 xl:h-16 2xl:h-20">
         <div className="flex items-center h-full ml-1 2xl:ml-2">
           {endMenu ? (
             <ChevronDoubleRightIcon
-              className="text-green-500 h-4 w-4 2xl:h-8 2xl:w-8 cursor-pointer"
+              className="text-green-500 dark:text-white h-4 w-4 2xl:h-8 2xl:w-8 cursor-pointer"
               onClick={() => setEndMenu(false)}
             />
           ) : (
             <ChevronDoubleLeftIcon
-              className="text-green-500 h-4 w-4 2xl:h-8 2xl:w-8 cursor-pointer"
+              className="text-green-500 h-4 w-4 dark:text-white 2xl:h-8 2xl:w-8 cursor-pointer"
               onClick={() => setEndMenu(true)}
             />
           )}
