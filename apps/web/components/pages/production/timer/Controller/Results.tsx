@@ -91,7 +91,7 @@ const Results = ({
             ) : unitsCreated < 100 ? (
               <>
                 <span className="text-gray-400 ">0</span>
-                <span className="text-dark-blue dark:bg-dark-blue dark:text-white">
+                <span className="text-dark-blue dark:text-white">
                   {unitsCreated}
                 </span>
               </>
