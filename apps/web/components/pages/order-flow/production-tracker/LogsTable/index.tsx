@@ -93,7 +93,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [cityLocation, setCityLocation] = useState<string[]>([])
   const [machineClass, setMachineClass] = useState<string[]>([])
   const [factoryById, setFactoryById] = useState<string>("")
-  const [dateRange, setDateRange] = useState<string>("")
+  const [dateRange, setDateRange] = useState<Date[] | string[]>([])
+  // const [endDate, setEndDate] = useState<Date | string>()
   const [parts, setParts] = useState([])
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
@@ -112,7 +113,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [machineClassCounter, setMachineClassCounter] = useState<number>()
   const [machineCounter, setMachineCounter] = useState<number>()
   const [partsCounter, setPartsCounter] = useState<number>(0)
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false)
   const today = moment()
+  const [isCurrentDate, setCurrentDate] = useState(today.format("yyyy-MM-DD"))
 
   useEffect(() => {
     // Function to update the window width when the window is resized
@@ -148,6 +151,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses(city)
 
+  // const defaultDateRange = [moment('2023-10-01'), moment('2023-10-10')];
+  // console.log("🚀 ~ file: index.tsx:155 ~ defaultDateRange:", defaultDateRange)
   // useEffect(() => {
   //   setMachineClass(machineClasses)
   // },[city])
@@ -327,7 +332,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }, [city, machineClass])
 
   const disabledDate = (current: any) => {
-    return current && current > today
+    return current && current >= today
   }
   // Filter `option.label` match the user type `input`
   const filterOption = (
@@ -377,17 +382,66 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   //   setPage(1)
   // }, [dateRange, setEndDateRange])
 
+  function formatTime(seconds: string) {
+    const duration = moment.duration(seconds, "seconds")
+    const minutes = duration.minutes()
+    const remainingSeconds = duration.seconds()
+
+    let result = ""
+
+    if (minutes > 0) {
+      result += `${minutes} min`
+    }
+
+    if (remainingSeconds > 0) {
+      if (result !== "") {
+        result += ", "
+      }
+      result += `${remainingSeconds} sec`
+    }
+
+    return result
+  }
+
+  const handleCheckboxChange = (e: any) => {
+    const isChecked = e.target.checked
+    setIsCheckboxChecked(isChecked)
+
+    if (isChecked) {
+      const currentDate = dayjs().toDate() // Get the current date
+      // console.log(dayjs().format('YYYY-MM-DD'))
+      setDateRange([dayjs().format("YYYY-MM-DD"), dayjs().format("YYYY-MM-DD")])
+      datePick([currentDate, currentDate]) // Call datePick with the current date
+    } else {
+      setStartDateRange("")
+      setEndDateRange("")
+    }
+  }
+
   const datePick = (inputValue: any) => {
     setPage(1)
-    if (inputValue && inputValue[0] && inputValue[1]) {
-      // If both start and end dates are provided, format them
+    setDateRange(inputValue)
+    if (isCheckboxChecked) {
+      console.log(dayjs().format("YYYY-MM-DD"))
+      // If the checkbox is checked, set the start and end dates to the current date
+      // const currentDate = dayjs().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       setStartDateRange(
-        dayjs(inputValue[0]).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
-      setEndDateRange(dayjs(inputValue[1]).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
+      setEndDateRange(
+        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+    } else if (inputValue && inputValue[0] && inputValue[1]) {
+      // Handle the case when the checkbox is not checked, but both start and end dates are provided
+      setStartDateRange(
+        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+      setEndDateRange(
+        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
     } else {
       // Handle the case when one or both dates are empty
-      setStartDateRange("") // Set to an empty string or another default value
+      setStartDateRange("")
       setEndDateRange("")
     }
   }
@@ -559,6 +613,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         : []
     setCheckedProduction(updatedArray)
   }
+
+  // const handleCurrentDateChecked = (event: any) => {
 
   const isChecked = (id: string) => {
     return checkedProduction.filter((item) => item.id === id).length > 0
@@ -868,6 +924,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   <div className="w-2/3">
                     <Space direction="vertical" className="w-full" size={12}>
                       <RangePicker
+                        disabled={isCheckboxChecked}
+                        // value={dateRange}
                         disabledDate={disabledDate}
                         onChange={(e) => datePick(e)}
                       />
@@ -875,10 +933,22 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   </div>
                 </div>
                 {/* Generate report */}
-                <div className="flex w-1/2 text-[11px] items-center justify-end pr-11">
+                <div className="flex w-1/2 text-[11px] items-center justify-end px-14">
                   <p className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
                     GENERATE REPORT
                   </p>
+                </div>
+              </div>
+              <div className="w-full flex text-[12px] px-[30.3%] font-semibold">
+                <div>
+                  <label htmlFor="checkbox-date">Current Date</label>
+                  <input
+                    id="checkbox-date"
+                    type="checkbox"
+                    checked={isCheckboxChecked}
+                    onChange={handleCheckboxChange}
+                    className="w-4 h-4 ml-2 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                  />
                 </div>
               </div>
             </div>
@@ -983,7 +1053,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[15%] px-6 py-3 text-slate-900"
+                    >
                       <div className="flex items-center ">
                         TIME
                         <button onClick={(e) => handleInputChange(e, "time")}>
@@ -1112,11 +1185,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                       : "text-red-500"
                                   }`}
                                 >
-                                  {item.time.toFixed(2)}s
+                                  {formatTime(item.time.toFixed(2))}
                                 </span>
                               ) : (
                                 <span className="font-bold text-red-500">
-                                  {item.time.toFixed(2)}s
+                                  {formatTime(item.time.toFixed(2))}
                                 </span>
                               )}
                             </td>
