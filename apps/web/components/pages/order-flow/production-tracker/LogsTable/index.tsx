@@ -34,7 +34,11 @@ import {
   T_Locations,
   T_BackendResponse,
 } from "custom-validator"
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/20/solid"
 // import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClassByLocation"
 // import useGetMachinesByMachineClasses from "../../../../../hooks/machines/useGetMachineByMachineClass"
 import { set } from "mongoose"
@@ -57,6 +61,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select"
 import Checkbox from "@mui/material/Checkbox"
 import { query } from "express"
 import useGetPartsByMachineClasses from "../../../../../hooks/parts/useGetPartsByMachines"
+import useGetGlobalMetrics from "../../../../../hooks/timerLogs/useGetGlobalMetrics"
 
 const ITEM_HEIGHT = 48
 // const ITEM_PADDING_TOP = 2;
@@ -376,9 +381,33 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   //   setStartDateRange(dateRange)
   //   setPage(1)
   // }, [dateRange, setStartDateRange])
+  const {
+    data: globalMetrics,
+    isLoading: isGlobalMetricsLoading,
+    isRefetching: isGlobalMetricsRefetching,
+    setFactoryIds,
+    setMachineClassIds,
+    setMachineIds,
+    setStartDateRanges,
+    setEndDateRanges,
+    setPartIds,
+  } = useGetGlobalMetrics(city, process)
+
+  useEffect(() => {
+    setMachineClassIds(machineClass)
+  }, [machineClass, setMachineClassIds])
+
+  useEffect(() => {
+    setMachineIds(machine)
+  }, [machine, setMachineIds])
+
+  useEffect(() => {
+    console.log("selectparts", partsSelected)
+    setPartIds(partsSelected)
+  }, [partsSelected, setPartIds])
 
   // useEffect(() => {
-  //   setEndDateRange(dateRange)
+  //   setEndDateRanges(dateRange)
   //   setPage(1)
   // }, [dateRange, setEndDateRange])
 
@@ -415,6 +444,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     } else {
       setStartDateRange("")
       setEndDateRange("")
+      setStartDateRanges("")
+      setEndDateRanges("")
     }
   }
 
@@ -431,6 +462,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
       setEndDateRange(
         dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
+      setStartDateRanges(
+        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+      setEndDateRanges(
+        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
     } else if (inputValue && inputValue[0] && inputValue[1]) {
       // Handle the case when the checkbox is not checked, but both start and end dates are provided
       setStartDateRange(
@@ -439,10 +476,18 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
       setEndDateRange(
         dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
+      setStartDateRanges(
+        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+      setEndDateRanges(
+        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
     } else {
       // Handle the case when one or both dates are empty
       setStartDateRange("")
       setEndDateRange("")
+      setStartDateRanges("")
+      setEndDateRanges("")
     }
   }
 
@@ -1105,19 +1150,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           >
                             <td className="pr-6">
                               <div className="flex items-center">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="currentColor"
-                                  aria-hidden="true"
-                                  className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800 arrow-icon"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M16.28 12.53a.75.75 0 010-1.06l-7.5-7.5a.75.75 0 011.06-1.06L17.69 12l-6.97 6.97a.75.75 0 11-1.06 1.06l7.5-7.5z"
-                                    clipRule="evenodd"
-                                  ></path>
-                                </svg>
+                                {isAccordionOpen ? (
+                                  <ChevronDownIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                                ) : (
+                                  <ChevronRightIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                                )}
                                 <input
                                   id={`checkbox-table-search-${idx}`}
                                   type="checkbox"
@@ -1515,7 +1552,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
                     <th scope="col" className="px-6 py-3 text-slate-900">
-                      CYCLE
+                      <input
+                        id={`checkbox-table-search`}
+                        type="checkbox"
+                        checked={checkedProduction.length == 5}
+                        className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                        onClick={(e) => handleSelectAllProduction(e)}
+                      />
                     </th>
                     <th scope="col" className="px-6 py-3 text-slate-900">
                       <div className="flex items-center">
@@ -1884,18 +1927,38 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   results
                 </p>
               </div>
-              <div className="h-12 text-end flex items-center ">
-                <div className="">
-                  <p className="text-sm text-gray-700">Global Total Units :</p>
-                  <p className="text-sm text-gray-700">Global Total Tons :</p>
-                  <p className="text-sm text-gray-700">
-                    Global Units Per Hour :
-                  </p>
-                  <p className="text-sm text-gray-700">
-                    Global Tons Per Hour :
-                  </p>
+              {globalMetrics?.items?.map((item, index) => (
+                <div key={index} className="h-12 text-end flex items-center ">
+                  <div className="">
+                    <p className="text-sm text-gray-700">
+                      Global Total Units :
+                      {item.totalUnits !== undefined && (
+                        <span>{item.totalUnits}</span>
+                      )}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      Global Total Tons :
+                      {item.totalTons !== undefined && (
+                        <span>{item.totalTons}</span>
+                      )}
+                    </p>
+
+                    <p className="text-sm text-gray-700">
+                      Global Units Per Hour :
+                      {item.globalUnitsPerHour !== undefined && (
+                        <span>{item.globalUnitsPerHour}</span>
+                      )}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      Global Tons Per Hour :
+                      {item.globalTonsPerHour !== undefined && (
+                        <span>{item.globalTonsPerHour}</span>
+                      )}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ))}
+
               <button
                 className="flex justify-center items-center p-2 text-lg"
                 onClick={() => handleProcess()}
