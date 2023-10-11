@@ -6,6 +6,7 @@ import {
 } from "../../utils/constants"
 import mongoose from "mongoose"
 import { groupBy, map } from "lodash"
+import * as Sentry from "@sentry/node"
 
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, status, selectedjob, search } = req.query
@@ -196,6 +197,7 @@ export const paginated = async (req: Request, res: Response) => {
     } catch (err: any) {
       console.log(err)
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

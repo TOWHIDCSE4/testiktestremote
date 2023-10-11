@@ -8,6 +8,7 @@ import {
 import CryptoJS from "crypto-js"
 import { keys } from "../../config/keys"
 import isEmpty from "lodash/isEmpty"
+import * as Sentry from "@sentry/node"
 
 export const updatePassword = async (req: Request, res: Response) => {
   const getUser = await Users.findById({
@@ -33,6 +34,7 @@ export const updatePassword = async (req: Request, res: Response) => {
           message: UPDATE_SUCCESS_MESSAGE,
         })
       } catch (err: any) {
+        Sentry.captureException(err)
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
         res.json({
           error: true,

@@ -13,6 +13,9 @@ import { ZLocation } from "custom-validator"
 import machineClasses from "../../models/machineClasses"
 import machines from "../../models/machines"
 import { Types } from "mongoose"
+import timerLogs from "../../models/timerLogs"
+import * as Sentry from "@sentry/node"
+
 
 export const getAllLocations = async (req: Request, res: Response) => {
   try {
@@ -46,6 +49,7 @@ export const getLocation = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -90,6 +94,7 @@ export const addLocation = async (req: Request, res: Response) => {
         }
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
@@ -140,6 +145,7 @@ export const updateLocation = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
@@ -191,6 +197,7 @@ export const deleteLocation = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -214,17 +221,18 @@ export const findMachineClassByLocation = async (
       itemCount: 0,
     })
   }
-
-  const locationToBeFound = locations
-    //@ts-expect-error
-    .split(",")
-    .map((e: string) => new Types.ObjectId(e))
+  const distinctMachineClassesIds = await timerLogs.distinct("machineClassId")
   try {
+    const locationToBeFound = locations
+      //@ts-expect-error
+      .split(",")
+      .map((e: string) => new Types.ObjectId(e))
     const distinctMachineClasses = await machines.aggregate([
       {
         $match: {
           // locationId:  new Types.ObjectId(locationId as string),
           locationId: { $in: locationToBeFound },
+          _id: { $in: distinctMachineClassesIds },
         },
       },
       {
@@ -272,6 +280,7 @@ export const findMachineClassByLocation = async (
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,

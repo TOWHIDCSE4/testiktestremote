@@ -5,6 +5,8 @@ import {
 import { Request, Response } from "express"
 import Parts from "../../models/parts"
 import { Types } from "mongoose"
+import * as Sentry from "@sentry/node"
+import timerLogs from "../../models/timerLogs"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
   const { locationId, machineClassId } = req.query
@@ -28,6 +30,7 @@ export const locationMachineClass = async (req: Request, res: Response) => {
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,
@@ -61,20 +64,22 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
       itemCount: null,
     })
   }
-  const machineClassesToSearch = machineClasses
-    //@ts-expect-error
-    .split(",")
-    //@ts-expect-error
-    .map((e) => new Types.ObjectId(e))
-  const locationsToSearch = locations
-    //@ts-expect-error
-    .split(",")
-    //@ts-expect-error
-    .map((e) => new Types.ObjectId(e))
   try {
+    const machineClassesToSearch = machineClasses
+      //@ts-expect-error
+      .split(",")
+      //@ts-expect-error
+      .map((e) => new Types.ObjectId(e))
+    const locationsToSearch = locations
+      //@ts-expect-error
+      .split(",")
+      //@ts-expect-error
+      .map((e) => new Types.ObjectId(e))
+    const distinctPartsIds = await timerLogs.distinct("partId")
     const filter = {
       machineClassId: { $in: machineClassesToSearch },
       locationId: { $in: locationsToSearch },
+      _id: { $in: distinctPartsIds },
     }
 
     if (search) {
@@ -95,5 +100,6 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
     })
   } catch (error) {
     console.error(error)
+    Sentry.captureException(error)
   }
 }

@@ -8,6 +8,7 @@ import {
   REQUIRED_VALUES_MISSING,
 } from "../../utils/constants"
 import { ZJob } from "custom-validator"
+import * as Sentry from "@sentry/node"
 
 export const getAllJobsPerStatus = async (req: Request, res: Response) => {
   const { locationId, status } = req.query
@@ -26,6 +27,7 @@ export const getAllJobsPerStatus = async (req: Request, res: Response) => {
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

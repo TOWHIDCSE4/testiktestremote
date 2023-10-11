@@ -5,6 +5,7 @@ import {
   REQUIRED_VALUES_MISSING,
 } from "../../utils/constants"
 import JobTimer from "../../models/jobTimer"
+import * as Sentry from "@sentry/node"
 
 export const getByTimerId = async (req: Request, res: Response) => {
   if (req.query.locationId && req.query.timerId) {
@@ -20,6 +21,7 @@ export const getByTimerId = async (req: Request, res: Response) => {
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

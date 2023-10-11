@@ -4,17 +4,23 @@ import {
 } from "../../utils/constants"
 import { Request, Response } from "express"
 import Machines from "../../models/machines"
+import timerLogs from "../../models/timerLogs"
 
 export const byLocation = async (req: Request, res: Response) => {
   const { locationId } = req.query
   if (locationId) {
     try {
+      const distinctMachineids = await timerLogs.distinct("machineId", {
+        locationId,
+      })
       const machinesCountByLocation = await Machines.find({
         locationId,
+        _id: { $in: distinctMachineids },
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
       const getMachineByLocation = await Machines.find({
         locationId,
+        _id: { $in: distinctMachineids },
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       })
       res.json({

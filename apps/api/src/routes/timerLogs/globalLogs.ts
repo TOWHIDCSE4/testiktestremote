@@ -8,6 +8,8 @@ import mongoose from "mongoose"
 import parts from "../../models/parts"
 import dayjs from "dayjs"
 import timerLogs from "../../models/timerLogs"
+import * as Sentry from "@sentry/node"
+
 
 export const globalLogs = async (req: Request, res: Response) => {
   const {
@@ -101,6 +103,7 @@ export const globalLogs = async (req: Request, res: Response) => {
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,
@@ -285,6 +288,7 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     } catch (err: any) {
       console.log(err)
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,
@@ -384,6 +388,7 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     console.log(err);
     //@ts-expect-error
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED;
+    Sentry.captureException(err)
     return {
       error: true,
       message,

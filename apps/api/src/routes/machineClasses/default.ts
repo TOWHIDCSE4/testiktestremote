@@ -10,6 +10,7 @@ import {
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZMachineClass } from "custom-validator"
+import * as Sentry from "@sentry/node"
 
 export const getAllMachineClasses = async (req: Request, res: Response) => {
   try {
@@ -24,6 +25,7 @@ export const getAllMachineClasses = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -47,6 +49,7 @@ export const getMachineClass = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -89,6 +92,7 @@ export const addMachineClass = async (req: Request, res: Response) => {
         }
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
@@ -139,6 +143,7 @@ export const updateMachineClass = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
@@ -193,6 +198,7 @@ export const deleteMachineClass = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,

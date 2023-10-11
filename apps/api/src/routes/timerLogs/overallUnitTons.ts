@@ -10,6 +10,7 @@ import Locations from "../../models/location"
 import ControllerTimers from "../../models/controllerTimers"
 import TimerLogs from "../../models/timerLogs"
 import MachineClasses from "../../models/machineClasses"
+import * as Sentry from "@sentry/node"
 
 export const overallUnitTons = async (req: Request, res: Response) => {
   if (req.query.machineClassId && req.query.locationId) {
@@ -83,6 +84,7 @@ export const overallUnitTons = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

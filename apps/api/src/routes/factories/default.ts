@@ -10,6 +10,7 @@ import {
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZFactory } from "custom-validator"
+import * as Sentry from "@sentry/node"
 
 export const getAllFactories = async (req: Request, res: Response) => {
   try {
@@ -23,6 +24,7 @@ export const getAllFactories = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -46,6 +48,7 @@ export const getFactory = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -88,6 +91,7 @@ export const addFactory = async (req: Request, res: Response) => {
         }
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
@@ -138,6 +142,7 @@ export const updateFactory = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
@@ -186,6 +191,7 @@ export const delteFactory = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,

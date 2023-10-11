@@ -11,6 +11,7 @@ import {
 import isEmpty from "lodash/isEmpty"
 import { ZCycleTimer } from "custom-validator"
 import { date } from "zod"
+import * as Sentry from "@sentry/node"
 
 export const getAllCycleTimers = async (req: Request, res: Response) => {
   try {
@@ -24,6 +25,7 @@ export const getAllCycleTimers = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -47,6 +49,7 @@ export const getCycleTimer = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -89,6 +92,7 @@ export const addCycleTimer = async (req: Request, res: Response) => {
         }
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
@@ -139,6 +143,7 @@ export const updateCycleTimer = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
