@@ -24,8 +24,8 @@ const Header = ({
   }
   return (
     <div
-      className={`flex flex-col md:flex-row justify-center md:justify-between ${
-        mode === "Dark" ? "bg-white" : "bg-dark-blue"
+      className={`flex flex-col md:flex-row justify-center bg-dark-blue md:justify-between ${
+        mode === "Dark" ? "bg-dark-blue" : "bg-dark-blue"
       } py-3 md:py-0 px-4 md:px-12 h-auto items-center`}
     >
       {progress > 100 ? (
@@ -37,7 +37,7 @@ const Header = ({
           <Image src={LogoGreen} alt="Logo" />
         </div>
       )}
-      <div className="items-end duration-100 dark:bg-dark-blue dark:text-white bg-gray-100 rounded-xl pt-2 px-1">
+      <div className="items-end duration-100 bg-gray-100 rounded-xl pt-2 px-1">
         <button onClick={toggleTheme}>
           {mode === "Dark" ? (
             <div className="flex">
@@ -51,7 +51,7 @@ const Header = ({
                 >
                   <g
                     clip-path="url(#a)"
-                    stroke="#fff"
+                    stroke="black"
                     stroke-width="1.5"
                     stroke-miterlimit="10"
                   >
@@ -76,7 +76,7 @@ const Header = ({
                   </defs>
                 </svg>
               </div>
-              <div>Light</div>
+              <div className="dark:text-black">Light</div>
             </div>
           ) : (
             <div className="flex">
@@ -109,7 +109,7 @@ const Header = ({
       <div className="mt-3 md:mt-0">
         <h2
           className={`uppercase text-2xl md:text-4xl xl:text-5xl 2xl:text-6xl  ${
-            mode === "Dark" ? "text-dark-blue" : "text-white"
+            mode === "Dark" ? "text-white" : "text-white"
           } font-semibold text-center`}
         >
           {isLoading ? (
@@ -122,7 +122,7 @@ const Header = ({
         </h2>
         <h3
           className={`uppercase text-lg md:text-2xl xl:text-3xl 2xl:text-4xl ${
-            mode === "Dark" ? "text-dark-blue" : "text-white"
+            mode === "Dark" ? "text-white" : "text-white"
           } leading-none font-medium text-center`}
         >
           Controller

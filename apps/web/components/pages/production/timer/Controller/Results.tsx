@@ -83,18 +83,22 @@ const Results = ({
               : unitsCreated} */}
             {unitsCreated < 10 ? (
               <>
-                <span className="text-gray-300 ">00</span>
-                <span className="text-dark-blue ">{unitsCreated}</span>
+                <span className="text-gray-400 ">00</span>
+                <span className="text-dark-blue dark:text-white">
+                  {unitsCreated}
+                </span>
               </>
             ) : unitsCreated < 100 ? (
               <>
-                <span className="text-gray-300 ">0</span>
+                <span className="text-gray-400 ">0</span>
                 <span className="text-dark-blue dark:bg-dark-blue dark:text-white">
                   {unitsCreated}
                 </span>
               </>
             ) : (
-              <span className="text-dark-blue">{unitsCreated}</span>
+              <span className="text-dark-blue dark:text-white">
+                {unitsCreated}
+              </span>
             )}
           </h1>
         </div>
