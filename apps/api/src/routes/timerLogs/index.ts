@@ -11,7 +11,11 @@ import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { timer } from "./timer"
 import { productInventory } from "./productInventory"
 import { overallUnitTons } from "./overallUnitTons"
-import { globalLogs, globalLogsMulti } from "./globalLogs"
+import {
+  calculateGlobalMetrics,
+  globalLogs,
+  globalLogsMulti,
+} from "./globalLogs"
 import { groupByDate } from "./groupByDate"
 
 //custom
@@ -21,6 +25,7 @@ router.get("/global", isUserLoggedIn, globalLogs)
 router.get("/global/multi/filter", isUserLoggedIn, globalLogsMulti)
 router.get("/inventory/:partId", isUserLoggedIn, productInventory)
 router.get("/overall-unit-tons", isUserLoggedIn, overallUnitTons)
+router.get("/get-global-metrics", isUserLoggedIn, calculateGlobalMetrics)
 
 //default
 router.get("/", isUserLoggedIn, getAllTimeLogs)
@@ -28,5 +33,4 @@ router.get("/:id", isUserLoggedIn, getTimeLog)
 router.post("/", isUserLoggedIn, addTimeLog)
 router.patch("/:id", isUserLoggedIn, updateTimeLog)
 router.delete("/:id", isUserLoggedIn, deleteTimeLog)
-
 export default router
