@@ -1,17 +1,18 @@
 "use client"
-import { DatePicker, Space, Select } from "antd"
-import {
-  ChevronUpDownIcon,
-  EllipsisVerticalIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/solid"
-import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
+import { DatePicker, Space } from "antd"
+// import Select from "react-select"
+// import {
+//   ChevronUpDownIcon,
+//   EllipsisVerticalIcon,
+//   MagnifyingGlassIcon,
+// } from "@heroicons/react/24/solid"
+// import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
 import dayjs from "dayjs"
-import {
-  AsyncPaginate,
-  reduceGroupedOptions,
-} from "react-select-async-paginate"
-import type { GroupBase, OptionsOrGroups } from "react-select"
+// import {
+//   AsyncPaginate,
+//   reduceGroupedOptions,
+// } from "react-select-async-paginate"
+// import type { GroupBase, OptionsOrGroups } from "react-select"
 import moment from "moment"
 
 export type OptionType = {
@@ -21,9 +22,9 @@ export type OptionType = {
 
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
-import { usePathname } from "next/navigation"
+// import { usePathname } from "next/navigation"
 import React, { Dispatch, useEffect, useState } from "react"
-import useGlobalTimerLogs from "../../../../../hooks/timerLogs/useGlobalTimerLogs"
+// import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGlobalTimerLogsMultiFilter"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import {
   T_Factory,
@@ -31,18 +32,53 @@ import {
   T_MachineClass,
   T_Part,
   T_Locations,
+  T_BackendResponse,
 } from "custom-validator"
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
-import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
-import useMachines from "../../../../../hooks/machines/useMachines"
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/20/solid"
+// import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClassByLocation"
+// import useGetMachinesByMachineClasses from "../../../../../hooks/machines/useGetMachineByMachineClass"
 import { set } from "mongoose"
 import useGetMachinesByLocation from "../../../../../hooks/machines/useGetMachinesByLocation"
 import useLocations from "../../../../../hooks/locations/useLocations"
 import usePaginatedParts from "../../../../../hooks/parts/usePaginatedParts"
+import { API_URL_PARTS } from "../../../../../helpers/constants"
+import Cookies from "js-cookie"
+import { useQueryClient } from "@tanstack/react-query"
+import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGetGlobalTimerLogsMultiFilter"
+import useGetMachinesByMachineClasses from "../../../../../hooks/machines/useGetMachinesByMachineClasses"
+import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClassesByLocation"
+import CustomSelect from "./CustomSelect"
+import OutlinedInput from "@mui/material/OutlinedInput"
+import InputLabel from "@mui/material/InputLabel"
+import MenuItem from "@mui/material/MenuItem"
+import FormControl from "@mui/material/FormControl"
+import ListItemText from "@mui/material/ListItemText"
+import Select, { SelectChangeEvent } from "@mui/material/Select"
+import Checkbox from "@mui/material/Checkbox"
+import { query } from "express"
+import useGetPartsByMachineClasses from "../../../../../hooks/parts/useGetPartsByMachines"
+import useGetGlobalMetrics from "../../../../../hooks/timerLogs/useGetGlobalMetrics"
+
+const ITEM_HEIGHT = 48
+// const ITEM_PADDING_TOP = 2;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5,
+      padding: 0,
+      // width: 200,
+    },
+  },
+}
 
 const { RangePicker } = DatePicker
 
 const LogsTable = ({ locationId }: { locationId: string }) => {
+  const queryClient = useQueryClient()
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
 
   const toggleAccordion = (id: string) => {
@@ -58,18 +94,33 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [process, setProcess] = useState<boolean>(false)
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [batchAction, setBatchAction] = useState<string>("")
-  const [city, setCity] = useState<string>("64d5814fb996589a945a6402")
-  const [machineClass, setMachineClass] = useState<string>("")
-  const [dateRange, setDateRange] = useState<string>("")
-  const [partSelector, setPartSelector] = useState<string | undefined>("")
-  const [machine, setMachine] = useState<string>("")
+  const [city, setCity] = useState<string[]>(["64d5814fb996589a945a6402"])
+  const [cityLocation, setCityLocation] = useState<string[]>([])
+  const [machineClass, setMachineClass] = useState<string[]>([])
+  const [factoryById, setFactoryById] = useState<string>("")
+  const [dateRange, setDateRange] = useState<Date[] | string[]>([])
+  // const [endDate, setEndDate] = useState<Date | string>()
+  const [parts, setParts] = useState([])
+  const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
+    []
+  )
+  const [partSelector, setPartSelector] = useState<string[]>([])
+  const [partsSelected, setPartsSelected] = useState<string[]>([])
+  const [machine, setMachine] = useState<string[]>([])
   const [search, setSearch] = useState<string>("")
+  const [selectedMachineValues, setSelectedMachineValues] = useState<string[]>()
   const [loadedListOptions, setLoadedListOptions] = useState<
     { value: string; label: string }[]
   >([])
   const [loadOptionsCount, setLoadOptionsCount] = useState(0)
   const [typingTimeout, setTypingTimeout] = useState(null)
+  const [cityCounter, setCityCounter] = useState<number>(city.length)
+  const [machineClassCounter, setMachineClassCounter] = useState<number>()
+  const [machineCounter, setMachineCounter] = useState<number>()
+  const [partsCounter, setPartsCounter] = useState<number>(0)
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false)
   const today = moment()
+  const [isCurrentDate, setCurrentDate] = useState(today.format("yyyy-MM-DD"))
 
   useEffect(() => {
     // Function to update the window width when the window is resized
@@ -103,9 +154,17 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   dayjs.extend(timezone.default)
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
-    useMachineClasses()
+    useMachineClasses(city)
+
+  // const defaultDateRange = [moment('2023-10-01'), moment('2023-10-10')];
+  // console.log("🚀 ~ file: index.tsx:155 ~ defaultDateRange:", defaultDateRange)
+  // useEffect(() => {
+  //   setMachineClass(machineClasses)
+  // },[city])
+
   const { data: machines, isLoading: isMachinesLoading } =
-    useGetMachinesByLocation(locationId)
+    useGetMachinesByMachineClasses(machineClass)
+  // const {data: partsData, isLoading: IsPartsLoading} = useGetPartsByMachineClasses(city, machineClass)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const {
     data: allParts,
@@ -117,58 +176,72 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   } = usePaginatedParts()
   const numberOfPartsPages = Math.ceil((allParts?.itemCount as number) / 6)
 
+  // useEffect(() => {
+  //   console.log("cityLocation", cityLocation)
+  //   if (locations && locations.items) {
+  //     // Find the matching location objects based on the keys
+  //     const selectedLocations = locations.items.filter((item) => city.includes(item._id));
+
+  //     // Extract the names from the matching location objects
+  //     const selectedNames = selectedLocations.map((location) => location.name);
+
+  //     // Set the selected names to cityLocation
+  //     setCityLocation(selectedNames);
+  //   } else {
+  //     // Handle the case where locations or locations.items is undefined
+  //     // You can set a default value or handle it as needed
+  //     setCityLocation([]); // Set to an empty array as an example
+  //   }
+
+  // },[])
   useEffect(() => {
-    setLocationId(city)
-    setPage(1)
+    setLocationId(city[0])
+    setPartsPage(1)
     // console.log(city)
   }, [city, setLocationId])
 
   useEffect(() => {
-    // Clear the previous typing timeout if it exists
-    if (typingTimeout) {
-      clearTimeout(typingTimeout)
-    }
+    console.log("Selected part", partSelector)
+    queryClient.invalidateQueries({
+      queryKey: ["global-timer-logs"],
+    })
+  }, [partSelector])
 
-    // Set a new timeout for 2 seconds
-    const newTimeout = setTimeout(() => {
-      // This code will run if the user stops typing for 2 seconds
-      setName(search)
-      setPartsPage(1)
-      setPage(1)
-    }, 500)
-
-    // Update the typingTimeout state with the new timeout
-    // setTypingTimeout(newTimeout)
-
-    // Cleanup: Clear the timeout when the component unmounts or when 'search' changes
-    return () => {
-      if (newTimeout) {
-        clearTimeout(newTimeout)
-      }
-    }
-  }, [search])
-
-  const onSearch = (value: any) => {
-    // console.log('the on Saearcb', value)
-    // setPartsPage(1)
-    setSearch(value)
+  const handlePartSelect = (e: any) => {
+    console.log(e)
+    const val = e.map((i: any) => i)
+    console.log("🚀 ~ file: index.tsx:1681 ~ handlePartSelect ~ obj:", e)
+    setPartSelector(e)
+    console.log(
+      "🚀 ~ file: index.tsx:1676 ~ LogsTable ~ partSelector:",
+      partSelector
+    )
   }
 
-  const customStyles = {
-    control: (provided: any, state: any) => ({
-      ...provided,
-      width: "15rem",
-      borderRadius: "15px",
-      border: "1px solid #ccc",
-      marginLeft: "5px",
-      boxShadow: state.isFocused ? "0 0 0 2px #ccc" : null,
-    }),
-    option: (provided: any, state: any) => ({
-      ...provided,
-      backgroundColor: state.isFocused ? "#3699FF" : null,
-      color: state.isFocused ? "white" : null,
-    }),
-  }
+  useEffect(() => {
+    // console.log("Part selector after update:", partSelector)
+    setPartSelector(partSelector)
+  }, [partSelector])
+
+  // const customStyles = {
+  //   control: (provided: any, state: any) => ({
+  //     ...provided,
+  //     width: "15rem",
+  //     height: "2rem",
+  //     overflow: "hidden",
+  //     flex: "nowrap",
+  //     display: "flex",
+  //     borderRadius: "15px",
+  //     border: "1px solid #ccc",
+  //     marginLeft: "5px",
+  //     boxShadow: state.isFocused ? "0 0 0 2px #ccc" : null,
+  //   }),
+  //   option: (provided: any, state: any) => ({
+  //     ...provided,
+  //     backgroundColor: state.isFocused ? "#3699FF" : null,
+  //     color: state.isFocused ? "white" : null,
+  //   }),
+  // }
 
   // const loadOptions = (inputValue: string) => {
   //   // Assuming the response is an array of items
@@ -195,44 +268,78 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   //   }
   // }
 
-  const loadOptions = (inputValue: string) => {
-    // Check if the search box is not empty
-    if (inputValue.trim() !== "") {
+  // const loadOptions = async (inputValue: string, loadOption: any, {page}:any) => {
+  //   // Check if the search box is not empty
+  //   // if (inputValue.trim() !== "") {
+  //   //   setLoadOptionsCount(loadOptionsCount + 1)
+  //   //   setPartsPage(1) // Reset partsPage to an empty value
+  //   // } else {
+  //   //   setLoadOptionsCount(0)
+  //   // }
+  //   // //   // Assuming the response is an array of items
+  //   const newOptions = await
+  //     allParts?.items?.map((item: T_Part) => ({
+  //       value: item._id as string,
+  //       label: item.name as string,
+  //     })) || []
+
+  //   // // Filter options based on the inputValue
+  //   // const filteredOptions = newOptions.filter((option) =>
+  //   //   option.label.toLowerCase().includes(inputValue.toLowerCase())
+  //   // )
+
+  //   // // Check if the map function has reached the end of allParts
+  //   // if (filteredOptions.length === allParts?.items?.length) {
+  //   //   if (numberOfPartsPages > partsPage) {
+  //   //     // Increment partsPage by 1 when mapping is finished
+  //   //     setPartsPage(partsPage + 1)
+  //   //   }
+  //   // }
+  //   // setLoadedListOptions(filteredOptions)
+  //   console.log("the filteredOptions", newOptions)
+  //   setPage(page + 1)
+  //   return {
+  //     options: newOptions || [],
+  //     hasMore: true,
+  //     additional: {
+  //       page: page,
+  //     }
+  //   }
+  // }
+  // type T_DBReturn = Omit<T_BackendResponse, "items"> & {
+  //   items: T_Part[]
+  // }
+  useEffect(() => {
+    const token = Cookies.get("tfl")
+    //@ts-expect-error
+    const locationsQuery = new URLSearchParams({ locations: city }).toString()
+    //@ts-expect-error
+    const machineClassesQuery = new URLSearchParams({
+      machineClasses: machineClass,
+    }).toString()
+
+    const fetchData = async () => {
+      const res = await fetch(
+        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&search=${search}`,
+        {
+          method: "GET",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      const responseJSON = await res.json()
+      console.log(responseJSON)
+      setParts(responseJSON)
       setLoadOptionsCount(loadOptionsCount + 1)
-      setPartsPage(1) // Reset partsPage to an empty value
-    } else {
-      setLoadOptionsCount(0)
     }
-    //   // Assuming the response is an array of items
-    const newOptions =
-      allParts?.items?.map((item: T_Part) => ({
-        value: item._id as string,
-        label: item.name,
-      })) || []
 
-    // Filter options based on the inputValue
-    const filteredOptions = newOptions.filter((option) =>
-      option.label.toLowerCase().includes(inputValue.toLowerCase())
-    )
-
-    // Check if the map function has reached the end of allParts
-    if (filteredOptions.length === allParts?.items?.length) {
-      if (numberOfPartsPages > partsPage) {
-        // Increment partsPage by 1 when mapping is finished
-        setPartsPage(partsPage + 1)
-      }
-    }
-    setLoadedListOptions(filteredOptions)
-    console.log("the filteredOptions", loadedListOptions)
-
-    return {
-      options: loadedListOptions || [],
-      hasMore: true,
-    }
-  }
+    fetchData()
+  }, [city, machineClass])
 
   const disabledDate = (current: any) => {
-    return current && current > today
+    return current && current >= today
   }
   // Filter `option.label` match the user type `input`
   const filterOption = (
@@ -253,7 +360,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setStartDateRange,
     setEndDateRange,
     setPartId,
-  } = useGlobalTimerLogs(city, sortType, keyword, process)
+  } = useGlobalTimerLogsMulti(city, sortType, keyword, process)
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
 
   useEffect(() => {
@@ -265,41 +372,184 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setMachineId(machine)
     setPage(1)
   }, [machine, setMachineId])
-  //TODO: remove ts expect error
+
   useEffect(() => {
-    //@ts-expect-error
-    setPartId(partSelector)
+    console.log("selectparts", partsSelected)
+    setPartId(partsSelected)
     setPage(1)
-  }, [partSelector, setPartId])
+  }, [partsSelected, setPartId])
 
   // useEffect(() => {
   //   setStartDateRange(dateRange)
   //   setPage(1)
   // }, [dateRange, setStartDateRange])
+  const {
+    data: globalMetrics,
+    isLoading: isGlobalMetricsLoading,
+    isRefetching: isGlobalMetricsRefetching,
+    setFactoryIds,
+    setMachineClassIds,
+    setMachineIds,
+    setStartDateRanges,
+    setEndDateRanges,
+    setPartIds,
+  } = useGetGlobalMetrics(city, process)
+
+  useEffect(() => {
+    setMachineClassIds(machineClass)
+  }, [machineClass, setMachineClassIds])
+
+  useEffect(() => {
+    setMachineIds(machine)
+  }, [machine, setMachineIds])
+
+  useEffect(() => {
+    console.log("selectparts", partsSelected)
+    setPartIds(partsSelected)
+  }, [partsSelected, setPartIds])
 
   // useEffect(() => {
-  //   setEndDateRange(dateRange)
+  //   setEndDateRanges(dateRange)
   //   setPage(1)
   // }, [dateRange, setEndDateRange])
 
-  const datePick = (inputValue: any) => {
-    setPage(1)
-    if (inputValue && inputValue[0] && inputValue[1]) {
-      // If both start and end dates are provided, format them
-      setStartDateRange(
-        dayjs(inputValue[0]).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRange(dayjs(inputValue[1]).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
+  function formatTime(seconds: string) {
+    const duration = moment.duration(seconds, "seconds")
+    const minutes = duration.minutes()
+    const remainingSeconds = duration.seconds()
+
+    let result = ""
+
+    if (minutes > 0) {
+      result += `${minutes} min`
+    }
+
+    if (remainingSeconds > 0) {
+      if (result !== "") {
+        result += ", "
+      }
+      result += `${remainingSeconds} sec`
+    }
+
+    return result
+  }
+
+  const handleCheckboxChange = (e: any) => {
+    const isChecked = e.target.checked
+    setIsCheckboxChecked(isChecked)
+
+    if (isChecked) {
+      const currentDate = dayjs().toDate() // Get the current date
+      // console.log(dayjs().format('YYYY-MM-DD'))
+      setDateRange([dayjs().format("YYYY-MM-DD"), dayjs().format("YYYY-MM-DD")])
+      datePick([currentDate, currentDate]) // Call datePick with the current date
     } else {
-      // Handle the case when one or both dates are empty
-      setStartDateRange("") // Set to an empty string or another default value
+      setStartDateRange("")
       setEndDateRange("")
+      setStartDateRanges("")
+      setEndDateRanges("")
     }
   }
 
-  // useEffect(() => {
-  //   console.log("the date range", dateRange)
-  // }, [dateRange])
+  const datePick = (inputValue: any) => {
+    setPage(1)
+    setDateRange(inputValue)
+    if (isCheckboxChecked) {
+      console.log(dayjs().format("YYYY-MM-DD"))
+      // If the checkbox is checked, set the start and end dates to the current date
+      // const currentDate = dayjs().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      setStartDateRange(
+        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+      setEndDateRange(
+        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+      setStartDateRanges(
+        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+      setEndDateRanges(
+        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+    } else if (inputValue && inputValue[0] && inputValue[1]) {
+      // Handle the case when the checkbox is not checked, but both start and end dates are provided
+      setStartDateRange(
+        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+      setEndDateRange(
+        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+      setStartDateRanges(
+        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+      setEndDateRanges(
+        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+      )
+    } else {
+      // Handle the case when one or both dates are empty
+      setStartDateRange("")
+      setEndDateRange("")
+      setStartDateRanges("")
+      setEndDateRanges("")
+    }
+  }
+
+  // const { Option } = Select
+
+  const handleLocationChange = (event: any) => {
+    // if(Array.isArray(event.target.value[0])){
+    //   const cityInfo = event.target.value[0]
+    //   console.log("handleLocationChange", cityInfo[0], cityInfo[1] )
+    //   setCity(cityInfo[0])
+    //   setCityLocation([...cityLocation, cityInfo[1]])
+    //   setCounter(selectedValues.length);
+    // }else{
+    //   setCity(event.target.value[0])
+    //   setCityLocation(event.target.value[1])
+    // }
+    setCity(event.target.value)
+  }
+
+  useEffect(() => {
+    setCityCounter(city.length)
+  }, [city])
+
+  const handleMachineClassChange = (event: any) => {
+    // console.log(`selected ${value}`);
+    setMachineClass(event.target.value)
+  }
+
+  useEffect(() => {
+    setMachineClassCounter(machineClass.length)
+  }, [machineClass])
+
+  const handleMachineChange = (event: any) => {
+    // console.log(`selected ${value}`);
+    setSelectedMachineValues(event.target.value)
+    setMachine(event.target.value)
+  }
+
+  useEffect(() => {
+    setMachineCounter(machine.length)
+  }, [machine])
+
+  const handlePartsChange = (event: any) => {
+    // console.log(`selected ${value}`);
+    // setSelectedMachineValues(event.target.value);
+    setPartsSelected(event.target.value)
+  }
+
+  useEffect(() => {
+    setPartsCounter(partsSelected.length)
+  }, [partsSelected])
+
+  // const TextWithCheckbox = (props: any) => {
+  //   return (
+  //     <div className="w-full flex justify-between">
+  //       {props.children}
+  //       <Checkbox checked={props.checked} />
+  //     </div>
+  //   );
+  // };
 
   useEffect(() => {
     // console.log(filterBy)
@@ -311,8 +561,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
             name="factories"
             className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
             onChange={(e) => {
+              //@ts-expect-error
               setFactoryId(e.target.value)
+              //@ts-expect-error
               setMachineClassId("")
+              //@ts-expect-error
               setMachineId("")
             }}
             disabled={isFactoriesLoading || isFactoriesLoading}
@@ -334,8 +587,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
             name="machineClasses"
             className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
             onChange={(e) => {
+              //@ts-expect-error
               setMachineClassId(e.target.value)
+              //@ts-expect-error
               setFactoryId("")
+              //@ts-expect-error
               setMachineId("")
             }}
             disabled={isMachineClassesLoading || isFactoriesLoading}
@@ -359,8 +615,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
             name="machines"
             className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
             onChange={(e) => {
+              //@ts-expect-error
               setMachineId(e.target.value)
+              //@ts-expect-error
               setMachineClassId("")
+              //@ts-expect-error
               setFactoryId("")
             }}
             disabled={isMachinesLoading || isFactoriesLoading}
@@ -390,6 +649,33 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }
   }, [filterBy])
 
+  const handleSelectAllProduction = (event: any) => {
+    const data = paginated?.items ?? []
+    let updatedArray = [] as any
+    updatedArray =
+      data?.length > 0 && event.target.checked
+        ? data
+            ?.filter((item) => item?._id !== undefined)
+            .map((item) => ({ id: item?._id }))
+        : []
+    setCheckedProduction(updatedArray)
+  }
+
+  // const handleCurrentDateChecked = (event: any) => {
+
+  const isChecked = (id: string) => {
+    return checkedProduction.filter((item) => item.id === id).length > 0
+  }
+
+  const handleChangeCheck = (e: any, id: string) => {
+    e.stopPropagation()
+    setCheckedProduction((prevState) =>
+      prevState.some((item) => item.id === id)
+        ? prevState.filter((item) => item.id !== id)
+        : [...prevState, { id }]
+    )
+  }
+
   return (
     <>
       <div
@@ -397,15 +683,15 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
           paginated ? "overflow-hidden" : "overflow-x-auto"
         }`}
       >
-        <div className="px-1 py-4">
-          <div className="flex pb-10">
-            <div className=" whitespace-nowrap">
+        <div className="px-1 w-full pt-4">
+          <div className="flex px-2">
+            <div className="flex flex-col whitespace-nowrap justify-between">
               <h3 className="text-2xl font-semibold pr-1">GLOBAL PRODUCTION</h3>
               <div className="w-full flex justify-center items-center">
                 <select
                   id="filterBy"
                   name="filterBy"
-                  className=" mt-2 w-20% block rounded-lg border-0 py-1 px-2 pl-2 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                  className=" mt-2 block rounded-lg border-0 py-1 px-2 pl-2 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
                   onChange={(e) => setFilterBy(e.target.value)}
                 >
                   <option value="BatchAction">Batch action</option>
@@ -415,129 +701,312 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 </select>
               </div>
             </div>
-            <div className=" grid grid-rows-2 grid-flow-col gap-1">
-              <div className="flex mb-3">
-                <div
-                  className={`flex w-[10rem] ${
-                    minWidth <= 1370 ? "ml-12" : "ml-10"
-                  } text-[11px] items-center`}
-                >
-                  <p className="flex justify-start font-semibold">CITY</p>
-                  <p className="w-[5rem] pl-4">
-                    <select
-                      id="filterBy"
-                      name="filterBy"
-                      className=" flex items-center w-[6.3rem] px-2 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                      onChange={(e) => setCity(e.target.value)}
+            <div className=" w-full space-y-3 px-4">
+              <div className="flex w-full">
+                {/* city */}
+                <div className="flex w-1/2 text-[11px] items-center">
+                  <p className="w-1/6 font-semibold text-right mr-2">CITY</p>
+                  {/* <Select
+                    // defaultValue={[colourOptions[2], colourOptions[3]]}
+                    isMulti
+                    name="colors"
+                    options={[
+                      { value: "chocolate", label: "Chocolate" },
+                      { value: "strawberry", label: "Strawberry" },
+                      { value: "vanilla", label: "Vanilla" },
+                    ]}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                  /> */}
+                  {/* <Space direction="vertical" className="min-w-full">
+                    <Select
+                      mode="multiple"
+                      style={{ width: "100%", height: '32px', overflow: "hidden", whiteSpace: "nowrap" }}
+                      placeholder={"select city"}
+                      defaultValue={[city[0]]}
+                      size="middle"
+                      onChange={(value) => handleLocationChange(value)}
+                      dropdownRender={(menu) => (
+                        <div>
+                          {menu}
+                        </div>
+                      )}
                     >
-                      {/* <option value=""></option> */}
                       {locations?.items?.map(
                         (item: T_Locations, index: number) => {
                           return (
-                            <option key={index} value={item._id as string}>
-                              {item.name}
-                            </option>
+                            <Option
+                              key={index}
+                              value={item._id as string}
+                              label={item.name}
+                            >
+                              <Space>{item.name}</Space>
+                            </Option>
                           )
                         }
                       )}
-                    </select>
-                  </p>
+                    </Select> */}
+                  <FormControl className="w-2/3" size="small">
+                    {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      style={{
+                        width: "100%",
+                        border: "0.3pt solid #ccc",
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                        height: "38px",
+                      }}
+                      value={city}
+                      onChange={(event) => handleLocationChange(event)}
+                      renderValue={() => `${cityCounter} selected`}
+                      MenuProps={MenuProps}
+                    >
+                      {locations?.items?.map(
+                        (item: T_Locations, index: number) => (
+                          <MenuItem
+                            key={index}
+                            // value={[item._id, item.name ] as string[]}
+                            value={item._id as string}
+                          >
+                            <ListItemText primary={item.name} />
+                            <Checkbox
+                              //@ts-expect-error
+                              checked={city.includes(item._id)}
+                            />
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                  </FormControl>
+                  {/* </Space> */}
                 </div>
-                <div className="flex text-[11px] items-center">
-                  <p className="flex justify-end font-semibold ">
+                {/* Machine class */}
+                <div className="flex w-1/2 text-[11px] items-center">
+                  <p className="w-1/6 font-semibold text-right mr-2">
                     MACHINE CLASS
                   </p>
-                  <p className=" pl-2">
-                    <select
-                      id="filterBy"
-                      name="filterBy"
-                      className="flex items-center px-1 py-0 rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                      onChange={(e) => setMachineClass(e.target.value)}
+                  {/* <Space direction="vertical" className="min-w-full">
+                    <Select
+                      mode="multiple"
+                      style={{ width: "100%" }}
+                      placeholder={"select machine class"}
+                      size="middle"
+                      disabled={city ? false : true}
+                      onChange={(value) => handleMachineClassChange(value)}
                     >
-                      <option value=""></option>
                       {machineClasses?.items?.map(
                         (item: T_MachineClass, index: number) => {
                           return (
-                            <option key={index} value={item._id as string}>
+                            <Option
+                              key={index}
+                              value={item._id as string}
+                              label={item.name}
+                            >
                               {item.name}
-                            </option>
+                            </Option>
                           )
                         }
                       )}
-                    </select>
-                  </p>
-                </div>
-                <div className="flex text-[11px] items-center">
-                  <p className="flex justify-start w-[3rem] ml-4 font-semibold">
-                    MACHINE
-                  </p>
-                  <p className="w-3/1 pl-5">
-                    <select
-                      id="filterBy"
-                      name="filterBy"
-                      className="flex items-center px-1 py-0 w-[6.3rem] rounded-lg border-0 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                      onChange={(e) => setMachine(e.target.value)}
+                    </Select>
+                  </Space> */}
+                  <FormControl className="w-2/3" size="small">
+                    {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      style={{
+                        width: "100%",
+                        border: "0.3pt solid #ccc",
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                        height: "38px",
+                      }}
+                      value={machineClass}
+                      onChange={(event) => handleMachineClassChange(event)}
+                      renderValue={() => `${machineClassCounter} selected`}
+                      MenuProps={MenuProps}
                     >
-                      <option value=""></option>
+                      {machineClasses?.items?.map(
+                        (item: T_MachineClass, index: number) => (
+                          <MenuItem
+                            key={index}
+                            // value={[item._id, item.name ] as string[]}
+                            value={item._id as string}
+                          >
+                            <ListItemText primary={item.name} />
+                            <Checkbox
+                              //@ts-expect-error
+                              checked={machineClass.includes(item._id)}
+                            />
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                  </FormControl>
+                </div>
+              </div>
+              <div className="flex w-full">
+                {/* machine */}
+                <div className="flex w-1/2 text-[11px] items-center">
+                  <p className="w-1/6 font-semibold text-right mr-2">MACHINE</p>
+                  {/* <Space direction="vertical" className="min-w-full">
+                    <Select
+                      mode="multiple"
+                      style={{ width: "100%" }}
+                      placeholder={"Select machine"}
+                      // value={''}
+                      disabled={machineClass ? false : true}
+                      onChange={(value) => handleMachineChange(value)}
+                    >
                       {machines?.items?.map(
                         (item: T_Machine, index: number) => {
                           return (
-                            <option key={index} value={item._id as string}>
-                              {item.name}
-                            </option>
+                            <Option
+                              key={index}
+                              value={item._id as string}
+                              label={item.name}
+                            >
+                              <Space>{item.name}</Space>
+                            </Option>
                           )
                         }
                       )}
-                    </select>
+                    </Select>
+                    <div>{selectedMachineValues?.length} selected</div>
+                  </Space> */}
+                  <FormControl className="w-2/3" size="small">
+                    {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      style={{
+                        width: "100%",
+                        border: "0.3pt solid #ccc",
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                        height: "38px",
+                      }}
+                      value={machine}
+                      onChange={(event) => handleMachineChange(event)}
+                      renderValue={() => `${machineCounter} selected`}
+                      MenuProps={MenuProps}
+                    >
+                      {machines?.items?.map(
+                        (item: T_Machine, index: number) => (
+                          <MenuItem
+                            key={index}
+                            // value={[item._id, item.name ] as string[]}
+                            value={item._id as string}
+                          >
+                            <ListItemText primary={item.name} />
+                            <Checkbox
+                              //@ts-expect-error
+                              checked={machine.includes(item._id)}
+                            />
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                  </FormControl>
+                </div>
+                {/* part selector */}
+                <div className="flex w-1/2 text-[11px] items-center">
+                  <p className="w-1/6 font-semibold text-right mr-2">
+                    PART SELECTOR
                   </p>
+                  {/* <AsyncPaginate
+                    isMulti
+                    value={partSelector}
+                    isDisabled={machine ? false : true}
+                    debounceTimeout={1000}
+                    placeholder={"Select"}
+                    // onInputChange={(e) => onSearch(e)}
+                    //@ts-expect-error
+                    loadOptions={loadOptions}
+                    onChange={(e) => handlePartSelect(e)}
+                    reduceOptions={reduceGroupedOptions}
+                    styles={customStyles}
+                    additional={{
+                      page: 1,
+                    }}
+                  /> */}
+                  <FormControl className="w-2/3" size="small">
+                    {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      style={{
+                        width: "100%",
+                        border: "0.3pt solid #ccc",
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                        height: "38px",
+                      }}
+                      value={partsSelected}
+                      onChange={(event) => handlePartsChange(event)}
+                      renderValue={() => `${partsCounter} selected`}
+                      MenuProps={MenuProps}
+                    >
+                      {
+                        //@ts-expect-error
+                        parts?.items?.map((item: T_Part, index: number) => (
+                          <MenuItem
+                            key={index}
+                            // value={[item._id, item.name ] as string[]}
+                            value={item._id as string}
+                          >
+                            <ListItemText primary={item.name} />
+                            <Checkbox
+                              //@ts-expect-error
+                              checked={partsSelected.includes(item._id)}
+                            />
+                          </MenuItem>
+                        ))
+                      }
+                    </Select>
+                  </FormControl>
                 </div>
               </div>
-              <div className="flex flex-wrap">
-                <div className="flex text-[11px] pl-0">
-                  <p className="flex items-center justify-start font-semibold">
+              <div className="flex w-full">
+                {/* date range */}
+                <div className="flex w-1/2 text-[11px] items-center">
+                  <p className="w-1/6 font-semibold text-right mr-2">
                     DATE RANGE
                   </p>
-                  <div className="pl-2">
-                    <Space
-                      direction="vertical"
-                      className=" flex items-center w-[12rem] rounded-lg "
-                      size={12}
-                    >
+                  <div className="w-2/3">
+                    <Space direction="vertical" className="w-full" size={12}>
                       <RangePicker
+                        disabled={isCheckboxChecked}
+                        // value={dateRange}
                         disabledDate={disabledDate}
                         onChange={(e) => datePick(e)}
                       />
                     </Space>
                   </div>
                 </div>
-                <div className="flex w-1/2 text-[11px] items-center pl-2 ">
-                  <p className="flex justify-end font-semibold items-center">
-                    PART SELECTOR
+                {/* Generate report */}
+                <div className="flex w-1/2 text-[11px] items-center justify-end px-14">
+                  <p className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
+                    GENERATE REPORT
                   </p>
-
-                  {/* <AsyncPaginate
-                    value={partSelector}
-                    debounceTimeout={1000}
-                    placeholder={"Select"}
-                    onInputChange={(e) => onSearch(e)}
-                    // loadOptions={loadOptions}
-                    // onChange={(e) => setPartSelector(e?.value)}
-                    reduceOptions={reduceGroupedOptions}
-                    styles={customStyles}
-                  /> */}
                 </div>
-                <div className="flex items-center">
-                  <div
-                    className={`flex ${
-                      minWidth >= 1370 ? "xl:w-[14.5rem] xl:pl-10 mt-4" : "pl-2"
-                    } ${
-                      minWidth <= 1295 ? "mt-4" : ""
-                    } text-[10px] justify-end `}
-                  >
-                    <p className="flex justify-center w-4/3 p-1 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
-                      GENERATE REPORT
-                    </p>
-                  </div>
+              </div>
+              <div className="w-full flex text-[12px] px-[30.3%] font-semibold">
+                <div>
+                  <label htmlFor="checkbox-date">Current Date</label>
+                  <input
+                    id="checkbox-date"
+                    type="checkbox"
+                    checked={isCheckboxChecked}
+                    onChange={handleCheckboxChange}
+                    className="w-4 h-4 ml-2 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                  />
                 </div>
               </div>
             </div>
@@ -549,10 +1018,16 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
-                      CYCLE
+                    <th scope="col" className="w-[10%] pl-10 text-slate-900">
+                      <input
+                        id={`checkbox-table-search`}
+                        type="checkbox"
+                        checked={checkedProduction.length == 5}
+                        className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                        onClick={(e) => handleSelectAllProduction(e)}
+                      />
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th scope="col" className="w-[10%] text-slate-900">
                       <div className="flex items-center">
                         DATE
                         <button
@@ -570,7 +1045,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th scope="col" className="w-[10%] text-slate-900">
                       <div className="flex items-center">
                         MACHINE
                         <button
@@ -588,7 +1063,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th scope="col" className="w-[40%] py-3 text-slate-900">
                       <div className="flex items-center">
                         PART
                         <button onClick={(e) => handleInputChange(e, "part")}>
@@ -636,7 +1111,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[15%] px-6 py-3 text-slate-900"
+                    >
                       <div className="flex items-center ">
                         TIME
                         <button onClick={(e) => handleInputChange(e, "time")}>
@@ -665,6 +1143,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
                       const isAccordionOpen =
                         openAccordion === `accordion-arrow-icon-body-${idx}`
+                      const checked = isChecked(item._id ?? "")
                       return (
                         <React.Fragment key={item._id}>
                           {/* {idx === 0 ? ( // Add accordion to the first row (index 0) */}
@@ -684,24 +1163,19 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           >
                             <td className="pr-6">
                               <div className="flex items-center">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="currentColor"
-                                  aria-hidden="true"
-                                  className="pr-4 pl-2 h-4 stroke-2 stroke-gray-800"
-                                >
-                                  <path
-                                    fill-rule="evenodd"
-                                    d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
-                                    clip-rule="evenodd"
-                                  ></path>
-                                </svg>
+                                {isAccordionOpen ? (
+                                  <ChevronDownIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                                ) : (
+                                  <ChevronRightIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                                )}
                                 <input
                                   id={`checkbox-table-search-${idx}`}
                                   type="checkbox"
                                   className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
-                                  onClick={(e) => e.stopPropagation()}
+                                  onClick={(e) =>
+                                    handleChangeCheck(e, item?._id ?? "")
+                                  }
+                                  checked={checked}
                                 />
                                 <label
                                   htmlFor={`checkbox-table-search-${idx}`}
@@ -713,18 +1187,18 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             </td>
                             <th
                               scope="row"
-                              className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                              className=" py-4 font-medium text-gray-900 whitespace-nowrap"
                             >
                               {dayjs
                                 .tz(dayjs(item.createdAt), "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
-                            <td className="px-6 py-4">
+                            <td className=" py-4">
                               {/* @ts-expect-error */}
                               {item?.machineId.name}
                             </td>
                             <td
-                              className={`px-6 py-4 text-sm text-gray-500 flex flex-col ${
+                              className={` py-4 text-sm text-gray-500 flex flex-col ${
                                 item.jobId ? "text-gray-900" : "text-red-500"
                               }`}
                             >
@@ -761,11 +1235,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                       : "text-red-500"
                                   }`}
                                 >
-                                  {item.time.toFixed(2)}s
+                                  {formatTime(item.time.toFixed(2))}
                                 </span>
                               ) : (
                                 <span className="font-bold text-red-500">
-                                  {item.time.toFixed(2)}s
+                                  {formatTime(item.time.toFixed(2))}
                                 </span>
                               )}
                             </td>
@@ -1091,7 +1565,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
                     <th scope="col" className="px-6 py-3 text-slate-900">
-                      CYCLE
+                      <input
+                        id={`checkbox-table-search`}
+                        type="checkbox"
+                        checked={checkedProduction.length == 5}
+                        className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                        onClick={(e) => handleSelectAllProduction(e)}
+                      />
                     </th>
                     <th scope="col" className="px-6 py-3 text-slate-900">
                       <div className="flex items-center">
@@ -1462,16 +1942,67 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               </div>
               <div className="h-12 text-end flex items-center ">
                 <div className="">
-                  <p className="text-sm text-gray-700">Global Total Units :</p>
-                  <p className="text-sm text-gray-700">Global Total Tons :</p>
+                  <p className="text-sm text-gray-700">
+                    Global Total Units :
+                    {
+                      //@ts-expect-error
+                      globalMetrics?.items?.totalUnits !== undefined && (
+                        <span>
+                          {
+                            //@ts-expect-error
+                            globalMetrics?.items?.totalUnits
+                          }
+                        </span>
+                      )
+                    }
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    Global Total Tons :
+                    {
+                      //@ts-expect-error
+                      globalMetrics?.items?.totalTons !== undefined && (
+                        <span>
+                          {
+                            //@ts-expect-error
+                            globalMetrics?.items?.totalTons.toFixed(4)
+                          }
+                        </span>
+                      )
+                    }
+                  </p>
+
                   <p className="text-sm text-gray-700">
                     Global Units Per Hour :
+                    {
+                      //@ts-expect-error
+                      globalMetrics?.items?.globalUnitsPerHour !==
+                        undefined && (
+                        <span>
+                          {
+                            //@ts-expect-error
+                            globalMetrics?.items?.globalUnitsPerHour.toFixed(4)
+                          }
+                        </span>
+                      )
+                    }
                   </p>
                   <p className="text-sm text-gray-700">
                     Global Tons Per Hour :
+                    {
+                      //@ts-expect-error
+                      globalMetrics?.items?.globalTonsPerHour !== undefined && (
+                        <span>
+                          {
+                            //@ts-expect-error
+                            globalMetrics?.items?.globalTonsPerHour.toFixed(4)
+                          }
+                        </span>
+                      )
+                    }
                   </p>
                 </div>
               </div>
+
               <button
                 className="flex justify-center items-center p-2 text-lg"
                 onClick={() => handleProcess()}
@@ -1489,7 +2020,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-label="Pagination"
                   >
                     <button
-                      onClick={() => setPage(page - 1)}
+                      onClick={() => {
+                        setCheckedProduction([]), setPage(page - 1)
+                      }}
                       disabled={page === 1 || numberOfPages === 0}
                       className="relative disabled:opacity-70 inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                     >
@@ -1505,7 +2038,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       {page} / {numberOfPages ? numberOfPages : 1}
                     </button>
                     <button
-                      onClick={() => setPage(page + 1)}
+                      onClick={() => {
+                        setCheckedProduction([]), setPage(page + 1)
+                      }}
                       className="relative disabled:opacity-70 inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                       disabled={page === numberOfPages || numberOfPages === 0}
                     >

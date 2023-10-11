@@ -16,7 +16,12 @@ module.exports = {
         "dark-blue": "#102136",
         "light-blue": "#E9ECEF",
       },
+      screens: {
+        ipadair: "820px",
+        ipadair: "768px",
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],
+  darkMode: "class",
 }

@@ -115,7 +115,7 @@ const TabTable = ({
           </div>
         </div>
       ) : !jobs?.error && jobs?.itemCount && jobs?.itemCount > 0 ? (
-        <table className="w-full divide-y divide-gray-300 table-fixed">
+        <table className="w-full divide-y divide-gray-300">
           <thead>
             <tr>
               <th scope="col" className="w-4"></th>
@@ -129,7 +129,7 @@ const TabTable = ({
                 scope="col"
                 className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase pl-4 w-28"
               >
-                <a href="#" className="group inline-flex">
+                <a href="#" className="group w-[8rem] inline-flex">
                   Factory
                 </a>
               </th>
@@ -137,7 +137,7 @@ const TabTable = ({
                 scope="col"
                 className="pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 w-28 uppercase"
               >
-                <a href="#" className="group inline-flex">
+                <a href="#" className="group w-[15rem] inline-flex">
                   Name
                 </a>
               </th>
@@ -145,7 +145,7 @@ const TabTable = ({
                 scope="col"
                 className="pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 w-28 uppercase"
               >
-                <a href="#" className="group inline-flex">
+                <a href="#" className="group w-[15rem] inline-flex">
                   Part
                 </a>
               </th>

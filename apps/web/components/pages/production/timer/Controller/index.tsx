@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useRef } from "react"
+import { createContext, useContext, useState, useEffect, useRef } from "react"
 import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
@@ -494,14 +494,18 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }, [timerDetailData])
 
+  // const toggleTheme = () => {
+  //   document.documentElement.classList.toggle("dark")
+  // }
+
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="h-screen overflow-auto 2xl:text-lg  dark:bg-dark-blue dark:text-white">
       <Header
         progress={progress}
         isLoading={isTimerDetailDataLoading}
         location={timerDetailData?.item?.locationId.name}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-12 mt-7">
+      <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-12 mt-7 dark:text-white">
         <Details
           timerDetails={timerDetailData?.item}
           isLoading={isTimerDetailDataLoading}
@@ -509,6 +513,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           sectionDiv={sectionDiv}
           jobTimer={jobTimer?.item as T_JobTimer}
           isJobTimerLoading={isJobTimerLoading}
+          isCycleClockRunning={isCycleClockRunning}
         />
         <div className="flex flex-col">
           <CycleClock

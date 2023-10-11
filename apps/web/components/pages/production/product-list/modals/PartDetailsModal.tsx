@@ -459,11 +459,11 @@ const PartDetailsModal = ({
               />
             </div>
           </div>
-          <div className="bg-gray-100 mt-7 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 justify-between">
+          <div className="bg-gray-100 mt-7 px-4 py-3 sm:flex sm:flex-row-reverse items-center sm:px-6 justify-between">
             <div className="flex items-center space-x-3">
               <button
                 type="submit"
-                className={`ml-3 uppercase flex items-center rounded-md  mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-70 ${
+                className={`uppercase flex items-center rounded-md  mt-3 w-full md:w-auto sm:mt-0 md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-70 ${
                   !anyChange
                     ? "bg-green-700 focus-visible:outline-green-900 hover:bg-green-800"
                     : "bg-gray-400 hover:bg-gray-500"

@@ -41,7 +41,7 @@ const BottomMenu = ({
           stopMenu
             ? "translate-y-0"
             : "translate-y-[191px] xl:translate-y-[297px] 2xl:translate-y-[380px]"
-        } bg-dark-blue h-62 xl:h-80 2xl:h-[430px] w-96 xl:w-[500px] 2xl:w-[800px] z-20 fixed bottom-0 rounded-t-md px-4 pb-5 transition transform duration-1000`}
+        } bg-dark-blue h-62 xl:h-80 2xl:h-[430px] dark:outline dark:outline-2 dark:outline-white w-96 xl:w-[500px] 2xl:w-[800px] z-20 fixed bottom-0 rounded-t-md px-4 pb-5 transition transform duration-1000`}
       >
         <div className="flex justify-center items-center mt-1 2xl:mt-3 mb-0 2xl:mb-2">
           {stopMenu ? (

@@ -2,6 +2,7 @@ import { REQUIRED_VALUES_MISSING } from "../../utils/constants"
 import { Request, Response } from "express"
 import Machines from "../../models/machines"
 import MachineClasses from "../../models/machineClasses"
+import * as Sentry from "@sentry/node"
 
 export const machineClasses = async (req: Request, res: Response) => {
   if (req.params.factoryId && req.params.factoryId !== "all") {
@@ -19,6 +20,7 @@ export const machineClasses = async (req: Request, res: Response) => {
         itemCount: getAllMachinesClasses.length,
       })
     } catch (error) {
+      Sentry.captureException(error)
       res.json({
         error: true,
         message: String(error),
@@ -48,6 +50,7 @@ export const machineClassesV2 = async (req: Request, res: Response) => {
       itemCount: getAllMachinesClasses.length,
     })
   } catch (error) {
+    Sentry.captureException(error)
     res.json({
       error: true,
       message: String(error),

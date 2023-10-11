@@ -10,6 +10,7 @@ import * as utc from "dayjs/plugin/utc"
 import isProductionTimeActive from "../../helpers/isProductionTimeActive"
 import Locations from "../../models/location"
 import Timers from "../../models/timers"
+import * as Sentry from "@sentry/node"
 
 export const todayControllerTimer = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
@@ -55,6 +56,7 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,

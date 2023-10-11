@@ -15,6 +15,7 @@ import CryptoJS from "crypto-js"
 import { keys } from "../../config/keys"
 import isEmpty from "lodash/isEmpty"
 import { ZUser } from "custom-validator"
+import * as Sentry from "@sentry/node"
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -28,6 +29,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -51,6 +53,7 @@ export const getUser = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -74,6 +77,7 @@ export const getUserByEmail = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -131,6 +135,7 @@ export const addUser = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,
@@ -174,6 +179,7 @@ export const updateUser = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
@@ -216,6 +222,7 @@ export const deleteUser = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,

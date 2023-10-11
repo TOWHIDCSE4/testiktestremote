@@ -4,6 +4,7 @@ import {
   UNKNOWN_ERROR_OCCURRED,
   UPDATE_SUCCESS_MESSAGE,
 } from "../../utils/constants"
+import * as Sentry from "@sentry/node"
 
 export const acceptUser = async (req: Request, res: Response) => {
   const getUser = await Users.findById({
@@ -31,6 +32,7 @@ export const acceptUser = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,

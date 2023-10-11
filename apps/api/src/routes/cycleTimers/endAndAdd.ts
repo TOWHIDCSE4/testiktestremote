@@ -7,6 +7,7 @@ import {
 import { Request, Response } from "express"
 import { ZCycleTimer } from "custom-validator"
 import CycleTimers from "../../models/cycleTimers"
+import * as Sentry from "@sentry/node"
 
 export const endAndAdd = async (req: Request, res: Response) => {
   const { timerId } = req.body
@@ -63,6 +64,7 @@ export const endAndAdd = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,

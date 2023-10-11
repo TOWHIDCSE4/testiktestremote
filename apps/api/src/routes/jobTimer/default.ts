@@ -10,6 +10,7 @@ import {
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZJobTimer } from "custom-validator"
+import * as Sentry from "@sentry/node"
 
 export const getAllJobTimer = async (req: Request, res: Response) => {
   try {
@@ -25,6 +26,7 @@ export const getAllJobTimer = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -48,6 +50,7 @@ export const getJobTimer = async (req: Request, res: Response) => {
     })
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,
@@ -85,6 +88,7 @@ export const addJobTimer = async (req: Request, res: Response) => {
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,
@@ -127,6 +131,7 @@ export const updateJobTimer = async (req: Request, res: Response) => {
         })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
           error: true,
           message: message,
@@ -178,6 +183,7 @@ export const deleteJobTimer = async (req: Request, res: Response) => {
     }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
     res.json({
       error: true,
       message: message,

@@ -4,6 +4,7 @@ import {
   UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUES_MISSING,
 } from "../../utils/constants"
+import * as Sentry from "@sentry/node"
 
 export const timerJobs = async (req: Request, res: Response) => {
   if (req.query.locationId && req.query.partId && req.query.factoryId) {
@@ -28,6 +29,7 @@ export const timerJobs = async (req: Request, res: Response) => {
       })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
       res.json({
         error: true,
         message: message,
