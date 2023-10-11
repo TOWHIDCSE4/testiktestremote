@@ -5,6 +5,7 @@ import {
 import { Request, Response } from "express"
 import Parts from "../../models/parts"
 import { Types } from "mongoose"
+import timerLogs from "../../models/timerLogs"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
   const { locationId, machineClassId } = req.query
@@ -72,9 +73,12 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
     //@ts-expect-error
     .map((e) => new Types.ObjectId(e))
   try {
+    const distinctPartsIds = await timerLogs.distinct("partId")
+
     const filter = {
       machineClassId: { $in: machineClassesToSearch },
       locationId: { $in: locationsToSearch },
+      _id: { $in: distinctPartsIds },
     }
 
     if (search) {
