@@ -966,7 +966,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               <NewWindow
                 copyStyles={true}
                 features={{
-                  width: 800,
+                  width: 900,
                   height: 1000,
                 }}
                 center="parent"
