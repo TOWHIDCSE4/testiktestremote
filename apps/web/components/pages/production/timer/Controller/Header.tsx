@@ -24,7 +24,7 @@ const Header = ({
   }
   return (
     <div
-      className={`flex flex-col md:flex-row justify-center bg-dark-blue md:justify-between ${
+      className={`flex flex-row md:flex-row justify-around bg-dark-blue md:justify-between ${
         mode === "Dark" ? "bg-dark-blue" : "bg-dark-blue"
       } py-3 md:py-0 px-4 xl:px-8 md:px-12 h-20 items-center`}
     >
@@ -39,7 +39,7 @@ const Header = ({
       )}
 
       <div className="mt-3 md:mt-0 flex">
-        <div className="items-end duration-100 bg-gray-100 rounded-xl mr-5 mt-5 h-9 py-0 pt-2 px-1">
+        <div className="items-end duration-100 bg-gray-100 rounded-xl sm:mt-2 mr-5 md:mt-5 2xl:mt-6 h-9 py-0 pt-2 px-1">
           <button onClick={toggleTheme}>
             {mode === "Dark" ? (
               <div className="flex">
