@@ -133,7 +133,7 @@ const Details = ({
   }, [selectedOperator])
 
   return (
-    <div className="order-last md:order-none md:mt-0 2xl:mt-0">
+    <div className="order-last h-[40rem] md:order-none md:mt-0 2xl:mt-0">
       <h4 className="uppercase text-sm text-gray-800 md:text-lg xl:text-[1.5vw] 2xl:text-2xl font-bold  dark:bg-dark-blue dark:text-white">
         Details
       </h4>
