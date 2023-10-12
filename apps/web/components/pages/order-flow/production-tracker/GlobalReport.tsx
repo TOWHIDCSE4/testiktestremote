@@ -16,6 +16,7 @@ const GlobalTableReport = ({
   data,
   city,
   keyword,
+  job,
   process,
   sortType,
   locationId,
@@ -26,6 +27,7 @@ const GlobalTableReport = ({
   endDateRange,
   machineClassId,
 }: {
+  job: any
   city: string
   keyword: string
   sortType: string
@@ -145,7 +147,7 @@ const GlobalTableReport = ({
           <div className="text-right">
             <div className="text-sm">
               <span className="text-gray-800 font-bold">City:</span>{" "}
-              {paginated?.item?.locationId.name}
+              {paginated?.item.locationId.name}
             </div>
             <div className="text-sm">
               <span className="text-gray-800 font-bold">Factory:</span>{" "}
@@ -172,13 +174,13 @@ const GlobalTableReport = ({
             </div>
           </div>
         </div>
-        <h6 className="uppercase text-gray-800 font-bold text-3xl mt-10">
+        <h6 className="uppercase text-gray-800 font-bold text-xl mt-10">
           Totals
         </h6>
-        <h5 className="text-lg text-gray-800 mt-4">
+        <h5 className="text-md text-gray-800 mt-4">
           <b>Total Units:</b> {paginated?.itemCount || 0}
         </h5>
-        <h5 className="text-lg text-gray-800">
+        <h5 className="text-md text-gray-800">
           <b>Total Tons:</b>{" "}
           {paginated?.items
             ? data.items
@@ -209,7 +211,7 @@ const GlobalTableReport = ({
             </span>
           ) : null}
         </h5> */}
-        <h6 className="uppercase text-gray-800 font-bold text-3xl mt-8">
+        <h6 className="uppercase text-gray-800 font-bold text-xl mt-8">
           Cycles
         </h6>
         <table className="min-w-full divide-y divide-gray-300">
@@ -219,7 +221,19 @@ const GlobalTableReport = ({
                 scope="col"
                 className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
               >
-                No
+                Cycle
+              </th>
+              <th
+                scope="col"
+                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+              >
+                Machine
+              </th>
+              <th
+                scope="col"
+                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+              >
+                Time and date
               </th>
               <th
                 scope="col"
@@ -231,13 +245,13 @@ const GlobalTableReport = ({
                 scope="col"
                 className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
               >
-                ID
+                Operator
               </th>
               <th
                 scope="col"
                 className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
               >
-                Operator
+                ID
               </th>
               <th
                 scope="col"
@@ -249,13 +263,13 @@ const GlobalTableReport = ({
                 scope="col"
                 className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
               >
-                Start
+                Duration
               </th>
               <th
                 scope="col"
                 className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
               >
-                Duration
+                Stop Reason
               </th>
             </tr>
           </thead>
@@ -268,10 +282,19 @@ const GlobalTableReport = ({
                       {log.cycle}
                     </td>
                     <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                      {typeof log?.partId === "object" ? log?.partId.name : ""}
+                      {typeof log?.machineId === "object"
+                        ? log?.machineId.name
+                        : ""}
                     </td>
                     <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                      {log.globalCycle ? log.globalCycle : ""}
+                      {log?.createdAt
+                        ? `${dayjs(log?.createdAt as string).format(
+                            "MM/DD/YYYY HH:mm"
+                          )}`
+                        : ""}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                      {typeof log?.partId === "object" ? log?.partId.name : ""}
                     </td>
                     <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                       {typeof log.operator === "object"
@@ -280,6 +303,9 @@ const GlobalTableReport = ({
                       {typeof log.operator === "object"
                         ? log.operator?.lastName
                         : ""}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                      {log.globalCycle ? log.globalCycle : ""}
                     </td>
                     <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                       {log.status === "Gain" ? (
@@ -292,9 +318,11 @@ const GlobalTableReport = ({
                         </span>
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500"></td>
                     <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                       {log.time.toFixed(2)}s
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                      {log?.stopReason ? log?.stopReason : ""}
                     </td>
                   </tr>
                 )
