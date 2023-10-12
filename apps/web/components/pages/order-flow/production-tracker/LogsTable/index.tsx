@@ -1018,14 +1018,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
-                    <th
-                      scope="col"
-                      className="w-1/12 text-center text-slate-900"
-                    >
+                    <th scope="col" className="w-[10%] pl-10 text-slate-900">
                       <input
                         id={`checkbox-table-search`}
                         type="checkbox"
-                        checked={checkedProduction.length == 10}
+                        checked={checkedProduction.length == 5}
                         className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
                         onClick={(e) => handleSelectAllProduction(e)}
                       />
@@ -1048,7 +1045,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="pl-4 text-slate-900">
+                    <th scope="col" className="w-[10%] text-slate-900">
                       <div className="flex items-center">
                         MACHINE
                         <button
@@ -1066,7 +1063,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="w-1/3 pl-8 py-3 text-slate-900">
+                    <th scope="col" className="w-[40%] py-3 text-slate-900">
                       <div className="flex items-center">
                         PART
                         <button onClick={(e) => handleInputChange(e, "part")}>
@@ -1196,12 +1193,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                 .tz(dayjs(item.createdAt), "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
-                            <td className="pl-4 py-4">
+                            <td className=" py-4">
                               {/* @ts-expect-error */}
                               {item?.machineId.name}
                             </td>
                             <td
-                              className={`pl-8 py-4 text-gray-500 ${
+                              className={` py-4 text-sm text-gray-500 flex flex-col ${
                                 item.jobId ? "text-gray-900" : "text-red-500"
                               }`}
                             >
