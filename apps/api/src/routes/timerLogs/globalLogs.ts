@@ -325,41 +325,46 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     let query = {}
 
     if (locationId) {
-      //@ts-expect-error
       const locationids = locationId
+        //@ts-expect-error
         .split(",")
+        //@ts-expect-error
         .map((e) => new mongoose.Types.ObjectId(e))
       //@ts-expect-error
       query.locationId = { $in: locationids }
     }
     if (factoryId) {
-      //@ts-expect-error
       const factoryids = factoryId
+        //@ts-expect-error
         .split(",")
+        //@ts-expect-error
         .map((e) => new mongoose.Types.ObjectId(e))
       //@ts-expect-error
       query.factoryId = { $in: factoryids }
     }
     if (machineId) {
-      //@ts-expect-error
       const machineids = machineId
+        //@ts-expect-error
         .split(",")
+        //@ts-expect-error
         .map((e) => new mongoose.Types.ObjectId(e))
       //@ts-expect-error
       query.machineId = { $in: machineids }
     }
     if (machineClassId) {
-      //@ts-expect-error
       const machineClassids = machineClassId
+        //@ts-expect-error
         .split(",")
+        //@ts-expect-error
         .map((e) => new mongoose.Types.ObjectId(e))
       //@ts-expect-error
       query.machineClassId = { $in: machineClassids }
     }
     if (partId) {
-      //@ts-expect-error
       const partids = partId
+        //@ts-expect-error
         .split(",")
+        //@ts-expect-error
         .map((e) => new mongoose.Types.ObjectId(e))
       //@ts-expect-error
       query.partId = { $in: partids }
