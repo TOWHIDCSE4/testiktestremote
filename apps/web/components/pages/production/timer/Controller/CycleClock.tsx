@@ -1,5 +1,6 @@
 import { T_ControllerTimer } from "custom-validator"
-import React, { Dispatch } from "react"
+import React, { Dispatch, useEffect, useState } from "react"
+import { hourMinuteSecondMilli } from "../../../../../helpers/timeConverter"
 
 type T_Props = {
   timerClockTimeArray: Array<number | string>
@@ -24,6 +25,13 @@ const CycleClock = ({
   progress,
   isAbleToStart,
 }: T_Props) => {
+  // const [cycleClockInSeconds, setCycleClockInSeconds] = useState(0)
+  // const [cycleClockTimeArray, setCycleClockTimeArray] = useState<Array<number | string>>([])
+
+  // console.log('cycleClockTimeArrayCopy',cycleClockTimeArrayCopy)
+  // useEffect(() => {
+  //   setCycleClockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
+  // }, [cycleClockInSeconds])
   return (
     <div className="timer  dark:bg-dark-blue dark:text-white">
       <div className="flex items-center gap-2 justify-end  dark:bg-dark-blue dark:text-white">
