@@ -19,6 +19,7 @@ module.exports = {
       screens: {
         ipadair: "820px",
         ipadair: "768px",
+        xl3: "1818px",
       },
     },
   },
