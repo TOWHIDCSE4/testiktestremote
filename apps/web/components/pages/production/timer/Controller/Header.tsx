@@ -12,7 +12,7 @@ const Header = ({
   isLoading: boolean
   location: string
 }) => {
-  const [mode, setMode] = React.useState("Dark")
+  const [mode, setMode] = React.useState("")
   const toggleTheme = () => {
     if (mode === "Dark") {
       document.documentElement.classList.remove("dark")
