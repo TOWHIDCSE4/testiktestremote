@@ -130,13 +130,10 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     page,
     sort,
     key,
+    limit,
     startDate = dayjs().startOf("week"),
     endDate = dayjs().endOf("week"),
   } = req.query
-  console.log(
-    "🚀 ~ file: globalLogs.ts:131 ~ globalLogsMulti ~ partId:",
-    partId
-  )
 
   const sortObj = {}
   if (sort && key) {
@@ -276,7 +273,7 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
         .populate("machineId")
         .sort({ ...sortObj })
         .skip(10 * (Number(page) - 1))
-        .limit(10)
+        .limit(limit !== null && limit !== undefined ? Number(limit) : 10)
 
       res.json({
         error: false,
@@ -338,41 +335,46 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
       },
     ]
     if (locationId) {
-      //@ts-expect-error
       const locationids = locationId
+        //@ts-expect-error
         .split(",")
+        //@ts-expect-error
         .map((e) => new mongoose.Types.ObjectId(e))
       //@ts-expect-error
       aggregation[0].$match.locationId = { $in: locationids }
     }
     if (factoryId) {
-      //@ts-expect-error
       const factoryids = factoryId
+        //@ts-expect-error
         .split(",")
+        //@ts-expect-error
         .map((e) => new mongoose.Types.ObjectId(e))
       //@ts-expect-error
       aggregation[0].$match.factoryId = { $in: factoryids }
     }
     if (machineId) {
-      //@ts-expect-error
       const machineids = machineId
+        //@ts-expect-error
         .split(",")
+        //@ts-expect-error
         .map((e) => new mongoose.Types.ObjectId(e))
       //@ts-expect-error
       aggregation[0].$match.machineId = { $in: machineids }
     }
     if (machineClassId) {
-      //@ts-expect-error
       const machineClassids = machineClassId
+        //@ts-expect-error
         .split(",")
+        //@ts-expect-error
         .map((e) => new mongoose.Types.ObjectId(e))
       //@ts-expect-error
       aggregation[0].$match.machineClassId = { $in: machineClassids }
     }
     if (partId) {
-      //@ts-expect-error
       const partids = partId
+        //@ts-expect-error
         .split(",")
+        //@ts-expect-error
         .map((e) => new mongoose.Types.ObjectId(e))
       //@ts-expect-error
       aggregation[0].$match.partId = { $in: partids }
@@ -380,7 +382,9 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     if (startDate && endDate) {
       //@ts-expect-error
       aggregation.$match.createdAt = {
+        //@ts-expect-error
         $gte: new Date(startDate),
+        //@ts-expect-error
         $lt: new Date(endDate),
       }
     }
