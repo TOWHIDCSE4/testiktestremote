@@ -1066,7 +1066,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       <div className="flex items-center">
                         MACHINE
                         <button
-                          onClick={(e) => handleInputChange(e, "machine")}
+                          onClick={(e) => handleInputChange(e, "machineId")}
                         >
                           <svg
                             className="w-3 h-3 ml-1.5"
@@ -1083,7 +1083,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <th scope="col" className="w-[40%] py-3 text-slate-900">
                       <div className="flex items-center">
                         PART
-                        <button onClick={(e) => handleInputChange(e, "part")}>
+                        <button onClick={(e) => handleInputChange(e, "partId")}>
                           <svg
                             className="w-3 h-3 ml-1.5"
                             aria-hidden="true"
@@ -1099,7 +1099,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <th scope="col" className="px-6 py-3 text-slate-900">
                       <div className="flex items-center">
                         ID
-                        <button onClick={(e) => handleInputChange(e, "id")}>
+                        <button
+                          onClick={(e) => handleInputChange(e, "globalCycle")}
+                        >
                           <svg
                             className="w-3 h-3 ml-1.5"
                             aria-hidden="true"
