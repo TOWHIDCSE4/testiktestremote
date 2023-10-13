@@ -11,6 +11,7 @@ import { ArrowDownTrayIcon } from "@heroicons/react/24/outline"
 import { API_URL_TIMER_LOGS } from "../../../../helpers/constants"
 import { hourMinuteSecond } from "../../../../helpers/timeConverter"
 import useGlobalTimerLogsMulti from "../../../../hooks/timerLogs/useGetGlobalTimerLogsMultiFilter"
+import { T_Locations, T_Machine, T_MachineClass } from "custom-validator"
 
 const GlobalTableReport = ({
   data,
@@ -26,8 +27,12 @@ const GlobalTableReport = ({
   startDateRange,
   endDateRange,
   machineClassId,
+  locationData,
+  machineClassData,
+  machineData,
+  newWindowRef,
 }: {
-  job: any
+  job?: any
   city: string
   keyword: string
   sortType: string
@@ -40,6 +45,10 @@ const GlobalTableReport = ({
   startDateRange: string
   endDateRange: string
   partId: string[]
+  locationData: T_Locations[]
+  machineClassData: T_MachineClass[]
+  machineData: T_Machine[]
+  newWindowRef: any
 }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
@@ -125,6 +134,30 @@ const GlobalTableReport = ({
       )
     }
   }, [paginated])
+
+  const handlePrint = () => {
+    if (newWindowRef.current) {
+      newWindowRef?.current?.window.print()
+    }
+  }
+
+  // useEffect for convert portrait to landscape
+  useEffect(() => {
+    var css = "@page { size: landscape; }"
+    var head = document.head || document.getElementsByTagName("head")[0]
+    var style = document.createElement("style")
+
+    style.type = "text/css"
+    style.media = "print"
+
+    if ((style as any).sheet) {
+      ;(style as any).sheet.cssText = css
+    } else {
+      style.appendChild(document.createTextNode(css))
+    }
+
+    head.appendChild(style)
+  }, [])
   console.log("🚀 ~ file: GlobalReport.tsx:75 ~ paginated:", paginated)
   return (
     <>
@@ -134,33 +167,46 @@ const GlobalTableReport = ({
           <ArrowDownTrayIcon className="h-5 w-5 text-gray-400 cursor-pointer" />
           <PrinterIcon
             className="h-5 w-5 text-white cursor-pointer"
-            onClick={() => window.print()}
+            onClick={handlePrint}
           />
         </div>
       </header>
       <main className="px-8">
         <div className="flex justify-between mt-8">
-          <div className="logo-container relative w-[200px] h-[50px]">
+          <div className="logo-container relative w-[150px] h-[30px]">
             <Image src={DarkLogo} fill alt="Logo" />
           </div>
 
           <div className="text-right">
-            <div className="text-sm">
-              <span className="text-gray-800 font-bold">City:</span>{" "}
-              {paginated?.item.locationId.name}
-            </div>
-            <div className="text-sm">
-              <span className="text-gray-800 font-bold">Factory:</span>{" "}
-              {paginated?.item?.factoryId.name}
-            </div>
-            <div className="text-sm">
-              <span className="text-gray-800 font-bold">Machine Class:</span>{" "}
-              {paginated?.item?.machineClassId.name}
-            </div>
-            <div className="text-sm">
-              <span className="text-gray-800 font-bold">Machine:</span>{" "}
-              {paginated?.item?.machineId.name}
-            </div>
+            {locationData.length > 0 && (
+              <div className="text-sm">
+                <span className="text-gray-800 font-bold">City:</span>{" "}
+                {locationData.map((item) => item.name).join(", ")}
+              </div>
+            )}
+            {machineClassData.length > 0 && (
+              <div className="text-sm">
+                <span className="text-gray-800 font-bold">Machine Class:</span>{" "}
+                {machineClassData.map((item) => item.name).join(", ")}
+              </div>
+            )}
+            {machineData.length > 0 && (
+              <div className="text-sm">
+                <span className="text-gray-800 font-bold">Machine:</span>{" "}
+                {machineData.map((item) => item.name).join(", ")}
+              </div>
+            )}
+            {startDateRange && endDateRange && (
+              <div className="text-sm">
+                <span className="text-gray-800 font-bold">Date Range:</span>{" "}
+                {[
+                  dayjs(startDateRange as string).format("MM/DD/YYYY"),
+                  dayjs(endDateRange as string).format("MM/DD/YYYY"),
+                ]
+                  .map((item) => item)
+                  .join(" - ")}
+              </div>
+            )}
             <div className="text-sm">
               <span className="text-gray-800 font-bold">Report:</span>{" "}
               {dayjs
@@ -174,7 +220,7 @@ const GlobalTableReport = ({
             </div>
           </div>
         </div>
-        <h6 className="uppercase text-gray-800 font-bold text-xl mt-10">
+        <h6 className="uppercase text-gray-800 font-bold text-2xl mt-10">
           Totals
         </h6>
         <h5 className="text-md text-gray-800 mt-4">
@@ -183,8 +229,8 @@ const GlobalTableReport = ({
         <h5 className="text-md text-gray-800">
           <b>Total Tons:</b>{" "}
           {paginated?.items
-            ? data.items
-                .reduce(
+            ? data?.items
+                ?.reduce(
                   (acc: number, log: { partId: { tons: any } }) =>
                     acc +
                     (typeof log.partId === "object"
@@ -211,144 +257,162 @@ const GlobalTableReport = ({
             </span>
           ) : null}
         </h5> */}
+
         <h6 className="uppercase text-gray-800 font-bold text-xl mt-8">
           Cycles
         </h6>
-        <table className="min-w-full divide-y divide-gray-300">
-          <thead>
-            <tr>
-              <th
-                scope="col"
-                className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-              >
-                Cycle
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Machine
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Time and date
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Part
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Operator
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                ID
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Status
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Duration
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-              >
-                Stop Reason
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {!isLoading && paginated?.items && paginated?.items?.length > 0 ? (
-              paginated?.items?.map(
-                (log: any, index: Key | null | undefined) => (
-                  <tr key={index}>
-                    <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                      {log.cycle}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                      {typeof log?.machineId === "object"
-                        ? log?.machineId.name
-                        : ""}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                      {log?.createdAt
-                        ? `${dayjs(log?.createdAt as string).format(
-                            "MM/DD/YYYY HH:mm"
-                          )}`
-                        : ""}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                      {typeof log?.partId === "object" ? log?.partId.name : ""}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                      {typeof log.operator === "object"
-                        ? log.operator?.firstName
-                        : ""}{" "}
-                      {typeof log.operator === "object"
-                        ? log.operator?.lastName
-                        : ""}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                      {log.globalCycle ? log.globalCycle : ""}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                      {log.status === "Gain" ? (
-                        <span className="font-bold text-green-500">
-                          {log.status}
-                        </span>
-                      ) : (
-                        <span className="font-bold text-red-500">
-                          {log.status}
-                        </span>
-                      )}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                      {log.time.toFixed(2)}s
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                      {log?.stopReason ? log?.stopReason : ""}
-                    </td>
-                  </tr>
-                )
-              )
-            ) : !isLoading &&
-              paginated?.items &&
-              paginated?.items?.length === 0 ? (
-              <tr className="relative">
-                <td className="py-3 text-sm text-gray-500 absolute right-0 border-b border-gray-200 flex w-full justify-center">
-                  No paginated
-                </td>
-              </tr>
-            ) : null}
-            {isLoading ? (
-              <div className="flex items-center justify-center my-4">
-                <div
-                  className="animate-spin inline-block w-5 h-5 border-2 border-current border-t-transparent text-dark-blue rounded-full my-1"
-                  role="status"
-                  aria-label="loading"
+        {paginated?.items?.length > 0 ? (
+          <table className="min-w-full divide-y divide-gray-300 mt-4">
+            <thead>
+              <tr>
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                 >
-                  <span className="sr-only">Loading...</span>
+                  Cycle
+                </th>
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Start Time
+                </th>
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Machine
+                </th>
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Part
+                </th>
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Operator
+                </th>
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  ID
+                </th>
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Status
+                </th>
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Duration
+                </th>
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
+                  Stop Reason
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {!isLoading &&
+              paginated?.items &&
+              paginated?.items?.length > 0 ? (
+                paginated?.items?.map(
+                  (log: any, index: Key | null | undefined) => (
+                    <tr key={index}>
+                      <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                        {log.cycle}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                        {log?.createdAt
+                          ? `${dayjs(log?.createdAt as string).format(
+                              "MM/DD/YYYY"
+                            )}`
+                          : ""}{" "}
+                        <span className="font-bold">
+                          {log?.createdAt
+                            ? `${dayjs(log?.createdAt as string).format(
+                                "HH:mm"
+                              )}`
+                            : ""}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                        {typeof log?.machineId === "object"
+                          ? log?.machineId.name
+                          : ""}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                        {typeof log?.partId === "object"
+                          ? log?.partId.name
+                          : ""}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                        {typeof log.operator === "object"
+                          ? log.operator?.firstName
+                          : ""}{" "}
+                        {typeof log.operator === "object"
+                          ? log.operator?.lastName
+                          : ""}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                        {log.globalCycle ? log.globalCycle : ""}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                        {log.status === "Gain" ? (
+                          <span className="font-bold text-green-500">
+                            {log.status}
+                          </span>
+                        ) : (
+                          <span className="font-bold text-red-500">
+                            {log.status}
+                          </span>
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                        {log.time.toFixed(2)}s
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                        {log?.stopReason ? log?.stopReason : ""}
+                      </td>
+                    </tr>
+                  )
+                )
+              ) : !isLoading &&
+                paginated?.items &&
+                paginated?.items?.length === 0 ? (
+                <tr className="relative">
+                  <td className="py-3 text-sm text-gray-500 absolute right-0 border-b border-gray-200 flex w-full justify-center">
+                    No paginated
+                  </td>
+                </tr>
+              ) : null}
+              {isLoading ? (
+                <div className="flex items-center justify-center my-4">
+                  <div
+                    className="animate-spin inline-block w-5 h-5 border-2 border-current border-t-transparent text-dark-blue rounded-full my-1"
+                    role="status"
+                    aria-label="loading"
+                  >
+                    <span className="sr-only">Loading...</span>
+                  </div>
                 </div>
-              </div>
-            ) : null}
-          </tbody>
-        </table>
+              ) : null}
+            </tbody>
+          </table>
+        ) : (
+          <div className="w-full text-center pt-32">
+            <h2>No Data</h2>
+          </div>
+        )}
       </main>
     </>
   )

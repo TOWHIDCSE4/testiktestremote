@@ -7,7 +7,7 @@ import moment from "moment"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 // import { usePathname } from "next/navigation"
-import React, { Dispatch, useEffect, useState } from "react"
+import React, { Dispatch, useEffect, useState, useRef } from "react"
 // import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGlobalTimerLogsMultiFilter"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import {
@@ -93,6 +93,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [machineCounter, setMachineCounter] = useState<number>()
   const [partsCounter, setPartsCounter] = useState<number>(0)
   const today = moment()
+  const myRef = useRef<NewWindow | null>(null)
 
   useEffect(() => {
     // Function to update the window width when the window is resized
@@ -496,6 +497,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   //     </div>
   //   );
   // };
+  console.log("dateRange", dateRange)
 
   useEffect(() => {
     const filterInputs = () => {
@@ -966,12 +968,14 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               <NewWindow
                 copyStyles={true}
                 features={{
-                  width: 900,
+                  width: paginated?.items?.length! > 0 ? 1440 : 500,
                   height: 1000,
                 }}
                 center="parent"
                 onUnload={() => setShowReport(false)}
                 title={"Report"}
+                name="Report"
+                ref={myRef}
               >
                 <GlobalTableReport
                   data={paginated}
@@ -986,8 +990,36 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   partId={partsSelected}
                   machineClassId={machineClass}
                   locationId={city}
-                  startDateRange={""}
-                  endDateRange={""}
+                  locationData={
+                    locations?.items?.filter((item) =>
+                      city.includes(item._id ?? "")
+                    ) ?? []
+                  }
+                  machineClassData={
+                    machineClasses?.items?.filter((item: T_MachineClass) =>
+                      machineClass.includes(item._id ?? "")
+                    ) ?? []
+                  }
+                  machineData={
+                    machines?.items?.filter((item: T_Machine) =>
+                      machine.includes((item._id as string) ?? "")
+                    ) ?? []
+                  }
+                  startDateRange={
+                    dateRange.length > 0
+                      ? dayjs(dateRange[0])
+                          .startOf("day")
+                          .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+                      : ""
+                  }
+                  endDateRange={
+                    dateRange.length > 0
+                      ? dayjs(dateRange[1])
+                          .endOf("day")
+                          .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+                      : ""
+                  }
+                  newWindowRef={myRef}
                 />
               </NewWindow>
             )}
