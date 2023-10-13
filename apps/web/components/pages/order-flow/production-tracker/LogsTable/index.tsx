@@ -361,8 +361,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setEndDateRange,
     setPartId,
   } = useGlobalTimerLogsMulti(city, sortType, keyword, process)
-  const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
-
+  const numberOfPages = Math.ceil((paginated?.itemCount as number) / 10)
   useEffect(() => {
     setMachineClassId(machineClass)
     setPage(1)
