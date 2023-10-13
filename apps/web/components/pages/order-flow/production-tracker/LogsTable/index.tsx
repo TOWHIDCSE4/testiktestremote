@@ -117,6 +117,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     const newValue = e.currentTarget.value
     setKeyword(key)
     setSortType(sortType === "asc" ? "desc" : "asc")
+    console.log(key, sortType)
   }
 
   const handleProcess = () => {
