@@ -242,9 +242,9 @@ const Controller = ({ timerId }: { timerId: string }) => {
             }
             const interval: any = setInterval(() => {
               setCycleClockInSeconds(
-                (previousState: number) => previousState + 0.01
+                (previousState: number) => previousState + 0.1
               )
-            }, 7)
+            }, 100)
             setCycleClockIntervalId(interval)
             setIsCycleClockRunning(true)
             setIsCycleClockStopping(false)

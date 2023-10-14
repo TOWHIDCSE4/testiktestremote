@@ -64,6 +64,13 @@ const Timer = ({
     id: typeof timer.partId === "string" && timer.partId ? timer.partId : "",
     name: timer?.part ? timer?.part?.name : "",
   })
+  let interval: any
+  useEffect(() => {
+
+    return () => {
+        clearInterval(interval);
+    };
+  }, []);
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
@@ -101,7 +108,7 @@ const Timer = ({
     return value
   }
   const runCycle = () => {
-    const interval: any = setInterval(() => {
+    interval = setInterval(() => {
       setCycleClockInSeconds((previousState: number) => previousState + 1)
     }, 1000)
     setCycleClockIntervalId(interval)

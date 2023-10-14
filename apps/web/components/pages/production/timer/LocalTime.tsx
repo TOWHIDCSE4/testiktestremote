@@ -15,6 +15,7 @@ const LocalTime = ({
     []
   )
   const [intervalId, setIntervalId] = useState<number>(0)
+  let interval: any
   useEffect(() => {
     if (timeZone) {
       const localeTimeInSeconds = dayjs
@@ -30,7 +31,7 @@ const LocalTime = ({
       )
       setTimeInSeconds(totalSecondsPass)
     }
-    return () => clearInterval(intervalId)
+    return () => clearInterval(interval)
   }, [timeZone])
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const LocalTime = ({
   }, [timeInSeconds])
 
   const runLocalTime = () => {
-    const interval: any = setInterval(() => {
+    interval = setInterval(() => {
       setTimeInSeconds((previousState: number) => previousState + 1)
     }, 1000)
     setIntervalId(interval)
@@ -46,7 +47,7 @@ const LocalTime = ({
 
   useEffect(() => {
     runLocalTime()
-  }, [])
+  }, [timeZone])
   return (
     <div className="rounded-md bg-white shadow p-2 text-center">
       <h5 className="text-lg text-gray-700 uppercase font-bold">
