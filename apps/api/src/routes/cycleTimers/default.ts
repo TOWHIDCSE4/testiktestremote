@@ -63,6 +63,7 @@ export const getCycleTimer = async (req: Request, res: Response) => {
 export const addCycleTimer = async (req: Request, res: Response) => {
   const io = getIo()
   const { timerId } = req.body
+  io.emit(`timer-${timerId}`, { action: "pre-add" })
   if (timerId) {
     const newCycleTimer = new CycleTimer({
       timerId,

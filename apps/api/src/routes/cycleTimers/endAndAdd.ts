@@ -14,6 +14,9 @@ export const endAndAdd = async (req: Request, res: Response) => {
   const io = getIo()
   const { timerId } = req.body
   try {
+    io.emit(`timer-${timerId}`, {
+      action: "pre-endAndAdd",
+    })
     if (timerId) {
       await CycleTimers.findOneAndUpdate(
         { timerId, endAt: null },

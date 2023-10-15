@@ -10,6 +10,7 @@ import { getIo } from "../../config/setup-socket"
 export const endByTimerId = async (req: Request, res: Response) => {
   const io = getIo()
   const { timerId } = req.body
+  io.emit(`timer-${timerId}`, { action: "pre-end" })
   try {
     if (timerId) {
       const getExistingCycleTimer = await CycleTimers.find({
