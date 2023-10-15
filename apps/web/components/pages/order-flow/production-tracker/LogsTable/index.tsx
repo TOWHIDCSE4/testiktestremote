@@ -308,8 +308,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setEndDateRange,
     setPartId,
   } = useGlobalTimerLogsMulti(city, sortType, keyword, process)
-  const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
-
+  const numberOfPages = Math.ceil((paginated?.itemCount as number) / 10)
   useEffect(() => {
     setMachineClassId(machineClass)
     setPage(1)
@@ -323,7 +322,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   useEffect(() => {
     setPartId(partsSelected)
     setPage(1)
-  }, [partsSelected, setPartId])
+  }, [parts, setPartId])
 
   // useEffect(() => {
   //   setStartDateRange(dateRange)
@@ -848,20 +847,29 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       renderValue={() => `${machineCounter} selected`}
                       MenuProps={MenuProps}
                     >
-                      {machines?.items?.map(
-                        (item: T_Machine, index: number) => (
-                          <MenuItem
-                            key={index}
-                            // value={[item._id, item.name ] as string[]}
-                            value={item._id as string}
-                          >
-                            <ListItemText primary={item.name} />
-                            <Checkbox
-                              //@ts-expect-error
-                              checked={machine.includes(item._id)}
-                            />
-                          </MenuItem>
+                      {machines &&
+                      machines.items &&
+                      machines.items.length > 0 ? (
+                        machines?.items?.map(
+                          (item: T_Machine, index: number) => (
+                            <MenuItem
+                              key={index}
+                              // value={[item._id, item.name ] as string[]}
+                              value={item._id as string}
+                            >
+                              <ListItemText primary={item.name} />
+                              <Checkbox
+                                //@ts-expect-error
+                                checked={machine.includes(item._id)}
+                              />
+                            </MenuItem>
+                          )
                         )
+                      ) : (
+                        // Render "No data found" when no data is available
+                        <MenuItem disabled>
+                          <ListItemText primary="No data found" />
+                        </MenuItem>
                       )}
                     </Select>
                   </FormControl>
@@ -907,19 +915,27 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     >
                       {
                         //@ts-expect-error
-                        parts?.items?.map((item: T_Part, index: number) => (
-                          <MenuItem
-                            key={index}
-                            // value={[item._id, item.name ] as string[]}
-                            value={item._id as string}
-                          >
-                            <ListItemText primary={item.name} />
-                            <Checkbox
-                              //@ts-expect-error
-                              checked={partsSelected.includes(item._id)}
-                            />
+                        parts && parts.items && parts.items.length > 0 ? (
+                          //@ts-expect-error
+                          parts.items.map((item, index) => (
+                            <MenuItem
+                              key={index}
+                              // value={[item._id, item.name ] as string[]}
+                              value={item._id as string}
+                            >
+                              <ListItemText primary={item.name} />
+
+                              <Checkbox
+                                checked={partsSelected.includes(item._id)}
+                              />
+                            </MenuItem>
+                          ))
+                        ) : (
+                          // Render "No data found" when no data is available
+                          <MenuItem disabled>
+                            <ListItemText primary="No data found" />
                           </MenuItem>
-                        ))
+                        )
                       }
                     </Select>
                   </FormControl>
@@ -1063,7 +1079,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       <div className="flex items-center">
                         MACHINE
                         <button
-                          onClick={(e) => handleInputChange(e, "machine")}
+                          onClick={(e) => handleInputChange(e, "machineId")}
                         >
                           <svg
                             className="w-3 h-3 ml-1.5"
@@ -1080,7 +1096,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <th scope="col" className="w-[40%] py-3 text-slate-900">
                       <div className="flex items-center">
                         PART
-                        <button onClick={(e) => handleInputChange(e, "part")}>
+                        <button onClick={(e) => handleInputChange(e, "partId")}>
                           <svg
                             className="w-3 h-3 ml-1.5"
                             aria-hidden="true"
@@ -1096,7 +1112,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <th scope="col" className="px-6 py-3 text-slate-900">
                       <div className="flex items-center">
                         ID
-                        <button onClick={(e) => handleInputChange(e, "id")}>
+                        <button
+                          onClick={(e) => handleInputChange(e, "globalCycle")}
+                        >
                           <svg
                             className="w-3 h-3 ml-1.5"
                             aria-hidden="true"

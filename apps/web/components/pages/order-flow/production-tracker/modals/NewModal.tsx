@@ -323,7 +323,7 @@ const NewModal = ({
                         >
                           <div className="relative w-full">
                             <Combobox.Input
-                              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
+                              className={`block w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
                               displayValue={(selected: {
                                 id: string
                                 name: string
@@ -350,7 +350,7 @@ const NewModal = ({
                             </Combobox.Button>
 
                             {filteredParts && filteredParts.length > 0 ? (
-                              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                              <Combobox.Options className="absolute z-[10000] mt-1 max-h-28 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                 {filteredParts.map(
                                   (item: T_Part, index: number) => (
                                     <Combobox.Option

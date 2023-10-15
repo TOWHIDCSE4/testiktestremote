@@ -115,37 +115,37 @@ const TabTable = ({
           </div>
         </div>
       ) : !jobs?.error && jobs?.itemCount && jobs?.itemCount > 0 ? (
-        <table className="w-full divide-y divide-gray-300">
+        <table className="w-full divide-y divide-gray-300 md:table-fixed">
           <thead>
             <tr>
               <th scope="col" className="w-4"></th>
               <th
                 scope="col"
-                className="py-3.5 pl-4 md:pl-7 lg:pl-9 text-left text-sm font-semibold text-gray-900 w-24 uppercase"
+                className="py-3.5 md:pl-[1.6rem] text-left text-sm font-semibold text-gray-900 md:w-[4rem] uppercase"
               >
                 User
               </th>
               <th
                 scope="col"
-                className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase pl-4 w-28"
+                className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase md:pl-4 md:w-20"
               >
-                <a href="#" className="group w-[8rem] inline-flex">
+                <a href="#" className="group inline-flex">
                   Factory
                 </a>
               </th>
               <th
                 scope="col"
-                className="pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 w-28 uppercase"
+                className="md:pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 md:w-[9.5rem] xl:w-[12.5rem] 2xl:w-[13rem] xl3:w-[14.5rem] uppercase"
               >
-                <a href="#" className="group w-[15rem] inline-flex">
+                <a href="#" className="group inline-flex">
                   Name
                 </a>
               </th>
               <th
                 scope="col"
-                className="pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 w-28 uppercase"
+                className="pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 md:w-[12rem] xl:w-40 2xl:w-[12.5rem] xl3:w-[14.5rem] uppercase"
               >
-                <a href="#" className="group w-[15rem] inline-flex">
+                <a href="#" className="group inline-flex">
                   Part
                 </a>
               </th>
@@ -159,7 +159,7 @@ const TabTable = ({
               </th> */}
               <th
                 scope="col"
-                className="pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 w-28 uppercase"
+                className="py-3.5 text-left text-sm font-semibold text-gray-900 md:w-[3rem] uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Count
@@ -167,7 +167,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 w-28 uppercase"
+                className="md:pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 md:w-20 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Priority
@@ -175,7 +175,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 w-28 uppercase"
+                className="md:pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 md:w-28 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Due
@@ -183,11 +183,11 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="relative py-3.5 pl-4 pr-4 sm:pr-6 lg:pr-8 w-20 text-center"
+                className="relative py-3.5 md:pl-4 md:w-10 text-center"
               >
                 {locked ? (
                   <LockClosedIcon
-                    className="w-[1.5rxxem] h-[1.5rem]"
+                    className="w-[1.5rem] h-[1.5rem]"
                     onClick={() => toggleLock()}
                   />
                 ) : (
@@ -219,7 +219,7 @@ const TabTable = ({
                         <ChevronRightIcon className="w-4 h-4 stroke-2 stroke-blue-950" />
                       )}
                     </td>
-                    <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-6">
                       <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
                         {typeof job?.user === "object" &&
                         job?.user?.profile?.photo ? (
