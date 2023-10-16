@@ -35,18 +35,19 @@ import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer
 import { useQueryClient } from "@tanstack/react-query"
 import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTimerByTimerId"
 import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
+import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import { Socket } from "socket.io-client"
 import { initializeSocket } from "../../../../../helpers/socket"
 
 const Controller = ({
   timerId,
-  // isCycleClockRunning: isCycleClockRunning,
-  // cycleClockInSeconds,
-  // endAddCycleTimer,
-  // isEndAddCycleTimerLoading,
-  // endCycleTimer,
-  // isEndCycleTimerLoading
-}: {
+}: // isCycleClockRunning: isCycleClockRunning,
+// cycleClockInSeconds,
+// endAddCycleTimer,
+// isEndAddCycleTimerLoading,
+// endCycleTimer,
+// isEndCycleTimerLoading
+{
   timerId: string
   // cycleClockTimeArray?: any
   // isCycleClockRunning?: any
@@ -70,7 +71,7 @@ const Controller = ({
     useAddControllerTimer()
   const { mutate: addCycleTimer, isLoading: isAddCycleTimerLoading } =
     useAddCycleTimer()
-    const { mutate: endAddCycleTimer, isLoading: isEndAddCycleTimerLoading } =
+  const { mutate: endAddCycleTimer, isLoading: isEndAddCycleTimerLoading } =
     useEndAddCycleTimer()
   const { mutate: endControllerTimer, isLoading: isEndControllerTimerLoading } =
     useEndControllerTimer()
@@ -114,6 +115,8 @@ const Controller = ({
     Array<number | string>
   >([])
 
+  const [updateJob, setUpdateJob] = useState<boolean>(false)
+  const [jobUpdateId, setJobUpdateId] = useState<string>("")
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
     useState(false)
   const [isCycleClockStarting, setIsCycleClockStarting] = useState(false)
@@ -134,16 +137,15 @@ const Controller = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     socket = initializeSocket()!
     const runSocket = (data: any) => {
-
-      if(data.action === "add"){
+      if (data.action === "add") {
         setIsCycleClockRunning(true)
         runIntervalClock()
       }
-      if(data.action === "endAndAdd"){
+      if (data.action === "endAndAdd") {
         setIsCycleClockRunning(true)
         runIntervalClock()
       }
-      if(data.action === "end"){
+      if (data.action === "end") {
         stopInterval()
       }
     }
@@ -155,13 +157,12 @@ const Controller = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const intervalRef = useRef<any>();
+  const intervalRef = useRef<any>()
   useEffect(() => {
-
     return () => {
-        clearInterval(intervalRef.current);
-    };
-  }, []);
+      clearInterval(intervalRef.current)
+    }
+  }, [])
 
   const currentDate = dayjs
     .tz(
@@ -172,13 +173,12 @@ const Controller = ({
     )
     .format("YYYY-MM-DD HH:mm:ss")
 
-    let interval: any
-    useEffect(() => {
-
-      return () => {
-          clearInterval(interval);
-      };
-    }, []);
+  let interval: any
+  useEffect(() => {
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
 
   useEffect(() => {
     if (cycleClockInSeconds > 0 && progress < 101) {
@@ -222,7 +222,7 @@ const Controller = ({
       setIsTimerControllerEnded(true)
       endControllerTimer(timerId, callBackReq)
       if (isCycleClockRunning) {
-        timeLogCall(jobTimer?.item.jobId,["Unit Created", "Production Ended"])
+        timeLogCall(jobTimer?.item.jobId, ["Unit Created", "Production Ended"])
         setStopReasons([])
         setStopMenu(false)
         setEndMenu(false)
@@ -280,9 +280,15 @@ const Controller = ({
 
   const callBackReqAddTimerLog = {
     onSuccess: (returnData: T_BackendResponse) => {
+      console.log("Returned Data", returnData)
       if (!returnData.error) {
+        if (returnData?.data) {
+        }
       } else {
         toast.error(String(returnData.message))
+        setUpdateJob(true)
+        setJobUpdateId(returnData?.data?._id)
+        console.log("Job Update", updateJob, jobUpdateId)
       }
     },
     onError: (err: any) => {
@@ -296,9 +302,8 @@ const Controller = ({
 
   const runIntervalClock = () => {
     intervalRef.current = setInterval(() => {
-    setCycleClockInSeconds(
-    (previousState: number) => previousState + 1
-    )}, 1000)
+      setCycleClockInSeconds((previousState: number) => previousState + 1)
+    }, 1000)
   }
   const runCycle = (fromDb?: boolean) => {
     if (!isLocationTimeEnded) {
@@ -381,7 +386,7 @@ const Controller = ({
       }, 3000)
     } else {
       endCycleTimer(timerId, callBackReq)
-      timeLogCall(null,stopReasons)
+      timeLogCall(null, stopReasons)
       setTimeout(function () {
         setProgress(100)
         setStopReasons([])
@@ -395,8 +400,6 @@ const Controller = ({
   useEffect(() => {
     sectionDiv.current?.scrollIntoView({ behavior: "smooth" })
   }, [readingMessages])
-
-
 
   useEffect(() => {
     if (cycleTimer?.items && cycleTimer?.items.length > 0 && jobTimer?.item) {
@@ -498,7 +501,7 @@ const Controller = ({
     }
   }, [timerDetailData])
 
-  const timeLogCall = (jobId:any, stopReasons:any) => {
+  const timeLogCall = (jobId: any, stopReasons: any) => {
     addTimerLogs(
       {
         timerId,
@@ -522,23 +525,22 @@ const Controller = ({
   }
 
   useEffect(() => {
-    if(isEndAddCycleTimerLoading){
+    if (isEndAddCycleTimerLoading) {
       stopInterval()
     }
-  }, [isEndAddCycleTimerLoading]);
+  }, [isEndAddCycleTimerLoading])
 
   useEffect(() => {
-    if(isEndCycleTimerLoading){
+    if (isEndCycleTimerLoading) {
       stopInterval()
     }
-  }, [isEndCycleTimerLoading]);
+  }, [isEndCycleTimerLoading])
 
   const stopInterval = () => {
     clearInterval(intervalRef.current)
     setCycleClockInSeconds(0)
     setIsCycleClockRunning(false)
   }
-
 
   return (
     <div className="h-screen overflow-auto 2xl:text-lg  dark:bg-dark-blue dark:text-white">
@@ -553,6 +555,8 @@ const Controller = ({
           isTimerDetailDataLoading={isTimerDetailDataLoading}
           readingMessages={readingMessages}
           sectionDiv={sectionDiv}
+          updateJob={updateJob}
+          jobUpdateId={jobUpdateId}
           jobTimer={jobTimer?.item as T_JobTimer}
           isJobTimerLoading={isJobTimerLoading}
           isCycleClockRunning={isCycleClockRunning}

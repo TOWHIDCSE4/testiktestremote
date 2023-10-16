@@ -79,30 +79,6 @@ export const addTimeLog = async (req: Request, res: Response) => {
           jobId: req.body.jobId,
         }).countDocuments()
         if (targetCountJob && currCountJob === targetCountJob) {
-          const newTimerLog = new TimerLogs({
-            ...req.body,
-            globalCycle: !checkIfHasData
-              ? 100000
-              : (lastTimerLog[0].globalCycle
-                  ? lastTimerLog[0].globalCycle
-                  : 0) + 1,
-          })
-          await newTimerLog.save()
-          await Jobs.findByIdAndUpdate(
-            req.body.jobId,
-            {
-              status: "Testing",
-              updatedAt: Date.now(),
-            },
-            { new: true }
-          )
-          res.json({
-            error: true,
-            item: null,
-            itemCount: null,
-            message: "Target count reached, please change the timer job",
-          })
-        } else if (targetCountJob && currCountJob > targetCountJob) {
           const getStockJob = await Jobs.findOne({
             locationId: req.body.locationId,
             partId: req.body.partId,
@@ -129,6 +105,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
           res.json({
             error: true,
             item: null,
+            data: getStockJob,
             itemCount: null,
             message: "Target count exceeded, log was assigned to stock.",
           })
