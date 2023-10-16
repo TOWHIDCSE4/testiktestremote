@@ -101,6 +101,13 @@ const TabTable = ({
 
     return sum
   }
+  // Handle Pagination
+  function numberPagesFunc(numberOfPages: any) {
+    if (jobs.items.length < 1) {
+      return 1
+    }
+    return numberOfPages ? numberOfPages : 1
+  }
 
   return (
     <>
@@ -477,8 +484,11 @@ const TabTable = ({
                       aria-hidden="true"
                     />
                   </button>
-                  <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                  {/* <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
                     {page} / {numberOfPages ? numberOfPages : 1}
+                  </button> */}
+                  <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                    {page} / {numberPagesFunc(numberOfPages)}
                   </button>
                   <button
                     onClick={() => setPage(page + 1)}
