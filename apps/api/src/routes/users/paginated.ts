@@ -7,10 +7,6 @@ import Users from "../../models/users"
 import * as Sentry from "@sentry/node"
 export const paginated = async (req: Request, res: Response) => {
   const { page, role, locationId, status, name, excludeUser } = req.query
-  console.log(
-    "🚀 ~ file: paginated.ts:10 ~ paginated ~ locationId:",
-    locationId
-  )
   if (page) {
     try {
       const usersCount = await Users.find({
@@ -35,10 +31,6 @@ export const paginated = async (req: Request, res: Response) => {
             : []),
         ],
       }).countDocuments()
-      console.log(
-        "🚀 ~ file: paginated.ts:32 ~ paginated ~ usersCount:",
-        usersCount
-      )
       const getAllUsers = await Users.find({
         ...(role && role !== "null" ? { role: role } : {}),
         ...(locationId && { locationId: locationId }),
@@ -64,8 +56,8 @@ export const paginated = async (req: Request, res: Response) => {
         .sort({
           createdAt: -1,
         })
-        .skip(5 * (Number(page) - 1))
-        .limit(5)
+        .skip(10 * (Number(page) - 1))
+        .limit(10)
       res.json({
         error: false,
         items: getAllUsers,
