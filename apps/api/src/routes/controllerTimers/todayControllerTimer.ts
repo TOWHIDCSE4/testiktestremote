@@ -50,6 +50,7 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
           message: null,
         })
       } else {
+        io.emit(`timer-${timerId}`, { action: `update-operator`, user: user })
         res.json({
           error: false,
           items: [],
