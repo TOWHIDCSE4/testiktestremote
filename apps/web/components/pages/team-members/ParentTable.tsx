@@ -295,18 +295,29 @@ const Content = () => {
       >
         <div className="px-1 w-full pt-2">
           <div className="flex">
-            <div className="flex w-56 sm:flex-none cursor-pointer h-6">
-              <Dropdown menu={{ items }} trigger={["click"]}>
-                <a onClick={(e) => e.preventDefault()}>
-                  <DownOutlined />
-                  <Space className="pl-2 text-[#7F1D1D]">TEAM LISTING</Space>
-                </a>
-              </Dropdown>
+            <div className="flex flex-col w-60 sm:flex-none cursor-pointer h-6">
+              <div className="flex ml-3">
+                <Dropdown menu={{ items }} trigger={["click"]}>
+                  <a onClick={(e) => e.preventDefault()}>
+                    <DownOutlined />
+                    <Space className="pl-2 text-[#7F1D1D]">TEAM LISTING</Space>
+                  </a>
+                </Dropdown>
 
-              <span className="text-lg font-bold flex pl-1">
-                -<p className="pl-1 text-[#172554]">ADMIN</p>
-              </span>
+                <span className="text-lg font-bold flex pl-1">
+                  -<p className="pl-1 text-[#172554]">ADMIN</p>
+                </span>
+              </div>
+              <div className="mt-4 ml-4">
+                <select name="cars" id="cars">
+                  <option value="volvo">Pending</option>
+                  <option value="saab">Active</option>
+                  <option value="mercedes">Rejected</option>
+                  <option value="audi">Archieved</option>
+                </select>
+              </div>
             </div>
+
             <div className="flex px-2 pb-8">
               <div className="flex">
                 <div className="pl-0 space-y-2">
@@ -549,7 +560,7 @@ const Content = () => {
                       <div className="relative mb-3" data-te-input-wrapper-init>
                         <input
                           type="search"
-                          className="peer block bg-slate-100 uppercase ring-1 focus:ring-1 focus:ring-[#172554] ring-gray-400 min-h-[auto] placeholder:text-gray-300 text-black w-40 ml-20 rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
+                          className="peer block bg-slate-100 uppercase ring-1 focus:ring-1 focus:ring-[#172554] ring-gray-400 min-h-[auto] placeholder:text-gray-300 text-black w-40 ml-80 rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
                           id="exampleSearch2"
                           placeholder="Search User"
                         />
