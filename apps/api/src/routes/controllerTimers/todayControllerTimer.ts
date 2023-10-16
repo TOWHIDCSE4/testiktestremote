@@ -11,10 +11,13 @@ import isProductionTimeActive from "../../helpers/isProductionTimeActive"
 import Locations from "../../models/location"
 import Timers from "../../models/timers"
 import * as Sentry from "@sentry/node"
+import { getIo } from "../../config/setup-socket"
 
 export const todayControllerTimer = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
+  const io = getIo()
+  const user = res.locals.user as string
   const { id, timerId } = req.query
   if (id || timerId) {
     try {
@@ -39,6 +42,7 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
           ...(id && { _id: id }),
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
         })
+        io.emit(`timer-${timerId}`, { action: `update-operator`, user: user })
         res.json({
           error: false,
           items: getAllActiveControllerTimerToday,
