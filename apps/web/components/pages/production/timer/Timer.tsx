@@ -6,8 +6,10 @@ import {
   T_Timer,
   T_User,
 } from "custom-validator"
-import React, { Dispatch, useEffect, useState } from "react"
+import React, { Dispatch, useEffect, useState, useRef } from "react"
 import useUpdateTimer from "../../../../hooks/timers/useUpdateTimer"
+// import NewWindow from "react-new-window"
+// import OpenController from "./Controller/index"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import DropDownMenu from "./DropDownMenu"
@@ -16,10 +18,14 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import useGetCycleTimerRealTime from "../../../../hooks/timers/useGetCycleTimerRealTime"
-import { hourMinuteSecond } from "../../../../helpers/timeConverter"
+import { hourMinuteSecondMilli } from "../../../../helpers/timeConverter"
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import combineClasses from "../../../../helpers/combineClasses"
+import useEndAddCycleTimer from "../../../../hooks/timers/useEndAddCycleTimer"
+import { initializeSocket } from "../../../../helpers/socket"
+import { Socket } from "socket.io-client"
+import useEndCycleTimer from "../../../../hooks/timers/useEndCycleTimer"
 
 type T_Props = {
   timer: T_Timer
@@ -46,6 +52,10 @@ const Timer = ({
   dayjs.extend(timezone.default)
   const queryClient = useQueryClient()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
+  // const { mutate: endAddCycleTimer, isLoading: isEndAddCycleTimerLoading } =
+  //   useEndAddCycleTimer()
+  //   const { mutate: endCycleTimer, isLoading: isEndCycleTimerLoading } =
+  //   useEndCycleTimer()
   const { data: totalTonsUnit, isLoading: isTotalTonsUnitCreated } =
     useTotalTonsUnit({
       locationId: timer.locationId as string,
@@ -58,17 +68,48 @@ const Timer = ({
   const [cycleClockTimeArray, setCycleCockTimeArray] = useState<
     Array<number | string>
   >([])
-  const [cycleClockIntervalId, setCycleClockIntervalId] = useState<number>(0)
+  // const [showController, setShowController] = useState(false)
+  // const [cycleClockIntervalId, setCycleClockIntervalId] = useState<number>(0)
   const [partQuery, setPartQuery] = useState("")
   const [selectedPart, setSelectedPart] = useState({
     id: typeof timer.partId === "string" && timer.partId ? timer.partId : "",
     name: timer?.part ? timer?.part?.name : "",
   })
-  let interval: any
+  let socket: Socket
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    socket = initializeSocket()!
+    const runSocket = (data: any) => {
+
+      if(data.action === "add"){
+        stopInterval()
+        setIsCycleClockRunning(true)
+        runCycle()
+
+      }
+      if(data.action === "endAndAdd"){
+        stopInterval()
+        setIsCycleClockRunning(true)
+        runCycle()
+      }
+      if(data.action === "end"){
+        stopInterval()
+      }
+    }
+    socket?.on(`timer-${timer._id}`, runSocket)
+
+    return () => {
+      socket?.off(`timer-${timer._id}`, runSocket)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const intervalRef = useRef<any>();
   useEffect(() => {
 
     return () => {
-        clearInterval(interval);
+        clearInterval(intervalRef.current);
     };
   }, []);
   const callBackReq = {
@@ -90,6 +131,7 @@ const Timer = ({
     },
   }
   const openController = () => {
+    // setShowController(true)
     window.open(
       `/production/timer/controller/${timer._id}`,
       "Timer Controller",
@@ -108,13 +150,13 @@ const Timer = ({
     return value
   }
   const runCycle = () => {
-    interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setCycleClockInSeconds((previousState: number) => previousState + 1)
     }, 1000)
-    setCycleClockIntervalId(interval)
+    // setCycleClockIntervalId(interval)
   }
   useEffect(() => {
-    setCycleCockTimeArray(hourMinuteSecond(cycleClockInSeconds))
+    setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
   }, [cycleClockInSeconds])
   useEffect(() => {
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
@@ -131,7 +173,7 @@ const Timer = ({
         setIsCycleClockRunning(true)
       }
     } else {
-      clearInterval(cycleClockIntervalId)
+      // clearInterval(cycleClockIntervalId)
       setIsCycleClockRunning(false)
     }
   }, [cycleTimer])
@@ -163,6 +205,25 @@ const Timer = ({
       mutate({ ...timerCopy, partId: id }, callBackReq)
     }
   }
+
+  // useEffect(() => {
+  //   if(isEndAddCycleTimerLoading){
+  //     stopInterval()
+  //   }
+  // }, [isEndAddCycleTimerLoading]);
+
+  // useEffect(() => {
+  //   if(isEndCycleTimerLoading){
+  //     stopInterval()
+  //   }
+  // }, [isEndCycleTimerLoading]);
+
+  const stopInterval = () => {
+    clearInterval(intervalRef.current)
+    setCycleClockInSeconds(0)
+    setIsCycleClockRunning(false)
+  }
+
   return (
     <div
       key={timer._id as string}
@@ -321,8 +382,30 @@ const Timer = ({
           Live Camera
         </button>
       </div>
+      {/* {showController && (
+        <NewWindow
+          copyStyles={true}
+          features={{
+            width: 1200,
+            height: 900,
+          }}
+          center="parent"
+          // onUnload={() => setShowController(false)}
+          title={`/production/timer/controller/${timer._id}`}
+          name={`${timer._id}`}
+        >
+          <OpenController
+            timerId={timer._id as string}
+            isCycleClockRunning={isCycleClockRunning}
+            cycleClockInSeconds={cycleClockInSeconds}
+            endAddCycleTimer={endAddCycleTimer}
+            isEndAddCycleTimerLoading={isEndAddCycleTimerLoading}
+            endCycleTimer={endCycleTimer}
+            isEndCycleTimerLoading={isEndCycleTimerLoading}
+          />
+        </NewWindow>
+      )} */}
     </div>
   )
 }
-
 export default Timer
