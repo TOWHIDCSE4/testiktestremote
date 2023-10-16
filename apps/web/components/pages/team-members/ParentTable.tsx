@@ -29,6 +29,9 @@ import useUpdateUser from "../../../hooks/users/useUpdateUser"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import ConfirmationModal from "./modals/ConfirmationModal"
+import { DownOutlined } from "@ant-design/icons"
+import type { MenuProps } from "antd"
+import { Dropdown, Space } from "antd"
 import DeleteModal from "./modals/DeleteModal"
 import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
@@ -48,6 +51,8 @@ const ARR_USER_STATUSES = [
   USER_STATUSES.Blocked,
   USER_STATUSES.Rejected,
 ]
+
+type MenuItem = string
 
 const Content = () => {
   dayjs.extend(utc.default)
@@ -96,7 +101,7 @@ const Content = () => {
       }
     ) => state
   )
-  const [filterBy, setFilterBy] = useState("All")
+  const [filterBy, setFilterBy] = useState("Role")
   const {
     data: paginated,
     isLoading: isPaginatedLoading,
@@ -178,7 +183,6 @@ const Content = () => {
             }
           }}
         >
-          <option value="">Select Role</option>
           {ARR_USER_ROLES.map((item: string, index: number) => {
             return <option key={index}>{item}</option>
           })}
@@ -262,6 +266,33 @@ const Content = () => {
     setCheckedProduction(updatedArray)
   }
 
+  const items: MenuProps["items"] = [
+    {
+      label: "Admin",
+      key: "0",
+    },
+    {
+      label: "HR",
+      key: "1",
+    },
+    {
+      label: "Production",
+      key: "2",
+    },
+    {
+      label: "Corporate",
+      key: "3",
+    },
+    {
+      label: "Personnel",
+      key: "4",
+    },
+    {
+      label: "Dev",
+      key: "5",
+    },
+  ]
+
   return (
     <>
       <div
@@ -269,22 +300,93 @@ const Content = () => {
           paginated ? "overflow-hidden" : "overflow-x-auto"
         }`}
       >
-        <div className="px-1 w-full pt-4">
-          <div className="flex px-2">
+        <div className="px-1 w-full pt-2">
+          <div className="flex px-2 pb-14">
+            <div className="flex w-56sm:flex-none">
+              <Dropdown menu={{ items }} trigger={["click"]}>
+                <a onClick={(e) => e.preventDefault()}>
+                  <DownOutlined />
+                  <Space className="pl-2 text-[#7F1D1D]">TEAM LISTING</Space>
+                </a>
+              </Dropdown>
+              <div className="">
+                <span className="text-lg font-bold flex pl-1">
+                  -<p className="pl-1 text-[#172554]">ADMIN</p>
+                </span>
+              </div>
+            </div>
+            <div className="flex">
+              <div className="pl-0 space-y-2">
+                <div className="flex justify-start text-gray-900 ml-14">
+                  <span className="text-[#7F1D1D]">City:</span>
+                  <div className="border-b-[3px] border-[#172554] w-60 text-center">
+                    <span>Seguin, Conroe, Gunter</span>
+                  </div>
+                </div>
+                <div className="flex text-gray-900 ml-8">
+                  <span className="text-[#7F1D1D]">Factory:</span>
+                  <div className="border-b-[3px] border-[#172554] w-60 text-center">
+                    <span>Full</span>
+                  </div>
+                </div>
+                <div className="flex text-gray-900">
+                  <span className="text-[#7F1D1D]">Department:</span>
+                  <div className="border-b-[3px] border-[#172554] w-60 text-center">
+                    <span>Full</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="ml-8 space-y-5">
+                <div className="flex justify-end text-end text-gray-900 ml-14">
+                  <span className="text-gray-500">
+                    Add New
+                    <br /> Team Member
+                  </span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    className="w-8 ml-2 mt-2 text-white bg-[#172554] h-8 rounded-md"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"
+                    />
+                  </svg>
+                </div>
+                <div className="flex justify-end text-gray-900 ml-8">
+                  <span className="py-1.5 px-3 border-1 bg-[#7F1D1D] border-black rounded-lg text-white">
+                    Create Team List
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* <div className="flex flex-col whitespace-nowrap justify-between">
+              <div className="w-full flex justify-center items-center"></div>
+            </div>
             <div className="flex flex-col whitespace-nowrap justify-between">
               <div className="w-full flex justify-center items-center"></div>
             </div>
             <div>
+              
+            </div>
+
+            <div className="hidden">
               <label
                 htmlFor="filterBy"
                 className="block text-sm font-medium text-gray-900"
               >
-                Filter By
+                Team Listing
               </label>
               <select
                 id="filterBy"
                 name="filterBy"
-                className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
+                className="mt-2 block w-full rounded-md border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
                 onChange={(e) => setFilterBy(e.target.value)}
               >
                 <option>All</option>
@@ -292,37 +394,19 @@ const Content = () => {
                 {userProfile?.item.role === "Super" && (
                   <option>Location</option>
                 )}
-                <option>Role</option>
+                <option className="flex">Team Listing</option>
               </select>
             </div>
-            <div>
+            <div className="flex">
+            {filterInputs()}
               <label
                 htmlFor="location"
                 className="block text-sm font-medium text-gray-900"
               >
-                {filterBy}
+                Team Listing
               </label>
-              {filterInputs()}
-            </div>
-            <div>
-              <label
-                htmlFor="filterBy"
-                className="block text-sm font-medium text-gray-900"
-              >
-                Search Name
-              </label>
-              <input
-                type="text"
-                name="search"
-                className="block w-full mt-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6"
-                onChange={(e) => {
-                  setName(e.target.value)
-                  if (storeSession?.role !== "Super" || "Administrator") {
-                    setLocationId(userProfile?.item?.locationId as string)
-                  }
-                }}
-              />
-            </div>
+              
+            </div> */}
           </div>
         </div>
         {isPaginatedLoading ? (
@@ -510,6 +594,7 @@ const Content = () => {
                         data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
                         aria-expanded={isAccordionOpen}
                         aria-controls={`accordion-arrow-icon-body-${idx}`}
+                        aria-colspan={6}
                         onClick={() =>
                           toggleAccordion(`accordion-arrow-icon-body-${idx}`)
                         }
