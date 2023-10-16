@@ -53,6 +53,8 @@ const Content = () => {
   const queryClient = useQueryClient()
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
+  const [selectedColor, setSelectedColor] = useState("text-yellow-900")
+  const [selectedValue, setSelectedValue] = useState("Pending")
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
   const [action, setAction] = useState<T_UserStatus | null>(null)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -286,6 +288,20 @@ const Content = () => {
     },
   ]
 
+  const handleSelectChange = (event: any) => {
+    setSelectedColor(event.target.value)
+    setSelectedValue(event.target.value)
+    if (event.target.value === "Pending") {
+      setSelectedColor("text-yellow-900")
+    } else if (event.target.value === "Active") {
+      setSelectedColor("text-green-900")
+    } else if (event.target.value === "Rejected") {
+      setSelectedColor("text-red-900")
+    } else if (event.target.value === "Archived") {
+      setSelectedColor("text-yellow-600")
+    }
+  }
+
   return (
     <>
       <div
@@ -293,8 +309,8 @@ const Content = () => {
           paginated ? "overflow-hidden" : "overflow-x-auto"
         }`}
       >
-        <div className="px-1 w-full pt-2">
-          <div className="flex">
+        <div className="px-1 w-full pt-2 ">
+          <div className="flex justify-between">
             <div className="flex flex-col w-60 sm:flex-none cursor-pointer h-6">
               <div className="flex ml-3">
                 <Dropdown menu={{ items }} trigger={["click"]}>
@@ -305,22 +321,83 @@ const Content = () => {
                 </Dropdown>
 
                 <span className="text-lg font-bold flex pl-1">
-                  -<p className="pl-1 text-[#172554]">ADMIN</p>
+                  -<p className="pl-1 text-[#172554]">{selectedValue}</p>
                 </span>
               </div>
               <div className="mt-4 ml-4">
-                <select name="cars" id="cars">
-                  <option value="volvo">Pending</option>
-                  <option value="saab">Active</option>
-                  <option value="mercedes">Rejected</option>
-                  <option value="audi">Archieved</option>
+                <select
+                  name="cars"
+                  id="cars"
+                  onChange={handleSelectChange}
+                  className={selectedColor}
+                >
+                  <option value="Pending" className="text-yellow-900">
+                    Pending
+                  </option>
+                  <option value="Active" className="text-green-900">
+                    Active
+                  </option>
+                  <option value="Rejected" className="text-red-900">
+                    Rejected
+                  </option>
+                  <option value="Archived" className="text-yellow-600">
+                    Archived
+                  </option>
                 </select>
               </div>
             </div>
-
-            <div className="flex px-2 pb-8">
-              <div className="flex">
-                <div className="pl-0 space-y-2">
+            <div className="pl-0 space-y-2">
+              <div className="flex justify-start text-gray-900 ml-14">
+                <span className="text-[#7F1D1D]">City:</span>
+                <div className="border-b-[3px] border-[#172554] w-60 text-center">
+                  <span>Seguin, Conroe, Gunter</span>
+                </div>
+              </div>
+              <div className="flex text-gray-900 ml-8">
+                <span className="text-[#7F1D1D]">Factory:</span>
+                <div className="border-b-[3px] border-[#172554] w-60 text-center">
+                  <span>All</span>
+                </div>
+              </div>
+              <div className="flex text-gray-900">
+                <span className="text-[#7F1D1D]">Department:</span>
+                <div className="border-b-[3px] border-[#172554] w-60 text-center">
+                  <span>All</span>
+                </div>
+              </div>
+            </div>
+            <div className=" space-y-5 px-2">
+              <div className="flex justify-center text-end text-gray-900 ">
+                <span className="text-gray-500">
+                  Add New
+                  <br /> Team Member
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  className="w-8 ml-2 mt-2 text-white bg-[#172554] h-8 rounded-md"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+              </div>
+              <div className="flex justify-center text-gray-900 ">
+                <span className="py-1.5 px-3 border-1 bg-[#7F1D1D] border-black rounded-lg text-white">
+                  Create Team List
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="flex">
+            {/* <div className="flex px-2 pb-8">
+              <div className="flex"> */}
+            {/* <div className="pl-0 space-y-2">
                   <div className="flex justify-start text-gray-900 ml-14">
                     <span className="text-[#7F1D1D]">City:</span>
                     <div className="border-b-[3px] border-[#172554] w-60 text-center">
@@ -339,9 +416,9 @@ const Content = () => {
                       <span>All</span>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="ml-12 space-y-5">
+            {/* <div className="ml-12 space-y-5">
                   <div className="flex justify-end text-end text-gray-900 ml-14">
                     <span className="text-gray-500">
                       Add New
@@ -367,8 +444,8 @@ const Content = () => {
                       Create Team List
                     </span>
                   </div>
-                </div>
-                {/* <div className="flex flex-col whitespace-nowrap justify-between">
+                </div> */}
+            {/* <div className="flex flex-col whitespace-nowrap justify-between">
               <div className="w-full flex justify-center items-center"></div>
             </div>
             <div className="flex flex-col whitespace-nowrap justify-between">
@@ -409,8 +486,8 @@ const Content = () => {
               </label>
               
             </div> */}
-              </div>
-            </div>
+            {/* </div>
+            </div> */}
           </div>
           {isPaginatedLoading ? (
             <div className="flex items-center justify-center mb-4 mt-9 w-full h-96">
@@ -429,6 +506,7 @@ const Content = () => {
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
               <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                 <tr>
+                  <th scope="col" className="w-[10%] text-slate-900"></th>
                   <th scope="col" className="w-[10%] text-slate-900">
                     <div className="flex items-center justify-center">
                       {/* <a href="#" className="group inline-flex items-center"> */}
@@ -524,8 +602,8 @@ const Content = () => {
                     </a> */}
                   </th>
 
-                  <th>
-                    <div className="flex items-center justify-center">
+                  <th colSpan={1}>
+                    <div className="flex items-center justify-center px-0 py-3">
                       {/* <a href="#" className="group inline-flex items-center"> */}
                       Department
                       <button
@@ -555,18 +633,18 @@ const Content = () => {
                     </a> */}
                   </th>
 
-                  <th colSpan={2}>
+                  {/* <th colSpan={2}>
                     <div className="flex items-center justify-center">
                       <div className="relative mb-3" data-te-input-wrapper-init>
                         <input
                           type="search"
-                          className="peer block bg-slate-100 uppercase ring-1 focus:ring-1 focus:ring-[#172554] ring-gray-400 min-h-[auto] placeholder:text-gray-300 text-black w-40 ml-80 rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
+                          className="peer block bg-slate-100 uppercase ring-1 focus:ring-1 focus:ring-[#172554] ring-gray-400 min-h-[auto] placeholder:text-gray-300 text-black w-40 rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
                           id="exampleSearch2"
                           placeholder="Search User"
                         />
                       </div>
                     </div>
-                  </th>
+                  </th> */}
                   {/* <th
                   scope="col"
                   className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
