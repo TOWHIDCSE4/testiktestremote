@@ -44,7 +44,7 @@ export const todayCycleTimer = async (req: Request, res: Response) => {
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
         }).sort({ createdAt: -1 })
         io.emit(`timer-${timerId}`, {
-          action: `update-operator`,
+          action: `update-cycle`,
           user: user,
           timers: getAllActiveControllerTimerToday,
         })
@@ -62,7 +62,7 @@ export const todayCycleTimer = async (req: Request, res: Response) => {
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
         }).sort({ createdAt: -1 })
         io.emit(`timer-${timerId}`, {
-          action: `update-operator`,
+          action: `update-cycle`,
           user: user,
           timers: getAllActiveControllerTimerToday,
         })
