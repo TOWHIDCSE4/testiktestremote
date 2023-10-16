@@ -301,72 +301,72 @@ const Content = () => {
         }`}
       >
         <div className="px-1 w-full pt-2">
-          <div className="flex px-2 pb-14">
-            <div className="flex w-56sm:flex-none">
+          <div className="flex">
+            <div className="flex w-56 sm:flex-none cursor-pointer h-6">
               <Dropdown menu={{ items }} trigger={["click"]}>
                 <a onClick={(e) => e.preventDefault()}>
                   <DownOutlined />
                   <Space className="pl-2 text-[#7F1D1D]">TEAM LISTING</Space>
                 </a>
               </Dropdown>
-              <div className="">
-                <span className="text-lg font-bold flex pl-1">
-                  -<p className="pl-1 text-[#172554]">ADMIN</p>
-                </span>
-              </div>
+
+              <span className="text-lg font-bold flex pl-1">
+                -<p className="pl-1 text-[#172554]">ADMIN</p>
+              </span>
             </div>
-            <div className="flex">
-              <div className="pl-0 space-y-2">
-                <div className="flex justify-start text-gray-900 ml-14">
-                  <span className="text-[#7F1D1D]">City:</span>
-                  <div className="border-b-[3px] border-[#172554] w-60 text-center">
-                    <span>Seguin, Conroe, Gunter</span>
+            <div className="flex px-2 pb-8">
+              <div className="flex">
+                <div className="pl-0 space-y-2">
+                  <div className="flex justify-start text-gray-900 ml-14">
+                    <span className="text-[#7F1D1D]">City:</span>
+                    <div className="border-b-[3px] border-[#172554] w-60 text-center">
+                      <span>Seguin, Conroe, Gunter</span>
+                    </div>
+                  </div>
+                  <div className="flex text-gray-900 ml-8">
+                    <span className="text-[#7F1D1D]">Factory:</span>
+                    <div className="border-b-[3px] border-[#172554] w-60 text-center">
+                      <span>Full</span>
+                    </div>
+                  </div>
+                  <div className="flex text-gray-900">
+                    <span className="text-[#7F1D1D]">Department:</span>
+                    <div className="border-b-[3px] border-[#172554] w-60 text-center">
+                      <span>Full</span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex text-gray-900 ml-8">
-                  <span className="text-[#7F1D1D]">Factory:</span>
-                  <div className="border-b-[3px] border-[#172554] w-60 text-center">
-                    <span>Full</span>
+
+                <div className="ml-12 space-y-5">
+                  <div className="flex justify-end text-end text-gray-900 ml-14">
+                    <span className="text-gray-500">
+                      Add New
+                      <br /> Team Member
+                    </span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      className="w-8 ml-2 mt-2 text-white bg-[#172554] h-8 rounded-md"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
                   </div>
-                </div>
-                <div className="flex text-gray-900">
-                  <span className="text-[#7F1D1D]">Department:</span>
-                  <div className="border-b-[3px] border-[#172554] w-60 text-center">
-                    <span>Full</span>
+                  <div className="flex justify-end text-gray-900 ml-8">
+                    <span className="py-1.5 px-5 border-1 bg-[#7F1D1D] border-black rounded-lg text-white">
+                      Create Team List
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="ml-8 space-y-5">
-                <div className="flex justify-end text-end text-gray-900 ml-14">
-                  <span className="text-gray-500">
-                    Add New
-                    <br /> Team Member
-                  </span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    className="w-8 ml-2 mt-2 text-white bg-[#172554] h-8 rounded-md"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 4.5v15m7.5-7.5h-15"
-                    />
-                  </svg>
-                </div>
-                <div className="flex justify-end text-gray-900 ml-8">
-                  <span className="py-1.5 px-3 border-1 bg-[#7F1D1D] border-black rounded-lg text-white">
-                    Create Team List
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* <div className="flex flex-col whitespace-nowrap justify-between">
+              {/* <div className="flex flex-col whitespace-nowrap justify-between">
               <div className="w-full flex justify-center items-center"></div>
             </div>
             <div className="flex flex-col whitespace-nowrap justify-between">
@@ -407,6 +407,7 @@ const Content = () => {
               </label>
               
             </div> */}
+            </div>
           </div>
         </div>
         {isPaginatedLoading ? (
@@ -542,6 +543,7 @@ const Content = () => {
                       </svg>
                     </button>
                   </div>
+
                   {/* <span className="ml-2 flex-none rounded text-gray-400">
     <ChevronUpDownIcon
       className="h-5 w-5"
@@ -549,6 +551,19 @@ const Content = () => {
     />
   </span>
                     </a> */}
+                </th>
+
+                <th colSpan={2}>
+                  <div className="flex items-center justify-center">
+                    <div className="relative mb-3" data-te-input-wrapper-init>
+                      <input
+                        type="search"
+                        className="peer block bg-slate-100 uppercase ring-1 focus:ring-1 focus:ring-[#172554] ring-gray-400 min-h-[auto] placeholder:text-gray-300 text-black w-40 ml-20 rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
+                        id="exampleSearch2"
+                        placeholder="Search User"
+                      />
+                    </div>
+                  </div>
                 </th>
                 {/* <th
                   scope="col"
@@ -602,14 +617,14 @@ const Content = () => {
                         <td className="pr-6">
                           <div className="flex items-center">
                             {isAccordionOpen ? (
-                              <ChevronDownIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                              <ChevronDownIcon className="w-4 ml-2 mr-4 h-4 stroke-1 stroke-gray-100 bg-gray-100" />
                             ) : (
                               <ChevronRightIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
                             )}
                             <input
                               id={`checkbox-table-search-${idx}`}
                               type="checkbox"
-                              className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                              className="w-4 h-4 bg-gray-100 text-gray-600  border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
                               onClick={(e) =>
                                 handleChangeCheck(e, item?._id ?? "")
                               }
@@ -623,11 +638,13 @@ const Content = () => {
                             </label>
                           </div>
                         </td>
-                        <td className={`px-3 py-4 text-sm text-gray-500`}>
+                        <td
+                          className={`px-3 py-4 text-sm text-gray-500 items-center`}
+                        >
                           <select
                             id="locations"
                             name="locations"
-                            className="block w-28 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="block w-28 rounded-md border-0 py-1.5 pl-3 pr-10 bg-gray-100 ring-opacity-0 bg-opacity-0 text-gray-900 focus:ring-opacity-0 ring-1 ring-inset ring-gray-100 focus:ring-1 focus:ring-gray-100 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                             onChange={(e) => {
                               mutate(
                                 {
@@ -668,7 +685,7 @@ const Content = () => {
                           <select
                             id="factories"
                             name="factories"
-                            className="block w-28 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="block w-36 rounded-md bg-opacity-0 bg-gray-300 ring-opacity-0 border-0 py-1.5 pl-3 bg-gray pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                             onChange={(e) => {
                               if (e.target.value !== "Global") {
                                 mutate(
@@ -733,7 +750,7 @@ const Content = () => {
                           <select
                             id="roles"
                             name="roles"
-                            className="block w-28 rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="block w-36 rounded-md bg-gray-300 bg-opacity-0 ring-opacity-0 focus:ring-opacity-0 border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                             onChange={(e) => {
                               mutate(
                                 {
@@ -759,7 +776,7 @@ const Content = () => {
                           </select>
                         </td>
                         <td
-                          className={`py-4 pl-4 pr-3 text-sm font-medium ${
+                          className={`py-4  pl-0 text-end w-24 pr-3 text-sm font-medium ${
                             item.status === "Approved"
                               ? "text-green-600"
                               : item.status === "Requested"
@@ -770,7 +787,7 @@ const Content = () => {
                           {item.status ? item.status : ""}
                         </td>
                         <td
-                          className={`pl-12 py-4 text-sm text-gray-500 relative`}
+                          className={`pl-24 py-4 text-sm text-gray-500 relative`}
                         >
                           <Menu as="div">
                             <Menu.Button>
