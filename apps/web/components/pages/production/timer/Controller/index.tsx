@@ -312,6 +312,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [cycleClockInSeconds])
 
   const runIntervalClock = () => {
+    clearInterval(intervalRef.current)
     intervalRef.current = setInterval(() => {
       setCycleClockInSeconds((previousState: number) => previousState + 0.1)
     }, 100)
