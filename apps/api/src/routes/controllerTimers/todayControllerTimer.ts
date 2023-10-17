@@ -17,7 +17,7 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   const io = getIo()
-  const user = res.locals.user as string
+  const user = res.locals.user
   const { id, timerId } = req.query
   if (id || timerId) {
     try {

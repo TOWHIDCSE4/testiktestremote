@@ -19,7 +19,20 @@ export const paginated = async (req: Request, res: Response) => {
           selectedjob?.length && {
             isStock: selectedjob === "STOCK" ? true : false,
           }),
+
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        $and: [
+          {
+            $or: [
+              {
+                name: {
+                  $regex: new RegExp(search as string),
+                  $options: "i",
+                },
+              }, // Case-insensitive name search
+            ],
+          },
+        ],
       }).countDocuments()
 
       // jobs find aggregation
