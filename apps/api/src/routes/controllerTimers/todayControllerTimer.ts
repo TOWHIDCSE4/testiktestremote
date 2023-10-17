@@ -11,10 +11,13 @@ import isProductionTimeActive from "../../helpers/isProductionTimeActive"
 import Locations from "../../models/location"
 import Timers from "../../models/timers"
 import * as Sentry from "@sentry/node"
+import { getIo } from "../../config/setup-socket"
 
 export const todayControllerTimer = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
+  const io = getIo()
+  const user = res.locals.user
   const { id, timerId } = req.query
   if (id || timerId) {
     try {
@@ -27,17 +30,22 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
         _id: locationId,
       })
       const timeZone = location?.timeZone
+      const currentDateStart = dayjs
+        .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
+        .toISOString()
+      const currentDateEnd = dayjs
+        .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
+        .toISOString()
       if (isAllowed) {
-        const currentDateStart = dayjs
-          .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
-          .toISOString()
-        const currentDateEnd = dayjs
-          .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
-          .toISOString()
         const getAllActiveControllerTimerToday = await ControllerTimers.find({
           ...(timerId && { timerId: timerId }),
           ...(id && { _id: id }),
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+        })
+        io.emit(`timer-${timerId}`, {
+          action: `update-operator`,
+          user: user,
+          timers: getAllActiveControllerTimerToday,
         })
         res.json({
           error: false,
@@ -46,6 +54,16 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
           message: null,
         })
       } else {
+        const getAllActiveControllerTimerToday = await ControllerTimers.find({
+          ...(timerId && { timerId: timerId }),
+          ...(id && { _id: id }),
+          createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+        })
+        io.emit(`timer-${timerId}`, {
+          action: `update-operator`,
+          user: user,
+          timers: getAllActiveControllerTimerToday,
+        })
         res.json({
           error: false,
           items: [],
