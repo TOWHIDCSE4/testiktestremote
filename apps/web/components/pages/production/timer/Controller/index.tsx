@@ -108,18 +108,17 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const [readingMessages, setReadingMessages] = useState<string[]>([])
 
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
-
+  const intervalRef = useRef<any>()
   let socket: Socket<any, any> | undefined
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     socket = initializeSocket()
     const runSocket = (data: any) => {
       if (data.action === "add") {
-        setIsCycleClockRunning(true)
         runIntervalClock()
       }
       if (data.action === "endAndAdd") {
-        setIsCycleClockRunning(true)
         runIntervalClock()
       }
       if (data.action === "end") {
@@ -148,25 +147,22 @@ const Controller = ({ timerId }: { timerId: string }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const intervalRef = useRef<any>()
-  useEffect(() => {
-    return () => {
-      clearInterval(intervalRef.current)
-    }
-  }, [])
-
   // Refocusing when tab minimize or change the tab
   useEffect(() => {
-    const handleVisibilityChange = () => {
+    const handleVisibilityChange = async () => {
       // If working for when tab is visible
       if (document.visibilityState === "visible") {
-        cycleRefetch()
-        refetchController()
-        runIntervalClock()
-      }
-      // Else if working for tab is hidden, minimize or not focus
-      else if (document.visibilityState === "hidden") {
-        clearInterval(intervalRef.current)
+        try {
+          cycleRefetch()
+          const response = await refetchController()
+          if (response?.data?.items[0]?.endAt) {
+            setIsTimerControllerEnded(true)
+          } else {
+            runIntervalClock()
+          }
+        } catch (error) {
+          throw error
+        }
       }
     }
 
@@ -192,16 +188,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
       clearInterval(interval)
     }
   }, [])
-
-  useEffect(() => {
-    if (cycleClockInSeconds > 0 && progress < 101) {
-      const percent = getPercentage(
-        cycleClockInSeconds,
-        timerDetailData?.item?.partId.time as number
-      )
-      setProgress(cycleClockInSeconds)
-    }
-  }, [cycleClockInSeconds])
 
   const startingTimerReadings = (messages: string[]) => {
     setTimeout(function () {
@@ -231,16 +217,9 @@ const Controller = ({ timerId }: { timerId: string }) => {
       setEndMenu(false)
       setIsCycleClockRunning(false)
       setIsTimerClockRunning(false)
-      setProgress(100)
+      setProgress(0)
       setIsTimerControllerEnded(true)
       endControllerTimer(timerId, callBackReq)
-      if (isCycleClockRunning) {
-        timeLogCall(jobTimer?.item.jobId, ["Unit Created", "Production Ended"])
-        setStopReasons([])
-        setStopMenu(false)
-        setEndMenu(false)
-        setUnitsCreated(unitsCreated + 1)
-      }
     }, 3000)
   }
 
@@ -259,10 +238,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
       )
       const secondsLapse = currentDate.diff(timerStart, "seconds", true)
       setTimerClockInSeconds(secondsLapse)
-      if (!controllerTimer?.items[0].endAt) {
-        runTimer()
-      } else {
+      if (controllerTimer?.items[0]?.endAt) {
         setIsTimerControllerEnded(true)
+      } else {
+        runTimer()
       }
     } else {
       if (
@@ -309,13 +288,24 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   useEffect(() => {
     setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
+    const percent = getPercentage(
+      cycleClockInSeconds,
+      (timerDetailData?.item?.partId.time as number) > 0
+        ? timerDetailData?.item?.partId.time
+        : 10
+    )
+    setProgress(percent)
   }, [cycleClockInSeconds])
 
   const runIntervalClock = () => {
-    clearInterval(intervalRef.current)
-    intervalRef.current = setInterval(() => {
-      setCycleClockInSeconds((previousState: number) => previousState + 0.1)
-    }, 100)
+    if (isTimerControllerEnded !== true) {
+      stopInterval()
+      setIsCycleClockStopping(false)
+      setIsCycleClockRunning(true)
+      intervalRef.current = setInterval(() => {
+        setCycleClockInSeconds((previousState: number) => previousState + 0.1)
+      }, 100)
+    }
   }
   const runCycle = (fromDb?: boolean) => {
     if (!isLocationTimeEnded) {
@@ -333,7 +323,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
                   addCycleTimer({ timerId }, callBackReq)
                 }
                 setIsCycleClockRunning(true)
-                setIsCycleClockStopping(false)
                 if (!isTimerClockRunning && !fromDb) {
                   addControllerTimer(
                     {
@@ -364,6 +353,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   const stopCycle = () => {
     setIsCycleClockStopping(true)
+    setCycleClockInSeconds(0)
     startingTimerReadings([
       `${currentDate} - Stopping timer`,
       `${currentDate} - Timer stopped`,
@@ -373,27 +363,16 @@ const Controller = ({ timerId }: { timerId: string }) => {
     if (stopReasons.length === 0) {
       endAddCycleTimer(timerId, callBackReq)
       timeLogCall(jobTimer?.item?.jobId, ["Unit Created"])
-      setTimeout(function () {
-        setIsCycleClockStopping(false)
-        setUnitsCreated(unitsCreated + 1)
-        setStopMenu(false)
-        setEndMenu(false)
-        if (timerDetailData?.item?.partId.time === 0) {
-          setProgress(100)
-        } else {
-          setProgress(0)
-        }
-      }, 3000)
+      setUnitsCreated(unitsCreated + 1)
+      setProgress(0)
     } else {
       endCycleTimer(timerId, callBackReq)
       timeLogCall(null, stopReasons)
-      setTimeout(function () {
-        setProgress(100)
-        setStopReasons([])
-        setStopMenu(false)
-        setEndMenu(false)
-        setIsCycleClockRunning(false)
-      }, 3000)
+      setProgress(0)
+      setStopReasons([])
+      setStopMenu(false)
+      setEndMenu(false)
+      setIsCycleClockRunning(false)
     }
   }
 
@@ -541,7 +520,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
   // function of stop cycle interval
   const stopInterval = () => {
     clearInterval(intervalRef.current)
-    setCycleClockInSeconds(0)
     setIsCycleClockRunning(false)
   }
 
