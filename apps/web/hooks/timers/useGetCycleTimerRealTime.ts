@@ -34,7 +34,7 @@ function useGetCycleTimerRealTime(timerId: string) {
     ["cycle-timer-real-time", timerId],
     () => getCycleTimer(timerId),
     {
-      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
+      // refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
       refetchOnWindowFocus: false,
       enabled: !!timerId,
     }

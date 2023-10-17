@@ -23,11 +23,13 @@ import TabTableDetail from "./TabTable-detail"
 
 const TabTable = ({
   tab,
+  pageRender,
   locationId,
   jobSelection,
   searchInput,
 }: {
   tab: T_JobStatus
+  pageRender: boolean
   locationId: string
   jobSelection: any
   searchInput: string
@@ -54,6 +56,7 @@ const TabTable = ({
   const [jobName, setJobName] = useState("")
   const [deleteModal, setDeleteModal] = useState(false)
   const [locked, setLocked] = useState<boolean>(false)
+  const [newPage, setNewPage] = useState<number>(page)
 
   const toggleRowExpansion = (job: T_Job, selected: boolean) => {
     if (locked) {
@@ -73,6 +76,10 @@ const TabTable = ({
   useEffect(() => {
     setSelectedJob([])
   }, [locked])
+
+  useEffect(() => {
+    setPage(1)
+  }, [pageRender, searchInput])
 
   useEffect(() => {
     if (tab) {
@@ -100,6 +107,13 @@ const TabTable = ({
     }
 
     return sum
+  }
+  // Handle Pagination
+  function numberPagesFunc(jobs: any, numberOfPages: number) {
+    if (jobs?.items.length < 1) {
+      return 1
+    }
+    return numberOfPages ? numberOfPages : 1
   }
 
   return (
@@ -477,8 +491,11 @@ const TabTable = ({
                       aria-hidden="true"
                     />
                   </button>
-                  <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                  {/* <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
                     {page} / {numberOfPages ? numberOfPages : 1}
+                  </button> */}
+                  <button className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                    {page} / {numberPagesFunc(jobs, numberOfPages)}
                   </button>
                   <button
                     onClick={() => setPage(page + 1)}

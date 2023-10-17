@@ -35,7 +35,6 @@ function useGetCycleTimer(timerId: string) {
     {
       cacheTime: ONE_DAY,
       staleTime: ONE_DAY,
-      refetchOnWindowFocus: false,
       enabled: !!timerId,
     }
   )

@@ -32,5 +32,6 @@ module.exports = {
   },
   env: {
     MEDIA_KEY: process.env.MEDIA_KEY,
+    API_URL: process.env.API_URL,
   },
 }
