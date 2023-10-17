@@ -47,13 +47,13 @@ const Timer = ({
   dayjs.extend(timezone.default)
   const queryClient = useQueryClient()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
-  const { data: totalTonsUnit, isLoading: isTotalTonsUnitCreated } =
-    useTotalTonsUnit({
-      locationId: timer.locationId as string,
-      timerId: timer._id as string,
-    })
-  const { data: cycleTimer, isLoading: isCycleTimerLoading } =
-    useGetCycleTimerRealTime(timer._id as string)
+  const { data: totalTonsUnit } = useTotalTonsUnit({
+    locationId: timer.locationId as string,
+    timerId: timer._id as string,
+  })
+  const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimerRealTime(
+    timer._id as string
+  )
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
   const [cycleClockInSeconds, setCycleClockInSeconds] = useState(0)
   const [cycleClockTimeArray, setCycleCockTimeArray] = useState<
@@ -70,15 +70,10 @@ const Timer = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     socket = initializeSocket()!
     const runSocket = (data: any) => {
-      console.log(data)
       if (data.action === "add") {
-        stopInterval()
-        setIsCycleClockRunning(true)
         runCycle()
       }
       if (data.action === "endAndAdd") {
-        stopInterval()
-        setIsCycleClockRunning(true)
         runCycle()
       }
       if (data.action === "end") {
@@ -101,6 +96,22 @@ const Timer = ({
       socket?.off(`timer-${timer._id}`, runSocket)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Refocusing when tab minimize or change the tab
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      // If condition working for when tab is visible
+      if (document.visibilityState === "visible") {
+        cycleRefetch()
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
   }, [])
 
   const intervalRef = useRef<any>()
@@ -146,6 +157,8 @@ const Timer = ({
     return value
   }
   const runCycle = () => {
+    stopInterval()
+    setIsCycleClockRunning(true)
     intervalRef.current = setInterval(() => {
       setCycleClockInSeconds((previousState: number) => previousState + 0.1)
     }, 100)
@@ -153,6 +166,7 @@ const Timer = ({
   useEffect(() => {
     setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
   }, [cycleClockInSeconds])
+
   useEffect(() => {
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
       const timeZone = timer?.location?.timeZone
@@ -171,6 +185,7 @@ const Timer = ({
       setIsCycleClockRunning(false)
     }
   }, [cycleTimer])
+
   useEffect(() => {
     if (timer.part) {
       setSelectedPart({

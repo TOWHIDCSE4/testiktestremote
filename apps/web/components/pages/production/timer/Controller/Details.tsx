@@ -98,7 +98,6 @@ const Details = ({
         queryClient.invalidateQueries({
           queryKey: ["job-timer-timer"],
         })
-        toast.success("Timer has been updated")
       } else {
         toast.error(String(data.message))
       }
