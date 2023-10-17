@@ -133,10 +133,6 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     startDate = dayjs().startOf("week"),
     endDate = dayjs().endOf("week"),
   } = req.query
-  console.log(
-    "🚀 ~ file: globalLogs.ts:131 ~ globalLogsMulti ~ partId:",
-    partId
-  )
 
   const sortObj = {}
   if (sort && key) {
