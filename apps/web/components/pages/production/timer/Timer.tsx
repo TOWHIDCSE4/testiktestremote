@@ -292,7 +292,7 @@ const Timer = ({
           </span>
         </div>
         <div className="flex justify-between text-gray-900">
-          <span>Average Unit/hr:</span>
+          <span>Average Unit/hr: </span>
           <span>
             {totalTonsUnit?.item?.unitPerHour
               ? Math.round(totalTonsUnit?.item.unitPerHour)
