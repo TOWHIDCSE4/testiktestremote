@@ -50,21 +50,7 @@ type MenuItem = string
 const Content = () => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
-  const queryClient = useQueryClient()
-  const [confirmationModal, setConfirmationModal] = useState(false)
-  const [deleteModal, setDeleteModal] = useState(false)
-  const [selectedColor, setSelectedColor] = useState("text-yellow-900")
-  const [selectedValue, setSelectedValue] = useState("Pending")
-  const [selectedRole, setSelectedRole] = useState("Admin")
-  const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
-  const [action, setAction] = useState<T_UserStatus | null>(null)
-  const { data: locations, isLoading: isLocationsLoading } = useLocations()
-  const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
-  const { data: userProfile } = useProfile()
-  const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
-    []
-  )
+
   const storeSession = useStoreSession(
     (
       state: {
@@ -96,6 +82,22 @@ const Content = () => {
         reset: () => void
       }
     ) => state
+  )
+
+  const queryClient = useQueryClient()
+  const [confirmationModal, setConfirmationModal] = useState(false)
+  const [deleteModal, setDeleteModal] = useState(false)
+  const [selectedColor, setSelectedColor] = useState("text-yellow-900")
+  const [selectedValue, setSelectedValue] = useState("Pending")
+  const [selectedRole, setSelectedRole] = useState(storeSession?.role)
+  const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
+  const [action, setAction] = useState<T_UserStatus | null>(null)
+  const { data: locations, isLoading: isLocationsLoading } = useLocations()
+  const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+  const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
+  const { data: userProfile } = useProfile()
+  const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
+    []
   )
   const [filterBy, setFilterBy] = useState("Role")
   const {
@@ -133,9 +135,7 @@ const Content = () => {
     USER_ROLES.Production,
     USER_ROLES.Personnel,
     USER_ROLES.Corporate,
-    ...(storeSession?.role === "Super" || storeSession?.role === "Administrator"
-      ? [USER_ROLES.HR]
-      : []),
+    USER_ROLES.HR,
     USER_ROLES.Accounting,
     USER_ROLES.Sales,
   ]
@@ -248,7 +248,7 @@ const Content = () => {
     } else {
       setLocationId(userProfile?.item?.locationId as string)
     }
-  }, [userProfile])
+  }, [userProfile, selectedRole])
 
   const handleSelectAllProduction = (event: any) => {
     const data = paginated?.items ?? []
@@ -264,7 +264,7 @@ const Content = () => {
 
   const items = [
     {
-      label: "Admin",
+      label: "Administrator",
       key: "0",
     },
     {
@@ -307,11 +307,16 @@ const Content = () => {
 
   const handleTeamListing = (event: any) => {
     setSelectedRole(event.target.value)
+    setRole(event.target.value)
+    console.log(
+      "🚀 ~ file: ParentTable.tsx:313 ~ handleTeamListing ~ event:",
+      event
+    )
   }
 
   const canViewTeamTable = () => {
     return (
-      selectedRole === "Admin" ||
+      selectedRole === "Administrator" ||
       selectedRole === "HR" ||
       selectedRole === "Production"
     )
@@ -699,7 +704,7 @@ const Content = () => {
                 </th> */}
                 </tr>
               </thead>
-              {canViewTeamTable() ? (
+              {
                 <tbody
                   data-accordion="open"
                   className="border-t-4 border-indigo-900"
@@ -755,7 +760,7 @@ const Content = () => {
                             <td
                               className={`py-0 pl-4 pr-3 text-sm font-medium`}
                             >
-                              {item.firstName + item.lastName}
+                              {item.firstName + " " + item.lastName}
                             </td>
                             <td className={`px-3 py-4 text-sm text-gray-500`}>
                               <select
@@ -1091,13 +1096,7 @@ const Content = () => {
                       )
                     })}
                 </tbody>
-              ) : (
-                <div className="w-[55rem] text-center mt-56 justify-center items-center h-96 ">
-                  <span className="text-black font-semibold text-xl">
-                    No Permission
-                  </span>
-                </div>
-              )}
+              }
             </table>
           ) : null}
           {!isPaginatedLoading &&

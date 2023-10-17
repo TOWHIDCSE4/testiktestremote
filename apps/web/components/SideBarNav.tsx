@@ -95,7 +95,7 @@ const navigation = [
     showOnlyFor: [
       USER_ROLES.Super,
       USER_ROLES.Administrator,
-      USER_ROLES.Corporate,
+      USER_ROLES.HR,
       USER_ROLES.Production,
     ],
   },

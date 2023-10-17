@@ -21,14 +21,14 @@ export const auth = async (req: Request, res: Response) => {
         const user = await Users.findOne({
           email,
         })
+        if (user && user.status === "Rejected") {
+          throw new Error("Account was prohibited to login due to violations")
+        }
         if (!user || (user && !user.approvedBy)) {
           throw new Error("Your account is still pending for approval")
         }
         if (!user || (user && user.deletedAt)) {
           throw new Error("Account does not exist in our system")
-        }
-        if (user && user.blockedAt) {
-          throw new Error("Account was prohibited to login due to violations")
         }
         if (user && !user.approvedBy) {
           throw new Error("Your account status is still pending")
