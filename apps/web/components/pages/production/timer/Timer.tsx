@@ -286,7 +286,7 @@ const Timer = ({
         <div className="flex justify-between text-gray-900">
           <span>Average Ton/hr:</span>
           <span>
-            {totalTonsUnit?.item?.tons
+            {totalTonsUnit?.item?.tonsPerHour
               ? totalTonsUnit?.item?.tonsPerHour.toFixed(3)
               : "0.000"}
           </span>
@@ -294,7 +294,7 @@ const Timer = ({
         <div className="flex justify-between text-gray-900">
           <span>Average Unit/hr:</span>
           <span>
-            {totalTonsUnit?.item?.tons
+            {totalTonsUnit?.item?.unitPerHour
               ? Math.round(totalTonsUnit?.item.unitPerHour)
               : "0"}
           </span>
