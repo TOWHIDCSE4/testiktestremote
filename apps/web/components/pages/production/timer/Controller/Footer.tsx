@@ -10,6 +10,7 @@ const Footer = ({
   isLoading: boolean
   timeZone: string
 }) => {
+  // console.log('progress', progress)
   return (
     <footer className="fixed bg-white w-full bottom-0">
       <div className="progress-bar">

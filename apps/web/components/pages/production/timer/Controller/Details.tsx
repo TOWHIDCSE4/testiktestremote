@@ -24,6 +24,7 @@ type T_Props = {
   jobTimer: T_JobTimer // Timer jobs list
   updateJob: boolean
   jobUpdateId: string
+  defaultOperator: any
   isJobTimerLoading: boolean // Timer jobs list loading
   isCycleClockRunning: boolean // Tracker run loading
 }
@@ -36,6 +37,7 @@ const Details = ({
   jobTimer,
   updateJob,
   jobUpdateId,
+  defaultOperator,
   isJobTimerLoading,
   isCycleClockRunning,
 }: T_Props) => {
@@ -77,6 +79,18 @@ const Details = ({
       updateJobTimer({ ...jobTimer, jobId: jobUpdateId }, callBackReq)
     }
   }, [updateJob, jobUpdateId])
+
+  useEffect(() => {
+    if (defaultOperator) {
+      console.log(defaultOperator)
+      setSelectedOperator({
+        id: defaultOperator._id,
+        name: defaultOperator.firstName,
+      })
+      console.log("selectedOperator", selectedOperator, defaultOperator)
+      mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
+    }
+  }, [defaultOperator])
 
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {

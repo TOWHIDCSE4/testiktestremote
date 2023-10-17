@@ -94,6 +94,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   const [updateJob, setUpdateJob] = useState<boolean>(false)
   const [jobUpdateId, setJobUpdateId] = useState<string>("")
+  const [defaultOperator, setDefaultOperator] = useState<object>()
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
     useState(false)
   const [isCycleClockStarting, setIsCycleClockStarting] = useState(false)
@@ -134,14 +135,18 @@ const Controller = ({ timerId }: { timerId: string }) => {
         const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
         const secondsLapse = currentDate.diff(timerStart, "seconds", true)
         setCycleClockInSeconds(secondsLapse)
+        if (data.action === "update-operator") {
+          console.log("data.user", data.user)
+          setDefaultOperator(data.user)
+        }
       }
-    }
-    socket?.on(`timer-${timerId}`, runSocket)
+      socket?.on(`timer-${timerId}`, runSocket)
 
-    return () => {
-      socket?.off(`timer-${timerId}`, runSocket)
+      return () => {
+        socket?.off(`timer-${timerId}`, runSocket)
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const intervalRef = useRef<any>()
@@ -195,7 +200,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         cycleClockInSeconds,
         timerDetailData?.item?.partId.time as number
       )
-      setProgress(percent)
+      setProgress(cycleClockInSeconds)
     }
   }, [cycleClockInSeconds])
 
@@ -555,6 +560,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           sectionDiv={sectionDiv}
           updateJob={updateJob}
           jobUpdateId={jobUpdateId}
+          defaultOperator={defaultOperator}
           jobTimer={jobTimer?.item as T_JobTimer}
           isJobTimerLoading={isJobTimerLoading}
           isCycleClockRunning={isCycleClockRunning}
