@@ -74,9 +74,11 @@ const Timer = ({
         runCycle()
       }
       if (data.action === "endAndAdd") {
+        setCycleClockInSeconds(0)
         runCycle()
       }
       if (data.action === "end") {
+        setCycleClockInSeconds(0)
         stopInterval()
       }
       if (data.action === "update-cycle" && data.timers.length > 0) {
@@ -217,7 +219,6 @@ const Timer = ({
 
   const stopInterval = () => {
     clearInterval(intervalRef.current)
-    setCycleClockInSeconds(0)
     setIsCycleClockRunning(false)
   }
 
