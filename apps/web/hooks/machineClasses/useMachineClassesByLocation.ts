@@ -11,10 +11,6 @@ export async function getAllMachineClassesByLocations(locations: string[]) {
   const token = Cookies.get("tfl")
   //@ts-expect-error
   const queryString = new URLSearchParams({ locations }).toString()
-  console.log(
-    "🚀 ~ file: useMachineClassesByLocation.ts:19 ~ getAllMachineClassesByLocations ~ `${API_URL_LOCATIONS}/machine-class/by-location?${queryString}`:",
-    `${API_URL_LOCATIONS}/machine-class/by-location?${queryString}`
-  )
 
   const res = await fetch(
     `${API_URL_LOCATIONS}/machine-class/by-location?${queryString}`,
@@ -30,7 +26,6 @@ export async function getAllMachineClassesByLocations(locations: string[]) {
 }
 
 function useMachineClasses(locations: string[]) {
-  console.log("Using useMachineClasses", locations)
   const queryKey = ["machine-classes", locations] // Include locations in the query key
   const query = useQuery(
     queryKey,
