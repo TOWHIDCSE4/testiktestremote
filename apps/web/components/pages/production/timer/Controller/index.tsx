@@ -1,5 +1,5 @@
 "use client"
-import { createContext, useContext, useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
@@ -35,55 +35,33 @@ import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer
 import { useQueryClient } from "@tanstack/react-query"
 import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTimerByTimerId"
 import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
-import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import { Socket } from "socket.io-client"
 import { initializeSocket } from "../../../../../helpers/socket"
 
-const Controller = ({
-  timerId,
-}: // isCycleClockRunning: isCycleClockRunning,
-// cycleClockInSeconds,
-// endAddCycleTimer,
-// isEndAddCycleTimerLoading,
-// endCycleTimer,
-// isEndCycleTimerLoading
-{
-  timerId: string
-  // cycleClockTimeArray?: any
-  // isCycleClockRunning?: any
-  // cycleClockInSeconds?:any
-  // endAddCycleTimer?:any
-  // isEndAddCycleTimerLoading?:boolean
-  // endCycleTimer?:any
-  // isEndCycleTimerLoading?:boolean
-}) => {
+const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   const queryClient = useQueryClient()
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
-  const { data: controllerTimer, isLoading: isControllerTimerLoading } =
+  const { data: controllerTimer, refetch: refetchController } =
     useGetControllerTimer(timerId)
-  const { data: cycleTimer, isLoading: isCycleTimerLoading } =
-    useGetCycleTimer(timerId)
+  const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimer(timerId)
 
-  const { mutate: addControllerTimer, isLoading: isAddControllerTimerLoading } =
-    useAddControllerTimer()
-  const { mutate: addCycleTimer, isLoading: isAddCycleTimerLoading } =
-    useAddCycleTimer()
+  const { mutate: addControllerTimer } = useAddControllerTimer()
+  const { mutate: addCycleTimer } = useAddCycleTimer()
   const { mutate: endAddCycleTimer, isLoading: isEndAddCycleTimerLoading } =
     useEndAddCycleTimer()
-  const { mutate: endControllerTimer, isLoading: isEndControllerTimerLoading } =
-    useEndControllerTimer()
+  const { mutate: endControllerTimer } = useEndControllerTimer()
   const { mutate: endCycleTimer, isLoading: isEndCycleTimerLoading } =
     useEndCycleTimer()
 
-  const { mutate: addTimerLogs, isLoading: isAddTimerLogsLoading } =
-    useAddTimerLog()
+  const { mutate: addTimerLogs } = useAddTimerLog()
 
-  const { data: timerLogs, isLoading: isTimerLogsLoading } = useGetAllTimerLogs(
-    { locationId: timerDetailData?.item?.locationId._id, timerId }
-  )
+  const { data: timerLogs } = useGetAllTimerLogs({
+    locationId: timerDetailData?.item?.locationId._id,
+    timerId,
+  })
 
   const { data: jobTimer, isLoading: isJobTimerLoading } =
     useGetJobTimerByTimerId({
@@ -91,8 +69,7 @@ const Controller = ({
       timerId,
     })
 
-  const { mutate: assignJobToTimer, isLoading: isAssignJobToTimerLoading } =
-    useAssignJobToTimer()
+  const { mutate: assignJobToTimer } = useAssignJobToTimer()
 
   const sectionDiv = useRef<HTMLDivElement>(null)
 
@@ -148,6 +125,16 @@ const Controller = ({
       if (data.action === "end") {
         stopInterval()
       }
+      if (data.action === "update-cycle" && data.timers.length > 0) {
+        const timeZone = timerDetailData?.item?.locationId.timeZone
+        const timerStart = dayjs.tz(
+          dayjs(data.timers[0].createdAt),
+          timeZone ? timeZone : ""
+        )
+        const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
+        const secondsLapse = currentDate.diff(timerStart, "seconds", true)
+        setCycleClockInSeconds(secondsLapse)
+      }
     }
     socket?.on(`timer-${timerId}`, runSocket)
 
@@ -161,6 +148,28 @@ const Controller = ({
   useEffect(() => {
     return () => {
       clearInterval(intervalRef.current)
+    }
+  }, [])
+
+  // Refocusing when tab minimize or change the tab
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      // If working for when tab is visible
+      if (document.visibilityState === "visible") {
+        cycleRefetch()
+        refetchController()
+        runIntervalClock()
+      }
+      // Else if working for tab is hidden, minimize or not focus
+      else if (document.visibilityState === "hidden") {
+        clearInterval(intervalRef.current)
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
     }
   }, [])
 
@@ -280,15 +289,13 @@ const Controller = ({
 
   const callBackReqAddTimerLog = {
     onSuccess: (returnData: T_BackendResponse) => {
-      console.log("Returned Data", returnData)
-      if (!returnData.error) {
-        if (returnData?.data) {
-        }
-      } else {
+      if (
+        returnData.message ===
+        "Target count exceeded, log was assigned to stock."
+      ) {
         toast.error(String(returnData.message))
         setUpdateJob(true)
         setJobUpdateId(returnData?.data?._id)
-        console.log("Job Update", updateJob, jobUpdateId)
       }
     },
     onError: (err: any) => {
@@ -302,8 +309,8 @@ const Controller = ({
 
   const runIntervalClock = () => {
     intervalRef.current = setInterval(() => {
-      setCycleClockInSeconds((previousState: number) => previousState + 1)
-    }, 1000)
+      setCycleClockInSeconds((previousState: number) => previousState + 0.1)
+    }, 100)
   }
   const runCycle = (fromDb?: boolean) => {
     if (!isLocationTimeEnded) {
@@ -320,12 +327,6 @@ const Controller = ({
                 if (!isCycleClockRunning && !fromDb) {
                   addCycleTimer({ timerId }, callBackReq)
                 }
-                // const interval: any = setInterval(() => {
-                //   setCycleClockInSeconds(
-                //     (previousState: number) => previousState + 0.01
-                //   )
-                // }, 10)
-                // setCycleClockIntervalId(interval)
                 setIsCycleClockRunning(true)
                 setIsCycleClockStopping(false)
                 if (!isTimerClockRunning && !fromDb) {
@@ -377,12 +378,6 @@ const Controller = ({
         } else {
           setProgress(0)
         }
-        // const interval: any = setInterval(() => {
-        //   setCycleClockInSeconds(
-        //     (previousState: number) => previousState + 0.01
-        //   )
-        // }, 10)
-        // setCycleClockIntervalId(interval)
       }, 3000)
     } else {
       endCycleTimer(timerId, callBackReq)
@@ -434,7 +429,6 @@ const Controller = ({
   }, [timerLogs])
 
   useEffect(() => {
-    window.scrollTo(0, 0)
     if (
       timerDetailData?.item &&
       timerLogs?.itemCount &&
@@ -501,6 +495,7 @@ const Controller = ({
     }
   }, [timerDetailData])
 
+  // function of add time log call
   const timeLogCall = (jobId: any, stopReasons: any) => {
     addTimerLogs(
       {
@@ -524,18 +519,21 @@ const Controller = ({
     )
   }
 
+  // useEffect run is end add cycle timer loading change
   useEffect(() => {
     if (isEndAddCycleTimerLoading) {
       stopInterval()
     }
   }, [isEndAddCycleTimerLoading])
 
+  // useEffect run is end cycle timer loading change
   useEffect(() => {
     if (isEndCycleTimerLoading) {
       stopInterval()
     }
   }, [isEndCycleTimerLoading])
 
+  // function of stop cycle interval
   const stopInterval = () => {
     clearInterval(intervalRef.current)
     setCycleClockInSeconds(0)

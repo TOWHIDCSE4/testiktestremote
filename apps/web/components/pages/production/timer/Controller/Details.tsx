@@ -15,7 +15,6 @@ import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
-import useAddTimerLog from "../../../../../hooks/timerLogs/useAddTimerLog"
 
 type T_Props = {
   timerDetails: T_Timer // Show all details of controller
