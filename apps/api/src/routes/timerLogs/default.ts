@@ -103,7 +103,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
             await newTimerLog.save()
           }
           res.json({
-            error: true,
+            error: false,
             item: null,
             data: getStockJob,
             itemCount: null,
