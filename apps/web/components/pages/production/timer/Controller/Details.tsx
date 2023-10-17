@@ -17,28 +17,33 @@ import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
 
 type T_Props = {
-  timerDetails: T_Timer
-  isLoading: boolean
-  readingMessages: string[]
+  timerDetails: T_Timer // Show all details of controller
+  isTimerDetailDataLoading: boolean // Loadind timer details
+  readingMessages: string[] // Using for messages
   sectionDiv: React.RefObject<HTMLDivElement>
-  jobTimer: T_JobTimer
-  isJobTimerLoading: boolean
-  isCycleClockRunning: boolean
+  jobTimer: T_JobTimer // Timer jobs list
+  updateJob: boolean
+  jobUpdateId: string
+  defaultOperator: any
+  isJobTimerLoading: boolean // Timer jobs list loading
+  isCycleClockRunning: boolean // Tracker run loading
 }
 
 const Details = ({
   timerDetails,
-  isLoading,
+  isTimerDetailDataLoading,
   readingMessages,
   sectionDiv,
   jobTimer,
+  updateJob,
+  jobUpdateId,
+  defaultOperator,
   isJobTimerLoading,
   isCycleClockRunning,
 }: T_Props) => {
   const queryClient = useQueryClient()
   const { data: users, isLoading: isUsersLoading } = useUsers()
   const isComboboxDisabled = isCycleClockRunning
-  console.log(isComboboxDisabled)
   const locationId =
     typeof timerDetails?.locationId === "object" && timerDetails?.locationId._id
       ? timerDetails?.locationId._id
@@ -67,6 +72,23 @@ const Details = ({
     id: "",
     name: "",
   })
+
+  useEffect(() => {
+    if (updateJob && jobUpdateId) {
+      updateJobTimer({ ...jobTimer, jobId: jobUpdateId }, callBackReq)
+    }
+  }, [updateJob, jobUpdateId])
+
+  useEffect(() => {
+    if (defaultOperator) {
+      setSelectedOperator({
+        id: defaultOperator._id,
+        name: defaultOperator.firstName + " " + defaultOperator.lastName,
+      })
+      mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
+    }
+  }, [defaultOperator])
+
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
@@ -140,7 +162,7 @@ const Details = ({
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Factory:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isLoading ? (
+          {isTimerDetailDataLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
             </div>
@@ -156,7 +178,7 @@ const Details = ({
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Machine:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isLoading ? (
+          {isTimerDetailDataLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
             </div>
@@ -172,7 +194,7 @@ const Details = ({
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Product:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isLoading ? (
+          {isTimerDetailDataLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
             </div>
@@ -188,7 +210,7 @@ const Details = ({
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Average Time:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isLoading ? (
+          {isTimerDetailDataLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
             </div>
@@ -205,7 +227,7 @@ const Details = ({
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Weight:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isLoading ? (
+          {isTimerDetailDataLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
             </div>
@@ -270,14 +292,14 @@ const Details = ({
         id="jobs"
         name="jobs"
         disabled={
-          isLoading ||
+          isTimerDetailDataLoading ||
           isTimerJobsLoading ||
           isJobTimerLoading ||
           isUpdateJobTimerLoading
         }
         defaultValue="Select Job"
         required
-        value={jobTimer?.jobId as string}
+        value={updateJob ? jobUpdateId : (jobTimer?.jobId as string)}
         className={`block mt-2 w-full xl:w-80 ipadair:w-[250px] 2xl:w-[350px] rounded-md border-0 py-1.5 pl-3 pr-10 dark:bg-gray-300 bg-zinc-100 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-1xl sm:xl:leading-7`}
         onChange={(e) => {
           if (e.target.value === "Add New Job") {

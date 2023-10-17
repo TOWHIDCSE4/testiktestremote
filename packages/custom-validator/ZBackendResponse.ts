@@ -6,6 +6,7 @@ export const ZBackendResponse = z.object({
   item: z.record(z.any()).optional(),
   items: z.any().array().optional(),
   itemCount: z.number().optional(),
+  data: z.record(z.any()).optional(),
 })
 
 export type T_BackendResponse = z.infer<typeof ZBackendResponse>
