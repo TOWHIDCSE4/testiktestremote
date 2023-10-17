@@ -460,9 +460,14 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setCityCounter(city.length)
   }, [city])
 
-  const handleMachineClassChange = (event: any) => {
-    // console.log(`selected ${value}`);
-    setMachineClass(event.target.value)
+  const handleMachineClassChange = (event: SelectChangeEvent) => {
+    const selectedMachineClasses = event.target.value
+
+    const selectedMachines = selectedMachineClasses.length > 0 ? machine : []
+
+    setMachineClass(selectedMachineClasses)
+    setMachine(selectedMachines)
+    // setSelectedMachineClasses(selectedMachineClasses);
   }
 
   useEffect(() => {
@@ -477,6 +482,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     setMachineCounter(machine.length)
+    setMachineClassCounter(machineClass.length)
   }, [machine])
 
   const handlePartsChange = (event: any) => {
@@ -844,7 +850,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       }}
                       value={machine}
                       onChange={(event) => handleMachineChange(event)}
-                      renderValue={() => `${machineCounter} selected`}
+                      renderValue={() =>
+                        `${machineCounter && machineClassCounter} selected`
+                      }
                       MenuProps={MenuProps}
                     >
                       {machines &&
