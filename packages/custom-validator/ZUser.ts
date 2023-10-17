@@ -18,7 +18,7 @@ export const ZUserStatus = z.enum([
   "Rejected",
   "Archived",
   "Blocked",
-  "Requested",
+  "Pending",
 ])
 
 export const ZUserProfile = z.object({

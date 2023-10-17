@@ -40,7 +40,7 @@ const users = new Schema({
   },
   status: {
     type: String,
-    enum: ["Approved", "Rejected", "Archived", "Blocked", "Requested"],
+    enum: ["Approved", "Rejected", "Archived", "Blocked", "Pending"],
   },
   createdAt: {
     type: Date,

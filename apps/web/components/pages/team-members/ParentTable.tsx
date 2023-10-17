@@ -29,23 +29,18 @@ import useUpdateUser from "../../../hooks/users/useUpdateUser"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import ConfirmationModal from "./modals/ConfirmationModal"
-import { DownOutlined } from "@ant-design/icons"
-import type { MenuProps } from "antd"
-import { Dropdown, Space } from "antd"
 import DeleteModal from "./modals/DeleteModal"
 import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
 import React from "react"
 
 const ARR_USER_STATUSES = [
-  USER_STATUSES.Requested,
+  USER_STATUSES.Pending,
   USER_STATUSES.Approved,
   USER_STATUSES.Archived,
   USER_STATUSES.Blocked,
   USER_STATUSES.Rejected,
 ]
-
-type MenuItem = string
 
 const Content = () => {
   dayjs.extend(utc.default)
@@ -85,17 +80,17 @@ const Content = () => {
   )
 
   const queryClient = useQueryClient()
-  const [confirmationModal, setConfirmationModal] = useState(false)
+  const { data: userProfile } = useProfile()
   const [deleteModal, setDeleteModal] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState("Pending")
+  const [confirmationModal, setConfirmationModal] = useState(false)
   const [selectedColor, setSelectedColor] = useState("text-yellow-900")
-  const [selectedValue, setSelectedValue] = useState("Pending")
   const [selectedRole, setSelectedRole] = useState(storeSession?.role)
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
+  const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
   const [action, setAction] = useState<T_UserStatus | null>(null)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
-  const { data: userProfile } = useProfile()
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
@@ -109,8 +104,9 @@ const Content = () => {
     setLocationId,
     setStatus,
     setName,
-  } = usePaginatedUsers()
+  } = usePaginatedUsers("Pending", storeSession?.role)
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
+  const [hasRendered, setHasRendered] = useState(false)
 
   const toggleAccordion = (id: string) => {
     if (openAccordion === id) {
@@ -193,13 +189,11 @@ const Content = () => {
           onChange={(e) => {
             setRole(null)
             setStatus(e.target.value as T_UserStatus)
-            debugger
             if (storeSession?.role !== "Super" || "Administrator") {
               setLocationId(userProfile?.item?.locationId as string)
             } else {
               setLocationId("")
             }
-            debugger
           }}
         >
           <option value="">Select Status</option>
@@ -248,7 +242,7 @@ const Content = () => {
     } else {
       setLocationId(userProfile?.item?.locationId as string)
     }
-  }, [userProfile, selectedRole])
+  }, [userProfile, selectedRole, selectedStatus])
 
   const handleSelectAllProduction = (event: any) => {
     const data = paginated?.items ?? []
@@ -290,8 +284,8 @@ const Content = () => {
   ]
 
   const handleSelectChange = (event: any) => {
-    setSelectedColor(event.target.value)
-    setSelectedValue(event.target.value)
+    setStatus(event.target.value)
+    setSelectedStatus(event.target.value)
     if (event.target.value === "Pending") {
       setSelectedColor("text-yellow-900")
     } else if (event.target.value === "Active") {
@@ -337,7 +331,7 @@ const Content = () => {
                   id="cars"
                   className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
                   onChange={handleTeamListing}
-                  value={selectedValue}
+                  // value={selectedValue}
                 >
                   <option value="">Select Role</option>
                   {items.map((item) => (
@@ -358,7 +352,7 @@ const Content = () => {
                 <span
                   className={`text-3xl uppercase font-semibold ${selectedColor}`}
                 >
-                  {selectedValue}
+                  {selectedStatus}
                 </span>
                 <select
                   name="status"
@@ -385,7 +379,25 @@ const Content = () => {
               <div className="flex justify-start text-gray-900 ml-14">
                 <span className="text-[#7F1D1D]">City:</span>
                 <div className="border-b-[3px] border-[#172554] w-60 text-center">
-                  <span>Seguin, Conroe, Gunter</span>
+                  {locations && locations.items
+                    ? storeSession?.role === ("Administrator" || "Super")
+                      ? locations.items.map((location, index) => (
+                          <span key={index}>
+                            {index > 0 ? ", " : ""}
+                            {location.name.toUpperCase()}
+                          </span>
+                        ))
+                      : locations.items.map((location, index) => {
+                          if (location._id === userProfile?.item?.locationId) {
+                            return (
+                              <span key={index}>
+                                {location.name.toUpperCase()}
+                              </span>
+                            )
+                          }
+                          return ""
+                        })
+                    : ""}
                 </div>
               </div>
               <div className="flex text-gray-900 ml-8">
@@ -904,7 +916,7 @@ const Content = () => {
                               className={`py-0 pl-0  text-end w-24 pr-3 text-sm font-medium ${
                                 item.status === "Approved"
                                   ? "text-green-600"
-                                  : item.status === "Requested"
+                                  : item.status === "Pending"
                                   ? "text-gray-600"
                                   : "text-red-600"
                               }`}

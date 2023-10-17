@@ -18,7 +18,7 @@ export const USER_STATUSES = {
   Rejected: "Rejected",
   Archived: "Archived",
   Blocked: "Blocked",
-  Requested: "Requested",
+  Pending: "Pending",
 }
 
 export const ONE_DAY = 1000 * 60 * 60 * 24 // 24 hours
