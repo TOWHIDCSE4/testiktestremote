@@ -55,6 +55,7 @@ const Content = () => {
   const [deleteModal, setDeleteModal] = useState(false)
   const [selectedColor, setSelectedColor] = useState("text-yellow-900")
   const [selectedValue, setSelectedValue] = useState("Pending")
+  const [selectedRole, setSelectedRole] = useState("Admin")
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
   const [action, setAction] = useState<T_UserStatus | null>(null)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -261,7 +262,7 @@ const Content = () => {
     setCheckedProduction(updatedArray)
   }
 
-  const items: MenuProps["items"] = [
+  const items = [
     {
       label: "Admin",
       key: "0",
@@ -299,7 +300,21 @@ const Content = () => {
       setSelectedColor("text-red-900")
     } else if (event.target.value === "Archived") {
       setSelectedColor("text-yellow-600")
+    } else {
+      setSelectedColor("")
     }
+  }
+
+  const handleTeamListing = (event: any) => {
+    setSelectedRole(event.target.value)
+  }
+
+  const canViewTeamTable = () => {
+    return (
+      selectedRole === "Admin" ||
+      selectedRole === "HR" ||
+      selectedRole === "Production"
+    )
   }
 
   return (
@@ -310,26 +325,41 @@ const Content = () => {
         }`}
       >
         <div className="px-1 w-full pt-2 ">
-          <div className="flex justify-between">
-            <div className="flex flex-col w-60 sm:flex-none cursor-pointer h-6">
-              <div className="flex ml-3">
-                <Dropdown menu={{ items }} trigger={["click"]}>
-                  <a onClick={(e) => e.preventDefault()}>
-                    <DownOutlined />
-                    <Space className="pl-2 text-[#7F1D1D]">TEAM LISTING</Space>
-                  </a>
-                </Dropdown>
-
+          <div className="flex justify-between h-44">
+            <div className="flex flex-col w-72 sm:flex-none cursor-pointer h-6">
+              <div className="flex ml-1">
+                <select
+                  id="cars"
+                  className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
+                  onChange={handleTeamListing}
+                  value={selectedValue}
+                >
+                  <option value="">Select Role</option>
+                  {items.map((item) => (
+                    <option key={item.key} value={item.label}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+                <label className="text-[#7F1D1D] text-lg">Team Listing</label>
                 <span className="text-lg font-bold flex pl-1">
-                  -<p className="pl-1 text-[#172554]">{selectedValue}</p>
+                  -
+                  <p className="pl-1 text-[#172554] uppercase">
+                    {selectedRole}
+                  </p>
                 </span>
               </div>
-              <div className="mt-4 ml-4">
+              <div className="mt-4 ml-4 flex flex-col">
+                <span
+                  className={`text-3xl uppercase font-semibold ${selectedColor}`}
+                >
+                  {selectedValue}
+                </span>
                 <select
-                  name="cars"
-                  id="cars"
+                  name="status"
+                  id="status"
                   onChange={handleSelectChange}
-                  className={selectedColor}
+                  className={`w-32 rounded-lg mt-6 h-10 ${selectedColor}`}
                 >
                   <option value="Pending" className="text-yellow-900">
                     Pending
@@ -346,7 +376,7 @@ const Content = () => {
                 </select>
               </div>
             </div>
-            <div className="pl-0 space-y-2">
+            <div className=" space-y-2 mr-10">
               <div className="flex justify-start text-gray-900 ml-14">
                 <span className="text-[#7F1D1D]">City:</span>
                 <div className="border-b-[3px] border-[#172554] w-60 text-center">
@@ -507,7 +537,7 @@ const Content = () => {
               <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                 <tr>
                   <th scope="col" className="w-[10%] text-slate-900"></th>
-                  <th scope="col" className="w-[10%] text-slate-900">
+                  <th scope="col" className="w-[15%] text-slate-900">
                     <div className="flex items-center justify-center">
                       {/* <a href="#" className="group inline-flex items-center"> */}
                       User
@@ -669,40 +699,43 @@ const Content = () => {
                 </th> */}
                 </tr>
               </thead>
-              <tbody
-                data-accordion="open"
-                className="border-t-4 border-indigo-900"
-              >
-                {paginated?.items &&
-                  paginated?.items.map((item, idx) => {
-                    const rowClass =
-                      idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
-                    const isAccordionOpen =
-                      openAccordion === `accordion-arrow-icon-body-${idx}`
-                    const checked = isChecked(item._id ?? "")
-                    return (
-                      <React.Fragment key={item._id}>
-                        <tr
-                          key={idx}
-                          className={`bg-gray text-slate-900 font-medium border-b ${rowClass} ${
-                            isAccordionOpen ? "open" : ""
-                          } ${!item._id ? "bg-red-50" : ""}`}
-                          data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
-                          aria-expanded={isAccordionOpen}
-                          aria-controls={`accordion-arrow-icon-body-${idx}`}
-                          aria-colspan={6}
-                          onClick={() =>
-                            toggleAccordion(`accordion-arrow-icon-body-${idx}`)
-                          }
-                        >
-                          <td className="pr-6">
-                            <div className="flex items-center">
-                              {isAccordionOpen ? (
-                                <ChevronDownIcon className="w-4 ml-2 mr-4 h-4 stroke-1 stroke-gray-100 bg-gray-100" />
-                              ) : (
-                                <ChevronRightIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
-                              )}
-                              <input
+              {canViewTeamTable() ? (
+                <tbody
+                  data-accordion="open"
+                  className="border-t-4 border-indigo-900"
+                >
+                  {paginated?.items &&
+                    paginated?.items.map((item, idx) => {
+                      const rowClass =
+                        idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
+                      const isAccordionOpen =
+                        openAccordion === `accordion-arrow-icon-body-${idx}`
+                      const checked = isChecked(item._id ?? "")
+                      return (
+                        <React.Fragment key={item._id}>
+                          <tr
+                            key={idx}
+                            className={`bg-gray h-4 text-slate-900 font-medium border-b ${rowClass} ${
+                              isAccordionOpen ? "open" : ""
+                            } ${!item._id ? "bg-red-50" : ""}`}
+                            data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
+                            aria-expanded={isAccordionOpen}
+                            aria-controls={`accordion-arrow-icon-body-${idx}`}
+                            aria-colspan={6}
+                            onClick={() =>
+                              toggleAccordion(
+                                `accordion-arrow-icon-body-${idx}`
+                              )
+                            }
+                          >
+                            <td className="pr-6">
+                              <div className="flex items-center">
+                                {isAccordionOpen ? (
+                                  <ChevronDownIcon className="w-4 ml-2 mr-4 h-2 stroke-1 stroke-gray-100 bg-gray-100" />
+                                ) : (
+                                  <ChevronRightIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                                )}
+                                {/* <input
                                 id={`checkbox-table-search-${idx}`}
                                 type="checkbox"
                                 className="w-4 h-4 bg-gray-100 text-gray-600  border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
@@ -710,71 +743,137 @@ const Content = () => {
                                   handleChangeCheck(e, item?._id ?? "")
                                 }
                                 checked={checked}
-                              />
-                              <label
-                                htmlFor={`checkbox-table-search-${idx}`}
-                                className="sr-only"
-                              >
-                                {item.status}
-                              </label>
-                            </div>
-                          </td>
-                          <td className={`py-4 pl-4 pr-3 text-sm font-medium`}>
-                            {item.firstName + item.lastName}
-                          </td>
-                          <td className={`px-3 py-4 text-sm text-gray-500`}>
-                            <select
-                              id="locations"
-                              name="locations"
-                              className="block w-28 rounded-md border-0 py-1.5 pl-3 pr-10 bg-gray-100 ring-opacity-0 bg-opacity-0 text-gray-900 focus:ring-opacity-0 ring-1 ring-inset ring-gray-100 focus:ring-1 focus:ring-gray-100 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                              onChange={(e) => {
-                                mutate(
-                                  {
-                                    ...item,
-                                    locationId: e.target.value,
-                                  },
-                                  callBackReq
-                                )
-                              }}
-                              disabled={
-                                isLocationsLoading ||
-                                isUpdateUserLoading ||
-                                isPaginatedLoading
-                              }
-                              value={
-                                typeof item?.locationId === "object" &&
-                                item?.locationId?._id
-                                  ? item?.locationId?._id
-                                  : ""
-                              }
+                              /> */}
+                                <label
+                                  htmlFor={`checkbox-table-search-${idx}`}
+                                  className="sr-only"
+                                >
+                                  {item.status}
+                                </label>
+                              </div>
+                            </td>
+                            <td
+                              className={`py-0 pl-4 pr-3 text-sm font-medium`}
                             >
-                              <option value="">Select Location</option>
-                              {locations?.items?.map(
-                                (item: T_Locations, index: number) => {
-                                  return (
-                                    <option
-                                      key={index}
-                                      value={item._id as string}
-                                    >
-                                      {item.name}
-                                    </option>
-                                  )
-                                }
-                              )}
-                            </select>
-                          </td>
-                          <td className={`px-3 py-4 text-sm text-gray-500`}>
-                            <select
-                              id="factories"
-                              name="factories"
-                              className="block w-36 rounded-md bg-opacity-0 bg-gray-300 ring-opacity-0 border-0 py-1.5 pl-3 bg-gray pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                              onChange={(e) => {
-                                if (e.target.value !== "Global") {
+                              {item.firstName + item.lastName}
+                            </td>
+                            <td className={`px-3 py-4 text-sm text-gray-500`}>
+                              <select
+                                id="locations"
+                                name="locations"
+                                className="block w-28 rounded-md border-0 py-1 pl-3 pr-10 bg-gray-100 ring-opacity-0 bg-opacity-0 text-gray-900 focus:ring-opacity-0 ring-1 ring-inset ring-gray-100 focus:ring-1 focus:ring-gray-100 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                onChange={(e) => {
                                   mutate(
                                     {
                                       ...item,
-                                      factoryId: e.target.value,
-                                      isGlobalFactory: false,
+                                      locationId: e.target.value,
+                                    },
+                                    callBackReq
+                                  )
+                                }}
+                                disabled={
+                                  isLocationsLoading ||
+                                  isUpdateUserLoading ||
+                                  isPaginatedLoading
+                                }
+                                value={
+                                  typeof item?.locationId === "object" &&
+                                  item?.locationId?._id
+                                    ? item?.locationId?._id
+                                    : ""
+                                }
+                              >
+                                <option value="">Select Location</option>
+                                {locations?.items?.map(
+                                  (item: T_Locations, index: number) => {
+                                    return (
+                                      <option
+                                        className="float-left"
+                                        key={index}
+                                        value={item._id as string}
+                                      >
+                                        {item.name}
+                                      </option>
+                                    )
+                                  }
+                                )}
+                              </select>
+                            </td>
+                            <td className={`px-3 py-4 text-sm text-gray-500`}>
+                              <select
+                                id="factories"
+                                name="factories"
+                                className="block w-28 rounded-md bg-opacity-0 text-center bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-3 bg-gray pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                onChange={(e) => {
+                                  if (e.target.value !== "Global") {
+                                    mutate(
+                                      {
+                                        ...item,
+                                        factoryId: e.target.value,
+                                        isGlobalFactory: false,
+                                        locationId:
+                                          typeof item.locationId === "object"
+                                            ? (item.locationId?._id as string)
+                                            : "",
+                                      },
+                                      callBackReq
+                                    )
+                                  } else {
+                                    mutate(
+                                      {
+                                        ...item,
+                                        factoryId: null,
+                                        isGlobalFactory: true,
+                                        role: USER_ROLES.Corporate as T_UserRole,
+                                        locationId:
+                                          typeof item.locationId === "object"
+                                            ? (item.locationId?._id as string)
+                                            : "",
+                                      },
+                                      callBackReq
+                                    )
+                                  }
+                                }}
+                                disabled={
+                                  isFactoriesLoading ||
+                                  isUpdateUserLoading ||
+                                  isPaginatedLoading
+                                }
+                                value={
+                                  item.isGlobalFactory
+                                    ? "Global"
+                                    : typeof item?.factoryId === "object" &&
+                                      item?.factoryId?._id
+                                    ? item?.factoryId?._id
+                                    : ""
+                                }
+                              >
+                                <option value="">Select Factory</option>
+                                {factories?.items?.map(
+                                  (item: T_Factory, index: number) => {
+                                    return (
+                                      <option
+                                        key={index}
+                                        value={item._id as string}
+                                      >
+                                        {item.name}
+                                      </option>
+                                    )
+                                  }
+                                )}
+                                <option>Global</option>
+                              </select>
+                            </td>
+                            <td className={`px-3 py-4 text-sm text-gray-500`}>
+                              <select
+                                id="roles"
+                                name="roles"
+                                className="block w-36 rounded-md bg-gray-300 bg-opacity-0 ring-opacity-0 focus:ring-opacity-0 border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                onChange={(e) => {
+                                  mutate(
+                                    {
+                                      ...item,
+                                      role: e.target.value as T_UserRole,
                                       locationId:
                                         typeof item.locationId === "object"
                                           ? (item.locationId?._id as string)
@@ -782,113 +881,72 @@ const Content = () => {
                                     },
                                     callBackReq
                                   )
-                                } else {
-                                  mutate(
-                                    {
-                                      ...item,
-                                      factoryId: null,
-                                      isGlobalFactory: true,
-                                      role: USER_ROLES.Corporate as T_UserRole,
-                                      locationId:
-                                        typeof item.locationId === "object"
-                                          ? (item.locationId?._id as string)
-                                          : "",
-                                    },
-                                    callBackReq
-                                  )
+                                }}
+                                value={item.role ? item.role : ""}
+                                disabled={
+                                  isUpdateUserLoading || isPaginatedLoading
                                 }
-                              }}
-                              disabled={
-                                isFactoriesLoading ||
-                                isUpdateUserLoading ||
-                                isPaginatedLoading
-                              }
-                              value={
-                                item.isGlobalFactory
-                                  ? "Global"
-                                  : typeof item?.factoryId === "object" &&
-                                    item?.factoryId?._id
-                                  ? item?.factoryId?._id
-                                  : ""
-                              }
-                            >
-                              <option value="">Select Factory</option>
-                              {factories?.items?.map(
-                                (item: T_Factory, index: number) => {
-                                  return (
-                                    <option
-                                      key={index}
-                                      value={item._id as string}
-                                    >
-                                      {item.name}
-                                    </option>
-                                  )
-                                }
-                              )}
-                              <option>Global</option>
-                            </select>
-                          </td>
-                          <td className={`px-3 py-4 text-sm text-gray-500`}>
-                            <select
-                              id="roles"
-                              name="roles"
-                              className="block w-36 rounded-md bg-gray-300 bg-opacity-0 ring-opacity-0 focus:ring-opacity-0 border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                              onChange={(e) => {
-                                mutate(
-                                  {
-                                    ...item,
-                                    role: e.target.value as T_UserRole,
-                                    locationId:
-                                      typeof item.locationId === "object"
-                                        ? (item.locationId?._id as string)
-                                        : "",
-                                  },
-                                  callBackReq
-                                )
-                              }}
-                              value={item.role ? item.role : ""}
-                              disabled={
-                                isUpdateUserLoading || isPaginatedLoading
-                              }
-                            >
-                              <option value="">Select Role</option>
-                              {ARR_USER_ROLES.map(
-                                (item: string, index: number) => {
-                                  return <option key={index}>{item}</option>
-                                }
-                              )}
-                            </select>
-                          </td>
-                          <td
-                            className={`py-4  pl-0 text-end w-24 pr-3 text-sm font-medium ${
-                              item.status === "Approved"
-                                ? "text-green-600"
-                                : item.status === "Requested"
-                                ? "text-gray-600"
-                                : "text-red-600"
-                            }`}
-                          >
-                            {item.status ? item.status : ""}
-                          </td>
-                          <td
-                            className={`pl-24 py-4 text-sm text-gray-500 relative`}
-                          >
-                            <Menu as="div">
-                              <Menu.Button>
-                                <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
-                              </Menu.Button>
-                              <Transition
-                                as={Fragment}
-                                enter="transition ease-out duration-100"
-                                enterFrom="transform opacity-0 scale-95"
-                                enterTo="transform opacity-100 scale-100"
-                                leave="transition ease-in duration-75"
-                                leaveFrom="transform opacity-100 scale-100"
-                                leaveTo="transform opacity-0 scale-95"
                               >
-                                <Menu.Items className="absolute right-9 mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                  <div className="py-1">
-                                    {item.status !== "Approved" && (
+                                <option value="">Select Role</option>
+                                {ARR_USER_ROLES.map(
+                                  (item: string, index: number) => {
+                                    return <option key={index}>{item}</option>
+                                  }
+                                )}
+                              </select>
+                            </td>
+                            <td
+                              className={`py-0 pl-0  text-end w-24 pr-3 text-sm font-medium ${
+                                item.status === "Approved"
+                                  ? "text-green-600"
+                                  : item.status === "Requested"
+                                  ? "text-gray-600"
+                                  : "text-red-600"
+                              }`}
+                            >
+                              {item.status ? item.status : ""}
+                            </td>
+                            <td
+                              className={`pl-0 text-center py-0 text-sm text-gray-500 relative`}
+                            >
+                              <Menu as="div" className="w-10">
+                                <Menu.Button>
+                                  <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
+                                </Menu.Button>
+                                <Transition
+                                  as={Fragment}
+                                  enter="transition ease-out duration-100"
+                                  enterFrom="transform opacity-0 scale-95"
+                                  enterTo="transform opacity-100 scale-100"
+                                  leave="transition ease-in duration-75"
+                                  leaveFrom="transform opacity-100 scale-100"
+                                  leaveTo="transform opacity-0 scale-95"
+                                >
+                                  <Menu.Items className="absolute right-9 mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div className="py-1">
+                                      {item.status !== "Approved" && (
+                                        <Menu.Item>
+                                          {({ active }) => (
+                                            <span
+                                              className={combineClasses(
+                                                active
+                                                  ? "bg-gray-100 text-gray-900"
+                                                  : "text-gray-700",
+                                                "block px-4 py-2 text-sm cursor-pointer text-left"
+                                              )}
+                                              onClick={() => {
+                                                setSelectedRow(item)
+                                                setConfirmationModal(true)
+                                                setAction(
+                                                  USER_STATUSES.Approved as T_UserStatus
+                                                )
+                                              }}
+                                            >
+                                              Approve
+                                            </span>
+                                          )}
+                                        </Menu.Item>
+                                      )}
                                       <Menu.Item>
                                         {({ active }) => (
                                           <span
@@ -900,161 +958,146 @@ const Content = () => {
                                             )}
                                             onClick={() => {
                                               setSelectedRow(item)
-                                              setConfirmationModal(true)
+                                              setDeleteModal(true)
                                               setAction(
-                                                USER_STATUSES.Approved as T_UserStatus
+                                                USER_STATUSES.Rejected as T_UserStatus
                                               )
                                             }}
                                           >
-                                            Approve
+                                            Reject
                                           </span>
                                         )}
                                       </Menu.Item>
-                                    )}
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <span
-                                          className={combineClasses(
-                                            active
-                                              ? "bg-gray-100 text-gray-900"
-                                              : "text-gray-700",
-                                            "block px-4 py-2 text-sm cursor-pointer text-left"
-                                          )}
-                                          onClick={() => {
-                                            setSelectedRow(item)
-                                            setDeleteModal(true)
-                                            setAction(
-                                              USER_STATUSES.Rejected as T_UserStatus
-                                            )
-                                          }}
-                                        >
-                                          Reject
-                                        </span>
-                                      )}
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <span
-                                          className={combineClasses(
-                                            active
-                                              ? "bg-gray-100 text-gray-900"
-                                              : "text-gray-700",
-                                            "block px-4 py-2 text-sm cursor-pointer text-left"
-                                          )}
-                                          onClick={() => {
-                                            setSelectedRow(item)
-                                            setDeleteModal(true)
-                                            setAction(
-                                              USER_STATUSES.Blocked as T_UserStatus
-                                            )
-                                          }}
-                                        >
-                                          Block
-                                        </span>
-                                      )}
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <span
-                                          className={combineClasses(
-                                            active
-                                              ? "bg-gray-100 text-gray-900"
-                                              : "text-gray-700",
-                                            "block px-4 py-2 text-sm cursor-pointer text-left"
-                                          )}
-                                          onClick={() => {
-                                            setSelectedRow(item)
-                                            setDeleteModal(true)
-                                            setAction(
-                                              USER_STATUSES.Archived as T_UserStatus
-                                            )
-                                          }}
-                                        >
-                                          Delete
-                                        </span>
-                                      )}
-                                    </Menu.Item>
-                                  </div>
-                                </Menu.Items>
-                              </Transition>
-                            </Menu>
-                          </td>
-                        </tr>
-                        {isAccordionOpen && (
-                          <tr
-                            id={`accordion-arrow-icon-body-${idx}`}
-                            aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
-                            className={`${isAccordionOpen ? "open" : ""}`}
-                          >
-                            <td colSpan={7}>
-                              <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
-                                <div className="w-[73%]">
-                                  <div className="flex justify-between">
-                                    <span className="flex w-[27rem] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
-                                      <p className="w-2/3 text-right">
-                                        ADDITIONAL INFO
-                                      </p>
-                                    </span>
+                                      <Menu.Item>
+                                        {({ active }) => (
+                                          <span
+                                            className={combineClasses(
+                                              active
+                                                ? "bg-gray-100 text-gray-900"
+                                                : "text-gray-700",
+                                              "block px-4 py-2 text-sm cursor-pointer text-left"
+                                            )}
+                                            onClick={() => {
+                                              setSelectedRow(item)
+                                              setDeleteModal(true)
+                                              setAction(
+                                                USER_STATUSES.Blocked as T_UserStatus
+                                              )
+                                            }}
+                                          >
+                                            Block
+                                          </span>
+                                        )}
+                                      </Menu.Item>
+                                      <Menu.Item>
+                                        {({ active }) => (
+                                          <span
+                                            className={combineClasses(
+                                              active
+                                                ? "bg-gray-100 text-gray-900"
+                                                : "text-gray-700",
+                                              "block px-4 py-2 text-sm cursor-pointer text-left"
+                                            )}
+                                            onClick={() => {
+                                              setSelectedRow(item)
+                                              setDeleteModal(true)
+                                              setAction(
+                                                USER_STATUSES.Archived as T_UserStatus
+                                              )
+                                            }}
+                                          >
+                                            Delete
+                                          </span>
+                                        )}
+                                      </Menu.Item>
+                                    </div>
+                                  </Menu.Items>
+                                </Transition>
+                              </Menu>
+                            </td>
+                          </tr>
+                          {isAccordionOpen && (
+                            <tr
+                              id={`accordion-arrow-icon-body-${idx}`}
+                              aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
+                              className={`${isAccordionOpen ? "open" : ""}`}
+                            >
+                              <td colSpan={7}>
+                                <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
+                                  <div className="w-[73%]">
+                                    <div className="flex justify-between">
+                                      <span className="flex w-[27rem] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                        <p className="w-2/3 text-right">
+                                          ADDITIONAL INFO
+                                        </p>
+                                      </span>
 
-                                    <span className="flex w-[22rem] text-[13px] ">
-                                      <p
-                                        className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
-                                          item.email
-                                            ? "text-gray-900"
-                                            : "text-red-500"
-                                        }`}
-                                      >
-                                        EMAIL:
-                                      </p>
-                                      <p
-                                        className={`px-3 py-4 text-sm text-gray-500 ${
-                                          item.email
-                                            ? "text-gray-900"
-                                            : "text-red-500"
-                                        }`}
-                                      >
-                                        {/* {typeof item. === "object"
+                                      <span className="flex w-[22rem] text-[13px] ">
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
+                                            item.email
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          EMAIL:
+                                        </p>
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 ${
+                                            item.email
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          {/* {typeof item. === "object"
                                             ? item.operator?.firstName
                                             : ""}{" "}
                                           {typeof item.operator === "object"
                                             ? item.operator?.lastName
                                             : ""} */}
-                                        {item.email || "-"}
-                                      </p>
-                                    </span>
-                                    <span className="flex w-[22rem] text-[13px] text-slate-900 ">
-                                      <p
-                                        className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
-                                          item.locationId
-                                            ? "text-gray-900"
-                                            : "text-red-500"
-                                        }`}
-                                      >
-                                        CITY:
-                                      </p>
-                                      <p
-                                        className={`px-3 py-4 text-sm text-gray-500 ${
-                                          item.locationId
-                                            ? "text-gray-900"
-                                            : "text-red-500"
-                                        }`}
-                                      >
-                                        {typeof item?.locationId === "object" &&
-                                        item?.locationId?._id
-                                          ? item?.locationId?.name
-                                          : ""}
-                                      </p>
-                                    </span>
+                                          {item.email || "-"}
+                                        </p>
+                                      </span>
+                                      <span className="flex w-[22rem] text-[13px] text-slate-900 ">
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
+                                            item.locationId
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          CITY:
+                                        </p>
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 ${
+                                            item.locationId
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          {typeof item?.locationId ===
+                                            "object" && item?.locationId?._id
+                                            ? item?.locationId?.name
+                                            : ""}
+                                        </p>
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    )
-                  })}
-              </tbody>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      )
+                    })}
+                </tbody>
+              ) : (
+                <div className="w-[55rem] text-center mt-56 justify-center items-center h-96 ">
+                  <span className="text-black font-semibold text-xl">
+                    No Permission
+                  </span>
+                </div>
+              )}
             </table>
           ) : null}
           {!isPaginatedLoading &&
