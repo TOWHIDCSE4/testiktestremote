@@ -1,29 +1,13 @@
 "use client"
 import { DatePicker, Space } from "antd"
-// import Select from "react-select"
-// import {
-//   ChevronUpDownIcon,
-//   EllipsisVerticalIcon,
-//   MagnifyingGlassIcon,
-// } from "@heroicons/react/24/solid"
-// import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
+import NewWindow from "react-new-window"
+import Report from "../../../production/timer/Report"
 import dayjs from "dayjs"
-// import {
-//   AsyncPaginate,
-//   reduceGroupedOptions,
-// } from "react-select-async-paginate"
-// import type { GroupBase, OptionsOrGroups } from "react-select"
 import moment from "moment"
-
-export type OptionType = {
-  value: number
-  label: string
-}
-
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 // import { usePathname } from "next/navigation"
-import React, { Dispatch, useEffect, useState } from "react"
+import React, { Dispatch, useEffect, useState, useRef } from "react"
 // import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGlobalTimerLogsMultiFilter"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import {
@@ -32,17 +16,12 @@ import {
   T_MachineClass,
   T_Part,
   T_Locations,
-  T_BackendResponse,
 } from "custom-validator"
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronDownIcon,
 } from "@heroicons/react/20/solid"
-// import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClassByLocation"
-// import useGetMachinesByMachineClasses from "../../../../../hooks/machines/useGetMachineByMachineClass"
-import { set } from "mongoose"
-import useGetMachinesByLocation from "../../../../../hooks/machines/useGetMachinesByLocation"
 import useLocations from "../../../../../hooks/locations/useLocations"
 import usePaginatedParts from "../../../../../hooks/parts/usePaginatedParts"
 import { API_URL_PARTS } from "../../../../../helpers/constants"
@@ -51,17 +30,18 @@ import { useQueryClient } from "@tanstack/react-query"
 import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGetGlobalTimerLogsMultiFilter"
 import useGetMachinesByMachineClasses from "../../../../../hooks/machines/useGetMachinesByMachineClasses"
 import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClassesByLocation"
-import CustomSelect from "./CustomSelect"
-import OutlinedInput from "@mui/material/OutlinedInput"
-import InputLabel from "@mui/material/InputLabel"
 import MenuItem from "@mui/material/MenuItem"
 import FormControl from "@mui/material/FormControl"
 import ListItemText from "@mui/material/ListItemText"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
 import Checkbox from "@mui/material/Checkbox"
-import { query } from "express"
-import useGetPartsByMachineClasses from "../../../../../hooks/parts/useGetPartsByMachines"
 import useGetGlobalMetrics from "../../../../../hooks/timerLogs/useGetGlobalMetrics"
+import GlobalTableReport from "../GlobalReport"
+
+export type OptionType = {
+  value: number
+  label: string
+}
 
 const ITEM_HEIGHT = 48
 // const ITEM_PADDING_TOP = 2;
@@ -89,38 +69,31 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }
   }
 
-  const [sortType, setSortType] = useState<string>("")
-  const [keyword, setKeyword] = useState<string>("")
-  const [process, setProcess] = useState<boolean>(false)
-  const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
-  const [batchAction, setBatchAction] = useState<string>("")
-  const [city, setCity] = useState<string[]>(["64d5814fb996589a945a6402"])
-  const [cityLocation, setCityLocation] = useState<string[]>([])
-  const [machineClass, setMachineClass] = useState<string[]>([])
-  const [factoryById, setFactoryById] = useState<string>("")
-  const [dateRange, setDateRange] = useState<Date[] | string[]>([])
-  // const [endDate, setEndDate] = useState<Date | string>()
   const [parts, setParts] = useState([])
+  const [keyword, setKeyword] = useState<string>("")
+  const [showReport, setShowReport] = useState(false)
+  const [sortType, setSortType] = useState<string>("")
+  const [process, setProcess] = useState<boolean>(false)
+  const [machineClass, setMachineClass] = useState<string[]>([])
+  const [dateRange, setDateRange] = useState<Date[] | string[]>([])
+  const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
+  const [city, setCity] = useState<string[]>(["64d5814fb996589a945a6402"])
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
-  const [partSelector, setPartSelector] = useState<string[]>([])
   const [partsSelected, setPartsSelected] = useState<string[]>([])
+  const [partSelector, setPartSelector] = useState<string[]>([])
   const [machine, setMachine] = useState<string[]>([])
   const [search, setSearch] = useState<string>("")
-  const [selectedMachineValues, setSelectedMachineValues] = useState<string[]>()
-  const [loadedListOptions, setLoadedListOptions] = useState<
-    { value: string; label: string }[]
-  >([])
   const [loadOptionsCount, setLoadOptionsCount] = useState(0)
-  const [typingTimeout, setTypingTimeout] = useState(null)
   const [cityCounter, setCityCounter] = useState<number>(city.length)
+  const [selectedMachineValues, setSelectedMachineValues] = useState<string[]>()
   const [machineClassCounter, setMachineClassCounter] = useState<number>()
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false)
   const [machineCounter, setMachineCounter] = useState<number>()
   const [partsCounter, setPartsCounter] = useState<number>(0)
-  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false)
   const today = moment()
-  const [isCurrentDate, setCurrentDate] = useState(today.format("yyyy-MM-DD"))
+  const myRef = useRef<NewWindow | null>(null)
 
   useEffect(() => {
     // Function to update the window width when the window is resized
@@ -144,6 +117,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     const newValue = e.currentTarget.value
     setKeyword(key)
     setSortType(sortType === "asc" ? "desc" : "asc")
+    console.log(key, sortType)
   }
 
   const handleProcess = () => {
@@ -176,46 +150,20 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   } = usePaginatedParts()
   const numberOfPartsPages = Math.ceil((allParts?.itemCount as number) / 6)
 
-  // useEffect(() => {
-  //   console.log("cityLocation", cityLocation)
-  //   if (locations && locations.items) {
-  //     // Find the matching location objects based on the keys
-  //     const selectedLocations = locations.items.filter((item) => city.includes(item._id));
-
-  //     // Extract the names from the matching location objects
-  //     const selectedNames = selectedLocations.map((location) => location.name);
-
-  //     // Set the selected names to cityLocation
-  //     setCityLocation(selectedNames);
-  //   } else {
-  //     // Handle the case where locations or locations.items is undefined
-  //     // You can set a default value or handle it as needed
-  //     setCityLocation([]); // Set to an empty array as an example
-  //   }
-
-  // },[])
   useEffect(() => {
     setLocationId(city[0])
     setPartsPage(1)
-    // console.log(city)
   }, [city, setLocationId])
 
   useEffect(() => {
-    console.log("Selected part", partSelector)
     queryClient.invalidateQueries({
       queryKey: ["global-timer-logs"],
     })
   }, [partSelector])
 
   const handlePartSelect = (e: any) => {
-    console.log(e)
     const val = e.map((i: any) => i)
-    console.log("🚀 ~ file: index.tsx:1681 ~ handlePartSelect ~ obj:", e)
     setPartSelector(e)
-    console.log(
-      "🚀 ~ file: index.tsx:1676 ~ LogsTable ~ partSelector:",
-      partSelector
-    )
   }
 
   useEffect(() => {
@@ -330,7 +278,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         }
       )
       const responseJSON = await res.json()
-      console.log(responseJSON)
       setParts(responseJSON)
       setLoadOptionsCount(loadOptionsCount + 1)
     }
@@ -373,7 +320,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }, [machine, setMachineId])
 
   useEffect(() => {
-    console.log("selectparts", partsSelected)
     setPartId(partsSelected)
     setPage(1)
   }, [parts, setPartId])
@@ -403,7 +349,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }, [machine, setMachineIds])
 
   useEffect(() => {
-    console.log("selectparts", partsSelected)
     setPartIds(partsSelected)
   }, [partsSelected, setPartIds])
 
@@ -454,7 +399,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setPage(1)
     setDateRange(inputValue)
     if (isCheckboxChecked) {
-      console.log(dayjs().format("YYYY-MM-DD"))
       // If the checkbox is checked, set the start and end dates to the current date
       // const currentDate = dayjs().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       setStartDateRange(
@@ -505,6 +449,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     //   setCity(event.target.value[0])
     //   setCityLocation(event.target.value[1])
     // }
+    console.log(
+      "🚀 ~ file: index.tsx:448 ~ handleLocationChange ~ event:",
+      event
+    )
     setCity(event.target.value)
   }
 
@@ -549,9 +497,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   //     </div>
   //   );
   // };
+  console.log("dateRange", dateRange)
 
   useEffect(() => {
-    // console.log(filterBy)
     const filterInputs = () => {
       if (filterBy === "Factories") {
         return (
@@ -673,6 +621,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         ? prevState.filter((item) => item.id !== id)
         : [...prevState, { id }]
     )
+  }
+
+  function handleClick() {
+    setShowReport(true)
   }
 
   return (
@@ -1008,9 +960,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 </div>
                 {/* Generate report */}
                 <div className="flex w-1/2 text-[11px] items-center justify-end px-14">
-                  <p className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
+                  <button
+                    className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-red-900 text-slate-50"
+                    onClick={handleClick}
+                  >
                     GENERATE REPORT
-                  </p>
+                  </button>
                 </div>
               </div>
               <div className="w-full flex text-[12px] px-[30.3%] font-semibold">
@@ -1026,6 +981,65 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 </div>
               </div>
             </div>
+            {showReport && (
+              <NewWindow
+                copyStyles={true}
+                features={{
+                  width: paginated?.items?.length! > 0 ? 1440 : 500,
+                  height: 1000,
+                }}
+                center="parent"
+                onUnload={() => setShowReport(false)}
+                title={"Report"}
+                name="Report"
+                ref={myRef}
+              >
+                <GlobalTableReport
+                  data={paginated}
+                  city={city[0]}
+                  keyword={keyword}
+                  sortType={sortType}
+                  process={process}
+                  factoryId={factories?.items?.map(
+                    (factory: { _id: string }) => factory._id
+                  )}
+                  machineId={machine}
+                  partId={partsSelected}
+                  machineClassId={machineClass}
+                  locationId={city}
+                  locationData={
+                    locations?.items?.filter((item) =>
+                      city.includes(item._id ?? "")
+                    ) ?? []
+                  }
+                  machineClassData={
+                    machineClasses?.items?.filter((item: T_MachineClass) =>
+                      machineClass.includes(item._id ?? "")
+                    ) ?? []
+                  }
+                  machineData={
+                    machines?.items?.filter((item: T_Machine) =>
+                      machine.includes((item._id as string) ?? "")
+                    ) ?? []
+                  }
+                  startDateRange={
+                    dateRange.length > 0
+                      ? dayjs(dateRange[0])
+                          .startOf("day")
+                          .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+                      : ""
+                  }
+                  endDateRange={
+                    dateRange.length > 0
+                      ? dayjs(dateRange[1])
+                          .endOf("day")
+                          .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+                      : ""
+                  }
+                  newWindowRef={myRef}
+                />
+              </NewWindow>
+            )}
           </div>
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
             {!isPaginatedLoading &&

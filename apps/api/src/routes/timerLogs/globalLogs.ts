@@ -90,6 +90,8 @@ export const globalLogs = async (req: Request, res: Response) => {
         .populate("partId")
         .populate("operator")
         .populate("machineId")
+        .populate("locationId")
+        .populate("machineClassId")
         .sort({ ...sortObj })
         .skip(5 * (Number(page) - 1))
         .limit(5)
@@ -130,6 +132,7 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     page,
     sort,
     key,
+    limit,
     startDate = dayjs().startOf("week"),
     endDate = dayjs().endOf("week"),
   } = req.query
@@ -270,9 +273,11 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
         .populate("partId")
         .populate("operator")
         .populate("machineId")
+        .populate("locationId")
+        .populate("machineClassId")
         .sort({ ...sortObj })
         .skip(10 * (Number(page) - 1))
-        .limit(10)
+        .limit(limit !== null && limit !== undefined ? Number(limit) : 10)
 
       res.json({
         error: false,
@@ -386,6 +391,60 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
         },
       },
     ]
+    if (locationId) {
+      const locationids = locationId
+        //@ts-expect-error
+        .split(",")
+        //@ts-expect-error
+        .map((e) => new mongoose.Types.ObjectId(e))
+      //@ts-expect-error
+      aggregation[0].$match.locationId = { $in: locationids }
+    }
+    if (factoryId) {
+      const factoryids = factoryId
+        //@ts-expect-error
+        .split(",")
+        //@ts-expect-error
+        .map((e) => new mongoose.Types.ObjectId(e))
+      //@ts-expect-error
+      aggregation[0].$match.factoryId = { $in: factoryids }
+    }
+    if (machineId) {
+      const machineids = machineId
+        //@ts-expect-error
+        .split(",")
+        //@ts-expect-error
+        .map((e) => new mongoose.Types.ObjectId(e))
+      //@ts-expect-error
+      aggregation[0].$match.machineId = { $in: machineids }
+    }
+    if (machineClassId) {
+      const machineClassids = machineClassId
+        //@ts-expect-error
+        .split(",")
+        //@ts-expect-error
+        .map((e) => new mongoose.Types.ObjectId(e))
+      //@ts-expect-error
+      aggregation[0].$match.machineClassId = { $in: machineClassids }
+    }
+    if (partId) {
+      const partids = partId
+        //@ts-expect-error
+        .split(",")
+        //@ts-expect-error
+        .map((e) => new mongoose.Types.ObjectId(e))
+      //@ts-expect-error
+      aggregation[0].$match.partId = { $in: partids }
+    }
+    if (startDate && endDate) {
+      //@ts-expect-error
+      aggregation.$match.createdAt = {
+        //@ts-expect-error
+        $gte: new Date(startDate),
+        //@ts-expect-error
+        $lt: new Date(endDate),
+      }
+    }
     const totalUnits = await timerLogs.find(query).countDocuments()
     const [result] = await parts.aggregate(aggregation).exec()
     const { totalTons } = result
