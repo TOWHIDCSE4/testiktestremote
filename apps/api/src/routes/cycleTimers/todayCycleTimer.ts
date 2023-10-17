@@ -11,63 +11,93 @@ import Locations from "../../models/location"
 import Timers from "../../models/timers"
 import isProductionTimeActive from "../../helpers/isProductionTimeActive"
 import * as Sentry from "@sentry/node"
+import { getIo } from "../../config/setup-socket"
+import mongoose from "mongoose"
 
 export const todayCycleTimer = async (req: Request, res: Response) => {
-  dayjs.extend(utc.default)
-  dayjs.extend(timezone.default)
-  const { id, timerId } = req.query
-  if (id || timerId) {
-    try {
-      const timer = await Timers.findOne({
-        _id: timerId,
-      })
-      const locationId = String(timer?.locationId)
-      const isAllowed = await isProductionTimeActive({ locationId })
-      const location = await Locations.findOne({
-        _id: locationId,
-      })
-      const timeZone = location?.timeZone
-      if (isAllowed) {
+  try {
+    const io = getIo()
+    dayjs.extend(utc.default)
+    dayjs.extend(timezone.default)
+    const { id, timerId } = req.query
+    if (id || timerId) {
+      try {
+        const user = res.locals.user
+        const timer = await Timers.findOne({
+          _id: new mongoose.Types.ObjectId(timerId as string),
+        })
+        const locationId = String(timer?.locationId)
+        const isAllowed = await isProductionTimeActive({ locationId })
+        const location = await Locations.findOne({
+          _id: new mongoose.Types.ObjectId(locationId),
+        })
+        const timeZone = location?.timeZone
         const currentDateStart = dayjs
           .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
           .toISOString()
         const currentDateEnd = dayjs
           .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
           .toISOString()
-        const getAllActiveControllerTimerToday = await CycleTimers.find({
-          ...(timerId && { timerId: timerId }),
-          ...(id && { _id: id }),
-          endAt: null,
-          createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-        }).sort({ createdAt: -1 })
+        if (isAllowed) {
+          const getAllActiveControllerTimerToday = await CycleTimers.find({
+            ...(timerId && { timerId: timerId }),
+            ...(id && { _id: id }),
+            endAt: null,
+            createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+          }).sort({ createdAt: -1 })
+          io.emit(`timer-${timerId}`, {
+            action: `update-cycle`,
+            user: user,
+            timers: getAllActiveControllerTimerToday,
+          })
+          res.json({
+            error: false,
+            items: getAllActiveControllerTimerToday,
+            itemCount: null,
+            message: null,
+          })
+        } else {
+          const getAllActiveControllerTimerToday = await CycleTimers.find({
+            ...(timerId && { timerId: timerId }),
+            ...(id && { _id: id }),
+            endAt: null,
+            createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+          }).sort({ createdAt: -1 })
+          io.emit(`timer-${timerId}`, {
+            action: `update-cycle`,
+            user: user,
+            timers: getAllActiveControllerTimerToday,
+          })
+          res.json({
+            error: false,
+            items: [],
+            itemCount: null,
+            message: null,
+          })
+        }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
-          error: false,
-          items: getAllActiveControllerTimerToday,
+          error: true,
+          message: message,
+          items: null,
           itemCount: null,
-          message: null,
-        })
-      } else {
-        res.json({
-          error: false,
-          items: [],
-          itemCount: null,
-          message: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      Sentry.captureException(err)
+    } else {
       res.json({
         error: true,
-        message: message,
+        message: REQUIRED_VALUES_MISSING,
         items: null,
         itemCount: null,
       })
     }
-  } else {
-    res.json({
+  } catch (error) {
+    Sentry.captureException(error)
+    return res.json({
       error: true,
-      message: REQUIRED_VALUES_MISSING,
+      message: error,
       items: null,
       itemCount: null,
     })

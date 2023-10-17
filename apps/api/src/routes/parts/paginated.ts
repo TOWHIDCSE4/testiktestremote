@@ -7,21 +7,11 @@ import {
 
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, factoryId, machineClassId, name } = req.query
-  console.log("🚀 ~ file: paginated.ts:10 ~ paginated ~ factoryId:", factoryId)
-  console.log(
-    "🚀 ~ file: paginated.ts:10 ~ paginated ~ locationId:",
-    locationId
-  )
   if (page && locationId) {
     // const isNotAssigned = factoryId === "Not Assigned"
     const isNotAssigned =
       (factoryId as string)?.toLowerCase() === "not verified"
-    console.log(
-      "🚀 ~ file: paginated.ts:18 ~ paginated ~ isNotAssigned:",
-      isNotAssigned
-    )
     const verified = !((factoryId as string)?.toLowerCase() === "not verified")
-    console.log("🚀 ~ file: paginated.ts:16 ~ paginated ~ verified:", verified)
     try {
       const partsCount = await Parts.find({
         locationId: locationId,
