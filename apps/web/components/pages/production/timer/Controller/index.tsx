@@ -109,11 +109,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
 
-  let socket: Socket
-
+  let socket: Socket<any, any> | undefined
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    socket = initializeSocket()!
+    socket = initializeSocket()
     const runSocket = (data: any) => {
       if (data.action === "add") {
         setIsCycleClockRunning(true)
@@ -135,18 +134,18 @@ const Controller = ({ timerId }: { timerId: string }) => {
         const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
         const secondsLapse = currentDate.diff(timerStart, "seconds", true)
         setCycleClockInSeconds(secondsLapse)
-        if (data.action === "update-operator") {
-          console.log("data.user", data.user)
-          setDefaultOperator(data.user)
-        }
       }
-      socket?.on(`timer-${timerId}`, runSocket)
-
-      return () => {
-        socket?.off(`timer-${timerId}`, runSocket)
+      if (data.action === "update-operator") {
+        setDefaultOperator(data.user)
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }
+
+    socket?.on(`timer-${timerId}`, runSocket)
+
+    return () => {
+      socket?.off(`timer-${timerId}`, runSocket)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const intervalRef = useRef<any>()

@@ -70,6 +70,7 @@ const Timer = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     socket = initializeSocket()!
     const runSocket = (data: any) => {
+      console.log(data)
       if (data.action === "add") {
         stopInterval()
         setIsCycleClockRunning(true)

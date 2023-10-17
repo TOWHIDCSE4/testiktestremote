@@ -75,19 +75,16 @@ const Details = ({
 
   useEffect(() => {
     if (updateJob && jobUpdateId) {
-      console.log("updateJob", updateJob, jobUpdateId)
       updateJobTimer({ ...jobTimer, jobId: jobUpdateId }, callBackReq)
     }
   }, [updateJob, jobUpdateId])
 
   useEffect(() => {
     if (defaultOperator) {
-      console.log(defaultOperator)
       setSelectedOperator({
         id: defaultOperator._id,
-        name: defaultOperator.firstName,
+        name: defaultOperator.firstName + " " + defaultOperator.lastName,
       })
-      console.log("selectedOperator", selectedOperator, defaultOperator)
       mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
     }
   }, [defaultOperator])
