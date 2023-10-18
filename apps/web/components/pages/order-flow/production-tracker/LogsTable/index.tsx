@@ -7,7 +7,7 @@ import moment from "moment"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 // import { usePathname } from "next/navigation"
-import React, { Dispatch, useEffect, useState, useRef } from "react"
+import React, { Dispatch, useEffect, useState, useRef, use } from "react"
 // import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGlobalTimerLogsMultiFilter"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import {
@@ -462,8 +462,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   const handleMachineClassChange = (event: SelectChangeEvent) => {
     const selectedMachineClasses = event.target.value
+    console.log(selectedMachineClasses, "-----------selectedMachineClasses")
 
-    const selectedMachines = selectedMachineClasses.length > 0 ? machine : []
+    const selectedMachines = []
 
     setMachineClass(selectedMachineClasses)
     setMachine(selectedMachines)
@@ -788,20 +789,32 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       renderValue={() => `${machineClassCounter} selected`}
                       MenuProps={MenuProps}
                     >
-                      {machineClasses?.items?.map(
-                        (item: T_MachineClass, index: number) => (
-                          <MenuItem
-                            key={index}
-                            // value={[item._id, item.name ] as string[]}
-                            value={item._id as string}
-                          >
-                            <ListItemText primary={item.name} />
-                            <Checkbox
-                              //@ts-expect-error
-                              checked={machineClass.includes(item._id)}
-                            />
-                          </MenuItem>
+                      {machineClasses &&
+                      machineClasses.items &&
+                      machineClasses.items.length > 0 ? (
+                        machineClasses?.items?.map(
+                          (item: T_MachineClass, index: number) => (
+                            <MenuItem
+                              key={index}
+                              // value={[item._id, item.name ] as string[]}
+                              value={item._id as string}
+                            >
+                              <ListItemText primary={item.name} />
+                              <Checkbox
+                                //@ts-expect-error
+                                checked={machineClass.includes(item._id)}
+                              />
+                            </MenuItem>
+                          )
                         )
+                      ) : (
+                        // Render "No data found" when no data is available
+                        <MenuItem disabled>
+                          <ListItemText
+                            className="mx-4 pl-4"
+                            primary="No data found"
+                          />
+                        </MenuItem>
                       )}
                     </Select>
                   </FormControl>
@@ -851,9 +864,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       }}
                       value={machine}
                       onChange={(event) => handleMachineChange(event)}
-                      renderValue={() =>
-                        `${machineCounter && machineClassCounter} selected`
-                      }
+                      renderValue={() => `${machineCounter} selected`}
                       MenuProps={MenuProps}
                     >
                       {machines &&
@@ -877,7 +888,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       ) : (
                         // Render "No data found" when no data is available
                         <MenuItem disabled>
-                          <ListItemText primary="No data found" />
+                          <ListItemText
+                            className="mx-4 pl-4"
+                            primary="No data found"
+                          />
                         </MenuItem>
                       )}
                     </Select>
@@ -943,7 +957,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         ) : (
                           // Render "No data found" when no data is available
                           <MenuItem disabled>
-                            <ListItemText primary="No data found" />
+                            <ListItemText
+                              className="mx-4 pl-4"
+                              primary="No data found"
+                            />
                           </MenuItem>
                         )
                       }
