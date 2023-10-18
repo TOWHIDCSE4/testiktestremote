@@ -775,6 +775,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         borderRadius: "8px",
                         fontSize: "14px",
                         height: "38px",
+                        marginLeft: "10px",
                       }}
                       value={machineClass}
                       onChange={(event) => handleMachineClassChange(event)}
@@ -876,7 +877,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 </div>
                 {/* part selector */}
                 <div className="flex w-1/2 text-[11px] items-center">
-                  <p className="w-1/6 font-semibold text-right mr-2">
+                  <p className="w-1/6 font-semibold text-right ml-0 pl-0 mr-2">
                     PART SELECTOR
                   </p>
                   {/* <AsyncPaginate
@@ -907,6 +908,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         borderRadius: "8px",
                         fontSize: "14px",
                         height: "38px",
+                        marginLeft: "10px",
                       }}
                       value={partsSelected}
                       onChange={(event) => handlePartsChange(event)}
