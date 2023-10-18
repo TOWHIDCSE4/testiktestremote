@@ -119,6 +119,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
         runIntervalClock()
       }
       if (data.action === "endAndAdd") {
+        setIsCycleClockStopping(true)
+        setCycleClockInSeconds(0)
         runIntervalClock()
       }
       if (data.action === "end") {
@@ -158,7 +160,9 @@ const Controller = ({ timerId }: { timerId: string }) => {
           if (response?.data?.items[0]?.endAt) {
             setIsTimerControllerEnded(true)
           } else {
-            runIntervalClock()
+            if (!setIsTimerControllerEnded) {
+              runIntervalClock()
+            }
           }
         } catch (error) {
           throw error
