@@ -9,36 +9,15 @@ export const paginated = async (req: Request, res: Response) => {
   const { page, role, locationId, status, name, excludeUser } = req.query
   if (page) {
     try {
-      const query = {
-        ...(role && role !== "null" ? { role: role } : {}),
-        ...(locationId && locationId !== undefined
-          ? { locationId: locationId }
-          : {}),
-        ...(status && status !== "null" ? { status: status } : {}),
-        _id: { $ne: excludeUser },
-        $and: [
-          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
-          ...(name && name !== ""
-            ? [
-                {
-                  $or: [
-                    { firstName: { $regex: `.*${name}.*`, $options: "i" } },
-                    { lastName: { $regex: `.*${name}.*`, $options: "i" } },
-                  ],
-                },
-              ]
-            : []),
-        ],
-      }
-      console.log("🚀 ~ file: paginated.ts:13 ~ paginated ~ query:", query)
-
       const usersCount = await Users.find({
         ...(role && role !== "null" ? { role: role } : {}),
         ...(locationId && locationId !== undefined
           ? { locationId: locationId }
           : {}),
         ...(status && status !== "null" ? { status: status } : {}),
-        _id: { $ne: excludeUser },
+        ...(excludeUser && excludeUser !== "undefined"
+          ? { _id: { $ne: excludeUser } }
+          : {}),
         $and: [
           { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
           ...(name && name !== ""
@@ -57,7 +36,10 @@ export const paginated = async (req: Request, res: Response) => {
         ...(role && role !== "null" ? { role: role } : {}),
         ...(locationId && { locationId: locationId }),
         ...(status && status !== "null" ? { status: status } : {}),
-        _id: { $ne: excludeUser },
+        ...(excludeUser && excludeUser !== "undefined"
+          ? { _id: { $ne: excludeUser } }
+          : {}),
+        // _id: { $ne: excludeUser },
         $and: [
           { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
           ...(name

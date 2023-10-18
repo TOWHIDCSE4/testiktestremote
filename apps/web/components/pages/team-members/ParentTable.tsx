@@ -1,8 +1,4 @@
 "use client"
-import {
-  ChevronUpDownIcon,
-  EllipsisVerticalIcon,
-} from "@heroicons/react/24/solid"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
@@ -13,11 +9,7 @@ import {
   T_Locations,
   T_UserRole,
 } from "custom-validator"
-import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/20/solid"
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
 import useLocations from "../../../hooks/locations/useLocations"
 import { USER_ROLES, USER_STATUSES } from "../../../helpers/constants"
@@ -45,7 +37,6 @@ const ARR_USER_STATUSES = [
 const Content = () => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
-
   const storeSession = useStoreSession(
     (
       state: {
@@ -89,6 +80,9 @@ const Content = () => {
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
   const [action, setAction] = useState<T_UserStatus | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
+  const [isOpenCity, setIsOpenCity] = useState()
+  const statusArray = ["Pending", "Active", "Rejected", "Archived"]
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
@@ -116,15 +110,6 @@ const Content = () => {
     }
   }
 
-  const handleChangeCheck = (e: any, id: string) => {
-    e.stopPropagation()
-    setCheckedProduction((prevState) =>
-      prevState.some((item) => item.id === id)
-        ? prevState.filter((item) => item.id !== id)
-        : [...prevState, { id }]
-    )
-  }
-
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
   const ARR_USER_ROLES = [
     ...(storeSession?.role === "Super" ? [USER_ROLES.Administrator] : []),
@@ -135,6 +120,7 @@ const Content = () => {
     USER_ROLES.Accounting,
     USER_ROLES.Sales,
   ]
+
   const filterInputs = () => {
     if (filterBy === "Location") {
       return (
@@ -244,18 +230,6 @@ const Content = () => {
     }
   }, [userProfile, selectedRole, selectedStatus])
 
-  const handleSelectAllProduction = (event: any) => {
-    const data = paginated?.items ?? []
-    let updatedArray = [] as any
-    updatedArray =
-      data?.length > 0 && event.target.checked
-        ? data
-            ?.filter((item) => item?._id !== undefined)
-            .map((item) => ({ id: item?._id }))
-        : []
-    setCheckedProduction(updatedArray)
-  }
-
   const items = [
     {
       label: "Administrator",
@@ -284,19 +258,19 @@ const Content = () => {
   ]
 
   const handleSelectChange = (event: any) => {
-    setStatus(event.target.value)
-    setSelectedStatus(event.target.value)
-    if (event.target.value === "Pending") {
-      setSelectedColor("text-yellow-900")
-    } else if (event.target.value === "Active") {
-      setSelectedColor("text-green-900")
-    } else if (event.target.value === "Rejected") {
-      setSelectedColor("text-red-900")
-    } else if (event.target.value === "Archived") {
-      setSelectedColor("text-yellow-600")
-    } else {
-      setSelectedColor("")
-    }
+    // setStatus(event.target.value)
+    // setSelectedStatus(event.target.value)
+    // if (event.target.value === "Pending") {
+    //   setSelectedColor("text-yellow-900")
+    // } else if (event.target.value === "Active") {
+    //   setSelectedColor("text-green-900")
+    // } else if (event.target.value === "Rejected") {
+    //   setSelectedColor("text-red-900")
+    // } else if (event.target.value === "Archived") {
+    //   setSelectedColor("text-yellow-600")
+    // } else {
+    //   setSelectedColor("")
+    // }
   }
 
   const handleTeamListing = (event: any) => {
@@ -316,6 +290,38 @@ const Content = () => {
     )
   }
 
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen)
+  }
+
+  type ColorMapping = {
+    Pending: string
+    Active: string
+    Rejected: string
+    Archived: string
+  }
+
+  const handleSelectDropdown = (value: string) => {
+    setSelectedStatus(value)
+    setIsOpen(false)
+    console.log("Selected Value:", value)
+
+    const colorMapping: { [key: string]: string } = {
+      Pending: "text-yellow-700",
+      Active: "text-green-800",
+      Rejected: "text-red-800",
+      Archived: "text-yellow-500",
+    }
+    console.log("Color Mapping:", colorMapping)
+    setSelectedColor(colorMapping[value] || "")
+    console.log("Selected Color:", colorMapping[value] || "")
+  }
+
+  const handleHideCity = (idx: any) => {
+    if (isOpenCity || isOpenCity == 0) setIsOpenCity(undefined)
+    else setIsOpenCity(idx)
+  }
+
   return (
     <>
       <div
@@ -324,61 +330,63 @@ const Content = () => {
         }`}
       >
         <div className="px-1 w-full pt-2 ">
-          <div className="flex justify-between h-44">
+          <div className="flex justify-between h-32">
             <div className="flex flex-col w-72 sm:flex-none cursor-pointer h-6">
               <div className="flex ml-1">
                 <select
                   id="cars"
                   className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
                   onChange={handleTeamListing}
-                  // value={selectedValue}
+                  // value={selectedStatus}
                 >
-                  <option value="">Select Role</option>
+                  <option className="hidden">Select Role</option>
                   {items.map((item) => (
                     <option key={item.key} value={item.label}>
                       {item.label}
                     </option>
                   ))}
                 </select>
-                <label className="text-[#7F1D1D] text-lg">Team Listing</label>
-                <span className="text-lg font-bold flex pl-1">
+                <label className="text-[#7F1D1D] text-md uppercase font-semibold">
+                  Team Listing
+                </label>
+                <span className="text-md font-bold flex pl-1">
                   -
-                  <p className="pl-1 text-[#172554] uppercase">
+                  <p className="pl-0.5 text-[#172554] uppercase">
                     {selectedRole}
                   </p>
                 </span>
               </div>
-              <div className="mt-4 ml-4 flex flex-col">
+              <div className="mt-5 ml-4 flex flex-col">
                 <span
-                  className={`text-3xl uppercase font-semibold ${selectedColor}`}
+                  className={`text-[2.5rem] uppercase font-semibold cursor-pointer ${selectedColor}`}
+                  onClick={toggleDropdown}
                 >
                   {selectedStatus}
                 </span>
-                <select
-                  name="status"
-                  id="status"
-                  onChange={handleSelectChange}
-                  className={`w-32 rounded-lg mt-6 h-10 ${selectedColor}`}
-                >
-                  <option value="Pending" className="text-yellow-900">
-                    Pending
-                  </option>
-                  <option value="Active" className="text-green-900">
-                    Active
-                  </option>
-                  <option value="Rejected" className="text-red-900">
-                    Rejected
-                  </option>
-                  <option value="Archived" className="text-yellow-600">
-                    Archived
-                  </option>
-                </select>
+                {isOpen && (
+                  <div className="bottom-[39rem] absolute mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-10">
+                    <ul>
+                      {statusArray.map((status, index) => (
+                        <li
+                          key={index}
+                          onClick={() => handleSelectDropdown(status)}
+                          className="cursor-pointer px-4 py-2 hover:bg-gray-200"
+                        >
+                          {status}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
-            <div className=" space-y-2 mr-10">
-              <div className="flex justify-start text-gray-900 ml-14">
-                <span className="text-[#7F1D1D]">City:</span>
-                <div className="border-b-[3px] border-[#172554] w-60 text-center">
+            <div className="space-y-2 mr-4">
+              <div className="flex justify-end text-gray-900 space-x-1">
+                <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
+                  {" "}
+                  City{" "}
+                </span>
+                <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
                   {locations && locations.items
                     ? storeSession?.role === ("Administrator" || "Super")
                       ? locations.items.map((location, index) => (
@@ -400,22 +408,28 @@ const Content = () => {
                     : ""}
                 </div>
               </div>
-              <div className="flex text-gray-900 ml-8">
-                <span className="text-[#7F1D1D]">Factory:</span>
-                <div className="border-b-[3px] border-[#172554] w-60 text-center">
+              <div className="flex justify-end text-gray-900 space-x-1">
+                <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
+                  Factory
+                </span>
+                <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                  <span className="text-start text-[#7F1D1D]">:</span>
                   <span>All</span>
                 </div>
               </div>
-              <div className="flex text-gray-900">
-                <span className="text-[#7F1D1D]">Department:</span>
-                <div className="border-b-[3px] border-[#172554] w-60 text-center">
+              <div className="flex justify-end text-gray-900 space-x-1">
+                <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
+                  Department
+                </span>
+                <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                  <span className="text-start text-[#7F1D1D]">:</span>
                   <span>All</span>
                 </div>
               </div>
             </div>
-            <div className=" space-y-5 px-2">
+            <div className=" w-[30rem] space-y-8 px-5">
               <div className="flex justify-center text-end text-gray-900 ">
-                <span className="text-gray-500">
+                <span className="text-gray-500 text-[14px] uppercase ">
                   Add New
                   <br /> Team Member
                 </span>
@@ -435,107 +449,19 @@ const Content = () => {
                 </svg>
               </div>
               <div className="flex justify-center text-gray-900 ">
-                <span className="py-1.5 px-3 border-1 bg-[#7F1D1D] border-black rounded-lg text-white">
-                  Create Team List
-                </span>
+                {/* <span className="py-1.5 px-2 border-1 text-[14px] uppercase bg-[#7F1D1D] border-black rounded-md text-white"> */}
+                {/* Create Team List */}
+                {/* </span> */}
+                <input
+                  type="search"
+                  className="peer block text-sm bg-slate-200 focus:placeholder:opacity-30 uppercase ring-1 placeholder:opacity-30 focus:ring-1 focus:border-1 focus:border-gray-400 focus:ring-slate-500 ring-gray-400 min-h-[auto] placeholder:text-gray-500 text-black w-[9.5rem] rounded border-0 bg-transparent px-3 py-[0.23rem] leading-[1.6] outline-none transition-all duration-200 ease-linear peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
+                  id="exampleSearch2"
+                  placeholder="Search Users"
+                />
               </div>
             </div>
           </div>
-          <div className="flex">
-            {/* <div className="flex px-2 pb-8">
-              <div className="flex"> */}
-            {/* <div className="pl-0 space-y-2">
-                  <div className="flex justify-start text-gray-900 ml-14">
-                    <span className="text-[#7F1D1D]">City:</span>
-                    <div className="border-b-[3px] border-[#172554] w-60 text-center">
-                      <span>Seguin, Conroe, Gunter</span>
-                    </div>
-                  </div>
-                  <div className="flex text-gray-900 ml-8">
-                    <span className="text-[#7F1D1D]">Factory:</span>
-                    <div className="border-b-[3px] border-[#172554] w-60 text-center">
-                      <span>All</span>
-                    </div>
-                  </div>
-                  <div className="flex text-gray-900">
-                    <span className="text-[#7F1D1D]">Department:</span>
-                    <div className="border-b-[3px] border-[#172554] w-60 text-center">
-                      <span>All</span>
-                    </div>
-                  </div>
-                </div> */}
-
-            {/* <div className="ml-12 space-y-5">
-                  <div className="flex justify-end text-end text-gray-900 ml-14">
-                    <span className="text-gray-500">
-                      Add New
-                      <br /> Team Member
-                    </span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      className="w-8 ml-2 mt-2 text-white bg-[#172554] h-8 rounded-md"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 4.5v15m7.5-7.5h-15"
-                      />
-                    </svg>
-                  </div>
-                  <div className="flex justify-end text-gray-900 ml-8">
-                    <span className="py-1.5 px-5 border-1 bg-[#7F1D1D] border-black rounded-lg text-white">
-                      Create Team List
-                    </span>
-                  </div>
-                </div> */}
-            {/* <div className="flex flex-col whitespace-nowrap justify-between">
-              <div className="w-full flex justify-center items-center"></div>
-            </div>
-            <div className="flex flex-col whitespace-nowrap justify-between">
-              <div className="w-full flex justify-center items-center"></div>
-            </div>
-            <div>
-              
-            </div>
-
-            <div className="hidden">
-              <label
-                htmlFor="filterBy"
-                className="block text-sm font-medium text-gray-900"
-              >
-                Team Listing
-              </label>
-              <select
-                id="filterBy"
-                name="filterBy"
-                className="mt-2 block w-full rounded-md border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                onChange={(e) => setFilterBy(e.target.value)}
-              >
-                <option>All</option>
-                <option>Status</option>
-                {userProfile?.item.role === "Super" && (
-                  <option>Location</option>
-                )}
-                <option className="flex">Team Listing</option>
-              </select>
-            </div>
-            <div className="flex">
-            {filterInputs()}
-              <label
-                htmlFor="location"
-                className="block text-sm font-medium text-gray-900"
-              >
-                Team Listing
-              </label>
-              
-            </div> */}
-            {/* </div>
-            </div> */}
-          </div>
+          <div className="flex"></div>
           {isPaginatedLoading ? (
             <div className="flex items-center justify-center mb-4 mt-9 w-full h-96">
               <div
@@ -553,17 +479,12 @@ const Content = () => {
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
               <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                 <tr>
-                  <th scope="col" className="w-[10%] text-slate-900"></th>
-                  <th scope="col" className="w-[15%] text-slate-900">
-                    <div className="flex items-center justify-center">
+                  <th scope="col" className="w-[6%] text-slate-900"></th>
+                  <th scope="col" className="w-[14%]">
+                    <div className="flex items-start justify-start ml-6">
                       {/* <a href="#" className="group inline-flex items-center"> */}
                       User
-                      <button
-                        onClick={
-                          (e) => {}
-                          // handleInputChange(e, "createdAt")
-                        }
-                      >
+                      <button onClick={(e) => {}}>
                         <svg
                           className="w-3 h-3 ml-1.5"
                           aria-hidden="true"
@@ -584,15 +505,9 @@ const Content = () => {
                                       </a> */}
                   </th>
                   <th>
-                    <div className="flex items-center justify-center">
-                      {/* <a href="#" className="group inline-flex items-center"> */}
-                      City
-                      <button
-                        onClick={
-                          (e) => {}
-                          // handleInputChange(e, "createdAt")
-                        }
-                      >
+                    <div className="flex items-center text justify-center">
+                      <span> City</span>
+                      <button onClick={(e) => {}}>
                         <svg
                           className="w-3 h-3 ml-1.5"
                           aria-hidden="true"
@@ -619,18 +534,14 @@ const Content = () => {
                     </span>
                   </a>
                 </th> */}
-                  <th>
-                    <div className="flex items-center justify-center">
-                      {/* <a href="#" className="group inline-flex items-center"> */}
-                      Factory
-                      <button
-                        onClick={
-                          (e) => {}
-                          // handleInputChange(e, "createdAt")
-                        }
-                      >
+                  <th className="w-[23%]">
+                    <div className="flex items-start justify-center mr-4 ">
+                      <span className="flex">
+                        Factory<p className="text-red-600 ml-1">*</p>
+                      </span>
+                      <button onClick={(e) => {}}>
                         <svg
-                          className="w-3 h-3 ml-1.5"
+                          className="w-3 h-3 ml-1"
                           aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="currentColor"
@@ -641,79 +552,56 @@ const Content = () => {
                       </button>
                     </div>
                     {/* <span className="ml-2 flex-none rounded text-gray-400">
-    <ChevronUpDownIcon
-      className="h-5 w-5"
-      aria-hidden="true"
-    />
-  </span>
+                      <ChevronUpDownIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                      />
+                    </span>
                     </a> */}
                   </th>
-
-                  <th colSpan={1}>
-                    <div className="flex items-center justify-center px-0 py-3">
-                      {/* <a href="#" className="group inline-flex items-center"> */}
-                      Department
-                      <button
-                        onClick={
-                          (e) => {}
-                          // handleInputChange(e, "createdAt")
-                        }
-                      >
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-
-                    {/* <span className="ml-2 flex-none rounded text-gray-400">
-    <ChevronUpDownIcon
-      className="h-5 w-5"
-      aria-hidden="true"
-    />
-  </span>
-                    </a> */}
-                  </th>
-
-                  {/* <th colSpan={2}>
-                    <div className="flex items-center justify-center">
-                      <div className="relative mb-3" data-te-input-wrapper-init>
-                        <input
-                          type="search"
-                          className="peer block bg-slate-100 uppercase ring-1 focus:ring-1 focus:ring-[#172554] ring-gray-400 min-h-[auto] placeholder:text-gray-300 text-black w-40 rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
-                          id="exampleSearch2"
-                          placeholder="Search User"
-                        />
+                  <th colSpan={1} className="w-[25%]">
+                    <div className="flex items-start justify-start px-0 py-3">
+                      <div className="flex items-center ml-12">
+                        Department
+                        <p className="text-red-600 ml-1">*</p>
+                        <button onClick={(e) => {}}>
+                          <svg
+                            className="w-3 h-3 ml-1"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
-                  </th> */}
-                  {/* <th
-                  scope="col"
-                  className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                >
-                  <a href="#" className="group inline-flex items-center">
-                    Status
-                    <span className="ml-2 flex-none rounded text-gray-400">
+
+                    {/* <span className="ml-2 flex-none rounded text-gray-400">
                       <ChevronUpDownIcon
                         className="h-5 w-5"
                         aria-hidden="true"
                       />
                     </span>
-                  </a>
-                </th> */}
-                  {/* <th
-                  scope="col"
-                  className={`text-sm px-3 pl-3.5 pr-6 text-left  font-semibold text-gray-900 uppercase`}
-                >
-                  <a href="#" className="group inline-flex items-center">
-                    Actions
-                  </a>
-                </th> */}
+                    </a> */}
+                  </th>
+
+                  {/* <th colSpan={1}>
+                    <div className="flex items-center justify-center ">
+                      <div
+                        className="relative mb-3 mr-24"
+                        data-te-input-wrapper-init
+                      >
+                        <input
+                          type="search"
+                          className="peer block text-sm bg-slate-200 focus:placeholder:opacity-30 uppercase ring-1 placeholder:opacity-30 focus:ring-1 focus:border-1 focus:border-gray-400 focus:ring-slate-500 ring-gray-400 min-h-[auto] placeholder:text-gray-500 text-black w-[9.5rem] rounded border-0 bg-transparent px-3 py-[0.23rem] leading-[1.6] outline-none transition-all duration-200 ease-linear peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
+                          id="exampleSearch2"
+                          placeholder="Search Users"
+                        />
+                      </div>
+                    </div>
+                  </th> */}
                 </tr>
               </thead>
               {
@@ -748,34 +636,39 @@ const Content = () => {
                             <td className="pr-6">
                               <div className="flex items-center">
                                 {isAccordionOpen ? (
-                                  <ChevronDownIcon className="w-4 ml-2 mr-4 h-2 stroke-1 stroke-gray-100 bg-gray-100" />
+                                  <svg
+                                    height="30"
+                                    viewBox="0 0 48 48"
+                                    width="30"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="ml-1"
+                                  >
+                                    <path d="M14 20l10 10 10-10z" />
+                                    <path d="M0 0h48v48h-48z" fill="none" />
+                                  </svg>
                                 ) : (
-                                  <ChevronRightIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                                  <svg
+                                    height="16"
+                                    viewBox="0 0 48 48"
+                                    width="15"
+                                    className="ml-2"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M-838-2232H562v3600H-838z"
+                                      fill="none"
+                                    />
+                                    <path d="M16 10v28l22-14z" />
+                                    <path d="M0 0h48v48H0z" fill="none" />
+                                  </svg>
                                 )}
-                                {/* <input
-                                id={`checkbox-table-search-${idx}`}
-                                type="checkbox"
-                                className="w-4 h-4 bg-gray-100 text-gray-600  border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
-                                onClick={(e) =>
-                                  handleChangeCheck(e, item?._id ?? "")
-                                }
-                                checked={checked}
-                              /> */}
-                                <label
-                                  htmlFor={`checkbox-table-search-${idx}`}
-                                  className="sr-only"
-                                >
-                                  {item.status}
-                                </label>
                               </div>
                             </td>
-                            <td
-                              className={`py-0 pl-4 pr-3 text-sm font-medium`}
-                            >
+                            <td className="py-0 pl-4 pr-3 text-sm font-medium overflow-hidden whitespace-nowrap overflow-ellipsis">
                               {item.firstName + " " + item.lastName}
                             </td>
-                            <td className={`px-3 py-4 text-sm text-gray-500`}>
-                              <select
+
+                            {/* <select
                                 id="locations"
                                 name="locations"
                                 className="block w-28 rounded-md border-0 py-1 pl-3 pr-10 bg-gray-100 ring-opacity-0 bg-opacity-0 text-gray-900 focus:ring-opacity-0 ring-1 ring-inset ring-gray-100 focus:ring-1 focus:ring-gray-100 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
@@ -814,121 +707,221 @@ const Content = () => {
                                     )
                                   }
                                 )}
-                              </select>
+                              </select> */}
+                            <td className="text-sm text-gray-500 items-center justify-center pl-10">
+                              <button
+                                id="dropdownFactoryButton"
+                                data-dropdown-toggle="dropdown"
+                                className="w-full rounded-md text-center space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                type="button"
+                                onClick={() => handleHideCity(idx)}
+                              >
+                                <svg
+                                  height="25"
+                                  viewBox="0 0 48 48"
+                                  width="25"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M14 20l10 10 10-10z" />
+                                  <path d="M0 0h48v48h-48z" fill="none" />
+                                </svg>
+                                <span>
+                                  {typeof item?.locationId === "object" &&
+                                  item?.locationId?._id
+                                    ? item?.locationId?.name
+                                    : ""}
+                                </span>
+                              </button>
                             </td>
-                            <td className={`px-3 py-4 text-sm text-gray-500`}>
-                              <select
-                                id="factories"
-                                name="factories"
-                                className="block w-28 rounded-md bg-opacity-0 text-center bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-3 bg-gray pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                                onChange={(e) => {
-                                  if (e.target.value !== "Global") {
-                                    mutate(
-                                      {
-                                        ...item,
-                                        factoryId: e.target.value,
-                                        isGlobalFactory: false,
-                                        locationId:
-                                          typeof item.locationId === "object"
-                                            ? (item.locationId?._id as string)
-                                            : "",
-                                      },
-                                      callBackReq
-                                    )
-                                  } else {
-                                    mutate(
-                                      {
-                                        ...item,
-                                        factoryId: null,
-                                        isGlobalFactory: true,
-                                        role: USER_ROLES.Corporate as T_UserRole,
-                                        locationId:
-                                          typeof item.locationId === "object"
-                                            ? (item.locationId?._id as string)
-                                            : "",
-                                      },
-                                      callBackReq
-                                    )
-                                  }
-                                }}
-                                disabled={
-                                  isFactoriesLoading ||
-                                  isUpdateUserLoading ||
-                                  isPaginatedLoading
-                                }
-                                value={
-                                  item.isGlobalFactory
+                            <td
+                              className={`text-sm text-gray-500 items-center justify-center`}
+                              style={{ paddingLeft: "60px" }}
+                            >
+                              <button
+                                id="dropdownFactoryButton"
+                                data-dropdown-toggle="dropdown"
+                                className="w-full rounded-md text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-2 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                type="button"
+                                onClick={() => handleHideCity(idx)}
+                              >
+                                <svg
+                                  height="25"
+                                  viewBox="0 0 48 48"
+                                  width="25"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M14 20l10 10 10-10z" />
+                                  <path d="M0 0h48v48h-48z" fill="none" />
+                                </svg>
+                                <span>
+                                  {item.isGlobalFactory ?? false
                                     ? "Global"
-                                    : typeof item?.factoryId === "object" &&
-                                      item?.factoryId?._id
-                                    ? item?.factoryId?._id
-                                    : ""
-                                }
+                                    : item?.factoryId
+                                    ? typeof item.factoryId === "string"
+                                      ? item.factoryId
+                                      : item.factoryId.name
+                                    : "Select Factory"}
+                                </span>
+                              </button>
+                            </td>
+                            {/* <div
+                                id="dropdownFactory"
+                                className={`z-50 fixed ${
+                                  isOpenCity == idx ? "block" : "hidden"
+                                } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
                               >
-                                <option value="">Select Factory</option>
-                                {factories?.items?.map(
-                                  (item: T_Factory, index: number) => {
-                                    return (
-                                      <option
-                                        key={index}
-                                        value={item._id as string}
-                                      >
-                                        {item.name}
-                                      </option>
+                                <ul
+                                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                  aria-labelledby="dropdownFactoryButton"
+                                >
+                                  <li>
+                                    <a
+                                      href="#"
+                                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                      onClick={() => {
+                                        const value = "Global"
+                                        if (value !== "Global") {
+                                          mutate(
+                                            {
+                                              ...item,
+                                              factoryId: value,
+                                              isGlobalFactory: false,
+                                              locationId:
+                                                typeof item.locationId ===
+                                                "object"
+                                                  ? (item.locationId
+                                                      ?._id as string)
+                                                  : "",
+                                            },
+                                            callBackReq
+                                          )
+                                        } else {
+                                          mutate(
+                                            {
+                                              ...item,
+                                              factoryId: null,
+                                              isGlobalFactory: true,
+                                              role: USER_ROLES.Corporate as T_UserRole,
+                                              locationId:
+                                                typeof item.locationId ===
+                                                "object"
+                                                  ? (item.locationId
+                                                      ?._id as string)
+                                                  : "",
+                                            },
+                                            callBackReq
+                                          )
+                                        }
+                                      }}
+                                    >
+                                      Global
+                                    </a>
+                                  </li>
+                                  {factories?.items?.map(
+                                    (factory: any, index: any) => (
+                                      <li key={index}>
+                                        <a
+                                          href="#"
+                                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                          onClick={() => {
+                                            const value = factory._id
+                                            if (value !== "Global") {
+                                              mutate(
+                                                {
+                                                  ...item,
+                                                  factoryId: value,
+                                                  isGlobalFactory: false,
+                                                  locationId:
+                                                    typeof item.locationId ===
+                                                    "object"
+                                                      ? (item.locationId
+                                                          ?._id as string)
+                                                      : "",
+                                                },
+                                                callBackReq
+                                              )
+                                            } else {
+                                              mutate(
+                                                {
+                                                  ...item,
+                                                  factoryId: null,
+                                                  isGlobalFactory: true,
+                                                  role: USER_ROLES.Corporate as T_UserRole,
+                                                  locationId:
+                                                    typeof item.locationId ===
+                                                    "object"
+                                                      ? (item.locationId
+                                                          ?._id as string)
+                                                      : "",
+                                                },
+                                                callBackReq
+                                              )
+                                            }
+                                          }}
+                                        >
+                                          {factory.name}
+                                        </a>
+                                      </li>
                                     )
-                                  }
-                                )}
-                                <option>Global</option>
-                              </select>
-                            </td>
-                            <td className={`px-3 py-4 text-sm text-gray-500`}>
-                              <select
-                                id="roles"
-                                name="roles"
-                                className="block w-36 rounded-md bg-gray-300 bg-opacity-0 ring-opacity-0 focus:ring-opacity-0 border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                                onChange={(e) => {
-                                  mutate(
-                                    {
-                                      ...item,
-                                      role: e.target.value as T_UserRole,
-                                      locationId:
-                                        typeof item.locationId === "object"
-                                          ? (item.locationId?._id as string)
-                                          : "",
-                                    },
-                                    callBackReq
-                                  )
-                                }}
-                                value={item.role ? item.role : ""}
-                                disabled={
-                                  isUpdateUserLoading || isPaginatedLoading
-                                }
+                                  )}
+                                </ul>
+                              </div> */}
+
+                            <td
+                              className={`text-sm text-gray-500 items-center justify-center`}
+                              style={{ paddingLeft: "30px" }}
+                            >
+                              <button
+                                id="dropdownFactoryButton"
+                                data-dropdown-toggle="dropdown"
+                                className="w-full rounded-md text-center space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                type="button"
+                                onClick={() => handleHideCity(idx)}
                               >
-                                <option value="">Select Role</option>
-                                {ARR_USER_ROLES.map(
-                                  (item: string, index: number) => {
-                                    return <option key={index}>{item}</option>
-                                  }
-                                )}
-                              </select>
+                                <svg
+                                  height="25"
+                                  viewBox="0 0 48 48"
+                                  width="30"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M14 20l10 10 10-10z" />
+                                  <path d="M0 0h48v48h-48z" fill="none" />
+                                </svg>
+                                <span>
+                                  {typeof item.role === "string"
+                                    ? item.role
+                                    : "Select Role"}
+                                </span>
+                              </button>
                             </td>
-                            <td
-                              className={`py-0 pl-0  text-end w-24 pr-3 text-sm font-medium ${
-                                item.status === "Approved"
-                                  ? "text-green-600"
-                                  : item.status === "Pending"
-                                  ? "text-gray-600"
-                                  : "text-red-600"
-                              }`}
-                            >
-                              {item.status ? item.status : ""}
+                            <td>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  paddingLeft: "30px",
+                                }}
+                              >
+                                <label>Director</label>
+                                <input
+                                  type="checkbox"
+                                  style={{ marginLeft: "6px" }}
+                                />
+                              </div>
                             </td>
+
                             <td
-                              className={`pl-0 text-center py-0 text-sm text-gray-500 relative`}
+                              className={`pl-0 w-full py-0 text-sm text-gray-500 relative`}
                             >
-                              <Menu as="div" className="w-10">
+                              <Menu as="div" className="w-full text-end pr-4">
                                 <Menu.Button>
-                                  <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="1.5em"
+                                    viewBox="0 0 128 512"
+                                  >
+                                    <path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z" />
+                                  </svg>{" "}
                                 </Menu.Button>
                                 <Transition
                                   as={Fragment}
@@ -939,7 +932,7 @@ const Content = () => {
                                   leaveFrom="transform opacity-100 scale-100"
                                   leaveTo="transform opacity-0 scale-95"
                                 >
-                                  <Menu.Items className="absolute right-9 mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                  <Menu.Items className="absolute right-9 text-end mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <div className="py-1">
                                       {item.status !== "Approved" && (
                                         <Menu.Item>
@@ -1039,7 +1032,7 @@ const Content = () => {
                               aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
                               className={`${isAccordionOpen ? "open" : ""}`}
                             >
-                              <td colSpan={7}>
+                              <td colSpan={6}>
                                 <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
                                   <div className="w-[73%]">
                                     <div className="flex justify-between">
@@ -1062,8 +1055,8 @@ const Content = () => {
                                         <p
                                           className={`px-3 py-4 text-sm text-gray-500 ${
                                             item.email
-                                              ? "text-gray-900"
-                                              : "text-red-500"
+                                              ? "text-red-500"
+                                              : "text-gray-900"
                                           }`}
                                         >
                                           {/* {typeof item. === "object"

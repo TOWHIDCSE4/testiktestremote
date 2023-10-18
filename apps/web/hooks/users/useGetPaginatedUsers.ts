@@ -39,7 +39,10 @@ export async function getAllUsers({
   return (await res.json()) as T_DBReturn
 }
 
-function usePaginatedUsers(queryStatus: T_UserStatus, queryRole: T_UserRole) {
+function usePaginatedUsers(
+  queryStatus: T_UserStatus | null,
+  queryRole: T_UserRole
+) {
   const [page, setPage] = useState(1)
   const [name, setName] = useState("")
   const { data: userProfile } = useProfile()
