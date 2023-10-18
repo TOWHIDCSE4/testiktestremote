@@ -131,17 +131,17 @@ const TabTable = ({
       ) : !jobs?.error && jobs?.itemCount && jobs?.itemCount > 0 ? (
         <table className="w-full divide-y divide-gray-300 md:table-fixed">
           <thead>
-            <tr>
+            <tr className="">
               <th scope="col" className="w-4"></th>
               <th
                 scope="col"
-                className="py-3.5 md:pl-[1.6rem] text-left text-sm font-semibold text-gray-900 md:w-[4rem] uppercase"
+                className="pl-4 py-3.5  text-left text-sm font-semibold text-gray-900  uppercase"
               >
                 User
               </th>
               <th
                 scope="col"
-                className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase md:pl-4 md:w-20"
+                className=" pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase  "
               >
                 <a href="#" className="group inline-flex">
                   Factory
@@ -149,7 +149,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="md:pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 md:w-[9.5rem] xl:w-[12.5rem] 2xl:w-[13rem] xl3:w-[14.5rem] uppercase"
+                className="pl-6 lg:pl-8 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Name
@@ -157,7 +157,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 md:w-[12rem] xl:w-40 2xl:w-[12.5rem] xl3:w-[14.5rem] uppercase"
+                className="pl-4 lg:pl-8 xl:pl-12 py-3.5 text-left text-sm font-semibold text-gray-900  lg:w-[8rem] xl:w-[14rem]  uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Part
@@ -173,7 +173,7 @@ const TabTable = ({
               </th> */}
               <th
                 scope="col"
-                className="py-3.5 text-left text-sm font-semibold text-gray-900 md:w-[3rem] uppercase"
+                className=" pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Count
@@ -181,7 +181,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="md:pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 md:w-20 uppercase"
+                className="pl-6  lg:pl-8 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Priority
@@ -189,7 +189,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="md:pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 md:w-28 uppercase"
+                className=" pl-6  lg:pl-14  py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Due
@@ -197,7 +197,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="relative py-3.5 md:pl-4 md:w-10 text-center"
+                className="relative md:pl-16 lg:pl-16 py-3.5  md:w-0   text-center"
               >
                 {locked ? (
                   <LockClosedIcon
@@ -258,15 +258,15 @@ const TabTable = ({
                         )}
                       </div>
                     </td>
-                    <td className="py-3 text-sm text-gray-800 pl-4">
+                    <td className="py-3 lg:pl-6 text-sm text-gray-800 pl-4">
                       {typeof job?.factory === "object"
                         ? job?.factory?.name
                         : ""}
                     </td>
-                    <td className="py-3 pl-4 text-sm text-gray-800">
+                    <td className="py-3 xl:pl-4 first-letter:pl-4 text-sm text-gray-800">
                       {job?.name}
                     </td>
-                    <td className="py-3 pl-4 text-sm text-gray-800">
+                    <td className="py-3 lg:pl-10 xl:pl-10 text-sm text-gray-800">
                       {job?.part?.name}
                     </td>
                     {/* <td className="py-3 pl-6 text-sm text-gray-800">
@@ -340,7 +340,7 @@ const TabTable = ({
                       <br />
                       <span className="text-red-500 hidden">Overdue</span>
                     </td>
-                    <td className="py-3 pl-2 pr-1 text-left text-sm font-medium sm:pr-6 lg:pr-8">
+                    <td className="py-3 lg:pl-16 md:pl-16 text-left text-sm font-medium sm:pr-6 lg:pr-8">
                       <Menu as="div">
                         <Menu.Button onClick={(e) => e.stopPropagation()}>
                           <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
