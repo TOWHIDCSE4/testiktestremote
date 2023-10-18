@@ -101,3 +101,60 @@ export const timer = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const timerUnitsCreatedCount = async (req: Request, res: Response) => {
+  const { locationId, timerId, page, countPerPage } = req.query
+  if (!locationId || !timerId) {
+    return res.json({
+      error: true,
+      message: REQUIRED_VALUES_MISSING,
+      item: null,
+      itemCount: null,
+    })
+  }
+  try {
+    const location = await Locations.findOne({
+      _id: locationId,
+    })
+    dayjs.extend(utc.default)
+    dayjs.extend(timezone.default)
+    const timeZone = location?.timeZone
+    const currentDateStart = dayjs
+      .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
+      .toISOString()
+    const currentDateEnd = dayjs
+      .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
+      .toISOString()
+    const getDayFirstTimer = await ControllerTimers.findOne({
+      locationId: locationId,
+      createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+    })
+    if (!getDayFirstTimer) {
+      return res.json({
+        error: false,
+        item: {},
+        itemCount: 0,
+        message: null,
+      })
+    }
+    const timerLogsCount = await TimerLogs.find({
+      timerId,
+      createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+      $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+      stopReason: { $in: ["Unit Created"] },
+    }).countDocuments()
+    res.json({
+      error: false,
+      item: { count: timerLogsCount },
+      itemCount: timerLogsCount,
+      message: null,
+    })
+  } catch (error) {
+    return res.json({
+      error: true,
+      message: error,
+      item: null,
+      itemCount: null,
+    })
+  }
+}
