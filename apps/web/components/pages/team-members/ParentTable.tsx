@@ -396,30 +396,6 @@ const Content = () => {
                     </ul>
                   </div>
                 )}
-                {/* <span
-                  className={`text-4xl uppercase font-semibold ${selectedColor}`}
-                >
-                  {selectedValue}
-                </span>
-                <select
-                  name="status"
-                  id="status"
-                  onChange={handleSelectChange}
-                  className={`w-32 rounded-lg mt-6 h-10 ${selectedColor}`}
-                >
-                  <option value="Pending" className="text-yellow-900">
-                    Pending
-                  </option>
-                  <option value="Active" className="text-green-900">
-                    Active
-                  </option>
-                  <option value="Rejected" className="text-red-900">
-                    Rejected
-                  </option>
-                  <option value="Archived" className="text-yellow-600">
-                    Archived
-                  </option>
-                </select> */}
               </div>
             </div>
             <div className="space-y-2 mr-4">
