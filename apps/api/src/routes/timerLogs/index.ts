@@ -8,7 +8,7 @@ import {
   updateTimeLog,
 } from "./default"
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
-import { timer } from "./timer"
+import { timer, timerUnitsCreatedCount } from "./timer"
 import { productInventory } from "./productInventory"
 import { overallUnitTons } from "./overallUnitTons"
 import {
@@ -21,6 +21,7 @@ import { groupByDate } from "./groupByDate"
 //custom
 router.get("/group-by-date", isUserLoggedIn, groupByDate)
 router.get("/timer", isUserLoggedIn, timer)
+router.get("/timer/unit-created/count", isUserLoggedIn, timerUnitsCreatedCount)
 router.get("/global", isUserLoggedIn, globalLogs)
 router.get("/global/multi/filter", isUserLoggedIn, globalLogsMulti)
 router.get("/inventory/:partId", isUserLoggedIn, productInventory)
