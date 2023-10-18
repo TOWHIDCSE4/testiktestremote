@@ -2,6 +2,8 @@ export const REFETCH_ACTIVATED = true
 
 export const INVALID_AUTH = "Invalid authentication"
 
+export const API_URL = process.env.API_URL
+
 export const USER_ROLES = {
   Production: "Production",
   Corporate: "Corporate",

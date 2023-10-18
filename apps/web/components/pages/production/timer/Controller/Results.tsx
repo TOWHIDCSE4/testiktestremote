@@ -42,7 +42,7 @@ const Results = ({
         </h5>
       </div>
       {/* Medium - large screen show timer data */}
-      <div className="units relative hidden md:block lg:absolute md:mt-[7vh] lg:mt-0 lg:bottom-[28vh] xl:bottom-[20vh] 2xl:bottom-[25vh] lg:right-12 lg:w-[500px] xl:w-[600px] 2xl:w-[760px]">
+      <div className="units relative hidden md:block lg:absolute md:mt-[33vh] lg:mt-0 lg:bottom-[15vh] xl:bottom-[17vh] 2xl:bottom-[14vh] lg:right-12 lg:w-[500px] xl:w-[600px] 2xl:w-[760px]">
         <h6 className="text-right ipadair:mt-0 uppercase text-lg md:text-xl xl:text-[1.7vw] 2xl:text-2xl xl:mt-5 2xl:mt-5 text-gray-500 font-semibold leading-none mb-28  dark:bg-dark-blue dark:text-white">
           Units Created
         </h6>
@@ -91,7 +91,7 @@ const Results = ({
             ) : unitsCreated < 100 ? (
               <>
                 <span className="text-gray-400 ">0</span>
-                <span className="text-dark-blue dark:bg-dark-blue dark:text-white">
+                <span className="text-dark-blue dark:text-white">
                   {unitsCreated}
                 </span>
               </>
