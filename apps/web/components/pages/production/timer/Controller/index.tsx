@@ -106,7 +106,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   >([])
 
   const [readingMessages, setReadingMessages] = useState<string[]>([])
-
+  const [shouldRunEffect, setShouldRunEffect] = useState(true)
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
   const intervalRef = useRef<any>()
   let socket: Socket<any, any> | undefined
@@ -149,6 +149,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       if (data.action === "update-operator") {
         // console.log("data.action", data.action, data.user)
         setDefaultOperator(data.user)
+        setShouldRunEffect(false)
       }
     }
 
@@ -161,9 +162,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [])
 
   useEffect(() => {
-    cycleRefetch()
-    // console.log("here we are")
-  }, [defaultOperator === {}])
+    if (shouldRunEffect) {
+      cycleRefetch()
+    }
+  }, [shouldRunEffect])
+
   // Refocusing when tab minimize or change the tab
   useEffect(() => {
     const handleVisibilityChange = async () => {
