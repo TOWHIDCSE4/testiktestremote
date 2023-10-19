@@ -30,13 +30,13 @@ import useGetCycleTimer from "../../../../../hooks/timers/useGetCycleTimer"
 import useEndCycleTimer from "../../../../../hooks/timers/useEndCycleTimer"
 import useAddTimerLog from "../../../../../hooks/timerLogs/useAddTimerLog"
 import useAddControllerTimer from "../../../../../hooks/timers/useAddControllerTimer"
-import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
 import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer"
 import { useQueryClient } from "@tanstack/react-query"
 import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTimerByTimerId"
 import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
 import { Socket } from "socket.io-client"
 import { initializeSocket } from "../../../../../helpers/socket"
+import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -58,10 +58,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   const { mutate: addTimerLogs } = useAddTimerLog()
 
-  const { data: timerLogs } = useGetAllTimerLogs({
-    locationId: timerDetailData?.item?.locationId._id,
-    timerId,
-  })
+  const { data: timerLogsCount, refetch: refetchTimerLogs } =
+    useGetAllTimerLogsCount({
+      locationId: timerDetailData?.item?.locationId._id,
+      timerId,
+    })
 
   const { data: jobTimer, isLoading: isJobTimerLoading } =
     useGetJobTimerByTimerId({
@@ -78,7 +79,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const [stopMenu, setStopMenu] = useState(false)
   const [endMenu, setEndMenu] = useState(false)
   const [progress, setProgress] = useState(100)
-  const [unitsCreated, setUnitsCreated] = useState(0)
   const [totalCycle, setTotalCycle] = useState(0)
   const [totals, setTotals] = useState({
     unitsPerHour: 0,
@@ -114,17 +114,27 @@ const Controller = ({ timerId }: { timerId: string }) => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     socket = initializeSocket()
-    const runSocket = (data: any) => {
+    const runSocket = async (data: any) => {
       if (data.action === "add") {
         runIntervalClock()
       }
       if (data.action === "endAndAdd") {
         setIsCycleClockStopping(true)
         setCycleClockInSeconds(0)
-        runIntervalClock()
+        try {
+          const { isSuccess } = await cycleRefetch()
+          if (isSuccess) {
+            runIntervalClock()
+            setIsCycleClockStarting(false)
+          }
+          refetchTimerLogs()
+        } catch (error) {
+          throw error
+        }
       }
       if (data.action === "end") {
         stopInterval()
+        setIsCycleClockStarting(false)
       }
       if (data.action === "update-cycle" && data.timers.length > 0) {
         const timeZone = timerDetailData?.item?.locationId.timeZone
@@ -305,7 +315,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
     if (isTimerControllerEnded !== true) {
       stopInterval()
       setIsCycleClockStopping(false)
-      setIsCycleClockRunning(true)
       intervalRef.current = setInterval(() => {
         setCycleClockInSeconds((previousState: number) => previousState + 0.1)
       }, 100)
@@ -357,6 +366,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   const stopCycle = () => {
     setIsCycleClockStopping(true)
+    setIsCycleClockStarting(true)
     setCycleClockInSeconds(0)
     startingTimerReadings([
       `${currentDate} - Stopping timer`,
@@ -367,11 +377,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
     if (stopReasons.length === 0) {
       endAddCycleTimer(timerId, callBackReq)
       timeLogCall(jobTimer?.item?.jobId, ["Unit Created"])
-      setUnitsCreated(unitsCreated + 1)
       setProgress(0)
     } else {
       endCycleTimer(timerId, callBackReq)
-      timeLogCall(null, stopReasons)
+      timeLogCall(jobTimer?.item?.jobId, stopReasons)
       setProgress(0)
       setStopReasons([])
       setStopMenu(false)
@@ -407,52 +416,38 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [cycleTimer, jobTimer])
 
   useEffect(() => {
-    if (timerLogs?.items && timerLogs?.items?.length > 0) {
-      const unitsCreatedCount = timerLogs?.items?.filter((item) =>
-        item.stopReason.includes("Unit Created")
-      ).length
-      setUnitsCreated(unitsCreatedCount as number)
-      setTotalCycle(timerLogs.itemCount as number)
-    }
-  }, [timerLogs])
-
-  useEffect(() => {
     if (
       timerDetailData?.item &&
-      timerLogs?.itemCount &&
-      timerLogs?.items?.length > 0 &&
+      timerLogsCount?.itemCount &&
+      timerDetailData?.item > 0 &&
       timerClockInSeconds > 0
     ) {
-      const unitsCreatedCount = timerLogs?.items?.filter((item) =>
-        item.stopReason.includes("Unit Created")
-      ).length
+      const count = timerLogsCount?.item?.count as number
       const hoursLapse =
         timerClockInSeconds > 3600 ? timerClockInSeconds / 3600 : 1
       setTotals({
-        unitsPerHour: unitsCreatedCount / hoursLapse,
+        unitsPerHour: count / hoursLapse,
         tonsPerHour:
-          (unitsCreatedCount * (timerDetailData?.item?.partId.tons as number)) /
-          hoursLapse,
-        totalTons:
-          unitsCreatedCount * (timerDetailData?.item?.partId.tons as number),
+          (count * (timerDetailData?.item?.partId.tons as number)) / hoursLapse,
+        totalTons: count * (timerDetailData?.item?.partId.tons as number),
       })
     }
-  }, [timerLogs, timerDetailData])
+  }, [timerLogsCount, timerDetailData])
 
   useEffect(() => {
     if (timerDetailData?.item && timerClockInSeconds > 0) {
+      const count = timerLogsCount?.item?.count as number
       const hoursLapse =
         timerClockInSeconds > 3600 ? timerClockInSeconds / 3600 : 1
       setTotals({
-        unitsPerHour: unitsCreated / Math.round(hoursLapse),
+        unitsPerHour: count / Math.round(hoursLapse),
         tonsPerHour:
-          (unitsCreated * (timerDetailData?.item?.partId.tons as number)) /
+          (count * (timerDetailData?.item?.partId.tons as number)) /
           Math.round(hoursLapse),
-        totalTons:
-          unitsCreated * (timerDetailData?.item?.partId.tons as number),
+        totalTons: count * (timerDetailData?.item?.partId.tons as number),
       })
     }
-  }, [timerDetailData, unitsCreated])
+  }, [timerDetailData, timerLogsCount])
 
   useEffect(() => {
     if (!isTimerDetailDataLoading && timerDetailData?.item) {
@@ -524,7 +519,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
   // function of stop cycle interval
   const stopInterval = () => {
     clearInterval(intervalRef.current)
-    setIsCycleClockRunning(false)
   }
 
   return (
@@ -561,7 +555,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
             isEndAddCycleTimerLoading={isEndAddCycleTimerLoading}
             isEndCycleTimerLoading={isEndCycleTimerLoading}
           />
-          <Results unitsCreated={unitsCreated} totals={totals} />
+          <Results
+            unitsCreated={(timerLogsCount?.item?.count as number) ?? 0}
+            totals={totals}
+          />
         </div>
         {/* End Medium - large screen show timer data */}
       </div>

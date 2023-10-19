@@ -45,6 +45,7 @@ export type { T_Machine } from "./ZMachine"
 export { ZTimerLog, ZTimerLogStatus, ZTimerStopReason } from "./ZTimerLog"
 export type {
   T_TimerLog,
+  T_TimerLogCount,
   T_TimerLogStatus,
   T_TimerStopReason,
 } from "./ZTimerLog"

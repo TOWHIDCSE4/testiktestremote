@@ -40,6 +40,11 @@ export const ZTimerLog = z.object({
   deletedAt: z.date().nullable().optional(),
 })
 
+export const ZTimerLogCount = z.object({
+  count: z.number(),
+})
+
+export type T_TimerLogCount = z.infer<typeof ZTimerLogCount>
 export type T_TimerLog = z.infer<typeof ZTimerLog>
 export type T_TimerLogStatus = z.infer<typeof ZTimerLogStatus>
 export type T_TimerStopReason = z.infer<typeof ZTimerStopReason>
