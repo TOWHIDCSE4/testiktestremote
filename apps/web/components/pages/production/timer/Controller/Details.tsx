@@ -15,6 +15,7 @@ import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
+import useProfile from "../../../../../hooks/users/useProfile"
 
 type T_Props = {
   timerDetails: T_Timer // Show all details of controller
@@ -63,15 +64,20 @@ const Details = ({
     setLocationId,
     setPartId,
   } = useGetTimerJobs()
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
   const { mutate: updateJobTimer, isLoading: isUpdateJobTimerLoading } =
     useUpdateJobTimer()
   const [operatorQuery, setOperatorQuery] = useState("")
   const [openNewJobModal, setOpenNewJobModal] = useState(false)
   const [selectedOperator, setSelectedOperator] = useState({
-    id: "",
-    name: "",
+    id: userProfile?.item._id,
+    name: userProfile?.item.firstName + " " + userProfile?.item.lastName,
   })
+  // const [operator, setOperator] = useState({
+  //   id: userProfile?.item._id,
+  //   name: userProfile?.item.firstName + " " + userProfile?.item.lastName,
+  // })
 
   useEffect(() => {
     if (updateJob && jobUpdateId) {
@@ -85,6 +91,7 @@ const Details = ({
         id: defaultOperator._id,
         name: defaultOperator.firstName + " " + defaultOperator.lastName,
       })
+      console.log("DefaultOperator", defaultOperator)
       mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
     }
   }, [defaultOperator])
