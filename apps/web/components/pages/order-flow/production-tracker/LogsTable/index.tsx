@@ -449,23 +449,25 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     //   setCity(event.target.value[0])
     //   setCityLocation(event.target.value[1])
     // }
-    console.log(
-      "🚀 ~ file: index.tsx:448 ~ handleLocationChange ~ event:",
-      event
-    )
+    const selectedMachineClass: Array<any> = []
     setCity(event.target.value)
+    setMachineClass(selectedMachineClass)
   }
 
   useEffect(() => {
     setCityCounter(city.length)
   }, [city])
 
+  // useEffect(() => {
+  //   if(!city){
+  //     setMachineClass([])
+  //   }
+  // }, [city])
   const handleMachineClassChange = (event: SelectChangeEvent) => {
-    const selectedMachineClasses = event.target.value
-    console.log(selectedMachineClasses, "-----------selectedMachineClasses")
+    const selectedMachineClasses: string = event.target.value
 
-    const selectedMachines = []
-
+    const selectedMachines: Array<any> = []
+    //@ts-expect-error
     setMachineClass(selectedMachineClasses)
     setMachine(selectedMachines)
     // setSelectedMachineClasses(selectedMachineClasses);
@@ -476,9 +478,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }, [machineClass])
 
   const handleMachineChange = (event: any) => {
-    // console.log(`selected ${value}`);
+    const selectedParts: Array<any> = []
     setSelectedMachineValues(event.target.value)
     setMachine(event.target.value)
+    setPartsSelected(selectedParts)
   }
 
   useEffect(() => {
@@ -785,7 +788,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         marginLeft: "10px",
                       }}
                       value={machineClass}
-                      onChange={(event) => handleMachineClassChange(event)}
+                      onChange={(event: any) => handleMachineClassChange(event)}
                       renderValue={() => `${machineClassCounter} selected`}
                       MenuProps={MenuProps}
                     >
