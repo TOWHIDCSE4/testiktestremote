@@ -316,7 +316,7 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     endDate,
   } = req.query
   try {
-    const startTime = startDate
+    const startTime =startDate
       ? dayjs(startDate as string)
       : dayjs().startOf("week")
     const endTime = endDate ? dayjs(endDate as string) : dayjs().endOf("week")
@@ -391,61 +391,7 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
         },
       },
     ]
-    if (locationId) {
-      const locationids = locationId
-        //@ts-expect-error
-        .split(",")
-        //@ts-expect-error
-        .map((e) => new mongoose.Types.ObjectId(e))
-      //@ts-expect-error
-      aggregation[0].$match.locationId = { $in: locationids }
-    }
-    if (factoryId) {
-      const factoryids = factoryId
-        //@ts-expect-error
-        .split(",")
-        //@ts-expect-error
-        .map((e) => new mongoose.Types.ObjectId(e))
-      //@ts-expect-error
-      aggregation[0].$match.factoryId = { $in: factoryids }
-    }
-    if (machineId) {
-      const machineids = machineId
-        //@ts-expect-error
-        .split(",")
-        //@ts-expect-error
-        .map((e) => new mongoose.Types.ObjectId(e))
-      //@ts-expect-error
-      aggregation[0].$match.machineId = { $in: machineids }
-    }
-    if (machineClassId) {
-      const machineClassids = machineClassId
-        //@ts-expect-error
-        .split(",")
-        //@ts-expect-error
-        .map((e) => new mongoose.Types.ObjectId(e))
-      //@ts-expect-error
-      aggregation[0].$match.machineClassId = { $in: machineClassids }
-    }
-    if (partId) {
-      const partids = partId
-        //@ts-expect-error
-        .split(",")
-        //@ts-expect-error
-        .map((e) => new mongoose.Types.ObjectId(e))
-      //@ts-expect-error
-      aggregation[0].$match.partId = { $in: partids }
-    }
-    if (startDate && endDate) {
-      //@ts-expect-error
-      aggregation.$match.createdAt = {
-        //@ts-expect-error
-        $gte: new Date(startDate),
-        //@ts-expect-error
-        $lt: new Date(endDate),
-      }
-    }
-    const totalUnits = await timerLogs.find(query).countDocuments()
+    const totalUnits = await TimerLogs.find(query).countDocuments()
     const [result] = await parts.aggregate(aggregation).exec()
     const { totalTons } = result
     const globalUnitsPerHour = totalUnits / totalTime
@@ -463,7 +409,7 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     console.log(err)
     //@ts-expect-error
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    // Sentry.captureException(err)
+    Sentry.captureException(err)
     return {
       error: true,
       message,
