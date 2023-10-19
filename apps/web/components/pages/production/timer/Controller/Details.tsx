@@ -111,7 +111,7 @@ const Details = ({
         id: defaultOperator._id,
         name: defaultOperator.firstName + " " + defaultOperator.lastName,
       })
-      console.log("DefaultOperator", defaultOperator, operator)
+      // console.log('DefaultOperator', defaultOperator)
       mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
     }
   }, [defaultOperator])
@@ -272,7 +272,7 @@ const Details = ({
       </h4>
       <Combobox
         as="div"
-        value={operator ? operator : selectedOperator}
+        value={selectedOperator}
         onChange={setSelectedOperator}
         disabled={isComboboxDisabled}
       >
