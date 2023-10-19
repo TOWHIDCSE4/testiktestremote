@@ -154,6 +154,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
 
     socket?.on(`timer-${timerId}`, runSocket)
+    cycleRefetch()
 
     return () => {
       socket?.off(`timer-${timerId}`, runSocket)
@@ -166,7 +167,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       console.log("cycleRefetch()")
       cycleRefetch()
     }
-  }, [shouldRunEffect])
+  }, [])
 
   // Refocusing when tab minimize or change the tab
   useEffect(() => {
