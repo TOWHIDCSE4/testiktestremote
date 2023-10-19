@@ -152,7 +152,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [])
 
   useEffect(() => {
-    if (shouldRunEffect) {
+    if (defaultOperator) {
       console.log("cycleRefetch()")
       cycleRefetch()
     }
