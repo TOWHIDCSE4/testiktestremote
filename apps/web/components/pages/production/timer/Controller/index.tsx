@@ -147,7 +147,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setCycleClockInSeconds(secondsLapse)
       }
       if (data.action === "update-operator") {
-        // console.log("data.action", data.action, data.user)
+        console.log("data.action", data.action, data.user)
         setDefaultOperator(data.user)
         setShouldRunEffect(false)
       }
@@ -163,6 +163,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   useEffect(() => {
     if (shouldRunEffect) {
+      console.log("cycleRefetch()")
       cycleRefetch()
     }
   }, [shouldRunEffect])

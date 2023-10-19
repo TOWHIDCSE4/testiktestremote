@@ -111,7 +111,7 @@ const Details = ({
         id: defaultOperator._id,
         name: defaultOperator.firstName + " " + defaultOperator.lastName,
       })
-      // console.log('DefaultOperator', defaultOperator)
+      console.log("DefaultOperator", defaultOperator, operator)
       mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
     }
   }, [defaultOperator])
