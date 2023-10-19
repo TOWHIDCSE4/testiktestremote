@@ -16,6 +16,7 @@ import { Combobox } from "@headlessui/react"
 import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
 import useProfile from "../../../../../hooks/users/useProfile"
+import useGetCycleTimer from "../../../../../hooks/timers/useGetCycleTimer"
 
 type T_Props = {
   timerDetails: T_Timer // Show all details of controller
@@ -26,6 +27,7 @@ type T_Props = {
   updateJob: boolean
   jobUpdateId: string
   defaultOperator: any
+  timerId: string
   isJobTimerLoading: boolean // Timer jobs list loading
   isCycleClockRunning: boolean // Tracker run loading
 }
@@ -38,6 +40,7 @@ const Details = ({
   jobTimer,
   updateJob,
   jobUpdateId,
+  timerId,
   defaultOperator,
   isJobTimerLoading,
   isCycleClockRunning,
@@ -68,17 +71,29 @@ const Details = ({
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
   const { mutate: updateJobTimer, isLoading: isUpdateJobTimerLoading } =
     useUpdateJobTimer()
+  // const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimer(timerId)
   const [operatorQuery, setOperatorQuery] = useState("")
   const [openNewJobModal, setOpenNewJobModal] = useState(false)
   const [selectedOperator, setSelectedOperator] = useState({
-    id: userProfile?.item._id,
-    name: userProfile?.item.firstName + " " + userProfile?.item.lastName,
+    id: "",
+    name: "",
   })
-  // const [operator, setOperator] = useState({
-  //   id: userProfile?.item._id,
-  //   name: userProfile?.item.firstName + " " + userProfile?.item.lastName,
-  // })
 
+  // console.log('userProfile', userProfile)
+  const [operator, setOperator] = useState({
+    id: "",
+    name: "",
+  })
+
+  // useEffect(() => {
+  //   if (Object.keys(operator).length === 0) {
+  //     console.log('userProfile', userProfile)
+  //     setOperator({
+  //       id: userProfile?.item._id,
+  //       name: userProfile?.item.firstName + " " + userProfile?.item.lastName,
+  //     });
+  //   }
+  // }, [operator, userProfile]);
   useEffect(() => {
     if (updateJob && jobUpdateId) {
       updateJobTimer({ ...jobTimer, jobId: jobUpdateId }, callBackReq)
@@ -86,12 +101,17 @@ const Details = ({
   }, [updateJob, jobUpdateId])
 
   useEffect(() => {
+    // cycleRefetch()
     if (defaultOperator) {
       setSelectedOperator({
         id: defaultOperator._id,
         name: defaultOperator.firstName + " " + defaultOperator.lastName,
       })
-      console.log("DefaultOperator", defaultOperator)
+      setOperator({
+        id: defaultOperator._id,
+        name: defaultOperator.firstName + " " + defaultOperator.lastName,
+      })
+      // console.log('DefaultOperator', defaultOperator)
       mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
     }
   }, [defaultOperator])
