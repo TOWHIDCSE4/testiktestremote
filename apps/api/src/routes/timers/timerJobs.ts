@@ -13,11 +13,13 @@ export const timerJobs = async (req: Request, res: Response) => {
         locationId: req.query.locationId,
         factoryId: req.query.factoryId,
         partId: req.query.partId,
-        $or: [
-          { status: "Pending" },
-          { status: "Active" },
-          { deletedAt: { $exists: false } },
-          { deletedAt: null },
+        $and: [
+          {
+            $or: [{ status: "Pending" }, { status: "Active" }],
+          },
+          {
+            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+          },
         ],
       }
       const jobsCount = await Jobs.find(query).countDocuments()
