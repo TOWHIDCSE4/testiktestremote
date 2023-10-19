@@ -21,6 +21,7 @@ import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import { initializeSocket } from "../../../../helpers/socket"
 import { Socket } from "socket.io-client"
+import useGetAllTimerLogsCount from "../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 
 type T_Props = {
   timer: T_Timer
@@ -51,6 +52,11 @@ const Timer = ({
     locationId: timer.locationId as string,
     timerId: timer._id as string,
   })
+  const { data: timerLogsCount, refetch: refetchTimerLogs } =
+    useGetAllTimerLogsCount({
+      locationId: timer.locationId as string,
+      timerId: timer._id as string,
+    })
   const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimerRealTime(
     timer._id as string
   )
@@ -76,6 +82,7 @@ const Timer = ({
       if (data.action === "endAndAdd") {
         setCycleClockInSeconds(0)
         runCycle()
+        refetchTimerLogs()
       }
       if (data.action === "end") {
         setCycleClockInSeconds(0)
@@ -331,8 +338,8 @@ const Timer = ({
         </p>
         <div>
           <h2 className="font-semibold text-gray-400 text-5xl">
-            {totalTonsUnit?.item?.dailyUnits
-              ? addZeroFront(totalTonsUnit?.item.dailyUnits)
+            {timerLogsCount?.item?.count
+              ? addZeroFront(timerLogsCount?.item?.count)
               : "000"}
           </h2>
           <h6 className="text-gray-700 font-semibold uppercase text-lg">
