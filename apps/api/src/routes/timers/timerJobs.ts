@@ -9,20 +9,19 @@ import * as Sentry from "@sentry/node"
 export const timerJobs = async (req: Request, res: Response) => {
   if (req.query.locationId && req.query.partId && req.query.factoryId) {
     try {
-      const jobsCount = await Jobs.find({
+      const query = {
         locationId: req.query.locationId,
         factoryId: req.query.factoryId,
         partId: req.query.partId,
-        status: "Testing",
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      }).countDocuments()
-      const getJobs = await Jobs.find({
-        locationId: req.query.locationId,
-        factoryId: req.query.factoryId,
-        partId: req.query.partId,
-        status: "Testing",
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      })
+        $or: [
+          { status: "Pending" },
+          { status: "Active" },
+          { deletedAt: { $exists: false } },
+          { deletedAt: null },
+        ],
+      }
+      const jobsCount = await Jobs.find(query).countDocuments()
+      const getJobs = await Jobs.find(query)
       res.json({
         error: false,
         message: null,
