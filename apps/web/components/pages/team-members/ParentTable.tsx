@@ -81,8 +81,9 @@ const Content = () => {
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
   const [action, setAction] = useState<T_UserStatus | null>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [isOpenRole, setIsOpenRole] = useState()
   const [isOpenCity, setIsOpenCity] = useState()
-  const statusArray = ["Pending", "Active", "Rejected", "Archived"]
+  const [isOpenLocation, setIsOpenLocation] = useState()
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
@@ -121,6 +122,23 @@ const Content = () => {
     USER_ROLES.Sales,
   ]
 
+  // const selectRoleForUser = (role: string, item:object) => {
+  //   mutate(
+  //     {
+  //       ...item,
+  //       role: value,
+  //       isGlobalFactory: false,
+  //       locationId:
+  //         typeof item.locationId ===
+  //         "object"
+  //           ? (item.locationId
+  //               ?._id as string)
+  //           : "",
+  //     },
+  //     callBackReq
+  //   );
+
+  // }
   const filterInputs = () => {
     if (filterBy === "Location") {
       return (
@@ -290,21 +308,15 @@ const Content = () => {
     )
   }
 
+  const statusArray = ["Pending", "Active", "Rejected", "Archived"]
+
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
-  }
-
-  type ColorMapping = {
-    Pending: string
-    Active: string
-    Rejected: string
-    Archived: string
   }
 
   const handleSelectDropdown = (value: string) => {
     setSelectedStatus(value)
     setIsOpen(false)
-    console.log("Selected Value:", value)
 
     const colorMapping: { [key: string]: string } = {
       Pending: "text-yellow-700",
@@ -312,9 +324,7 @@ const Content = () => {
       Rejected: "text-red-800",
       Archived: "text-yellow-500",
     }
-    console.log("Color Mapping:", colorMapping)
     setSelectedColor(colorMapping[value] || "")
-    console.log("Selected Color:", colorMapping[value] || "")
   }
 
   const handleHideCity = (idx: any) => {
@@ -322,11 +332,21 @@ const Content = () => {
     else setIsOpenCity(idx)
   }
 
+  const handleHideRole = (idx: any) => {
+    if (isOpenRole || isOpenRole == 0) setIsOpenRole(undefined)
+    else setIsOpenRole(idx)
+  }
+
+  const handleHideLocation = (idx: any) => {
+    if (isOpenLocation || isOpenLocation == 0) setIsOpenLocation(undefined)
+    else setIsOpenLocation(idx)
+  }
+
   return (
     <>
       <div
-        className={`relative w-full mt-6 overflow-hidden bg-white drop-shadow-lg rounded-md ${
-          paginated ? "overflow-hidden" : "overflow-x-auto"
+        className={`relative w-full mt-6 bg-white overflow-auto drop-shadow-lg rounded-md ${
+          paginated ? "overflow-visible" : "overflow-x-auto"
         }`}
       >
         <div className="px-1 w-full pt-2 ">
@@ -364,7 +384,7 @@ const Content = () => {
                   {selectedStatus}
                 </span>
                 {isOpen && (
-                  <div className="bottom-[39rem] absolute mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-10">
+                  <div className="top-35 absolute overflow- mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
                     <ul>
                       {statusArray.map((status, index) => (
                         <li
@@ -449,9 +469,6 @@ const Content = () => {
                 </svg>
               </div>
               <div className="flex justify-center text-gray-900 ">
-                {/* <span className="py-1.5 px-2 border-1 text-[14px] uppercase bg-[#7F1D1D] border-black rounded-md text-white"> */}
-                {/* Create Team List */}
-                {/* </span> */}
                 <input
                   type="search"
                   className="peer block text-sm bg-slate-200 focus:placeholder:opacity-30 uppercase ring-1 placeholder:opacity-30 focus:ring-1 focus:border-1 focus:border-gray-400 focus:ring-slate-500 ring-gray-400 min-h-[auto] placeholder:text-gray-500 text-black w-[9.5rem] rounded border-0 bg-transparent px-3 py-[0.23rem] leading-[1.6] outline-none transition-all duration-200 ease-linear peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
@@ -480,7 +497,7 @@ const Content = () => {
               <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                 <tr>
                   <th scope="col" className="w-[6%] text-slate-900"></th>
-                  <th scope="col" className="w-[14%]">
+                  <th scope="col" className="w-[12%]">
                     <div className="flex items-start justify-start ml-6">
                       {/* <a href="#" className="group inline-flex items-center"> */}
                       User
@@ -504,7 +521,7 @@ const Content = () => {
                     </span>
                                       </a> */}
                   </th>
-                  <th>
+                  <th className="w-[20%]">
                     <div className="flex items-center text justify-center">
                       <span> City</span>
                       <button onClick={(e) => {}}>
@@ -534,8 +551,8 @@ const Content = () => {
                     </span>
                   </a>
                 </th> */}
-                  <th className="w-[23%]">
-                    <div className="flex items-start justify-center mr-4 ">
+                  <th className="w-[10%]">
+                    <div className="flex items-start justify-start  ">
                       <span className="flex">
                         Factory<p className="text-red-600 ml-1">*</p>
                       </span>
@@ -620,21 +637,25 @@ const Content = () => {
                         <React.Fragment key={item._id}>
                           <tr
                             key={idx}
-                            className={`bg-gray h-4 text-slate-900 font-medium border-b ${rowClass} ${
-                              isAccordionOpen ? "open" : ""
-                            } ${!item._id ? "bg-red-50" : ""}`}
-                            data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
-                            aria-expanded={isAccordionOpen}
-                            aria-controls={`accordion-arrow-icon-body-${idx}`}
+                            className={`bg-gray h-4 text-slate-900 font-medium border-b ${rowClass}  ${
+                              !item._id ? "bg-red-50" : ""
+                            }`}
                             aria-colspan={6}
-                            onClick={() =>
-                              toggleAccordion(
-                                `accordion-arrow-icon-body-${idx}`
-                              )
-                            }
                           >
                             <td className="pr-6">
-                              <div className="flex items-center">
+                              <div
+                                data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
+                                aria-controls={`accordion-arrow-icon-body-${idx}`}
+                                onClick={() =>
+                                  toggleAccordion(
+                                    `accordion-arrow-icon-body-${idx}`
+                                  )
+                                }
+                                aria-expanded={isAccordionOpen}
+                                className={`flex items-center ${
+                                  isAccordionOpen ? "open" : ""
+                                }`}
+                              >
                                 {isAccordionOpen ? (
                                   <svg
                                     height="30"
@@ -708,15 +729,16 @@ const Content = () => {
                                   }
                                 )}
                               </select> */}
-                            <td className="text-sm text-gray-500 items-center justify-center pl-10">
+                            <td className="text-sm text-gray-500 items-center fixed justify-center pl-10">
                               <button
                                 id="dropdownFactoryButton"
                                 data-dropdown-toggle="dropdown"
                                 className="w-full rounded-md text-center space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                 type="button"
-                                onClick={() => handleHideCity(idx)}
+                                onClick={() => handleHideLocation(idx)}
                               >
                                 <svg
+                                  className="text-black"
                                   height="25"
                                   viewBox="0 0 48 48"
                                   width="25"
@@ -732,15 +754,116 @@ const Content = () => {
                                     : ""}
                                 </span>
                               </button>
+                              <div
+                                id="dropdownFactory"
+                                className={`z-10 relative ${
+                                  isOpenLocation == idx ? "block" : "hidden"
+                                } bg-white divide-y overflow-visible divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                              >
+                                <ul
+                                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                  aria-labelledby="dropdownFactoryButton"
+                                >
+                                  <li>
+                                    <a
+                                      href="#"
+                                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                      onClick={() => {
+                                        const value = "Global"
+                                        if (value !== "Global") {
+                                          mutate(
+                                            {
+                                              ...item,
+                                              factoryId: value,
+                                              isGlobalFactory: false,
+                                              locationId:
+                                                typeof item.locationId ===
+                                                "object"
+                                                  ? (item.locationId
+                                                      ?._id as string)
+                                                  : "",
+                                            },
+                                            callBackReq
+                                          )
+                                        } else {
+                                          mutate(
+                                            {
+                                              ...item,
+                                              factoryId: null,
+                                              isGlobalFactory: true,
+                                              role: USER_ROLES.Corporate as T_UserRole,
+                                              locationId:
+                                                typeof item.locationId ===
+                                                "object"
+                                                  ? (item.locationId
+                                                      ?._id as string)
+                                                  : "",
+                                            },
+                                            callBackReq
+                                          )
+                                        }
+                                      }}
+                                    >
+                                      Global
+                                    </a>
+                                  </li>
+                                  {locations?.items?.map(
+                                    (location: any, index: any) => (
+                                      <li key={index}>
+                                        <a
+                                          href="#"
+                                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                          onClick={() => {
+                                            const value = location._id
+                                            if (value !== "Global") {
+                                              mutate(
+                                                {
+                                                  ...item,
+                                                  factoryId: value,
+                                                  isGlobalFactory: false,
+                                                  locationId:
+                                                    typeof item.locationId ===
+                                                    "object"
+                                                      ? (item.locationId
+                                                          ?._id as string)
+                                                      : "",
+                                                },
+                                                callBackReq
+                                              )
+                                            } else {
+                                              mutate(
+                                                {
+                                                  ...item,
+                                                  factoryId: null,
+                                                  isGlobalFactory: true,
+                                                  role: USER_ROLES.Corporate as T_UserRole,
+                                                  locationId:
+                                                    typeof item.locationId ===
+                                                    "object"
+                                                      ? (item.locationId
+                                                          ?._id as string)
+                                                      : "",
+                                                },
+                                                callBackReq
+                                              )
+                                            }
+                                          }}
+                                        >
+                                          {location.name}
+                                        </a>
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
                             </td>
                             <td
-                              className={`text-sm text-gray-500 items-center justify-center`}
-                              style={{ paddingLeft: "60px" }}
+                              className={`text-sm text-gray-500 items-start justify-center`}
                             >
                               <button
                                 id="dropdownFactoryButton"
                                 data-dropdown-toggle="dropdown"
-                                className="w-full rounded-md text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-2 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full rounded-md text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                 type="button"
                                 onClick={() => handleHideCity(idx)}
                               >
@@ -763,8 +886,8 @@ const Content = () => {
                                     : "Select Factory"}
                                 </span>
                               </button>
-                            </td>
-                            {/* <div
+
+                              <div
                                 id="dropdownFactory"
                                 className={`z-50 fixed ${
                                   isOpenCity == idx ? "block" : "hidden"
@@ -865,18 +988,19 @@ const Content = () => {
                                     )
                                   )}
                                 </ul>
-                              </div> */}
+                              </div>
+                            </td>
 
                             <td
-                              className={`text-sm text-gray-500 items-center justify-center`}
+                              className={`text-sm text-gray-500 items-start justify-start`}
                               style={{ paddingLeft: "30px" }}
                             >
                               <button
                                 id="dropdownFactoryButton"
                                 data-dropdown-toggle="dropdown"
-                                className="w-full rounded-md text-center space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full rounded-md text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                 type="button"
-                                onClick={() => handleHideCity(idx)}
+                                onClick={() => handleHideRole(idx)}
                               >
                                 <svg
                                   height="25"
@@ -893,6 +1017,25 @@ const Content = () => {
                                     : "Select Role"}
                                 </span>
                               </button>
+                              <div
+                                id="dropdownFactory"
+                                className={`z-50 fixed ${
+                                  isOpenRole == idx ? "block" : "hidden"
+                                } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                              >
+                                <ul
+                                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                  aria-labelledby="dropdownFactoryButton"
+                                >
+                                  {Object.values(USER_ROLES).map(
+                                    (role, index) => (
+                                      <a className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                        <li key={index}>{role}</li>
+                                      </a>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
                             </td>
                             <td>
                               <div
@@ -900,6 +1043,7 @@ const Content = () => {
                                   display: "flex",
                                   alignItems: "center",
                                   paddingLeft: "30px",
+                                  marginLeft: "30px",
                                 }}
                               >
                                 <label>Director</label>
@@ -1032,65 +1176,66 @@ const Content = () => {
                               aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
                               className={`${isAccordionOpen ? "open" : ""}`}
                             >
-                              <td colSpan={6}>
+                              <td colSpan={7}>
                                 <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
                                   <div className="w-[73%]">
                                     <div className="flex justify-between">
-                                      <span className="flex w-[27rem] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                      <span className="flex w-[17rem] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
                                         <p className="w-2/3 text-right">
                                           ADDITIONAL INFO
                                         </p>
                                       </span>
-
-                                      <span className="flex w-[22rem] text-[13px] ">
-                                        <p
-                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
-                                            item.email
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          EMAIL:
-                                        </p>
-                                        <p
-                                          className={`px-3 py-4 text-sm text-gray-500 ${
-                                            item.email
-                                              ? "text-red-500"
-                                              : "text-gray-900"
-                                          }`}
-                                        >
-                                          {/* {typeof item. === "object"
+                                      <div className="flex flex-col py-2">
+                                        <span className="flex  w-[22rem] text-[13px] ">
+                                          <p
+                                            className={`px-3 text-sm  text-gray-500 font-semibold ${
+                                              item.email
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            EMAIL:
+                                          </p>
+                                          <p
+                                            className={` text-sm text-gray-500 ${
+                                              item.email
+                                                ? "text-red-500"
+                                                : "text-gray-900"
+                                            }`}
+                                          >
+                                            {/* {typeof item. === "object"
                                             ? item.operator?.firstName
                                             : ""}{" "}
                                           {typeof item.operator === "object"
                                             ? item.operator?.lastName
                                             : ""} */}
-                                          {item.email || "-"}
-                                        </p>
-                                      </span>
-                                      <span className="flex w-[22rem] text-[13px] text-slate-900 ">
-                                        <p
-                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
-                                            item.locationId
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          CITY:
-                                        </p>
-                                        <p
-                                          className={`px-3 py-4 text-sm text-gray-500 ${
-                                            item.locationId
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          {typeof item?.locationId ===
-                                            "object" && item?.locationId?._id
-                                            ? item?.locationId?.name
-                                            : ""}
-                                        </p>
-                                      </span>
+                                            {item.email || "-"}
+                                          </p>
+                                        </span>
+                                        <span className="flex w-[22rem] text-[13px] text-slate-900 ">
+                                          <p
+                                            className={`px-3 text-sm text-gray-500 font-semibold ${
+                                              item.locationId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            CITY:
+                                          </p>
+                                          <p
+                                            className={`px-3 text-sm text-gray-500 ${
+                                              item.locationId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {typeof item?.locationId ===
+                                              "object" && item?.locationId?._id
+                                              ? item?.locationId?.name
+                                              : ""}
+                                          </p>
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -1184,6 +1329,9 @@ const Content = () => {
               </div>
             </div>
           </div>
+          {/* <span className="py-1.5 px-2 border-1 text-[14px] uppercase bg-[#7F1D1D] border-black rounded-md text-white">
+                Create Team List
+                </span> */}
         </div>
         <ConfirmationModal
           isOpen={confirmationModal}
