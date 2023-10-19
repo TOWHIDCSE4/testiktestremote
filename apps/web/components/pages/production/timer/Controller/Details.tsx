@@ -272,7 +272,7 @@ const Details = ({
       </h4>
       <Combobox
         as="div"
-        value={selectedOperator}
+        value={operator ? operator : selectedOperator}
         onChange={setSelectedOperator}
         disabled={isComboboxDisabled}
       >
