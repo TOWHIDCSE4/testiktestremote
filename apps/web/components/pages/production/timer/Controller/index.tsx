@@ -147,7 +147,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setCycleClockInSeconds(secondsLapse)
       }
       if (data.action === "update-operator") {
-        console.log("data.action", data.action, data.user)
+        // console.log("data.action", data.action, data.user)
         setDefaultOperator(data.user)
       }
     }
@@ -160,6 +160,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    cycleRefetch()
+    // console.log("here we are")
+  }, [defaultOperator === {}])
   // Refocusing when tab minimize or change the tab
   useEffect(() => {
     const handleVisibilityChange = async () => {
@@ -536,6 +540,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           readingMessages={readingMessages}
           sectionDiv={sectionDiv}
           updateJob={updateJob}
+          timerId={timerId}
           jobUpdateId={jobUpdateId}
           defaultOperator={defaultOperator}
           jobTimer={jobTimer?.item as T_JobTimer}
