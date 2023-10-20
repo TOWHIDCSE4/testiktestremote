@@ -37,11 +37,14 @@ import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerT
 import { Socket } from "socket.io-client"
 import { initializeSocket } from "../../../../../helpers/socket"
 import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
+import Cookies from "js-cookie"
+import useProfile from "../../../../../hooks/users/useProfile"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   const queryClient = useQueryClient()
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
   const { data: controllerTimer, refetch: refetchController } =
@@ -115,6 +118,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     socket = initializeSocket()
     const runSocket = async (data: any) => {
+      if (data.action === "pre-add") {
+        console.log(data.action)
+        addCycleTimer({ timerId }, callBackReq)
+      }
       if (data.action === "add") {
         runIntervalClock()
       }
@@ -133,8 +140,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
         }
       }
       if (data.action === "end") {
-        stopInterval()
+        setCycleClockInSeconds(0)
+        setIsCycleClockStopping(true)
+        setIsCycleClockRunning(false)
         setIsCycleClockStarting(false)
+        stopInterval()
       }
       if (data.action === "update-cycle" && data.timers.length > 0) {
         const timeZone = timerDetailData?.item?.locationId.timeZone
@@ -154,7 +164,12 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
 
     socket?.on(`timer-${timerId}`, runSocket)
-    cycleRefetch()
+    socket?.emit("join-timer", {
+      action: "emit-operator",
+      timerId: timerId,
+      user: userProfile,
+    })
+    // cycleRefetch()
 
     return () => {
       socket?.off(`timer-${timerId}`, runSocket)
