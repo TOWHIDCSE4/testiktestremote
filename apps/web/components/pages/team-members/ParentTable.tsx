@@ -405,9 +405,10 @@ const Content = () => {
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   {" "}
-                  City:{" "}
+                  City{" "}
                 </span>
                 <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
+                  <span className="text-start text-[#7F1D1D]">:</span>
                   {locations && locations.items
                     ? storeSession?.role === ("Administrator" || "Super")
                       ? locations.items.map((location, index) => (
@@ -431,17 +432,19 @@ const Content = () => {
               </div>
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
-                  Factory:
+                  Factory
                 </span>
                 <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                  <span className="text-start text-[#7F1D1D]">:</span>
                   <span>All</span>
                 </div>
               </div>
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
-                  Department:
+                  Department
                 </span>
                 <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                  <span className="text-start text-[#7F1D1D]">:</span>
                   <span>All</span>
                 </div>
               </div>
@@ -956,6 +959,7 @@ const Content = () => {
                   >
                     {paginated?.items &&
                       paginated?.items.map((item, idx) => {
+                        console.log(paginated)
                         const rowClass =
                           idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
                         const isAccordionOpen =
@@ -1084,7 +1088,7 @@ const Content = () => {
                                 </button>
                                 <div
                                   id="dropdownFactory"
-                                  className={`z-10 relative ${
+                                  className={`z-50 fixed ${
                                     isOpenLocation == idx ? "block" : "hidden"
                                   } bg-white divide-y overflow-visible divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
                                 >
@@ -1357,7 +1361,22 @@ const Content = () => {
                                     >
                                       {Object.values(USER_ROLES).map(
                                         (role, index) => (
-                                          <a className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                          <a
+                                            className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                            onClick={() => {
+                                              mutate(
+                                                {
+                                                  ...item,
+                                                  role:
+                                                    "Personnel" &&
+                                                    "Corporate" &&
+                                                    "Production" &&
+                                                    "HR",
+                                                },
+                                                callBackReq
+                                              )
+                                            }}
+                                          >
                                             <li key={index}>{role}</li>
                                           </a>
                                         )
@@ -1403,7 +1422,22 @@ const Content = () => {
                                     >
                                       {Object.values(USER_ROLES).map(
                                         (role, index) => (
-                                          <a className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                          <a
+                                            className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                            onClick={() => {
+                                              mutate(
+                                                {
+                                                  ...item,
+                                                  role:
+                                                    "Personnel" &&
+                                                    "Corporate" &&
+                                                    "Production" &&
+                                                    "HR",
+                                                },
+                                                callBackReq
+                                              )
+                                            }}
+                                          >
                                             <li key={index}>{role}</li>
                                           </a>
                                         )
@@ -1626,6 +1660,7 @@ const Content = () => {
               </table>
             )
           ) : null}
+
           {!isPaginatedLoading &&
           paginated?.items &&
           paginated?.items.length === 0 ? (
@@ -1651,9 +1686,9 @@ const Content = () => {
                   Next
                 </a>
               </div>
-              <div className="h-12 flex items-center w-full">
-                <div className="flex-1">
-                  <p className="text-sm text-gray-700">
+              <div className="h-12 flex items-center justify-between w-full">
+                <div className="flex justify-between">
+                  <p className="text-sm  text-gray-700">
                     Showing{" "}
                     <span className="font-medium">
                       {paginated?.items?.length as number}
@@ -1665,6 +1700,9 @@ const Content = () => {
                     results
                   </p>
                 </div>
+                <span className="py-1.5 text-center px-2 cursor-pointer border-1 text-[14px] uppercase bg-[#7F1D1D] border-black rounded-md text-white">
+                  Create Team List
+                </span>
                 <div>
                   {isPaginatedLoading ? (
                     <div className="animate-pulse flex space-x-4">
@@ -1706,9 +1744,6 @@ const Content = () => {
               </div>
             </div>
           </div>
-          {/* <span className="py-1.5 px-2 border-1 text-[14px] uppercase bg-[#7F1D1D] border-black rounded-md text-white">
-                Create Team List
-                </span> */}
         </div>
         <ConfirmationModal
           isOpen={confirmationModal}
