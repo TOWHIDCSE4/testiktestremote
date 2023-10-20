@@ -15,6 +15,7 @@ import isEmpty from "lodash/isEmpty"
 import { ZTimerLog } from "custom-validator"
 import Jobs from "../../models/jobs"
 import * as Sentry from "@sentry/node"
+import { getIo } from "../../config/setup-socket"
 
 export const getAllTimeLogs = async (req: Request, res: Response) => {
   try {
@@ -173,6 +174,7 @@ export const getTimeLog = async (req: Request, res: Response) => {
 
 export const addTimeLog = async (req: Request, res: Response) => {
   try {
+    const io = getIo()
     const parsedTimerLog = ZTimerLog.safeParse(req.body)
     if (parsedTimerLog.success) {
       try {
@@ -200,16 +202,16 @@ export const addTimeLog = async (req: Request, res: Response) => {
           })
           if (targetCountJob && currCountJob === targetCountJob) {
             const limitReached = currCountJob + 1 === targetCountJob || false
-            const action =
+            const recommendation =
               getStockJob && limitReached
                 ? JOB_ACTION.SWITCH
                 : !getStockJob && limitReached
                 ? JOB_ACTION.STOP
                 : JOB_ACTION.CONTINUE
             const jobToBe =
-              action === JOB_ACTION.SWITCH
+              recommendation === JOB_ACTION.SWITCH
                 ? getStockJob?._id
-                : action === JOB_ACTION.CONTINUE
+                : recommendation === JOB_ACTION.CONTINUE
                 ? req?.body?.jobId
                 : null
             if (getStockJob) {
@@ -223,11 +225,26 @@ export const addTimeLog = async (req: Request, res: Response) => {
                       : 0) + 1,
               })
               await newTimerLog.save()
+              if (
+                recommendation === JOB_ACTION.STOP ||
+                recommendation === JOB_ACTION.SWITCH
+              ) {
+                io.emit(`timer-${req.body.timerId}`, {
+                  action: `job-change`,
+                  route: "POST/timer-log",
+                  data: {
+                    completed: limitReached,
+                    recommendation,
+                    jobToBe,
+                    data: getStockJob,
+                  },
+                })
+              }
               return res.json({
                 error: false,
                 item: null,
                 completed: limitReached,
-                action,
+                recommendation,
                 jobToBe,
                 data: getStockJob,
                 itemCount: null,
@@ -245,24 +262,40 @@ export const addTimeLog = async (req: Request, res: Response) => {
             })
             const createTimerLog = await newTimerLog.save()
             const limitReached = currCountJob + 1 === targetCountJob || false
-            const action =
+            const recommendation =
               getStockJob && limitReached
                 ? JOB_ACTION.SWITCH
                 : !getStockJob && limitReached
                 ? JOB_ACTION.STOP
                 : JOB_ACTION.CONTINUE
             const jobToBe =
-              action === JOB_ACTION.SWITCH
+              recommendation === JOB_ACTION.SWITCH
                 ? getStockJob?._id
-                : action === JOB_ACTION.CONTINUE
+                : recommendation === JOB_ACTION.CONTINUE
                 ? req?.body?.jobId
                 : null
+            if (
+              recommendation === JOB_ACTION.STOP ||
+              recommendation === JOB_ACTION.SWITCH
+            ) {
+              io.emit(`timer-${req.body.timerId}`, {
+                action: `job-change`,
+                route: "POST/timer-log",
+                data: {
+                  completed: limitReached,
+                  recommendation,
+                  jobToBe,
+                  data: job,
+                },
+              })
+            }
             res.json({
               error: false,
               completed: limitReached,
-              action,
+              recommendation,
               jobToBe,
               item: createTimerLog,
+              data: job,
               itemCount: 1,
               message: limitReached
                 ? "Target count exceeded, log was assigned to stock."
