@@ -16,16 +16,16 @@ jobs:
       - name: Build project
         working-directory: apps/web
         run: npm run build
-      - name: Delete pm2 web
-        working-directory: apps/web
-        run: pm2 delete web
-        continue-on-error: true
         
   deployment:
     runs-on: web-dev
     needs: build
     steps:
       - uses: actions/checkout@v3
+      - name: Delete pm2 web
+        working-directory: apps/web
+        run: pm2 delete web
+        continue-on-error: true
       - name: Start pm2 web
         working-directory: apps/web
         run: pm2 start npm --name web -- run start
