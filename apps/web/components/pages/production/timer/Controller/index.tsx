@@ -120,7 +120,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
     const runSocket = async (data: any) => {
       if (data.action === "pre-add") {
         console.log(data.action)
-        addCycleTimer({ timerId }, callBackReq)
+        // addCycleTimer({ timerId }, callBackReq)
       }
       if (data.action === "add") {
         runIntervalClock()
