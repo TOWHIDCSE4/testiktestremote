@@ -294,10 +294,6 @@ const Content = () => {
   const handleTeamListing = (event: any) => {
     setSelectedRole(event.target.value)
     setRole(event.target.value)
-    console.log(
-      "🚀 ~ file: ParentTable.tsx:313 ~ handleTeamListing ~ event:",
-      event
-    )
   }
 
   const canViewTeamTable = () => {
@@ -308,19 +304,20 @@ const Content = () => {
     )
   }
 
-  const statusArray = ["Pending", "Active", "Rejected", "Archived"]
+  const statusArray = Object.values(USER_STATUSES)
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
   }
 
-  const handleSelectDropdown = (value: string) => {
+  const handleSelectDropdown = (value: T_UserStatus) => {
     setSelectedStatus(value)
+    setStatus(value)
     setIsOpen(false)
 
     const colorMapping: { [key: string]: string } = {
       Pending: "text-yellow-700",
-      Active: "text-green-800",
+      Approved: "text-green-800",
       Rejected: "text-red-800",
       Archived: "text-yellow-500",
     }
@@ -389,7 +386,11 @@ const Content = () => {
                       {statusArray.map((status, index) => (
                         <li
                           key={index}
-                          onClick={() => handleSelectDropdown(status)}
+                          onClick={() => {
+                            if (Object.values(USER_STATUSES).includes(status)) {
+                              handleSelectDropdown(status as T_UserStatus)
+                            }
+                          }}
                           className="cursor-pointer px-4 py-2 hover:bg-gray-200"
                         >
                           {status}
@@ -404,7 +405,7 @@ const Content = () => {
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   {" "}
-                  City{" "}
+                  City:{" "}
                 </span>
                 <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
                   {locations && locations.items
@@ -430,19 +431,17 @@ const Content = () => {
               </div>
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
-                  Factory
+                  Factory:
                 </span>
                 <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
-                  <span className="text-start text-[#7F1D1D]">:</span>
                   <span>All</span>
                 </div>
               </div>
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
-                  Department
+                  Department:
                 </span>
                 <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
-                  <span className="text-start text-[#7F1D1D]">:</span>
                   <span>All</span>
                 </div>
               </div>
@@ -451,7 +450,7 @@ const Content = () => {
               <div className="flex justify-center text-end text-gray-900 ">
                 <span className="text-gray-500 text-[14px] uppercase ">
                   Add New
-                  <br /> Team Member
+                  <br /> Team Members
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -493,51 +492,351 @@ const Content = () => {
           {!isPaginatedLoading &&
           paginated?.items &&
           paginated?.items.length > 0 ? (
-            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
-              <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
-                <tr>
-                  <th scope="col" className="w-[6%] text-slate-900"></th>
-                  <th scope="col" className="w-[12%]">
-                    <div className="flex items-start justify-start ml-6">
-                      {/* <a href="#" className="group inline-flex items-center"> */}
-                      User
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                    {/* <span className="ml-2 flex-none rounded text-gray-400">
+            selectedRole === "Administrator" ? (
+              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
+                <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
+                  <tr>
+                    <th scope="col" className="w-[6%] text-slate-900"></th>
+                    <th scope="col" className="w-[12%]">
+                      <div className="flex items-start justify-start ml-6">
+                        {/* <a href="#" className="group inline-flex items-center"> */}
+                        User
+                        <button onClick={(e) => {}}>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                      {/* <span className="ml-2 flex-none rounded text-gray-400">
                       <ChevronUpDownIcon
                         className="h-5 w-5"
                         aria-hidden="true"
                       />
                     </span>
                                       </a> */}
-                  </th>
-                  <th className="w-[20%]">
-                    <div className="flex items-center text justify-center">
-                      <span> City</span>
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  {/* <th
+                    </th>
+                  </tr>
+                </thead>
+                {
+                  <tbody
+                    data-accordion="open"
+                    className="border-t-4 border-indigo-900"
+                  >
+                    {paginated?.items &&
+                      paginated?.items.map((item, idx) => {
+                        const rowClass =
+                          idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
+                        const isAccordionOpen =
+                          openAccordion === `accordion-arrow-icon-body-${idx}`
+                        const checked = isChecked(item._id ?? "")
+                        return (
+                          <React.Fragment key={item._id}>
+                            <tr
+                              key={idx}
+                              className={`bg-gray h-4 text-slate-900 font-medium border-b ${rowClass}  ${
+                                !item._id ? "bg-red-50" : ""
+                              }`}
+                              aria-colspan={6}
+                            >
+                              <td className="pr-6">
+                                <div
+                                  data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
+                                  aria-controls={`accordion-arrow-icon-body-${idx}`}
+                                  onClick={() =>
+                                    toggleAccordion(
+                                      `accordion-arrow-icon-body-${idx}`
+                                    )
+                                  }
+                                  aria-expanded={isAccordionOpen}
+                                  className={`flex items-center ${
+                                    isAccordionOpen ? "open" : ""
+                                  }`}
+                                >
+                                  {isAccordionOpen ? (
+                                    <svg
+                                      height="30"
+                                      viewBox="0 0 48 48"
+                                      width="30"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="ml-1"
+                                    >
+                                      <path d="M14 20l10 10 10-10z" />
+                                      <path d="M0 0h48v48h-48z" fill="none" />
+                                    </svg>
+                                  ) : (
+                                    <svg
+                                      height="16"
+                                      viewBox="0 0 48 48"
+                                      width="15"
+                                      className="ml-2"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M-838-2232H562v3600H-838z"
+                                        fill="none"
+                                      />
+                                      <path d="M16 10v28l22-14z" />
+                                      <path d="M0 0h48v48H0z" fill="none" />
+                                    </svg>
+                                  )}
+                                </div>
+                              </td>
+                              <td
+                                colSpan={5}
+                                className="py-0 pl-4 pr-3 text-sm font-medium overflow-hidden whitespace-nowrap"
+                              >
+                                {item.firstName + " " + item.lastName}
+                              </td>
+
+                              <td
+                                className={`pl-0 w-full py-0 text-sm text-gray-500 relative`}
+                              >
+                                <Menu as="div" className="w-full text-end pr-4">
+                                  <Menu.Button className="font-normal text-gray-400">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      height="1.5em"
+                                      viewBox="0 0 128 512"
+                                    >
+                                      <path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z" />
+                                    </svg>{" "}
+                                  </Menu.Button>
+                                  <Transition
+                                    as={Fragment}
+                                    enter="transition ease-out duration-100"
+                                    enterFrom="transform opacity-0 scale-95"
+                                    enterTo="transform opacity-100 scale-100"
+                                    leave="transition ease-in duration-75"
+                                    leaveFrom="transform opacity-100 scale-100"
+                                    leaveTo="transform opacity-0 scale-95"
+                                  >
+                                    <Menu.Items className="absolute right-9 text-end mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                      <div className="py-1">
+                                        {item.status !== "Approved" && (
+                                          <Menu.Item>
+                                            {({ active }) => (
+                                              <span
+                                                className={combineClasses(
+                                                  active
+                                                    ? "bg-gray-100 text-gray-900"
+                                                    : "text-gray-700",
+                                                  "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                )}
+                                                onClick={() => {
+                                                  setSelectedRow(item)
+                                                  setConfirmationModal(true)
+                                                  setAction(
+                                                    USER_STATUSES.Approved as T_UserStatus
+                                                  )
+                                                }}
+                                              >
+                                                Approve
+                                              </span>
+                                            )}
+                                          </Menu.Item>
+                                        )}
+                                        <Menu.Item>
+                                          {({ active }) => (
+                                            <span
+                                              className={combineClasses(
+                                                active
+                                                  ? "bg-gray-100 text-gray-900"
+                                                  : "text-gray-700",
+                                                "block px-4 py-2 text-sm cursor-pointer text-left"
+                                              )}
+                                              onClick={() => {
+                                                setSelectedRow(item)
+                                                setDeleteModal(true)
+                                                setAction(
+                                                  USER_STATUSES.Rejected as T_UserStatus
+                                                )
+                                              }}
+                                            >
+                                              Reject
+                                            </span>
+                                          )}
+                                        </Menu.Item>
+                                        <Menu.Item>
+                                          {({ active }) => (
+                                            <span
+                                              className={combineClasses(
+                                                active
+                                                  ? "bg-gray-100 text-gray-900"
+                                                  : "text-gray-700",
+                                                "block px-4 py-2 text-sm cursor-pointer text-left"
+                                              )}
+                                              onClick={() => {
+                                                setSelectedRow(item)
+                                                setDeleteModal(true)
+                                                setAction(
+                                                  USER_STATUSES.Blocked as T_UserStatus
+                                                )
+                                              }}
+                                            >
+                                              Block
+                                            </span>
+                                          )}
+                                        </Menu.Item>
+                                        <Menu.Item>
+                                          {({ active }) => (
+                                            <span
+                                              className={combineClasses(
+                                                active
+                                                  ? "bg-gray-100 text-gray-900"
+                                                  : "text-gray-700",
+                                                "block px-4 py-2 text-sm cursor-pointer text-left"
+                                              )}
+                                              onClick={() => {
+                                                setSelectedRow(item)
+                                                setDeleteModal(true)
+                                                setAction(
+                                                  USER_STATUSES.Archived as T_UserStatus
+                                                )
+                                              }}
+                                            >
+                                              Delete
+                                            </span>
+                                          )}
+                                        </Menu.Item>
+                                      </div>
+                                    </Menu.Items>
+                                  </Transition>
+                                </Menu>
+                              </td>
+                            </tr>
+                            {isAccordionOpen && (
+                              <tr
+                                id={`accordion-arrow-icon-body-${idx}`}
+                                aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
+                                className={`${isAccordionOpen ? "open" : ""}`}
+                              >
+                                <td colSpan={7}>
+                                  <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
+                                    <div className="w-[73%]">
+                                      <div className="flex justify-between">
+                                        <span className="flex w-[17rem] text-[14px] text-green-800 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                          <p className="w-2/3 text-right">
+                                            ADDITIONAL INFO
+                                          </p>
+                                        </span>
+                                        <div className="flex flex-col py-2">
+                                          <span className="flex  w-[22rem] text-[13px] ">
+                                            <p
+                                              className={`px-3 text-sm  text-gray-500 font-semibold ${
+                                                item.email
+                                                  ? "text-gray-900"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              EMAIL:
+                                            </p>
+                                            <p
+                                              className={` text-sm text-gray-500 ${
+                                                item.email
+                                                  ? "text-gray-900"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              {/* {typeof item. === "object"
+                                            ? item.operator?.firstName
+                                            : ""}{" "}
+                                          {typeof item.operator === "object"
+                                            ? item.operator?.lastName
+                                            : ""} */}
+                                              {item.email || "-"}
+                                            </p>
+                                          </span>
+                                          <span className="flex w-[22rem] text-[13px] text-slate-900 ">
+                                            <p
+                                              className={`px-3 text-sm text-gray-500 font-semibold ${
+                                                item.locationId
+                                                  ? "text-gray-900"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              CITY:
+                                            </p>
+                                            <p
+                                              className={`px-3 text-sm text-gray-900 ${
+                                                item.locationId
+                                                  ? "text-gray-900"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              {typeof item?.locationId ===
+                                                "object" &&
+                                              item?.locationId?._id
+                                                ? item?.locationId?.name
+                                                : ""}{" "}
+                                              - This was selected during
+                                              creation
+                                            </p>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        )
+                      })}
+                  </tbody>
+                }
+              </table>
+            ) : (
+              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-auto">
+                <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
+                  <tr>
+                    <th scope="col" className="w-[6%] text-slate-900"></th>
+                    <th scope="col" className="w-[12%]">
+                      <div className="flex items-start justify-start ml-6">
+                        {/* <a href="#" className="group inline-flex items-center"> */}
+                        User
+                        <button onClick={(e) => {}}>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                      {/* <span className="ml-2 flex-none rounded text-gray-400">
+                      <ChevronUpDownIcon
+                        className="h-5 w-5"
+                        aria-hidden="true"
+                      />
+                    </span>
+                                      </a> */}
+                    </th>
+                    <th className="w-[20%]">
+                      <div className="flex items-center text justify-center ml-14">
+                        <span> City</span>
+                        <button onClick={(e) => {}}>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    {/* <th
                   scope="col"
                   className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
                 >
@@ -551,36 +850,11 @@ const Content = () => {
                     </span>
                   </a>
                 </th> */}
-                  <th className="w-[10%]">
-                    <div className="flex items-start justify-start  ">
-                      <span className="flex">
-                        Factory<p className="text-red-600 ml-1">*</p>
-                      </span>
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                    {/* <span className="ml-2 flex-none rounded text-gray-400">
-                      <ChevronUpDownIcon
-                      className="h-5 w-5"
-                      aria-hidden="true"
-                      />
-                    </span>
-                    </a> */}
-                  </th>
-                  <th colSpan={1} className="w-[25%]">
-                    <div className="flex items-start justify-start px-0 py-3">
-                      <div className="flex items-center ml-12">
-                        Department
-                        <p className="text-red-600 ml-1">*</p>
+                    <th className="w-[10%]">
+                      <div className="flex items-start justify-start ml-20 ">
+                        <span className="flex">
+                          Factory<p className="text-red-600 ml-1">*</p>
+                        </span>
                         <button onClick={(e) => {}}>
                           <svg
                             className="w-3 h-3 ml-1"
@@ -593,18 +867,72 @@ const Content = () => {
                           </svg>
                         </button>
                       </div>
-                    </div>
+                      {/* <span className="ml-2 flex-none rounded text-gray-400">
+                      <ChevronUpDownIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                      />
+                    </span>
+                    </a> */}
+                    </th>
+                    {selectedRole === "Personnel" ? (
+                      <th colSpan={1} className="w-[25%]">
+                        <div className="flex items-start justify-start px-0 py-3 pl-4">
+                          <div className="flex items-center ml-12">
+                            Machine Class
+                            <p className="text-red-600 ml-1">*</p>
+                            <button onClick={(e) => {}}>
+                              <svg
+                                className="w-3 h-3 ml-1"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
 
-                    {/* <span className="ml-2 flex-none rounded text-gray-400">
+                        {/* <span className="ml-2 flex-none rounded text-gray-400">
                       <ChevronUpDownIcon
                         className="h-5 w-5"
                         aria-hidden="true"
                       />
                     </span>
                     </a> */}
-                  </th>
+                      </th>
+                    ) : (
+                      <th colSpan={1} className="w-[25%]">
+                        <div className="flex items-start justify-start px-0 py-3 pl-4">
+                          <div className="flex items-center ml-12">
+                            Department
+                            <p className="text-red-600 ml-1">*</p>
+                            <button onClick={(e) => {}}>
+                              <svg
+                                className="w-3 h-3 ml-1"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
 
-                  {/* <th colSpan={1}>
+                        {/* <span className="ml-2 flex-none rounded text-gray-400">
+                    <ChevronUpDownIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
+                  </span>
+                  </a> */}
+                      </th>
+                    )}
+                    {/* <th colSpan={1}>
                     <div className="flex items-center justify-center ">
                       <div
                         className="relative mb-3 mr-24"
@@ -619,77 +947,77 @@ const Content = () => {
                       </div>
                     </div>
                   </th> */}
-                </tr>
-              </thead>
-              {
-                <tbody
-                  data-accordion="open"
-                  className="border-t-4 border-indigo-900"
-                >
-                  {paginated?.items &&
-                    paginated?.items.map((item, idx) => {
-                      const rowClass =
-                        idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
-                      const isAccordionOpen =
-                        openAccordion === `accordion-arrow-icon-body-${idx}`
-                      const checked = isChecked(item._id ?? "")
-                      return (
-                        <React.Fragment key={item._id}>
-                          <tr
-                            key={idx}
-                            className={`bg-gray h-4 text-slate-900 font-medium border-b ${rowClass}  ${
-                              !item._id ? "bg-red-50" : ""
-                            }`}
-                            aria-colspan={6}
-                          >
-                            <td className="pr-6">
-                              <div
-                                data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
-                                aria-controls={`accordion-arrow-icon-body-${idx}`}
-                                onClick={() =>
-                                  toggleAccordion(
-                                    `accordion-arrow-icon-body-${idx}`
-                                  )
-                                }
-                                aria-expanded={isAccordionOpen}
-                                className={`flex items-center ${
-                                  isAccordionOpen ? "open" : ""
-                                }`}
-                              >
-                                {isAccordionOpen ? (
-                                  <svg
-                                    height="30"
-                                    viewBox="0 0 48 48"
-                                    width="30"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="ml-1"
-                                  >
-                                    <path d="M14 20l10 10 10-10z" />
-                                    <path d="M0 0h48v48h-48z" fill="none" />
-                                  </svg>
-                                ) : (
-                                  <svg
-                                    height="16"
-                                    viewBox="0 0 48 48"
-                                    width="15"
-                                    className="ml-2"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      d="M-838-2232H562v3600H-838z"
-                                      fill="none"
-                                    />
-                                    <path d="M16 10v28l22-14z" />
-                                    <path d="M0 0h48v48H0z" fill="none" />
-                                  </svg>
-                                )}
-                              </div>
-                            </td>
-                            <td className="py-0 pl-4 pr-3 text-sm font-medium overflow-hidden whitespace-nowrap overflow-ellipsis">
-                              {item.firstName + " " + item.lastName}
-                            </td>
+                  </tr>
+                </thead>
+                {
+                  <tbody
+                    data-accordion="open"
+                    className="border-t-4 border-indigo-900"
+                  >
+                    {paginated?.items &&
+                      paginated?.items.map((item, idx) => {
+                        const rowClass =
+                          idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
+                        const isAccordionOpen =
+                          openAccordion === `accordion-arrow-icon-body-${idx}`
+                        const checked = isChecked(item._id ?? "")
+                        return (
+                          <React.Fragment key={item._id}>
+                            <tr
+                              key={idx}
+                              className={`bg-gray h-4 text-slate-900 font-medium border-b ${rowClass}  ${
+                                !item._id ? "bg-red-50" : ""
+                              }`}
+                              aria-colspan={6}
+                            >
+                              <td className="pr-6">
+                                <div
+                                  data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
+                                  aria-controls={`accordion-arrow-icon-body-${idx}`}
+                                  onClick={() =>
+                                    toggleAccordion(
+                                      `accordion-arrow-icon-body-${idx}`
+                                    )
+                                  }
+                                  aria-expanded={isAccordionOpen}
+                                  className={`flex items-center ${
+                                    isAccordionOpen ? "open" : ""
+                                  }`}
+                                >
+                                  {isAccordionOpen ? (
+                                    <svg
+                                      height="30"
+                                      viewBox="0 0 48 48"
+                                      width="30"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className="ml-1"
+                                    >
+                                      <path d="M14 20l10 10 10-10z" />
+                                      <path d="M0 0h48v48h-48z" fill="none" />
+                                    </svg>
+                                  ) : (
+                                    <svg
+                                      height="16"
+                                      viewBox="0 0 48 48"
+                                      width="15"
+                                      className="ml-2"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M-838-2232H562v3600H-838z"
+                                        fill="none"
+                                      />
+                                      <path d="M16 10v28l22-14z" />
+                                      <path d="M0 0h48v48H0z" fill="none" />
+                                    </svg>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="py-0 pl-4 pr-3 text-sm font-medium overflow-hidden whitespace-nowrap overflow-ellipsis">
+                                {item.firstName + " " + item.lastName}
+                              </td>
 
-                            {/* <select
+                              {/* <select
                                 id="locations"
                                 name="locations"
                                 className="block w-28 rounded-md border-0 py-1 pl-3 pr-10 bg-gray-100 ring-opacity-0 bg-opacity-0 text-gray-900 focus:ring-opacity-0 ring-1 ring-inset ring-gray-100 focus:ring-1 focus:ring-gray-100 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
@@ -729,356 +1057,427 @@ const Content = () => {
                                   }
                                 )}
                               </select> */}
-                            <td className="text-sm text-gray-500 items-center fixed justify-center pl-10">
-                              <button
-                                id="dropdownFactoryButton"
-                                data-dropdown-toggle="dropdown"
-                                className="w-full rounded-md text-center space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                                type="button"
-                                onClick={() => handleHideLocation(idx)}
-                              >
-                                <svg
-                                  className="text-black"
-                                  height="25"
-                                  viewBox="0 0 48 48"
-                                  width="25"
-                                  xmlns="http://www.w3.org/2000/svg"
+                              <td className="text-sm text-gray-500 items-center fixed justify-center pl-10">
+                                <button
+                                  id="dropdownFactoryButton"
+                                  data-dropdown-toggle="dropdown"
+                                  className="w-full rounded-md text-center space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                  type="button"
+                                  onClick={() => handleHideLocation(idx)}
                                 >
-                                  <path d="M14 20l10 10 10-10z" />
-                                  <path d="M0 0h48v48h-48z" fill="none" />
-                                </svg>
-                                <span>
-                                  {typeof item?.locationId === "object" &&
-                                  item?.locationId?._id
-                                    ? item?.locationId?.name
-                                    : ""}
-                                </span>
-                              </button>
-                              <div
-                                id="dropdownFactory"
-                                className={`z-10 relative ${
-                                  isOpenLocation == idx ? "block" : "hidden"
-                                } bg-white divide-y overflow-visible divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
-                              >
-                                <ul
-                                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                                  aria-labelledby="dropdownFactoryButton"
-                                >
-                                  <li>
-                                    <a
-                                      href="#"
-                                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                      onClick={() => {
-                                        const value = "Global"
-                                        if (value !== "Global") {
-                                          mutate(
-                                            {
-                                              ...item,
-                                              factoryId: value,
-                                              isGlobalFactory: false,
-                                              locationId:
-                                                typeof item.locationId ===
-                                                "object"
-                                                  ? (item.locationId
-                                                      ?._id as string)
-                                                  : "",
-                                            },
-                                            callBackReq
-                                          )
-                                        } else {
-                                          mutate(
-                                            {
-                                              ...item,
-                                              factoryId: null,
-                                              isGlobalFactory: true,
-                                              role: USER_ROLES.Corporate as T_UserRole,
-                                              locationId:
-                                                typeof item.locationId ===
-                                                "object"
-                                                  ? (item.locationId
-                                                      ?._id as string)
-                                                  : "",
-                                            },
-                                            callBackReq
-                                          )
-                                        }
-                                      }}
-                                    >
-                                      Global
-                                    </a>
-                                  </li>
-                                  {locations?.items?.map(
-                                    (location: any, index: any) => (
-                                      <li key={index}>
-                                        <a
-                                          href="#"
-                                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                          onClick={() => {
-                                            const value = location._id
-                                            if (value !== "Global") {
-                                              mutate(
-                                                {
-                                                  ...item,
-                                                  factoryId: value,
-                                                  isGlobalFactory: false,
-                                                  locationId:
-                                                    typeof item.locationId ===
-                                                    "object"
-                                                      ? (item.locationId
-                                                          ?._id as string)
-                                                      : "",
-                                                },
-                                                callBackReq
-                                              )
-                                            } else {
-                                              mutate(
-                                                {
-                                                  ...item,
-                                                  factoryId: null,
-                                                  isGlobalFactory: true,
-                                                  role: USER_ROLES.Corporate as T_UserRole,
-                                                  locationId:
-                                                    typeof item.locationId ===
-                                                    "object"
-                                                      ? (item.locationId
-                                                          ?._id as string)
-                                                      : "",
-                                                },
-                                                callBackReq
-                                              )
-                                            }
-                                          }}
-                                        >
-                                          {location.name}
-                                        </a>
-                                      </li>
-                                    )
-                                  )}
-                                </ul>
-                              </div>
-                            </td>
-                            <td
-                              className={`text-sm text-gray-500 items-start justify-center`}
-                            >
-                              <button
-                                id="dropdownFactoryButton"
-                                data-dropdown-toggle="dropdown"
-                                className="w-full rounded-md text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                                type="button"
-                                onClick={() => handleHideCity(idx)}
-                              >
-                                <svg
-                                  height="25"
-                                  viewBox="0 0 48 48"
-                                  width="25"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path d="M14 20l10 10 10-10z" />
-                                  <path d="M0 0h48v48h-48z" fill="none" />
-                                </svg>
-                                <span>
-                                  {item.isGlobalFactory ?? false
-                                    ? "Global"
-                                    : item?.factoryId
-                                    ? typeof item.factoryId === "string"
-                                      ? item.factoryId
-                                      : item.factoryId.name
-                                    : "Select Factory"}
-                                </span>
-                              </button>
-
-                              <div
-                                id="dropdownFactory"
-                                className={`z-50 fixed ${
-                                  isOpenCity == idx ? "block" : "hidden"
-                                } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
-                              >
-                                <ul
-                                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                                  aria-labelledby="dropdownFactoryButton"
-                                >
-                                  <li>
-                                    <a
-                                      href="#"
-                                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                      onClick={() => {
-                                        const value = "Global"
-                                        if (value !== "Global") {
-                                          mutate(
-                                            {
-                                              ...item,
-                                              factoryId: value,
-                                              isGlobalFactory: false,
-                                              locationId:
-                                                typeof item.locationId ===
-                                                "object"
-                                                  ? (item.locationId
-                                                      ?._id as string)
-                                                  : "",
-                                            },
-                                            callBackReq
-                                          )
-                                        } else {
-                                          mutate(
-                                            {
-                                              ...item,
-                                              factoryId: null,
-                                              isGlobalFactory: true,
-                                              role: USER_ROLES.Corporate as T_UserRole,
-                                              locationId:
-                                                typeof item.locationId ===
-                                                "object"
-                                                  ? (item.locationId
-                                                      ?._id as string)
-                                                  : "",
-                                            },
-                                            callBackReq
-                                          )
-                                        }
-                                      }}
-                                    >
-                                      Global
-                                    </a>
-                                  </li>
-                                  {factories?.items?.map(
-                                    (factory: any, index: any) => (
-                                      <li key={index}>
-                                        <a
-                                          href="#"
-                                          className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                          onClick={() => {
-                                            const value = factory._id
-                                            if (value !== "Global") {
-                                              mutate(
-                                                {
-                                                  ...item,
-                                                  factoryId: value,
-                                                  isGlobalFactory: false,
-                                                  locationId:
-                                                    typeof item.locationId ===
-                                                    "object"
-                                                      ? (item.locationId
-                                                          ?._id as string)
-                                                      : "",
-                                                },
-                                                callBackReq
-                                              )
-                                            } else {
-                                              mutate(
-                                                {
-                                                  ...item,
-                                                  factoryId: null,
-                                                  isGlobalFactory: true,
-                                                  role: USER_ROLES.Corporate as T_UserRole,
-                                                  locationId:
-                                                    typeof item.locationId ===
-                                                    "object"
-                                                      ? (item.locationId
-                                                          ?._id as string)
-                                                      : "",
-                                                },
-                                                callBackReq
-                                              )
-                                            }
-                                          }}
-                                        >
-                                          {factory.name}
-                                        </a>
-                                      </li>
-                                    )
-                                  )}
-                                </ul>
-                              </div>
-                            </td>
-
-                            <td
-                              className={`text-sm text-gray-500 items-start justify-start`}
-                              style={{ paddingLeft: "30px" }}
-                            >
-                              <button
-                                id="dropdownFactoryButton"
-                                data-dropdown-toggle="dropdown"
-                                className="w-full rounded-md text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                                type="button"
-                                onClick={() => handleHideRole(idx)}
-                              >
-                                <svg
-                                  height="25"
-                                  viewBox="0 0 48 48"
-                                  width="30"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path d="M14 20l10 10 10-10z" />
-                                  <path d="M0 0h48v48h-48z" fill="none" />
-                                </svg>
-                                <span>
-                                  {typeof item.role === "string"
-                                    ? item.role
-                                    : "Select Role"}
-                                </span>
-                              </button>
-                              <div
-                                id="dropdownFactory"
-                                className={`z-50 fixed ${
-                                  isOpenRole == idx ? "block" : "hidden"
-                                } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
-                              >
-                                <ul
-                                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                                  aria-labelledby="dropdownFactoryButton"
-                                >
-                                  {Object.values(USER_ROLES).map(
-                                    (role, index) => (
-                                      <a className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                        <li key={index}>{role}</li>
-                                      </a>
-                                    )
-                                  )}
-                                </ul>
-                              </div>
-                            </td>
-                            <td>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  paddingLeft: "30px",
-                                  marginLeft: "30px",
-                                }}
-                              >
-                                <label>Director</label>
-                                <input
-                                  type="checkbox"
-                                  style={{ marginLeft: "6px" }}
-                                />
-                              </div>
-                            </td>
-
-                            <td
-                              className={`pl-0 w-full py-0 text-sm text-gray-500 relative`}
-                            >
-                              <Menu as="div" className="w-full text-end pr-4">
-                                <Menu.Button>
                                   <svg
+                                    className="text-black"
+                                    height="25"
+                                    viewBox="0 0 48 48"
+                                    width="25"
                                     xmlns="http://www.w3.org/2000/svg"
-                                    height="1.5em"
-                                    viewBox="0 0 128 512"
                                   >
-                                    <path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z" />
-                                  </svg>{" "}
-                                </Menu.Button>
-                                <Transition
-                                  as={Fragment}
-                                  enter="transition ease-out duration-100"
-                                  enterFrom="transform opacity-0 scale-95"
-                                  enterTo="transform opacity-100 scale-100"
-                                  leave="transition ease-in duration-75"
-                                  leaveFrom="transform opacity-100 scale-100"
-                                  leaveTo="transform opacity-0 scale-95"
+                                    <path d="M14 20l10 10 10-10z" />
+                                    <path d="M0 0h48v48h-48z" fill="none" />
+                                  </svg>
+                                  <span>
+                                    {typeof item?.locationId === "object" &&
+                                    item?.locationId?._id
+                                      ? item?.locationId?.name
+                                      : ""}
+                                  </span>
+                                </button>
+                                <div
+                                  id="dropdownFactory"
+                                  className={`z-10 relative ${
+                                    isOpenLocation == idx ? "block" : "hidden"
+                                  } bg-white divide-y overflow-visible divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
                                 >
-                                  <Menu.Items className="absolute right-9 text-end mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                    <div className="py-1">
-                                      {item.status !== "Approved" && (
+                                  <ul
+                                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                    aria-labelledby="dropdownFactoryButton"
+                                  >
+                                    <li>
+                                      <a
+                                        href="#"
+                                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                        onClick={() => {
+                                          const value = "Global"
+                                          if (value !== "Global") {
+                                            mutate(
+                                              {
+                                                ...item,
+                                                factoryId: value,
+                                                isGlobalFactory: false,
+                                                locationId:
+                                                  typeof item.locationId ===
+                                                  "object"
+                                                    ? (item.locationId
+                                                        ?._id as string)
+                                                    : "",
+                                              },
+                                              callBackReq
+                                            )
+                                          } else {
+                                            mutate(
+                                              {
+                                                ...item,
+                                                factoryId: null,
+                                                isGlobalFactory: true,
+                                                role: USER_ROLES.Corporate as T_UserRole,
+                                                locationId:
+                                                  typeof item.locationId ===
+                                                  "object"
+                                                    ? (item.locationId
+                                                        ?._id as string)
+                                                    : "",
+                                              },
+                                              callBackReq
+                                            )
+                                          }
+                                        }}
+                                      >
+                                        Global
+                                      </a>
+                                    </li>
+                                    {locations?.items?.map(
+                                      (location: any, index: any) => (
+                                        <li key={index}>
+                                          <a
+                                            href="#"
+                                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                            onClick={() => {
+                                              const value = location._id
+                                              if (value !== "Global") {
+                                                mutate(
+                                                  {
+                                                    ...item,
+                                                    factoryId: value,
+                                                    isGlobalFactory: false,
+                                                    locationId:
+                                                      typeof item.locationId ===
+                                                      "object"
+                                                        ? (item.locationId
+                                                            ?._id as string)
+                                                        : "",
+                                                  },
+                                                  callBackReq
+                                                )
+                                              } else {
+                                                mutate(
+                                                  {
+                                                    ...item,
+                                                    factoryId: null,
+                                                    isGlobalFactory: true,
+                                                    role: USER_ROLES.Corporate as T_UserRole,
+                                                    locationId:
+                                                      typeof item.locationId ===
+                                                      "object"
+                                                        ? (item.locationId
+                                                            ?._id as string)
+                                                        : "",
+                                                  },
+                                                  callBackReq
+                                                )
+                                              }
+                                            }}
+                                          >
+                                            {location.name}
+                                          </a>
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                </div>
+                              </td>
+                              <td
+                                className={`text-sm text-gray-500 items-start justify-center pl-20`}
+                              >
+                                <button
+                                  id="dropdownFactoryButton"
+                                  data-dropdown-toggle="dropdown"
+                                  className="w-full rounded-md text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                  type="button"
+                                  onClick={() => handleHideCity(idx)}
+                                >
+                                  <svg
+                                    height="25"
+                                    viewBox="0 0 48 48"
+                                    width="25"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path d="M14 20l10 10 10-10z" />
+                                    <path d="M0 0h48v48h-48z" fill="none" />
+                                  </svg>
+                                  <span className="truncate">
+                                    {item.isGlobalFactory ?? false
+                                      ? "Global"
+                                      : item?.factoryId
+                                      ? typeof item.factoryId === "string"
+                                        ? item.factoryId
+                                        : item.factoryId.name
+                                      : "Select Factory"}
+                                  </span>
+                                </button>
+
+                                <div
+                                  id="dropdownFactory"
+                                  className={`z-50 fixed ${
+                                    isOpenCity == idx ? "block" : "hidden"
+                                  } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 `}
+                                >
+                                  <ul
+                                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                    aria-labelledby="dropdownFactoryButton"
+                                  >
+                                    <li>
+                                      <a
+                                        href="#"
+                                        className="block px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                        onClick={() => {
+                                          const value = "Global"
+                                          if (value !== "Global") {
+                                            mutate(
+                                              {
+                                                ...item,
+                                                factoryId: value,
+                                                isGlobalFactory: false,
+                                                locationId:
+                                                  typeof item.locationId ===
+                                                  "object"
+                                                    ? (item.locationId
+                                                        ?._id as string)
+                                                    : "",
+                                              },
+                                              callBackReq
+                                            )
+                                          } else {
+                                            mutate(
+                                              {
+                                                ...item,
+                                                factoryId: null,
+                                                isGlobalFactory: true,
+                                                role: USER_ROLES.Corporate as T_UserRole,
+                                                locationId:
+                                                  typeof item.locationId ===
+                                                  "object"
+                                                    ? (item.locationId
+                                                        ?._id as string)
+                                                    : "",
+                                              },
+                                              callBackReq
+                                            )
+                                          }
+                                        }}
+                                      >
+                                        Global
+                                      </a>
+                                    </li>
+                                    {factories?.items?.map(
+                                      (factory: any, index: any) => (
+                                        <li key={index}>
+                                          <a
+                                            href="#"
+                                            className="block px-2 py-0 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white overflow-hidden overflow-ellipsis whitespace-nowrap"
+                                            onClick={() => {
+                                              const value = factory._id
+                                              if (value !== "Global") {
+                                                mutate(
+                                                  {
+                                                    ...item,
+                                                    factoryId: value,
+                                                    isGlobalFactory: false,
+                                                    locationId:
+                                                      typeof item.locationId ===
+                                                      "object"
+                                                        ? (item.locationId
+                                                            ?._id as string)
+                                                        : "",
+                                                  },
+                                                  callBackReq
+                                                )
+                                              } else {
+                                                mutate(
+                                                  {
+                                                    ...item,
+                                                    factoryId: null,
+                                                    isGlobalFactory: true,
+                                                    role: USER_ROLES.Corporate as T_UserRole,
+                                                    locationId:
+                                                      typeof item.locationId ===
+                                                      "object"
+                                                        ? (item.locationId
+                                                            ?._id as string)
+                                                        : "",
+                                                  },
+                                                  callBackReq
+                                                )
+                                              }
+                                            }}
+                                          >
+                                            {factory.name}
+                                          </a>
+                                        </li>
+                                      )
+                                    )}
+                                  </ul>
+                                </div>
+                              </td>
+
+                              {selectedRole === "Personnel" ? (
+                                <td
+                                  className={`text-sm text-gray-500 items-start justify-start`}
+                                >
+                                  <button
+                                    id="dropdownFactoryButton"
+                                    data-dropdown-toggle="dropdown"
+                                    className="w-full rounded-md text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
+                                    type="button"
+                                    onClick={() => handleHideRole(idx)}
+                                  >
+                                    <svg
+                                      height="25"
+                                      viewBox="0 0 48 48"
+                                      width="30"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path d="M14 20l10 10 10-10z" />
+                                      <path d="M0 0h48v48h-48z" fill="none" />
+                                    </svg>
+                                    <span>
+                                      {typeof item.role === "string"
+                                        ? item.role
+                                        : "Select Machine Class"}
+                                    </span>
+                                  </button>
+                                  <div
+                                    id="dropdownFactory"
+                                    className={`z-50 fixed ${
+                                      isOpenRole == idx ? "block" : "hidden"
+                                    } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                                  >
+                                    <ul
+                                      className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                      aria-labelledby="dropdownFactoryButton"
+                                    >
+                                      {Object.values(USER_ROLES).map(
+                                        (role, index) => (
+                                          <a className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                            <li key={index}>{role}</li>
+                                          </a>
+                                        )
+                                      )}
+                                    </ul>
+                                  </div>
+                                </td>
+                              ) : (
+                                <td
+                                  className={`text-sm text-gray-500 items-start justify-start`}
+                                >
+                                  <button
+                                    id="dropdownFactoryButton"
+                                    data-dropdown-toggle="dropdown"
+                                    className="w-full rounded-md text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
+                                    type="button"
+                                    onClick={() => handleHideRole(idx)}
+                                  >
+                                    <svg
+                                      height="25"
+                                      viewBox="0 0 48 48"
+                                      width="30"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path d="M14 20l10 10 10-10z" />
+                                      <path d="M0 0h48v48h-48z" fill="none" />
+                                    </svg>
+                                    <span>
+                                      {typeof item.role === "string"
+                                        ? item.role
+                                        : "Select Role"}
+                                    </span>
+                                  </button>
+                                  <div
+                                    id="dropdownFactory"
+                                    className={`z-50 fixed ${
+                                      isOpenRole == idx ? "block" : "hidden"
+                                    } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                                  >
+                                    <ul
+                                      className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                      aria-labelledby="dropdownFactoryButton"
+                                    >
+                                      {Object.values(USER_ROLES).map(
+                                        (role, index) => (
+                                          <a className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                            <li key={index}>{role}</li>
+                                          </a>
+                                        )
+                                      )}
+                                    </ul>
+                                  </div>
+                                </td>
+                              )}
+                              {selectedRole === "HR" && (
+                                <td>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      paddingLeft: "30px",
+                                      marginLeft: "30px",
+                                    }}
+                                  >
+                                    <label>Director</label>
+                                    <input
+                                      type="checkbox"
+                                      style={{ marginLeft: "6px" }}
+                                    />
+                                  </div>
+                                </td>
+                              )}
+
+                              <td
+                                className={`pl-0 w-full py-0 text-sm text-gray-500 relative`}
+                              >
+                                <Menu as="div" className="w-full text-end pr-4">
+                                  <Menu.Button>
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      height="1.5em"
+                                      viewBox="0 0 128 512"
+                                    >
+                                      <path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z" />
+                                    </svg>{" "}
+                                  </Menu.Button>
+                                  <Transition
+                                    as={Fragment}
+                                    enter="transition ease-out duration-100"
+                                    enterFrom="transform opacity-0 scale-95"
+                                    enterTo="transform opacity-100 scale-100"
+                                    leave="transition ease-in duration-75"
+                                    leaveFrom="transform opacity-100 scale-100"
+                                    leaveTo="transform opacity-0 scale-95"
+                                  >
+                                    <Menu.Items className="absolute right-9 text-end mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                      <div className="py-1">
+                                        {item.status !== "Approved" && (
+                                          <Menu.Item>
+                                            {({ active }) => (
+                                              <span
+                                                className={combineClasses(
+                                                  active
+                                                    ? "bg-gray-100 text-gray-900"
+                                                    : "text-gray-700",
+                                                  "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                )}
+                                                onClick={() => {
+                                                  setSelectedRow(item)
+                                                  setConfirmationModal(true)
+                                                  setAction(
+                                                    USER_STATUSES.Approved as T_UserStatus
+                                                  )
+                                                }}
+                                              >
+                                                Approve
+                                              </span>
+                                            )}
+                                          </Menu.Item>
+                                        )}
                                         <Menu.Item>
                                           {({ active }) => (
                                             <span
@@ -1090,164 +1489,142 @@ const Content = () => {
                                               )}
                                               onClick={() => {
                                                 setSelectedRow(item)
-                                                setConfirmationModal(true)
+                                                setDeleteModal(true)
                                                 setAction(
-                                                  USER_STATUSES.Approved as T_UserStatus
+                                                  USER_STATUSES.Rejected as T_UserStatus
                                                 )
                                               }}
                                             >
-                                              Approve
+                                              Reject
                                             </span>
                                           )}
                                         </Menu.Item>
-                                      )}
-                                      <Menu.Item>
-                                        {({ active }) => (
-                                          <span
-                                            className={combineClasses(
-                                              active
-                                                ? "bg-gray-100 text-gray-900"
-                                                : "text-gray-700",
-                                              "block px-4 py-2 text-sm cursor-pointer text-left"
-                                            )}
-                                            onClick={() => {
-                                              setSelectedRow(item)
-                                              setDeleteModal(true)
-                                              setAction(
-                                                USER_STATUSES.Rejected as T_UserStatus
-                                              )
-                                            }}
-                                          >
-                                            Reject
-                                          </span>
-                                        )}
-                                      </Menu.Item>
-                                      <Menu.Item>
-                                        {({ active }) => (
-                                          <span
-                                            className={combineClasses(
-                                              active
-                                                ? "bg-gray-100 text-gray-900"
-                                                : "text-gray-700",
-                                              "block px-4 py-2 text-sm cursor-pointer text-left"
-                                            )}
-                                            onClick={() => {
-                                              setSelectedRow(item)
-                                              setDeleteModal(true)
-                                              setAction(
-                                                USER_STATUSES.Blocked as T_UserStatus
-                                              )
-                                            }}
-                                          >
-                                            Block
-                                          </span>
-                                        )}
-                                      </Menu.Item>
-                                      <Menu.Item>
-                                        {({ active }) => (
-                                          <span
-                                            className={combineClasses(
-                                              active
-                                                ? "bg-gray-100 text-gray-900"
-                                                : "text-gray-700",
-                                              "block px-4 py-2 text-sm cursor-pointer text-left"
-                                            )}
-                                            onClick={() => {
-                                              setSelectedRow(item)
-                                              setDeleteModal(true)
-                                              setAction(
-                                                USER_STATUSES.Archived as T_UserStatus
-                                              )
-                                            }}
-                                          >
-                                            Delete
-                                          </span>
-                                        )}
-                                      </Menu.Item>
-                                    </div>
-                                  </Menu.Items>
-                                </Transition>
-                              </Menu>
-                            </td>
-                          </tr>
-                          {isAccordionOpen && (
-                            <tr
-                              id={`accordion-arrow-icon-body-${idx}`}
-                              aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
-                              className={`${isAccordionOpen ? "open" : ""}`}
-                            >
-                              <td colSpan={7}>
-                                <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
-                                  <div className="w-[73%]">
-                                    <div className="flex justify-between">
-                                      <span className="flex w-[17rem] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
-                                        <p className="w-2/3 text-right">
-                                          ADDITIONAL INFO
-                                        </p>
-                                      </span>
-                                      <div className="flex flex-col py-2">
-                                        <span className="flex  w-[22rem] text-[13px] ">
-                                          <p
-                                            className={`px-3 text-sm  text-gray-500 font-semibold ${
-                                              item.email
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
-                                          >
-                                            EMAIL:
+                                        <Menu.Item>
+                                          {({ active }) => (
+                                            <span
+                                              className={combineClasses(
+                                                active
+                                                  ? "bg-gray-100 text-gray-900"
+                                                  : "text-gray-700",
+                                                "block px-4 py-2 text-sm cursor-pointer text-left"
+                                              )}
+                                              onClick={() => {
+                                                setSelectedRow(item)
+                                                setDeleteModal(true)
+                                                setAction(
+                                                  USER_STATUSES.Blocked as T_UserStatus
+                                                )
+                                              }}
+                                            >
+                                              Block
+                                            </span>
+                                          )}
+                                        </Menu.Item>
+                                        <Menu.Item>
+                                          {({ active }) => (
+                                            <span
+                                              className={combineClasses(
+                                                active
+                                                  ? "bg-gray-100 text-gray-900"
+                                                  : "text-gray-700",
+                                                "block px-4 py-2 text-sm cursor-pointer text-left"
+                                              )}
+                                              onClick={() => {
+                                                setSelectedRow(item)
+                                                setDeleteModal(true)
+                                                setAction(
+                                                  USER_STATUSES.Archived as T_UserStatus
+                                                )
+                                              }}
+                                            >
+                                              Delete
+                                            </span>
+                                          )}
+                                        </Menu.Item>
+                                      </div>
+                                    </Menu.Items>
+                                  </Transition>
+                                </Menu>
+                              </td>
+                            </tr>
+                            {isAccordionOpen && (
+                              <tr
+                                id={`accordion-arrow-icon-body-${idx}`}
+                                aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
+                                className={`${isAccordionOpen ? "open" : ""}`}
+                              >
+                                <td colSpan={7}>
+                                  <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
+                                    <div className="w-[73%]">
+                                      <div className="flex justify-between">
+                                        <span className="flex w-[17rem] text-[14px]  text-green-800 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                          <p className="w-2/3 text-right">
+                                            ADDITIONAL INFO
                                           </p>
-                                          <p
-                                            className={` text-sm text-gray-500 ${
-                                              item.email
-                                                ? "text-red-500"
-                                                : "text-gray-900"
-                                            }`}
-                                          >
-                                            {/* {typeof item. === "object"
+                                        </span>
+                                        <div className="flex flex-col py-2">
+                                          <span className="flex  w-[22rem] text-[13px] ">
+                                            <p
+                                              className={`px-3 text-sm  text-gray-500 font-semibold ${
+                                                item.email
+                                                  ? "text-gray-900"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              EMAIL:
+                                            </p>
+                                            <p
+                                              className={` text-sm text-gray-500 ${
+                                                item.email
+                                                  ? "text-red-500"
+                                                  : "text-gray-900"
+                                              }`}
+                                            >
+                                              {/* {typeof item. === "object"
                                             ? item.operator?.firstName
                                             : ""}{" "}
                                           {typeof item.operator === "object"
                                             ? item.operator?.lastName
                                             : ""} */}
-                                            {item.email || "-"}
-                                          </p>
-                                        </span>
-                                        <span className="flex w-[22rem] text-[13px] text-slate-900 ">
-                                          <p
-                                            className={`px-3 text-sm text-gray-500 font-semibold ${
-                                              item.locationId
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
-                                          >
-                                            CITY:
-                                          </p>
-                                          <p
-                                            className={`px-3 text-sm text-gray-500 ${
-                                              item.locationId
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
-                                          >
-                                            {typeof item?.locationId ===
-                                              "object" && item?.locationId?._id
-                                              ? item?.locationId?.name
-                                              : ""}
-                                          </p>
-                                        </span>
+                                              {item.email || "-"}
+                                            </p>
+                                          </span>
+                                          <span className="flex w-[22rem] text-[13px] text-slate-900 ">
+                                            <p
+                                              className={`px-3 text-sm text-gray-500 font-semibold ${
+                                                item.createdAt
+                                                  ? "text-gray-900"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              CREATED AT:
+                                            </p>
+                                            <p
+                                              className={`px-3 text-sm text-gray-500 ${
+                                                item.createdAt
+                                                  ? "text-gray-900"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              {item?.createdAt instanceof Date
+                                                ? item?.createdAt?.toLocaleString()
+                                                : ""}
+                                            </p>
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </React.Fragment>
-                      )
-                    })}
-                </tbody>
-              }
-            </table>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
+                        )
+                      })}
+                  </tbody>
+                }
+              </table>
+            )
           ) : null}
           {!isPaginatedLoading &&
           paginated?.items &&

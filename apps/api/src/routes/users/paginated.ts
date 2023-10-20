@@ -59,8 +59,8 @@ export const paginated = async (req: Request, res: Response) => {
         .sort({
           createdAt: -1,
         })
-        .skip(10 * (Number(page) - 1))
-        .limit(10)
+        .skip(7 * (Number(page) - 1))
+        .limit(7)
       res.json({
         error: false,
         items: getAllUsers,
