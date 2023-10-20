@@ -24,7 +24,7 @@ export default function chatSocket(io: Server) {
       if (data.action == "emit-operator") {
         const { action, timerId, ...rest } = data
         if (timerId) {
-          io.emit(`timer-${timerId}`, { action: "update-operator", ...rest })
+          io.emit(`timer-${timerId}`, { action: "update-operator", user: user })
         }
       }
     })
