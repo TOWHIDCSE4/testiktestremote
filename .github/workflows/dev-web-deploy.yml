@@ -5,9 +5,9 @@ on:
     branches: ["dev"]
 
 jobs:
-  deployment:
-    runs-on: web-dev
 
+  build: 
+    runs-on: web-dev
     steps:
       - uses: actions/checkout@v3
         with:
@@ -20,6 +20,12 @@ jobs:
         working-directory: apps/web
         run: pm2 delete web
         continue-on-error: true
+        
+  deployment:
+    runs-on: web-dev
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
       - name: Start pm2 web
         working-directory: apps/web
         run: pm2 start npm --name web -- run start
