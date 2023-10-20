@@ -9,6 +9,7 @@ import {
   ADD_SUCCESS_MESSAGE,
   UPDATE_SUCCESS_MESSAGE,
   DELETE_SUCCESS_MESSAGE,
+  JOB_ACTION,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZTimerLog } from "custom-validator"
@@ -186,18 +187,31 @@ export const addTimeLog = async (req: Request, res: Response) => {
             stopReason: { $in: ["Unit Created"] },
             jobId: req.body.jobId,
           }).countDocuments()
+          const getStockJob = await Jobs.findOne({
+            locationId: req.body.locationId,
+            partId: req.body.partId,
+            factoryId: req.body.factoryId,
+            isStock: true,
+            $and: [
+              { status: { $ne: "Deleted" } },
+              { status: { $ne: "Archived" } },
+            ],
+            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+          })
           if (targetCountJob && currCountJob === targetCountJob) {
-            const getStockJob = await Jobs.findOne({
-              locationId: req.body.locationId,
-              partId: req.body.partId,
-              factoryId: req.body.factoryId,
-              isStock: true,
-              $and: [
-                { status: { $ne: "Deleted" } },
-                { status: { $ne: "Archived" } },
-              ],
-              $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-            })
+            const limitReached = currCountJob + 1 === targetCountJob || false
+            const action =
+              getStockJob && limitReached
+                ? JOB_ACTION.SWITCH
+                : !getStockJob && limitReached
+                ? JOB_ACTION.STOP
+                : JOB_ACTION.CONTINUE
+            const jobToBe =
+              action === JOB_ACTION.SWITCH
+                ? getStockJob?._id
+                : action === JOB_ACTION.CONTINUE
+                ? req?.body?.jobId
+                : null
             if (getStockJob) {
               const newTimerLog = new TimerLogs({
                 ...req.body,
@@ -209,14 +223,17 @@ export const addTimeLog = async (req: Request, res: Response) => {
                       : 0) + 1,
               })
               await newTimerLog.save()
+              return res.json({
+                error: false,
+                item: null,
+                completed: limitReached,
+                action,
+                jobToBe,
+                data: getStockJob,
+                itemCount: null,
+                message: "Target count exceeded, log was assigned to stock.",
+              })
             }
-            res.json({
-              error: false,
-              item: null,
-              data: getStockJob,
-              itemCount: null,
-              message: "Target count exceeded, log was assigned to stock.",
-            })
           } else {
             const newTimerLog = new TimerLogs({
               ...req.body,
@@ -227,11 +244,29 @@ export const addTimeLog = async (req: Request, res: Response) => {
                     : 0) + 1,
             })
             const createTimerLog = await newTimerLog.save()
+            const limitReached = currCountJob + 1 === targetCountJob || false
+            const action =
+              getStockJob && limitReached
+                ? JOB_ACTION.SWITCH
+                : !getStockJob && limitReached
+                ? JOB_ACTION.STOP
+                : JOB_ACTION.CONTINUE
+            const jobToBe =
+              action === JOB_ACTION.SWITCH
+                ? getStockJob?._id
+                : action === JOB_ACTION.CONTINUE
+                ? req?.body?.jobId
+                : null
             res.json({
               error: false,
+              completed: limitReached,
+              action,
+              jobToBe,
               item: createTimerLog,
               itemCount: 1,
-              message: ADD_SUCCESS_MESSAGE,
+              message: limitReached
+                ? "Target count exceeded, log was assigned to stock."
+                : ADD_SUCCESS_MESSAGE,
             })
           }
         }
@@ -254,6 +289,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
       })
     }
   } catch (error: any) {
+    Sentry.captureException(error)
     res.json({
       error: true,
       message: error,
