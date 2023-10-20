@@ -19,6 +19,15 @@ export default function chatSocket(io: Server) {
     socket["user"] = user
 
     console.log("User connected")
+    socket.on("join-timer", (data: any) => {
+      console.log(data)
+      if (data.action == "emit-operator") {
+        const { action, timerId, ...rest } = data
+        if (timerId) {
+          io.emit(`timer-${timerId}`, { action: "update-operator", ...rest })
+        }
+      }
+    })
 
     socket.on("event", (message: any) => {
       // Handle chat message logic here (e.g., save to a database)
