@@ -19,8 +19,9 @@ import * as Sentry from "@sentry/node"
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const usersCounts = await Users.find().countDocuments()
-    const getAllUsers = await Users.find().sort({ createdAt: -1 })
+    const query = { status: "Approved" }
+    const usersCounts = await Users.find(query).countDocuments()
+    const getAllUsers = await Users.find(query).sort({ createdAt: -1 })
     res.json({
       error: false,
       items: getAllUsers,
