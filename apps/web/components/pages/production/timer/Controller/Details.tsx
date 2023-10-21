@@ -10,13 +10,11 @@ import useUsers from "../../../../../hooks/users/useUsers"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
-import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
-import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
+import useUpdateTimerJob from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
 import useProfile from "../../../../../hooks/users/useProfile"
-import useGetCycleTimer from "../../../../../hooks/timers/useGetCycleTimer"
 
 type T_Props = {
   timerDetails: T_Timer // Show all details of controller
@@ -24,12 +22,16 @@ type T_Props = {
   readingMessages: string[] // Using for messages
   sectionDiv: React.RefObject<HTMLDivElement>
   jobTimer: T_JobTimer // Timer jobs list
-  updateJob: boolean
   jobUpdateId: string
   defaultOperator: any
   timerId: string
   isJobTimerLoading: boolean // Timer jobs list loading
   isCycleClockRunning: boolean // Tracker run loading
+  timerJobs: T_Job[] | undefined
+  setFactoryId: any
+  setLocationId: any
+  setPartId: any
+  isTimerJobsLoading: boolean
 }
 
 const Details = ({
@@ -38,12 +40,16 @@ const Details = ({
   readingMessages,
   sectionDiv,
   jobTimer,
-  updateJob,
   jobUpdateId,
   timerId,
   defaultOperator,
   isJobTimerLoading,
   isCycleClockRunning,
+  timerJobs,
+  setFactoryId,
+  setLocationId,
+  setPartId,
+  isTimerJobsLoading,
 }: T_Props) => {
   const queryClient = useQueryClient()
   const { data: users, isLoading: isUsersLoading } = useUsers()
@@ -60,18 +66,10 @@ const Details = ({
     typeof timerDetails?.partId === "object" && timerDetails?.partId._id
       ? timerDetails?.partId._id
       : ""
-  const {
-    data: timerJobs,
-    isLoading: isTimerJobsLoading,
-    setFactoryId,
-    setLocationId,
-    setPartId,
-  } = useGetTimerJobs()
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
-  const { mutate: updateJobTimer, isLoading: isUpdateJobTimerLoading } =
-    useUpdateJobTimer()
-  // const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimer(timerId)
+  const { mutate: updateTimerJob, isLoading: isUpdateTimerJobLoading } =
+    useUpdateTimerJob()
   const [operatorQuery, setOperatorQuery] = useState("")
   const [openNewJobModal, setOpenNewJobModal] = useState(false)
   const [selectedOperator, setSelectedOperator] = useState({
@@ -79,29 +77,12 @@ const Details = ({
     name: "",
   })
 
-  // console.log('userProfile', userProfile)
   const [operator, setOperator] = useState({
     id: "",
     name: "",
   })
 
-  // useEffect(() => {
-  //   if (Object.keys(operator).length === 0) {
-  //     console.log('userProfile', userProfile)
-  //     setOperator({
-  //       id: userProfile?.item._id,
-  //       name: userProfile?.item.firstName + " " + userProfile?.item.lastName,
-  //     });
-  //   }
-  // }, [operator, userProfile]);
   useEffect(() => {
-    if (updateJob && jobUpdateId) {
-      updateJobTimer({ ...jobTimer, jobId: jobUpdateId }, callBackReq)
-    }
-  }, [updateJob, jobUpdateId])
-
-  useEffect(() => {
-    // cycleRefetch()
     if (defaultOperator) {
       setSelectedOperator({
         id: defaultOperator._id,
@@ -111,7 +92,6 @@ const Details = ({
         id: defaultOperator._id,
         name: defaultOperator.firstName + " " + defaultOperator.lastName,
       })
-      // console.log('DefaultOperator', defaultOperator)
       mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
     }
   }, [defaultOperator])
@@ -321,22 +301,22 @@ const Details = ({
           isTimerDetailDataLoading ||
           isTimerJobsLoading ||
           isJobTimerLoading ||
-          isUpdateJobTimerLoading
+          isUpdateTimerJobLoading
         }
         defaultValue="Select Job"
         required
-        value={updateJob ? jobUpdateId : (jobTimer?.jobId as string)}
+        value={jobUpdateId}
         className={`block mt-2 w-full xl:w-80 ipadair:w-[250px] 2xl:w-[350px] rounded-md border-0 py-1.5 pl-3 pr-10 dark:bg-gray-300 bg-zinc-100 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-1xl sm:xl:leading-7`}
         onChange={(e) => {
           if (e.target.value === "Add New Job") {
             setOpenNewJobModal(true)
           } else {
-            updateJobTimer({ ...jobTimer, jobId: e.target.value }, callBackReq)
+            updateTimerJob({ ...jobTimer, jobId: e.target.value }, callBackReq)
           }
         }}
       >
         <option value="">Select Job</option>
-        {timerJobs?.items.map((item: T_Job, index: number) => {
+        {timerJobs?.map((item: T_Job, index: number) => {
           return (
             <option key={index} value={item._id as string}>
               {item.name}

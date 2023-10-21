@@ -98,6 +98,10 @@ const Timer = ({
         const secondsLapse = currentDate.diff(timerStart, "seconds", true)
         setCycleClockInSeconds(secondsLapse)
       }
+      if (data.action === "end-controller") {
+        setCycleClockInSeconds(0)
+        stopInterval()
+      }
     }
     socket?.on(`timer-${timer._id}`, runSocket)
 

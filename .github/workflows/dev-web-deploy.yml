@@ -4,13 +4,10 @@ on:
   push:
     branches: ["dev"]
 
-env: 
-  SENTRY_WEB_DSN: https://33331924175dbb304fff8c113219c4de@o4505359606480896.ingest.sentry.io/4506070836838400
-
 jobs:
-
-  build: 
+  deployment:
     runs-on: web-dev
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -19,12 +16,6 @@ jobs:
       - name: Build project
         working-directory: apps/web
         run: npm run build
-        
-  deployment:
-    runs-on: web-dev
-    needs: build
-    steps:
-      - uses: actions/checkout@v3
       - name: Delete pm2 web
         working-directory: apps/web
         run: pm2 delete web
