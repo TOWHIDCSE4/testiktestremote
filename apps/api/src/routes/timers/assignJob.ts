@@ -23,11 +23,7 @@ export const assignJob = async (req: Request, res: Response) => {
       const job = await Jobs.findOne({
         _id: getDayJobTimer?.jobId,
         $and: [
-          {
-            deletedAt: {
-              $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-            },
-          },
+          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
         ],
       })
       if (!getDayJobTimer) {
