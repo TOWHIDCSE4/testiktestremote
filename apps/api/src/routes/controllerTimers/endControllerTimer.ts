@@ -6,10 +6,12 @@ import { Request, Response } from "express"
 import CycleTimers from "../../models/cycleTimers"
 import ControllerTimers from "../../models/controllerTimers"
 import * as Sentry from "@sentry/node"
+import { getIo } from "../../config/setup-socket"
 
 export const endControllerTimer = async (req: Request, res: Response) => {
   const { timerId } = req.body
   try {
+    const io = getIo()
     if (timerId) {
       const getExistingCycleTimer = await CycleTimers.find({
         timerId,
@@ -34,6 +36,12 @@ export const endControllerTimer = async (req: Request, res: Response) => {
             endAt: Date.now(),
           }
         )
+
+        io.emit(`timer-${timerId}`, {
+          action: "end-controller",
+          route: "PATCH/controller-timers/end",
+          data: endTimer,
+        })
         res.json({
           error: false,
           item: endTimer,
