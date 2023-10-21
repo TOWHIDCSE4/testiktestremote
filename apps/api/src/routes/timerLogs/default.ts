@@ -240,6 +240,16 @@ export const addTimeLog = async (req: Request, res: Response) => {
                   },
                 })
               }
+              if (limitReached) {
+                await Jobs.findByIdAndUpdate(
+                  req.body.jobId,
+                  {
+                    status: "Testing",
+                    updatedAt: Date.now(),
+                  },
+                  { new: true }
+                )
+              }
               return res.json({
                 error: false,
                 item: null,
@@ -288,6 +298,16 @@ export const addTimeLog = async (req: Request, res: Response) => {
                   data: job,
                 },
               })
+            }
+            if (limitReached) {
+              await Jobs.findByIdAndUpdate(
+                req.body.jobId,
+                {
+                  status: "Testing",
+                  updatedAt: Date.now(),
+                },
+                { new: true }
+              )
             }
             res.json({
               error: false,
