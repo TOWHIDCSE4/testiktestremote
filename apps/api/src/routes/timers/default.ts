@@ -7,10 +7,16 @@ import {
   ADD_SUCCESS_MESSAGE,
   UPDATE_SUCCESS_MESSAGE,
   DELETE_SUCCESS_MESSAGE,
+  JOB_ACTION,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZTimer } from "custom-validator"
 import * as Sentry from "@sentry/node"
+import JobTimer from "../../models/jobTimer"
+import { timer } from "../timerLogs/timer"
+import TimerLogs from "../../models/timerLogs"
+import Jobs from "../../models/jobs"
+import { getIo } from "../../config/setup-socket"
 
 export const getAllTimers = async (req: Request, res: Response) => {
   try {
@@ -38,6 +44,7 @@ export const getAllTimers = async (req: Request, res: Response) => {
 
 export const getTimer = async (req: Request, res: Response) => {
   try {
+    const io = getIo()
     const getTimer = await Timers.findOne({
       _id: req.params.id,
       deletedAt: null,
@@ -49,8 +56,71 @@ export const getTimer = async (req: Request, res: Response) => {
       .populate("machineClassId")
       .populate("operator")
       .populate("createdBy")
+
+    const timerJob = await JobTimer.findOne({
+      timerId: req.params.id,
+      deletedAt: null,
+    })
+
+    const jobId = timerJob?.jobId
+    const job = await Jobs.findOne({ _id: jobId })
+    const getStockJob = !job?.isStock
+      ? await Jobs.findOne({
+          locationId: getTimer?.locationId?._id,
+          partId: getTimer?.partId?._id,
+          factoryId: getTimer?.factoryId?._id,
+          isStock: true,
+          $and: [
+            { status: { $ne: "Deleted" } },
+            { status: { $ne: "Archived" } },
+          ],
+          $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        })
+      : job
+
+    const targetCountJob = !job?.isStock ? job?.count : "unlimited"
+
+    const currCountJob = !job?.isStock
+      ? await TimerLogs.find({
+          stopReason: { $in: ["Unit Created"] },
+          jobId: jobId,
+        }).countDocuments()
+      : null
+
+    const limitReached = currCountJob === targetCountJob || false
+    const recommendation =
+      getStockJob && limitReached
+        ? JOB_ACTION.SWITCH
+        : !getStockJob && limitReached
+        ? JOB_ACTION.STOP
+        : JOB_ACTION.CONTINUE
+    const jobToBe =
+      recommendation === JOB_ACTION.SWITCH
+        ? getStockJob?._id
+        : recommendation === JOB_ACTION.CONTINUE
+        ? jobId
+        : null
+    if (
+      recommendation === JOB_ACTION.STOP ||
+      recommendation === JOB_ACTION.SWITCH
+    ) {
+      io.emit(`timer-${req.body.timerId}`, {
+        action: `job-change`,
+        route: "GET//timers",
+        data: {
+          completed: limitReached,
+          recommendation,
+          jobToBe,
+          data: getStockJob,
+        },
+      })
+    }
+
     res.json({
       error: false,
+      completed: limitReached,
+      recommendation,
+      jobToBe,
       item: getTimer,
       itemCount: 1,
       message: null,
