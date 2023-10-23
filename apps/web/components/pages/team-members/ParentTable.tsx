@@ -85,7 +85,8 @@ const Content = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenRole, setIsOpenRole] = useState()
   const [isOpenCity, setIsOpenCity] = useState()
-  const [isOpenLocation, setIsOpenLocation] = useState()
+  const [isOpenLocation, setIsOpenLocation] = useState(undefined)
+  // const [isDropdownClose, setIsDropdownClose]=useState(undefined)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const [openNewMemberModal, setOpenNewMemberModal] = useState(false)
@@ -463,13 +464,15 @@ const Content = () => {
                   <br /> Team Members
                 </span>
                 <svg
-                  onClick={() => setOpenNewMemberModal(true)}
+                  onClick={() => {
+                    setNewModal(true)
+                  }}
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke-width="1.5"
                   stroke="currentColor"
-                  className="w-8 ml-2 mt-2 text-white bg-[#172554] h-8 rounded-md"
+                  className="w-8 ml-2 mt-2 cursor-pointer text-white bg-[#172554] h-8 rounded-md"
                 >
                   <path
                     stroke-linecap="round"
