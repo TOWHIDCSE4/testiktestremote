@@ -240,10 +240,10 @@ export const addTimeLog = async (req: Request, res: Response) => {
                     data: getStockJob,
                   },
                 })
+                const updateJob = jobTimer.findByIdAndUpdate(req.body.timerId, {
+                  jobId: jobToBe,
+                })
               }
-              const updateJob = jobTimer.findByIdAndUpdate(req.body.timerId, {
-                jobId: jobToBe,
-              })
               if (limitReached) {
                 await Jobs.findByIdAndUpdate(
                   req.body.jobId,
