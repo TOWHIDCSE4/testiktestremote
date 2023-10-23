@@ -1,8 +1,4 @@
-import {
-  API_URL_TIMER,
-  ONE_DAY,
-  REFETCH_ACTIVATED,
-} from "../../helpers/constants"
+import { API_URL_TIMER } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse } from "custom-validator"
 import Cookies from "js-cookie"
@@ -50,7 +46,6 @@ function useTotalTonsUnit({
     {
       refetchOnWindowFocus: false,
       enabled: !!locationId && !!timerId,
-      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
     }
   )
   return query

@@ -31,15 +31,15 @@ const CycleClock = ({
 }: T_Props) => {
   const isActive = () => {
     if (
-      !isCycleClockRunning &&
+      isCycleClockRunning !== true &&
       isEndCycleTimerLoading &&
-      !isEndAddCycleTimerLoading
+      isEndAddCycleTimerLoading !== true
     ) {
       return true
     } else if (
-      !isCycleClockRunning &&
-      !isEndCycleTimerLoading &&
-      !isEndAddCycleTimerLoading
+      isCycleClockRunning !== true &&
+      isEndCycleTimerLoading !== true &&
+      isEndAddCycleTimerLoading !== true
     ) {
       return true
     } else {
@@ -155,7 +155,7 @@ const CycleClock = ({
                     ? "scale-75 transition-transform duration-300 text-green-200 cursor-not-allowed"
                     : "text-green-600 cursor-pointer"
                 } ${isAbleToStart ? "" : "text-custom-color cursor-pointer"}`}
-                onClick={() => !isCycleClockStarting && runCycle()}
+                onClick={() => isCycleClockStarting !== true && runCycle()}
               >
                 Start
               </button>
@@ -167,7 +167,7 @@ const CycleClock = ({
                     ? "scale-75 transition-transform duration-300 text-neutral-200 cursor-not-allowed"
                     : "text-neutral-600 cursor-pointer"
                 }`}
-                onClick={() => !isCycleClockStarting && stopCycle()}
+                onClick={() => isCycleClockStarting !== true && stopCycle()}
               >
                 Stop
               </button>

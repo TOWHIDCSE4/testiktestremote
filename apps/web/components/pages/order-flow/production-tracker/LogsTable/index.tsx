@@ -7,7 +7,7 @@ import moment from "moment"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 // import { usePathname } from "next/navigation"
-import React, { Dispatch, useEffect, useState, useRef } from "react"
+import React, { Dispatch, useEffect, useState, useRef, use } from "react"
 // import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGlobalTimerLogsMultiFilter"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import {
@@ -449,20 +449,28 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     //   setCity(event.target.value[0])
     //   setCityLocation(event.target.value[1])
     // }
-    console.log(
-      "🚀 ~ file: index.tsx:448 ~ handleLocationChange ~ event:",
-      event
-    )
+    const selectedMachineClass: Array<any> = []
     setCity(event.target.value)
+    setMachineClass(selectedMachineClass)
   }
 
   useEffect(() => {
     setCityCounter(city.length)
   }, [city])
 
-  const handleMachineClassChange = (event: any) => {
-    // console.log(`selected ${value}`);
-    setMachineClass(event.target.value)
+  // useEffect(() => {
+  //   if(!city){
+  //     setMachineClass([])
+  //   }
+  // }, [city])
+  const handleMachineClassChange = (event: SelectChangeEvent) => {
+    const selectedMachineClasses: string = event.target.value
+
+    const selectedMachines: Array<any> = []
+    //@ts-expect-error
+    setMachineClass(selectedMachineClasses)
+    setMachine(selectedMachines)
+    // setSelectedMachineClasses(selectedMachineClasses);
   }
 
   useEffect(() => {
@@ -470,13 +478,15 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }, [machineClass])
 
   const handleMachineChange = (event: any) => {
-    // console.log(`selected ${value}`);
+    const selectedParts: Array<any> = []
     setSelectedMachineValues(event.target.value)
     setMachine(event.target.value)
+    setPartsSelected(selectedParts)
   }
 
   useEffect(() => {
     setMachineCounter(machine.length)
+    setMachineClassCounter(machineClass.length)
   }, [machine])
 
   const handlePartsChange = (event: any) => {
@@ -778,24 +788,36 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         marginLeft: "10px",
                       }}
                       value={machineClass}
-                      onChange={(event) => handleMachineClassChange(event)}
+                      onChange={(event: any) => handleMachineClassChange(event)}
                       renderValue={() => `${machineClassCounter} selected`}
                       MenuProps={MenuProps}
                     >
-                      {machineClasses?.items?.map(
-                        (item: T_MachineClass, index: number) => (
-                          <MenuItem
-                            key={index}
-                            // value={[item._id, item.name ] as string[]}
-                            value={item._id as string}
-                          >
-                            <ListItemText primary={item.name} />
-                            <Checkbox
-                              //@ts-expect-error
-                              checked={machineClass.includes(item._id)}
-                            />
-                          </MenuItem>
+                      {machineClasses &&
+                      machineClasses.items &&
+                      machineClasses.items.length > 0 ? (
+                        machineClasses?.items?.map(
+                          (item: T_MachineClass, index: number) => (
+                            <MenuItem
+                              key={index}
+                              // value={[item._id, item.name ] as string[]}
+                              value={item._id as string}
+                            >
+                              <ListItemText primary={item.name} />
+                              <Checkbox
+                                //@ts-expect-error
+                                checked={machineClass.includes(item._id)}
+                              />
+                            </MenuItem>
+                          )
                         )
+                      ) : (
+                        // Render "No data found" when no data is available
+                        <MenuItem disabled>
+                          <ListItemText
+                            className="mx-4 pl-4"
+                            primary="No data found"
+                          />
+                        </MenuItem>
                       )}
                     </Select>
                   </FormControl>
@@ -869,7 +891,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       ) : (
                         // Render "No data found" when no data is available
                         <MenuItem disabled>
-                          <ListItemText primary="No data found" />
+                          <ListItemText
+                            className="mx-4 pl-4"
+                            primary="No data found"
+                          />
                         </MenuItem>
                       )}
                     </Select>
@@ -935,7 +960,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         ) : (
                           // Render "No data found" when no data is available
                           <MenuItem disabled>
-                            <ListItemText primary="No data found" />
+                            <ListItemText
+                              className="mx-4 pl-4"
+                              primary="No data found"
+                            />
                           </MenuItem>
                         )
                       }
