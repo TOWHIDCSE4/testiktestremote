@@ -11,6 +11,7 @@ import {
 } from "custom-validator"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
+import NewMemberModal from "./modals/NewMemberModal"
 import useLocations from "../../../hooks/locations/useLocations"
 import { USER_ROLES, USER_STATUSES } from "../../../helpers/constants"
 import { T_User, T_UserStatus } from "custom-validator/ZUser"
@@ -73,6 +74,7 @@ const Content = () => {
   const queryClient = useQueryClient()
   const { data: userProfile } = useProfile()
   const [deleteModal, setDeleteModal] = useState(false)
+  const [newModal, setNewModal] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState("Pending")
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [selectedColor, setSelectedColor] = useState("text-yellow-900")
@@ -86,6 +88,7 @@ const Content = () => {
   const [isOpenLocation, setIsOpenLocation] = useState()
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+  const [openNewMemberModal, setOpenNewMemberModal] = useState(false)
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
@@ -339,6 +342,10 @@ const Content = () => {
     else setIsOpenLocation(idx)
   }
 
+  const onSearch = (e: any) => {
+    setName(e.target.value)
+  }
+
   return (
     <>
       <div
@@ -456,6 +463,7 @@ const Content = () => {
                   <br /> Team Members
                 </span>
                 <svg
+                  onClick={() => setOpenNewMemberModal(true)}
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -473,9 +481,12 @@ const Content = () => {
               <div className="flex justify-center text-gray-900 ">
                 <input
                   type="search"
-                  className="peer block text-sm bg-slate-200 focus:placeholder:opacity-30 uppercase ring-1 placeholder:opacity-30 focus:ring-1 focus:border-1 focus:border-gray-400 focus:ring-slate-500 ring-gray-400 min-h-[auto] placeholder:text-gray-500 text-black w-[9.5rem] rounded border-0 bg-transparent px-3 py-[0.23rem] leading-[1.6] outline-none transition-all duration-200 ease-linear peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
+                  className="peer block text-sm bg-slate-200 focus:placeholder:opacity-30 placeholder:uppercase ring-1 placeholder:opacity-30 focus:ring-1 focus:border-1 focus:border-gray-400 focus:ring-slate-500 ring-gray-400 min-h-[auto] placeholder:text-gray-500 text-black w-[9.5rem] rounded border-0 bg-transparent px-3 py-[0.23rem] leading-[1.6] outline-none transition-all duration-200 ease-linear peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
                   id="exampleSearch2"
                   placeholder="Search Users"
+                  onChange={(e) => {
+                    onSearch(e)
+                  }}
                 />
               </div>
             </div>
@@ -1757,6 +1768,8 @@ const Content = () => {
           user={selectedRow as T_User}
           status={action as T_UserStatus}
         />
+
+        <NewMemberModal isOpen={newModal} onClose={() => setNewModal(false)} />
       </div>
     </>
   )
