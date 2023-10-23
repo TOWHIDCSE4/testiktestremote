@@ -16,6 +16,7 @@ import { ZTimerLog } from "custom-validator"
 import Jobs from "../../models/jobs"
 import * as Sentry from "@sentry/node"
 import { getIo } from "../../config/setup-socket"
+import jobTimer from "../../models/jobTimer"
 
 export const getAllTimeLogs = async (req: Request, res: Response) => {
   try {
@@ -240,6 +241,9 @@ export const addTimeLog = async (req: Request, res: Response) => {
                   },
                 })
               }
+              const updateJob = jobTimer.findByIdAndUpdate(req.body.timerId, {
+                jobId: jobToBe,
+              })
               if (limitReached) {
                 await Jobs.findByIdAndUpdate(
                   req.body.jobId,
@@ -297,6 +301,9 @@ export const addTimeLog = async (req: Request, res: Response) => {
                   jobToBe,
                   data: job,
                 },
+              })
+              const updateJob = jobTimer.findByIdAndUpdate(req.body.timerId, {
+                jobId: jobToBe,
               })
             }
             if (limitReached) {
