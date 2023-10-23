@@ -1,6 +1,7 @@
 "use client"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
+import { FormControl, MenuItem, Select } from "@mui/material"
 import * as utc from "dayjs/plugin/utc"
 import { Fragment, useEffect, useState } from "react"
 import {
@@ -34,8 +35,74 @@ const ARR_USER_STATUSES = [
   USER_STATUSES.Blocked,
   USER_STATUSES.Rejected,
 ]
+interface ContentProps {
+  userLog: string
+}
 
-const Content = () => {
+const Content: React.FC<ContentProps> = ({ userLog }) => {
+  const [userRole, setUserLog] = useState<string | undefined>(userLog)
+  const [items, setItem] = [
+    {
+      label: "Administrator",
+      key: "0",
+    },
+    {
+      label: "HR",
+      key: "1",
+    },
+    {
+      label: "Production",
+      key: "2",
+    },
+    {
+      label: "Corporate",
+      key: "3",
+    },
+    {
+      label: "Personnel",
+      key: "4",
+    },
+    {
+      label: "Dev",
+      key: "5",
+    },
+  ]
+  // const items = [
+  //   {
+  //     label: "Administrator",
+  //     key: "0",
+  //   },
+  //   {
+  //     label: "HR",
+  //     key: "1",
+  //   },
+  //   {
+  //     label: "Production",
+  //     key: "2",
+  //   },
+  //   {
+  //     label: "Corporate",
+  //     key: "3",
+  //   },
+  //   {
+  //     label: "Personnel",
+  //     key: "4",
+  //   },
+  //   {
+  //     label: "Dev",
+  //     key: "5",
+  //   },
+  // ]
+
+  const roleFilter = (): string[] | undefined => {
+    if (userRole === "HR") {
+      return ["Production", "Corporate", "Personnel"]
+    } else if (userRole === "Production") {
+      return ["Personnel"]
+    }
+    return undefined
+  }
+
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   const storeSession = useStoreSession(
@@ -252,33 +319,6 @@ const Content = () => {
     }
   }, [userProfile, selectedRole, selectedStatus])
 
-  const items = [
-    {
-      label: "Administrator",
-      key: "0",
-    },
-    {
-      label: "HR",
-      key: "1",
-    },
-    {
-      label: "Production",
-      key: "2",
-    },
-    {
-      label: "Corporate",
-      key: "3",
-    },
-    {
-      label: "Personnel",
-      key: "4",
-    },
-    {
-      label: "Dev",
-      key: "5",
-    },
-  ]
-
   const handleSelectChange = (event: any) => {
     // setStatus(event.target.value)
     // setSelectedStatus(event.target.value)
@@ -358,19 +398,35 @@ const Content = () => {
           <div className="flex justify-between h-32">
             <div className="flex flex-col w-72 sm:flex-none cursor-pointer h-6">
               <div className="flex ml-1">
-                <select
+                <FormControl variant="outlined">
+                  <Select
+                    label="Select Role"
+                    id="cars"
+                    className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0"
+                    onChange={handleTeamListing}
+                    // value={selectedStatus}
+                  >
+                    <MenuItem value="">Select Role</MenuItem>
+                    {roleFilter().map((item, index) => (
+                      <MenuItem key={index} value={item}>
+                        {item}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {/* <select
                   id="cars"
                   className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
                   onChange={handleTeamListing}
                   // value={selectedStatus}
                 >
-                  <option className="hidden">Select Role</option>
-                  {items.map((item) => (
-                    <option key={item.key} value={item.label}>
-                      {item.label}
+                  <option className="hidden p-5">Select Role</option>
+                  {roleFilter()?.map((item, index) => (
+                    <option key={index} value={item}>
+                      {item}
                     </option>
                   ))}
-                </select>
+                </select> */}
                 <label className="text-[#7F1D1D] text-md uppercase font-semibold">
                   Team Listing
                 </label>
@@ -635,50 +691,56 @@ const Content = () => {
                                   >
                                     <Menu.Items className="absolute right-9 text-end mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                       <div className="py-1">
-                                        {item.status !== "Approved" && (
-                                          <Menu.Item>
-                                            {({ active }) => (
-                                              <span
-                                                className={combineClasses(
-                                                  active
-                                                    ? "bg-gray-100 text-gray-900"
-                                                    : "text-gray-700",
-                                                  "block px-4 py-2 text-sm cursor-pointer text-left"
+                                        {item.status !== "Approved" &&
+                                          (userRole === "HR" ||
+                                          userRole === "HR" ? (
+                                            <>
+                                              <Menu.Item>
+                                                {({ active }) => (
+                                                  <span
+                                                    className={combineClasses(
+                                                      active
+                                                        ? "bg-gray-100 text-gray-900"
+                                                        : "text-gray-700",
+                                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                    )}
+                                                    onClick={() => {
+                                                      setSelectedRow(item)
+                                                      setConfirmationModal(true)
+                                                      setAction(
+                                                        USER_STATUSES.Approved as T_UserStatus
+                                                      )
+                                                    }}
+                                                  >
+                                                    Approve
+                                                  </span>
                                                 )}
-                                                onClick={() => {
-                                                  setSelectedRow(item)
-                                                  setConfirmationModal(true)
-                                                  setAction(
-                                                    USER_STATUSES.Approved as T_UserStatus
-                                                  )
-                                                }}
-                                              >
-                                                Approve
-                                              </span>
-                                            )}
-                                          </Menu.Item>
-                                        )}
-                                        <Menu.Item>
-                                          {({ active }) => (
-                                            <span
-                                              className={combineClasses(
-                                                active
-                                                  ? "bg-gray-100 text-gray-900"
-                                                  : "text-gray-700",
-                                                "block px-4 py-2 text-sm cursor-pointer text-left"
-                                              )}
-                                              onClick={() => {
-                                                setSelectedRow(item)
-                                                setDeleteModal(true)
-                                                setAction(
-                                                  USER_STATUSES.Rejected as T_UserStatus
-                                                )
-                                              }}
-                                            >
-                                              Reject
-                                            </span>
-                                          )}
-                                        </Menu.Item>
+                                              </Menu.Item>
+                                              <Menu.Item>
+                                                {({ active }) => (
+                                                  <span
+                                                    className={combineClasses(
+                                                      active
+                                                        ? "bg-gray-100 text-gray-900"
+                                                        : "text-gray-700",
+                                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                    )}
+                                                    onClick={() => {
+                                                      setSelectedRow(item)
+                                                      setDeleteModal(true)
+                                                      setAction(
+                                                        USER_STATUSES.Rejected as T_UserStatus
+                                                      )
+                                                    }}
+                                                  >
+                                                    Reject
+                                                  </span>
+                                                )}
+                                              </Menu.Item>
+                                            </>
+                                          ) : (
+                                            ""
+                                          ))}
                                         <Menu.Item>
                                           {({ active }) => (
                                             <span
