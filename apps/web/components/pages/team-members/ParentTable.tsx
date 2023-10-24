@@ -1,7 +1,6 @@
 "use client"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
-import { FormControl, MenuItem, Select } from "@mui/material"
 import * as utc from "dayjs/plugin/utc"
 import { Fragment, useEffect, useState } from "react"
 import { T_BackendResponse, T_Locations, T_UserRole } from "custom-validator"
@@ -23,6 +22,7 @@ import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
 import React from "react"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
+import { FormControl, MenuItem, Select } from "@mui/material"
 
 const ARR_USER_STATUSES = [
   USER_STATUSES.Pending,
@@ -62,41 +62,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       label: "Dev",
       key: "5",
     },
+    {
+      label: "HR_Director",
+      key: "6",
+    },
   ])
-
-  // const items = [
-  //   {
-  //     label: "Administrator",
-  //     key: "0",
-  //   },
-  //   {
-  //     label: "HR",
-  //     key: "1",
-  //   },
-  //   {
-  //     label: "Production",
-  //     key: "2",
-  //   },
-  //   {
-  //     label: "Corporate",
-  //     key: "3",
-  //   },
-  //   {
-  //     label: "Personnel",
-  //     key: "4",
-  //   },
-  //   {
-  //     label: "Dev",
-  //     key: "5",
-  //   },
-  // ]
 
   const roleFilter = (): string[] => {
     if (userRole === "HR") {
       return ["Production", "Corporate", "Personnel"]
     } else if (userRole === "Production") {
       return ["Personnel"]
-    } else if (userRole === "Administrator" || userRole === "HR-Director") {
+    } else if (userRole === "Administrator" || userRole === "HR_Director") {
       return [
         "Administrator",
         "Production",
@@ -151,6 +128,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const queryClient = useQueryClient()
   const { data: userProfile } = useProfile()
+  console.log(userProfile)
+
   const [deleteModal, setDeleteModal] = useState(false)
   const [newModal, setNewModal] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState("Pending")
@@ -341,33 +320,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }, [userProfile, selectedRole, selectedStatus])
 
-  // const items = [
-  //   {
-  //     label: "Administrator",
-  //     key: "0",
-  //   },
-  //   {
-  //     label: "HR",
-  //     key: "1",
-  //   },
-  //   {
-  //     label: "Production",
-  //     key: "2",
-  //   },
-  //   {
-  //     label: "Corporate",
-  //     key: "3",
-  //   },
-  //   {
-  //     label: "Personnel",
-  //     key: "4",
-  //   },
-  //   {
-  //     label: "Dev",
-  //     key: "5",
-  //   },
-  // ]
-
   const handleTeamListing = (event: any) => {
     setOpenAccordion(null)
     setSelectedRole(event.target.value)
@@ -439,12 +391,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     id="cars"
                     className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
                     onChange={handleTeamListing}
-                    // value={selectedStatus}
+                    value={selectedStatus}
                   >
                     <option className="hidden">Select Role</option>
-                    {items.map((item) => (
-                      <option key={item.key} value={item.label}>
-                        {item.label}
+                    {roleFilter().map((item, index) => (
+                      <option key={index} value={item}>
+                        {item}
                       </option>
                     ))}
                   </select>
