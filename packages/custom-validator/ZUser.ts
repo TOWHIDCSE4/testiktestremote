@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { ZLocation } from "./ZLocation"
 import { ZFactory } from "./ZFactory"
+import { ZMachineClass } from "./ZMachineClass"
 
 export const ZUserRoles = z.enum([
   "Administrator",
@@ -39,6 +40,7 @@ export const ZUser = z.object({
   _id: z.string().optional(),
   firstName: z.string(),
   lastName: z.string(),
+  machineClassId: z.union([z.string(), ZMachineClass]).nullable().optional(),
   role: ZUserRoles,
   email: z.string().email(),
   password: z.string().min(8),

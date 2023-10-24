@@ -157,6 +157,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [selectedColor, setSelectedColor] = useState("text-yellow-900")
   const [selectedRole, setSelectedRole] = useState(storeSession?.role)
+  const [selectedMachineClass, setSelectedMachineClass] = useState()
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
   const [action, setAction] = useState<T_UserStatus | null>(null)
@@ -183,7 +184,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const { data: machineClass, isLoading: isMachineLoading } =
     useMachineClasses()
-  console.log(machineClass?.items)
 
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   const [hasRendered, setHasRendered] = useState(false)
@@ -465,8 +465,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               <div className="mt-4 flex flex-col">
                 <span
-                  className={`text-[2rem] uppercase font-semibold text-xl cursor-pointer ${selectedColor}`}
-                  style={{ paddingLeft: "40px" }}
+                  className={`text-[2rem] uppercase md:pl-5 font-semibold text-xl cursor-pointer ${selectedColor}`}
                   onClick={toggleDropdown}
                 >
                   {selectedStatus}
@@ -1347,11 +1346,22 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       <path d="M0 0h48v48h-48z" fill="none" />
                                     </svg>
                                     <span>
-                                      {typeof item.role === "string"
-                                        ? item.role
-                                        : "Select Machine Class"}
+                                      {item.machineClassId ? (
+                                        machineClass.items.map(
+                                          (machineClass: any) =>
+                                            machineClass._id ===
+                                            item.machineClassId ? (
+                                              <div key={machineClass._id}>
+                                                {machineClass.name}
+                                              </div>
+                                            ) : null
+                                        )
+                                      ) : (
+                                        <div>Select Machine Class</div>
+                                      )}
                                     </span>
                                   </button>
+
                                   <div
                                     id="dropdownFactory"
                                     className={`z-50 fixed ${
@@ -1363,9 +1373,40 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       aria-labelledby="dropdownFactoryButton"
                                     >
                                       {machineClass.items.map(
-                                        (item: any, index: string) => (
-                                          <a className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                            <li key={index}>{item.name}</li>
+                                        (
+                                          machineClassId: any,
+                                          index: string
+                                        ) => (
+                                          <a
+                                            className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                            onClick={() => {
+                                              const value = machineClassId._id
+                                              if (value !== "Global") {
+                                                mutate(
+                                                  {
+                                                    ...item,
+                                                    machineClassId: value,
+                                                    isGlobalFactory: false,
+                                                  },
+                                                  callBackReq
+                                                )
+                                                setIsOpenFactory(undefined)
+                                              } else {
+                                                mutate(
+                                                  {
+                                                    ...item,
+                                                    machineClassId: null,
+                                                    isGlobalFactory: true,
+                                                  },
+                                                  callBackReq
+                                                )
+                                              }
+                                              setIsOpenFactory(undefined)
+                                            }}
+                                          >
+                                            <li key={index}>
+                                              {machineClassId.name}
+                                            </li>
                                           </a>
                                         )
                                       )}
