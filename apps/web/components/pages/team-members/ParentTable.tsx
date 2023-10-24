@@ -3,7 +3,12 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import { Fragment, useEffect, useState } from "react"
-import { T_BackendResponse, T_Locations, T_UserRole } from "custom-validator"
+import {
+  T_BackendResponse,
+  T_Locations,
+  T_UserRole,
+  ZUserRoles,
+} from "custom-validator"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
 import NewMemberModal from "./modals/NewMemberModal"
@@ -22,7 +27,6 @@ import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
 import React from "react"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
-import { FormControl, MenuItem, Select } from "@mui/material"
 
 const ARR_USER_STATUSES = [
   USER_STATUSES.Pending,
@@ -63,10 +67,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       label: "Dev",
       key: "5",
     },
-    {
-      label: "HR_Director",
-      key: "6",
-    },
   ])
 
   const roleFilter = (): string[] => {
@@ -91,7 +91,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   const approveChecking = (item: any, userId: string) => {
-    if (item._id === userId) {
+    if (
+      item._id === userId ||
+      storeSession?.role === ("Administrator" || "HR_Director")
+    ) {
       setCheckedProved(true)
     } else {
       setCheckedProved(false)
@@ -158,7 +161,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
-  const [filterBy, setFilterBy] = useState("Role")
   const {
     data: paginated,
     isLoading: isPaginatedLoading,
@@ -174,8 +176,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     useMachineClasses()
 
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
-  const [hasRendered, setHasRendered] = useState(false)
-
   const toggleAccordion = (id: string) => {
     if (openAccordion === id) {
       setOpenAccordion(null)
@@ -194,104 +194,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     USER_ROLES.Accounting,
     USER_ROLES.Sales,
   ]
-
-  // const selectRoleForUser = (role: string, item:object) => {
-  //   mutate(
-  //     {
-  //       ...item,
-  //       role: value,
-  //       isGlobalFactory: false,
-  //       locationId:
-  //         typeof item.locationId ===
-  //         "object"
-  //           ? (item.locationId
-  //               ?._id as string)
-  //           : "",
-  //     },
-  //     callBackReq
-  //   );
-
-  // }
-  const filterInputs = () => {
-    if (filterBy === "Location") {
-      return (
-        <select
-          id="locations"
-          name="locations"
-          className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-          onChange={(e) => {
-            setLocationId(e.target.value)
-            setRole(null)
-            setStatus(null)
-          }}
-          disabled={isLocationsLoading || isPaginatedLoading}
-        >
-          <option value="">Select Location</option>
-          {locations?.items?.map((item: T_Locations, index: number) => {
-            return (
-              <option key={index} value={item._id as string}>
-                {item.name}
-              </option>
-            )
-          })}
-        </select>
-      )
-    } else if (filterBy === "Role") {
-      return (
-        <select
-          id="roles"
-          name="roles"
-          className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-          onChange={(e) => {
-            setRole(e.target.value as T_UserRole)
-            setStatus(null)
-            if (storeSession?.role !== "Super" || "Adminstrator") {
-              setLocationId(userProfile?.item?.locationId as string)
-            } else {
-              setLocationId("")
-            }
-          }}
-        >
-          {ARR_USER_ROLES.map((item: string, index: number) => {
-            return <option key={index}>{item}</option>
-          })}
-        </select>
-      )
-    } else if (filterBy === "Status") {
-      return (
-        <select
-          id="statuses"
-          name="statuses"
-          className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-          onChange={(e) => {
-            setRole(null)
-            setStatus(e.target.value as T_UserStatus)
-            if (storeSession?.role !== "Super" || "Administrator") {
-              setLocationId(userProfile?.item?.locationId as string)
-            } else {
-              setLocationId("")
-            }
-          }}
-        >
-          <option value="">Select Status</option>
-          {ARR_USER_STATUSES.map((item: string, index: number) => {
-            return <option key={index}>{item}</option>
-          })}
-        </select>
-      )
-    } else {
-      return (
-        <select
-          id="all"
-          name="all"
-          className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-          disabled
-        >
-          <option></option>
-        </select>
-      )
-    }
-  }
 
   const isChecked = (id: string) => {
     return checkedProduction.filter((item) => item.id === id).length > 0
@@ -322,17 +224,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }, [userProfile, selectedRole, selectedStatus])
 
   const handleTeamListing = (event: any) => {
+    setIsOpenRole(undefined)
     setOpenAccordion(null)
     setSelectedRole(event.target.value)
     setRole(event.target.value)
-  }
-
-  const canViewTeamTable = () => {
-    return (
-      selectedRole === "Administrator" ||
-      selectedRole === "HR" ||
-      selectedRole === "Production"
-    )
   }
 
   const statusArray = Object.values(USER_STATUSES)
@@ -342,6 +237,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   const handleSelectDropdown = (value: T_UserStatus) => {
+    setIsOpenRole(undefined)
     setSelectedStatus(value)
     setOpenAccordion(null)
     setIsOpen(!isOpen)
@@ -980,14 +876,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             </button>
                           </div>
                         </div>
-
-                        {/* <span className="ml-2 flex-none rounded text-gray-400">
-                    <ChevronUpDownIcon
-                      className="h-5 w-5"
-                      aria-hidden="true"
-                    />
-                  </span>
-                  </a> */}
                       </th>
                     )}
                     {/* <th colSpan={1}>
@@ -1285,6 +1173,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     data-dropdown-toggle="dropdown"
                                     className="w-full rounded-md text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
                                     type="button"
+                                    disabled={
+                                      isLocationsLoading ||
+                                      isUpdateUserLoading ||
+                                      isPaginatedLoading
+                                    }
                                     onClick={() => handleHideRole(idx)}
                                   >
                                     <svg
@@ -1372,6 +1265,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     data-dropdown-toggle="dropdown"
                                     className="w-full rounded-md text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
                                     type="button"
+                                    disabled={
+                                      isLocationsLoading ||
+                                      isUpdateUserLoading ||
+                                      isPaginatedLoading
+                                    }
                                     onClick={() => handleHideRole(idx)}
                                   >
                                     <svg
@@ -1407,12 +1305,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               mutate(
                                                 {
                                                   ...item,
-                                                  role:
-                                                    "Personnel" &&
-                                                    "Corporate" &&
-                                                    "Production" &&
-                                                    "HR" &&
-                                                    "HR_Director",
+                                                  role: role as T_UserRole,
                                                 },
                                                 callBackReq
                                               )
@@ -1440,7 +1333,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     <label>Director</label>
                                     <input
                                       type="checkbox"
-                                      style={{ marginLeft: "6px" }}
+                                      style={{ marginLeft: "3px" }}
                                     />
                                   </div>
                                 </td>
@@ -1622,16 +1515,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             <p
                                               className={` text-sm text-gray-500 ${
                                                 item.email
-                                                  ? "text-red-500"
-                                                  : "text-gray-900"
+                                                  ? "text-gray-900"
+                                                  : "text-red-500"
                                               }`}
                                             >
-                                              {/* {typeof item. === "object"
-                                            ? item.operator?.firstName
-                                            : ""}{" "}
-                                          {typeof item.operator === "object"
-                                            ? item.operator?.lastName
-                                            : ""} */}
                                               {item.email || "-"}
                                             </p>
                                           </span>
@@ -1712,9 +1599,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     results
                   </p>
                 </div>
-                <span className="py-1.5 text-center px-2 cursor-pointer border-1 text-[14px] uppercase bg-[#7F1D1D] border-black rounded-md text-white">
+                {/* <span className="py-1.5 text-center px-2 cursor-pointer border-1 text-[14px] uppercase bg-[#7F1D1D] border-black rounded-md text-white">
                   Create Team List
-                </span>
+                </span> */}
                 <div>
                   {isPaginatedLoading ? (
                     <div className="animate-pulse flex space-x-4">
