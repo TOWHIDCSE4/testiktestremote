@@ -27,6 +27,10 @@ const users = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Factory",
   },
+  machineClassId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "MachineClass",
+  },
   isGlobalFactory: Boolean,
   profile: {
     type: Object,
