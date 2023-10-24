@@ -1171,7 +1171,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                   },
                                                   callBackReq
                                                 )
-                                                setIsOpenLocation(undefined)
                                               } else {
                                                 mutate(
                                                   {
@@ -1180,8 +1179,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                   },
                                                   callBackReq
                                                 )
-                                                setIsOpenLocation(undefined)
                                               }
+                                              setIsOpenLocation(undefined)
                                             }}
                                           >
                                             {location.name}
@@ -1254,7 +1253,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                   },
                                                   callBackReq
                                                 )
-                                                setIsOpenFactory(undefined)
                                               } else {
                                                 mutate(
                                                   {
@@ -1342,7 +1340,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                   },
                                                   callBackReq
                                                 )
-                                                setIsOpenFactory(undefined)
                                               } else {
                                                 mutate(
                                                   {
@@ -1353,7 +1350,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                   callBackReq
                                                 )
                                               }
-                                              setIsOpenFactory(undefined)
+                                              setIsOpenRole(undefined)
                                             }}
                                           >
                                             <li key={index}>
@@ -1418,6 +1415,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                 },
                                                 callBackReq
                                               )
+                                              setIsOpenRole(undefined)
                                             }}
                                           >
                                             <li key={index}>{role}</li>
