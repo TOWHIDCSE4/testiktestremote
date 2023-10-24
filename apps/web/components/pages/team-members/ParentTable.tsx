@@ -37,6 +37,7 @@ interface ContentProps {
 
 const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [userRole, setUserRole] = useState<string | undefined>(userLog)
+  const [checkedProved, setCheckedProved] = useState<boolean>(true)
   const [items, setItem] = useState<{ label: string; key: string }[]>([
     {
       label: "Administrator",
@@ -86,6 +87,14 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       return ["Personnel"]
     } else {
       return [""]
+    }
+  }
+
+  const approveChecking = (item: any, userId: string) => {
+    if (item._id === userId) {
+      setCheckedProved(true)
+    } else {
+      setCheckedProved(false)
     }
   }
 
@@ -176,10 +185,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
-  console.log(
-    "🚀 ~ file: ParentTable.tsx:128 ~ Content ~ storeSession:",
-    storeSession
-  )
   const ARR_USER_ROLES = [
     ...(storeSession?.role === "Super" ? [USER_ROLES.Administrator] : []),
     USER_ROLES.Production,
@@ -307,10 +312,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       toast.error(String(err))
     },
   }
-  console.log(
-    "🚀 ~ file: ParentTable.tsx:249 ~ Content ~ callBackReq.data:",
-    callBackReq
-  )
 
   useEffect(() => {
     if (storeSession?.role === "Super" || "Administrator") {
@@ -670,7 +671,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     <Menu.Items className="absolute right-9 text-end mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                       <div className="py-1">
                                         {item.status !== "Approved" &&
-                                          (userRole === "HR" ||
+                                          (userRole === "HR_Director" ||
                                           userRole === "Administrator" ? (
                                             <>
                                               <Menu.Item>
@@ -1454,9 +1455,15 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       xmlns="http://www.w3.org/2000/svg"
                                       height="1.5em"
                                       viewBox="0 0 128 512"
+                                      onClick={() => {
+                                        approveChecking(
+                                          item.locationId,
+                                          userProfile?.item.locationId as string
+                                        )
+                                      }}
                                     >
                                       <path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z" />
-                                    </svg>{" "}
+                                    </svg>
                                   </Menu.Button>
                                   <Transition
                                     as={Fragment}
@@ -1472,15 +1479,25 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                         {item.status !== "Approved" && (
                                           <Menu.Item>
                                             {({ active }) => (
-                                              <span
+                                              <button
+                                                disabled={!checkedProved}
                                                 className={combineClasses(
                                                   active
-                                                    ? "bg-gray-100 text-gray-900"
+                                                    ? "bg-gray-100  text-gray-900"
                                                     : "text-gray-700",
-                                                  "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                  `block px-4 py-2 disabled:text-gray-400 text-sm ${`${
+                                                    checkedProved
+                                                      ? "cursor-pointer"
+                                                      : "cursor-not-allowed"
+                                                  }`} text-left`
                                                 )}
                                                 onClick={() => {
                                                   setSelectedRow(item)
+                                                  approveChecking(
+                                                    item?.locationId,
+                                                    userProfile?.item
+                                                      ?.locationId as string
+                                                  )
                                                   setConfirmationModal(true)
                                                   setAction(
                                                     USER_STATUSES.Approved as T_UserStatus
@@ -1488,18 +1505,23 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                 }}
                                               >
                                                 Approve
-                                              </span>
+                                              </button>
                                             )}
                                           </Menu.Item>
                                         )}
                                         <Menu.Item>
                                           {({ active }) => (
-                                            <span
+                                            <button
+                                              disabled={!checkedProved}
                                               className={combineClasses(
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
                                                   : "text-gray-700",
-                                                "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                `block px-4 py-2 text-sm disabled:text-gray-400 text-left ${`${
+                                                  checkedProved
+                                                    ? "cursor-pointer"
+                                                    : "cursor-not-allowed"
+                                                }`}`
                                               )}
                                               onClick={() => {
                                                 setSelectedRow(item)
@@ -1510,17 +1532,22 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               }}
                                             >
                                               Reject
-                                            </span>
+                                            </button>
                                           )}
                                         </Menu.Item>
                                         <Menu.Item>
                                           {({ active }) => (
-                                            <span
+                                            <button
+                                              disabled={!checkedProved}
                                               className={combineClasses(
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
                                                   : "text-gray-700",
-                                                "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                `block px-4 py-2 text-sm disabled:text-gray-400 text-left ${`${
+                                                  checkedProved
+                                                    ? "cursor-pointer"
+                                                    : "cursor-not-allowed"
+                                                }`}`
                                               )}
                                               onClick={() => {
                                                 setSelectedRow(item)
@@ -1531,17 +1558,22 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               }}
                                             >
                                               Block
-                                            </span>
+                                            </button>
                                           )}
                                         </Menu.Item>
                                         <Menu.Item>
                                           {({ active }) => (
-                                            <span
+                                            <button
+                                              disabled={!checkedProved}
                                               className={combineClasses(
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
                                                   : "text-gray-700",
-                                                "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                `block px-4 py-2 text-sm disabled:text-gray-400 text-left ${`${
+                                                  checkedProved
+                                                    ? "cursor-pointer"
+                                                    : "cursor-not-allowed"
+                                                }`}`
                                               )}
                                               onClick={() => {
                                                 setSelectedRow(item)
@@ -1552,7 +1584,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               }}
                                             >
                                               Delete
-                                            </span>
+                                            </button>
                                           )}
                                         </Menu.Item>
                                       </div>
