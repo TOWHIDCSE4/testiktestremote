@@ -118,6 +118,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const [readingMessages, setReadingMessages] = useState<string[]>([])
   const [shouldRunEffect, setShouldRunEffect] = useState(true)
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
+  const [updateTimer, setUpdateTimer] = useState<object>({})
   const intervalRef = useRef<any>()
   let socket: Socket<any, any> | undefined
   const currentDate = dayjs
@@ -311,6 +312,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const callBackReq = {
     onSuccess: (returnData: T_BackendResponse) => {
       if (!returnData.error) {
+        if (returnData?.data) {
+          setUpdateTimer(returnData)
+          //@ts-expect-error
+          if (returnData.jobToBe !== undefined) {
+            //@ts-expect-error
+            setJobUpdateId(returnData.jobToBe)
+          }
+        }
       } else {
         toast.error(String(returnData.message))
       }
@@ -508,23 +517,26 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   // function of add time log call
   const timeLogCall = (jobId: any, stopReasons: any) => {
-    addTimerLogs({
-      timerId,
-      machineId: timerDetailData?.item?.machineId._id as string,
-      machineClassId: timerDetailData?.item?.machineClassId._id as string,
-      locationId: timerDetailData?.item?.locationId._id as string,
-      factoryId: timerDetailData?.item?.factoryId._id as string,
-      jobId: jobId,
-      partId: timerDetailData?.item?.partId._id as string,
-      time: cycleClockInSeconds,
-      operator: timerDetailData?.item?.operator._id as string,
-      status:
-        (timerDetailData?.item?.partId.time as number) > cycleClockInSeconds
-          ? "Gain"
-          : "Loss",
-      stopReason: stopReasons,
-      cycle: totalCycle + 1,
-    })
+    addTimerLogs(
+      {
+        timerId,
+        machineId: timerDetailData?.item?.machineId._id as string,
+        machineClassId: timerDetailData?.item?.machineClassId._id as string,
+        locationId: timerDetailData?.item?.locationId._id as string,
+        factoryId: timerDetailData?.item?.factoryId._id as string,
+        jobId: jobId,
+        partId: timerDetailData?.item?.partId._id as string,
+        time: cycleClockInSeconds,
+        operator: timerDetailData?.item?.operator._id as string,
+        status:
+          (timerDetailData?.item?.partId.time as number) > cycleClockInSeconds
+            ? "Gain"
+            : "Loss",
+        stopReason: stopReasons,
+        cycle: totalCycle + 1,
+      },
+      callBackReq
+    )
   }
 
   // useEffect run is end add cycle timer loading change
@@ -559,6 +571,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           isTimerDetailDataLoading={isTimerDetailDataLoading}
           readingMessages={readingMessages}
           sectionDiv={sectionDiv}
+          updateTimer={updateTimer}
           timerId={timerId}
           jobUpdateId={jobUpdateId}
           defaultOperator={defaultOperator}
