@@ -91,7 +91,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   const approveChecking = (item: any, userId: string) => {
-    if (item === userId) {
+    if (item._id === userId) {
       setCheckedProved(true)
     } else {
       setCheckedProved(false)
@@ -1417,14 +1417,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       viewBox="0 0 128 512"
                                       onClick={() => {
                                         approveChecking(
-                                          item.locationId._id,
-                                          userProfile?.item.locationId
+                                          item.locationId,
+                                          userProfile?.item.locationId as string
                                         )
                                       }}
                                     >
                                       <path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z" />
                                     </svg>
-                                    {"asdasd "}
                                   </Menu.Button>
                                   <Transition
                                     as={Fragment}
@@ -1455,8 +1454,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                 onClick={() => {
                                                   setSelectedRow(item)
                                                   approveChecking(
-                                                    item.locationId._id,
-                                                    userProfile?.item.locationId
+                                                    item?.locationId,
+                                                    userProfile?.item
+                                                      ?.locationId as string
                                                   )
                                                   setConfirmationModal(true)
                                                   setAction(
