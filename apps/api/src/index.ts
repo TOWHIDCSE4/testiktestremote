@@ -6,7 +6,7 @@ import "./utils/mongodb"
 import * as Sentry from "@sentry/node"
 import { setupSocket } from "./config/setup-socket"
 import sentryConfig from "./utils/sentry.config"
-
+import * as os from "os"
 const app: Application = express()
 Sentry.init(sentryConfig)
 app.use(Sentry.Handlers.requestHandler({ user: true }))
@@ -18,6 +18,17 @@ app.use(
     credentials: true,
   })
 )
+app.get("/", (req, res) => {
+  res.status(200).json({
+    error: false,
+    message: "server is up and running ✅ (●'◡'●)",
+    data: {
+      os: os.hostname(),
+      user: os.userInfo().username,
+      platform: os.platform(),
+    },
+  })
+})
 routes(app)
 const server = setupSocket(app)
 app.use(Sentry.Handlers.errorHandler())
