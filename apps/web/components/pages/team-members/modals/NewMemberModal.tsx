@@ -1,12 +1,33 @@
+// import { Fragment, useState } from "react"
+// import { Dialog, Transition } from "@headlessui/react"
+
+// import { HeartIcon } from "@heroicons/react/24/solid"
+// import Image from "next/image"
+// import Link from "next/link"
+// import DarkLogo from "../../../assets/logo/logo-dark.png"
+// import { useForm } from "react-hook-form"
+// import useRegister from "../../../../hooks/users/useRegister"
+// import { useRouter } from "next/navigation"
+// import { T_User, T_UserStatus } from "custom-validator/ZUser"
+// import toast from "react-hot-toast"
+// import { T_BackendResponse } from "custom-validator"
+// import { USER_ROLES } from "../../../../helpers/constants"
+// import useLocations from "../../../../hooks/locations/useLocations"
+// import { useQueryClient } from "@tanstack/react-query"
+// import useUpdateUser from "../../../../hooks/users/useUpdateUser"
+// import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
+// import useStoreSession from "../../../../../../apps/web/store/useStoreSession"
+
 import { Fragment, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { useForm } from "react-hook-form"
 import useRegister from "../../../../hooks/users/useRegister"
 import { useRouter } from "next/navigation"
-import { T_User } from "custom-validator/ZUser"
+import { T_User, T_UserStatus } from "custom-validator/ZUser"
+import useProfile from "../../../../hooks/users/useProfile"
 import toast from "react-hot-toast"
 import { T_BackendResponse } from "custom-validator"
-import { USER_ROLES } from "../../../../helpers/constants"
+import { USER_ROLES, USER_STATUSES } from "../../../../helpers/constants"
 import useLocations from "../../../../hooks/locations/useLocations"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 
@@ -17,7 +38,10 @@ interface NewModalProps {
 
 const NewMemberModal = ({ isOpen, onClose }: NewModalProps) => {
   const [isDeleted, setIsDeleted] = useState(false)
+  const [isNotChecked, setIsNotChecked] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const [action, setAction] = useState<T_UserStatus | null>(null)
   const togglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword)
   }
@@ -34,8 +58,9 @@ const NewMemberModal = ({ isOpen, onClose }: NewModalProps) => {
   const onSubmit = (data: T_User) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
+        console.log(data)
         if (!data.error) {
-          router.push("/")
+          // router.push("/team-members");
           resetForm()
         } else {
           toast.error(String(data.message))
@@ -93,6 +118,11 @@ const NewMemberModal = ({ isOpen, onClose }: NewModalProps) => {
   //       return "delete"
   //   }
   // }
+
+  const handleCheckboxChange = () => {
+    console.log(isNotChecked)
+    setIsNotChecked(!isNotChecked)
+  }
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>

@@ -1,6 +1,7 @@
 "use client"
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
+import { FormControl, MenuItem, Select } from "@mui/material"
 import * as utc from "dayjs/plugin/utc"
 import { Fragment, useEffect, useState } from "react"
 import { T_BackendResponse, T_Locations, T_UserRole } from "custom-validator"
@@ -30,8 +31,87 @@ const ARR_USER_STATUSES = [
   USER_STATUSES.Blocked,
   USER_STATUSES.Rejected,
 ]
+interface ContentProps {
+  userLog: string
+}
 
-const Content = () => {
+const Content: React.FC<ContentProps> = ({ userLog }) => {
+  const [userRole, setUserRole] = useState<string | undefined>(userLog)
+  const [items, setItem] = useState<{ label: string; key: string }[]>([
+    {
+      label: "Administrator",
+      key: "0",
+    },
+    {
+      label: "HR",
+      key: "1",
+    },
+    {
+      label: "Production",
+      key: "2",
+    },
+    {
+      label: "Corporate",
+      key: "3",
+    },
+    {
+      label: "Personnel",
+      key: "4",
+    },
+    {
+      label: "Dev",
+      key: "5",
+    },
+  ])
+
+  // const items = [
+  //   {
+  //     label: "Administrator",
+  //     key: "0",
+  //   },
+  //   {
+  //     label: "HR",
+  //     key: "1",
+  //   },
+  //   {
+  //     label: "Production",
+  //     key: "2",
+  //   },
+  //   {
+  //     label: "Corporate",
+  //     key: "3",
+  //   },
+  //   {
+  //     label: "Personnel",
+  //     key: "4",
+  //   },
+  //   {
+  //     label: "Dev",
+  //     key: "5",
+  //   },
+  // ]
+
+  const roleFilter = (): string[] => {
+    if (userRole === "HR") {
+      return ["Production", "Corporate", "Personnel"]
+    } else if (userRole === "Production") {
+      return ["Personnel"]
+    } else if (userRole === "Administrator" || userRole === "HR-Director") {
+      return [
+        "Administrator",
+        "Production",
+        "Corporate",
+        "Personnel",
+        "Dev",
+        "HR",
+      ]
+    } else if (userRole === "Production") {
+      return ["Personnel"]
+    } else {
+      return [""]
+    }
+  }
+
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   const storeSession = useStoreSession(
@@ -43,6 +123,7 @@ const Content = () => {
           | "Production"
           | "Personnel"
           | "HR"
+          | "HR_Director"
           | "Accounting"
           | "Sales"
           | "Super"
@@ -56,6 +137,7 @@ const Content = () => {
             | "Production"
             | "Personnel"
             | "HR"
+            | "HR_Director"
             | "Accounting"
             | "Sales"
             | "Super"
@@ -259,32 +341,32 @@ const Content = () => {
     }
   }, [userProfile, selectedRole, selectedStatus])
 
-  const items = [
-    {
-      label: "Administrator",
-      key: "0",
-    },
-    {
-      label: "HR",
-      key: "1",
-    },
-    {
-      label: "Production",
-      key: "2",
-    },
-    {
-      label: "Corporate",
-      key: "3",
-    },
-    {
-      label: "Personnel",
-      key: "4",
-    },
-    {
-      label: "Dev",
-      key: "5",
-    },
-  ]
+  // const items = [
+  //   {
+  //     label: "Administrator",
+  //     key: "0",
+  //   },
+  //   {
+  //     label: "HR",
+  //     key: "1",
+  //   },
+  //   {
+  //     label: "Production",
+  //     key: "2",
+  //   },
+  //   {
+  //     label: "Corporate",
+  //     key: "3",
+  //   },
+  //   {
+  //     label: "Personnel",
+  //     key: "4",
+  //   },
+  //   {
+  //     label: "Dev",
+  //     key: "5",
+  //   },
+  // ]
 
   const handleTeamListing = (event: any) => {
     setOpenAccordion(null)
@@ -636,50 +718,56 @@ const Content = () => {
                                   >
                                     <Menu.Items className="absolute right-9 text-end mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                       <div className="py-1">
-                                        {item.status !== "Approved" && (
-                                          <Menu.Item>
-                                            {({ active }) => (
-                                              <span
-                                                className={combineClasses(
-                                                  active
-                                                    ? "bg-gray-100 text-gray-900"
-                                                    : "text-gray-700",
-                                                  "block px-4 py-2 text-sm cursor-pointer text-left"
+                                        {item.status !== "Approved" &&
+                                          (userRole === "HR" ||
+                                          userRole === "Administrator" ? (
+                                            <>
+                                              <Menu.Item>
+                                                {({ active }) => (
+                                                  <span
+                                                    className={combineClasses(
+                                                      active
+                                                        ? "bg-gray-100 text-gray-900"
+                                                        : "text-gray-700",
+                                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                    )}
+                                                    onClick={() => {
+                                                      setSelectedRow(item)
+                                                      setConfirmationModal(true)
+                                                      setAction(
+                                                        USER_STATUSES.Approved as T_UserStatus
+                                                      )
+                                                    }}
+                                                  >
+                                                    Approve
+                                                  </span>
                                                 )}
-                                                onClick={() => {
-                                                  setSelectedRow(item)
-                                                  setConfirmationModal(true)
-                                                  setAction(
-                                                    USER_STATUSES.Approved as T_UserStatus
-                                                  )
-                                                }}
-                                              >
-                                                Approve
-                                              </span>
-                                            )}
-                                          </Menu.Item>
-                                        )}
-                                        <Menu.Item>
-                                          {({ active }) => (
-                                            <span
-                                              className={combineClasses(
-                                                active
-                                                  ? "bg-gray-100 text-gray-900"
-                                                  : "text-gray-700",
-                                                "block px-4 py-2 text-sm cursor-pointer text-left"
-                                              )}
-                                              onClick={() => {
-                                                setSelectedRow(item)
-                                                setDeleteModal(true)
-                                                setAction(
-                                                  USER_STATUSES.Rejected as T_UserStatus
-                                                )
-                                              }}
-                                            >
-                                              Reject
-                                            </span>
-                                          )}
-                                        </Menu.Item>
+                                              </Menu.Item>
+                                              <Menu.Item>
+                                                {({ active }) => (
+                                                  <span
+                                                    className={combineClasses(
+                                                      active
+                                                        ? "bg-gray-100 text-gray-900"
+                                                        : "text-gray-700",
+                                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                    )}
+                                                    onClick={() => {
+                                                      setSelectedRow(item)
+                                                      setDeleteModal(true)
+                                                      setAction(
+                                                        USER_STATUSES.Rejected as T_UserStatus
+                                                      )
+                                                    }}
+                                                  >
+                                                    Reject
+                                                  </span>
+                                                )}
+                                              </Menu.Item>
+                                            </>
+                                          ) : (
+                                            ""
+                                          ))}
                                         <Menu.Item>
                                           {({ active }) => (
                                             <span
@@ -839,7 +927,7 @@ const Content = () => {
                                       </a> */}
                     </th>
                     <th className="w-[20%]">
-                      <div className="flex items-center text justify-center ml-14">
+                      <div className="flex items-center justify-center ml-14">
                         <span> City</span>
                         <button onClick={(e) => {}}>
                           <svg
@@ -1076,7 +1164,7 @@ const Content = () => {
                                   }
                                 )}
                               </select> */}
-                              <td className="text-sm text-gray-500 items-center fixed justify-center pl-10">
+                              <td className="text-sm text-gray-500 items-center justify-center pl-10">
                                 <button
                                   id="dropdownFactoryButton"
                                   data-dropdown-toggle="dropdown"
@@ -1274,25 +1362,10 @@ const Content = () => {
                                       className="py-2 text-sm text-gray-700 dark:text-gray-200"
                                       aria-labelledby="dropdownFactoryButton"
                                     >
-                                      {Object.values(USER_ROLES).map(
-                                        (role, index) => (
-                                          <a
-                                            className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            onClick={() => {
-                                              mutate(
-                                                {
-                                                  ...item,
-                                                  role:
-                                                    "Personnel" &&
-                                                    "Corporate" &&
-                                                    "Production" &&
-                                                    "HR",
-                                                },
-                                                callBackReq
-                                              )
-                                            }}
-                                          >
-                                            <li key={index}>{role}</li>
+                                      {machineClass.items.map(
+                                        (item: any, index: string) => (
+                                          <a className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                            <li key={index}>{item.name}</li>
                                           </a>
                                         )
                                       )}
@@ -1347,7 +1420,8 @@ const Content = () => {
                                                     "Personnel" &&
                                                     "Corporate" &&
                                                     "Production" &&
-                                                    "HR",
+                                                    "HR" &&
+                                                    "HR_Director",
                                                 },
                                                 callBackReq
                                               )

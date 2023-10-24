@@ -13,6 +13,7 @@ const users = new Schema({
       "Production",
       "Personnel",
       "HR",
+      "HR_Director",
       "Accounting",
       "Sales",
     ],

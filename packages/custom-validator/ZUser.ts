@@ -8,6 +8,7 @@ export const ZUserRoles = z.enum([
   "Production",
   "Personnel",
   "HR",
+  "HR_Director",
   "Accounting",
   "Sales",
   "Super",

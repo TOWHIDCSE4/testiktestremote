@@ -2,6 +2,7 @@
 import useStoreSession from "../../../store/useStoreSession"
 import ParentTable from "./ParentTable"
 import { USER_ROLES } from "../../../helpers/constants"
+import useProfile from "../../../hooks/users/useProfile"
 
 const TEAMMEMBERS_ADMIN_ROLES = [
   USER_ROLES.Super,
@@ -10,7 +11,41 @@ const TEAMMEMBERS_ADMIN_ROLES = [
 ]
 
 const Content = () => {
-  const storeSession = useStoreSession((state) => state)
+  const storeSession = useStoreSession(
+    (
+      state: {
+        role:
+          | "Administrator"
+          | "Corporate"
+          | "Production"
+          | "Personnel"
+          | "HR"
+          | "HR_Director"
+          | "Accounting"
+          | "Sales"
+          | "Super"
+        email: string
+        token: string | null
+      } & {
+        update: (session: {
+          role:
+            | "Administrator"
+            | "Corporate"
+            | "Production"
+            | "Personnel"
+            | "HR"
+            | "HR_Director"
+            | "Accounting"
+            | "Sales"
+            | "Super"
+          email: string
+          token: string | null
+        }) => void
+        reset: () => void
+      }
+    ) => state
+  )
+
   if (!TEAMMEMBERS_ADMIN_ROLES.includes(storeSession.role))
     return (
       <div className="mt-28">
@@ -29,7 +64,7 @@ const Content = () => {
           </h4> */}
         </div>
         <div className="w-full h-0.5 bg-gray-200 mt-5"></div>
-        <ParentTable />
+        <ParentTable userLog={storeSession.role} />
       </div>
     </div>
   )
