@@ -3,12 +3,7 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import { Fragment, useEffect, useState } from "react"
-import {
-  T_BackendResponse,
-  T_Factory,
-  T_Locations,
-  T_UserRole,
-} from "custom-validator"
+import { T_BackendResponse, T_Locations, T_UserRole } from "custom-validator"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
 import NewMemberModal from "./modals/NewMemberModal"
@@ -26,6 +21,7 @@ import DeleteModal from "./modals/DeleteModal"
 import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
 import React from "react"
+import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 
 const ARR_USER_STATUSES = [
   USER_STATUSES.Pending,
@@ -84,12 +80,10 @@ const Content = () => {
   const [action, setAction] = useState<T_UserStatus | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenRole, setIsOpenRole] = useState()
-  const [isOpenCity, setIsOpenCity] = useState()
+  const [isOpenFactory, setIsOpenFactory] = useState()
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
-  // const [isDropdownClose, setIsDropdownClose]=useState(undefined)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const [openNewMemberModal, setOpenNewMemberModal] = useState(false)
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
@@ -104,6 +98,11 @@ const Content = () => {
     setStatus,
     setName,
   } = usePaginatedUsers("Pending", storeSession?.role)
+
+  const { data: machineClass, isLoading: isMachineLoading } =
+    useMachineClasses()
+  console.log(machineClass?.items)
+
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   const [hasRendered, setHasRendered] = useState(false)
 
@@ -116,6 +115,10 @@ const Content = () => {
   }
 
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
+  console.log(
+    "🚀 ~ file: ParentTable.tsx:128 ~ Content ~ storeSession:",
+    storeSession
+  )
   const ARR_USER_ROLES = [
     ...(storeSession?.role === "Super" ? [USER_ROLES.Administrator] : []),
     USER_ROLES.Production,
@@ -243,6 +246,10 @@ const Content = () => {
       toast.error(String(err))
     },
   }
+  console.log(
+    "🚀 ~ file: ParentTable.tsx:249 ~ Content ~ callBackReq.data:",
+    callBackReq
+  )
 
   useEffect(() => {
     if (storeSession?.role === "Super" || "Administrator") {
@@ -279,23 +286,8 @@ const Content = () => {
     },
   ]
 
-  const handleSelectChange = (event: any) => {
-    // setStatus(event.target.value)
-    // setSelectedStatus(event.target.value)
-    // if (event.target.value === "Pending") {
-    //   setSelectedColor("text-yellow-900")
-    // } else if (event.target.value === "Active") {
-    //   setSelectedColor("text-green-900")
-    // } else if (event.target.value === "Rejected") {
-    //   setSelectedColor("text-red-900")
-    // } else if (event.target.value === "Archived") {
-    //   setSelectedColor("text-yellow-600")
-    // } else {
-    //   setSelectedColor("")
-    // }
-  }
-
   const handleTeamListing = (event: any) => {
+    setOpenAccordion(null)
     setSelectedRole(event.target.value)
     setRole(event.target.value)
   }
@@ -316,8 +308,9 @@ const Content = () => {
 
   const handleSelectDropdown = (value: T_UserStatus) => {
     setSelectedStatus(value)
+    setOpenAccordion(null)
+    setIsOpen(!isOpen)
     setStatus(value)
-    setIsOpen(false)
 
     const colorMapping: { [key: string]: string } = {
       Pending: "text-yellow-700",
@@ -328,9 +321,9 @@ const Content = () => {
     setSelectedColor(colorMapping[value] || "")
   }
 
-  const handleHideCity = (idx: any) => {
-    if (isOpenCity || isOpenCity == 0) setIsOpenCity(undefined)
-    else setIsOpenCity(idx)
+  const handleHideFactory = (idx: any) => {
+    if (isOpenFactory || isOpenFactory == 0) setIsOpenFactory(undefined)
+    else setIsOpenFactory(idx)
   }
 
   const handleHideRole = (idx: any) => {
@@ -355,25 +348,32 @@ const Content = () => {
         }`}
       >
         <div className="px-1 w-full pt-2 ">
-          <div className="flex justify-between h-32">
-            <div className="flex flex-col w-72 sm:flex-none cursor-pointer h-6">
-              <div className="flex ml-1">
-                <select
-                  id="cars"
-                  className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
-                  onChange={handleTeamListing}
-                  // value={selectedStatus}
-                >
-                  <option className="hidden">Select Role</option>
-                  {items.map((item) => (
-                    <option key={item.key} value={item.label}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-                <label className="text-[#7F1D1D] text-md uppercase font-semibold">
-                  Team Listing
-                </label>
+          <div className="flex w-[100%] h-32">
+            <div className="flex flex-col sm:flex-none cursor-pointer w-[30%]">
+              <div className="flex flex-col md:flex-col sm:flex-col lg:flex-col xl:flex-row 2xl:flex-row">
+                <div className="flex items-center">
+                  {/* <div className="w-[100%] md:w-[100%] sm:w-[100%] lg:w-[100%] xl:w-[50%] 2xl:w-[50%]"> */}
+                  <select
+                    id="cars"
+                    className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
+                    onChange={handleTeamListing}
+                    // value={selectedStatus}
+                  >
+                    <option className="hidden">Select Role</option>
+                    {items.map((item) => (
+                      <option key={item.key} value={item.label}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                  <label
+                    className="text-[#7F1D1D] uppercase font-semibold"
+                    style={{ whiteSpace: "nowrap", fontSize: "1rem" }}
+                  >
+                    Team Listing
+                  </label>
+                </div>
+
                 <span className="text-md font-bold flex pl-1">
                   -
                   <p className="pl-0.5 text-[#172554] uppercase">
@@ -381,9 +381,10 @@ const Content = () => {
                   </p>
                 </span>
               </div>
-              <div className="mt-5 ml-4 flex flex-col">
+              <div className="mt-4 flex flex-col">
                 <span
-                  className={`text-[2.5rem] uppercase font-semibold cursor-pointer ${selectedColor}`}
+                  className={`text-[2rem] uppercase font-semibold text-xl cursor-pointer ${selectedColor}`}
+                  style={{ paddingLeft: "40px" }}
                   onClick={toggleDropdown}
                 >
                   {selectedStatus}
@@ -409,7 +410,7 @@ const Content = () => {
                 )}
               </div>
             </div>
-            <div className="space-y-2 mr-4">
+            <div className="space-y-2 w-[40%]">
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   {" "}
@@ -457,7 +458,7 @@ const Content = () => {
                 </div>
               </div>
             </div>
-            <div className=" w-[30rem] space-y-8 px-5">
+            <div className="space-y-8 w-[30%] px-5">
               <div className="flex justify-center text-end text-gray-900 ">
                 <span className="text-gray-500 text-[14px] uppercase ">
                   Add New
@@ -1081,6 +1082,11 @@ const Content = () => {
                                   data-dropdown-toggle="dropdown"
                                   className="w-full rounded-md text-center space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                   type="button"
+                                  disabled={
+                                    isLocationsLoading ||
+                                    isUpdateUserLoading ||
+                                    isPaginatedLoading
+                                  }
                                   onClick={() => handleHideLocation(idx)}
                                 >
                                   <svg
@@ -1110,49 +1116,6 @@ const Content = () => {
                                     className="py-2 text-sm text-gray-700 dark:text-gray-200"
                                     aria-labelledby="dropdownFactoryButton"
                                   >
-                                    <li>
-                                      <a
-                                        href="#"
-                                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        onClick={() => {
-                                          const value = "Global"
-                                          if (value !== "Global") {
-                                            mutate(
-                                              {
-                                                ...item,
-                                                factoryId: value,
-                                                isGlobalFactory: false,
-                                                locationId:
-                                                  typeof item.locationId ===
-                                                  "object"
-                                                    ? (item.locationId
-                                                        ?._id as string)
-                                                    : "",
-                                              },
-                                              callBackReq
-                                            )
-                                          } else {
-                                            mutate(
-                                              {
-                                                ...item,
-                                                factoryId: null,
-                                                isGlobalFactory: true,
-                                                role: USER_ROLES.Corporate as T_UserRole,
-                                                locationId:
-                                                  typeof item.locationId ===
-                                                  "object"
-                                                    ? (item.locationId
-                                                        ?._id as string)
-                                                    : "",
-                                              },
-                                              callBackReq
-                                            )
-                                          }
-                                        }}
-                                      >
-                                        Global
-                                      </a>
-                                    </li>
                                     {locations?.items?.map(
                                       (location: any, index: any) => (
                                         <li key={index}>
@@ -1165,33 +1128,20 @@ const Content = () => {
                                                 mutate(
                                                   {
                                                     ...item,
-                                                    factoryId: value,
-                                                    isGlobalFactory: false,
-                                                    locationId:
-                                                      typeof item.locationId ===
-                                                      "object"
-                                                        ? (item.locationId
-                                                            ?._id as string)
-                                                        : "",
+                                                    locationId: value ?? "",
                                                   },
                                                   callBackReq
                                                 )
+                                                setIsOpenLocation(undefined)
                                               } else {
                                                 mutate(
                                                   {
                                                     ...item,
-                                                    factoryId: null,
-                                                    isGlobalFactory: true,
-                                                    role: USER_ROLES.Corporate as T_UserRole,
-                                                    locationId:
-                                                      typeof item.locationId ===
-                                                      "object"
-                                                        ? (item.locationId
-                                                            ?._id as string)
-                                                        : "",
+                                                    locationId: value ?? "",
                                                   },
                                                   callBackReq
                                                 )
+                                                setIsOpenLocation(undefined)
                                               }
                                             }}
                                           >
@@ -1211,7 +1161,12 @@ const Content = () => {
                                   data-dropdown-toggle="dropdown"
                                   className="w-full rounded-md text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                   type="button"
-                                  onClick={() => handleHideCity(idx)}
+                                  disabled={
+                                    isLocationsLoading ||
+                                    isUpdateUserLoading ||
+                                    isPaginatedLoading
+                                  }
+                                  onClick={() => handleHideFactory(idx)}
                                 >
                                   <svg
                                     height="25"
@@ -1236,56 +1191,13 @@ const Content = () => {
                                 <div
                                   id="dropdownFactory"
                                   className={`z-50 fixed ${
-                                    isOpenCity == idx ? "block" : "hidden"
+                                    isOpenFactory == idx ? "block" : "hidden"
                                   } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 `}
                                 >
                                   <ul
                                     className="py-2 text-sm text-gray-700 dark:text-gray-200"
                                     aria-labelledby="dropdownFactoryButton"
                                   >
-                                    <li>
-                                      <a
-                                        href="#"
-                                        className="block px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        onClick={() => {
-                                          const value = "Global"
-                                          if (value !== "Global") {
-                                            mutate(
-                                              {
-                                                ...item,
-                                                factoryId: value,
-                                                isGlobalFactory: false,
-                                                locationId:
-                                                  typeof item.locationId ===
-                                                  "object"
-                                                    ? (item.locationId
-                                                        ?._id as string)
-                                                    : "",
-                                              },
-                                              callBackReq
-                                            )
-                                          } else {
-                                            mutate(
-                                              {
-                                                ...item,
-                                                factoryId: null,
-                                                isGlobalFactory: true,
-                                                role: USER_ROLES.Corporate as T_UserRole,
-                                                locationId:
-                                                  typeof item.locationId ===
-                                                  "object"
-                                                    ? (item.locationId
-                                                        ?._id as string)
-                                                    : "",
-                                              },
-                                              callBackReq
-                                            )
-                                          }
-                                        }}
-                                      >
-                                        Global
-                                      </a>
-                                    </li>
                                     {factories?.items?.map(
                                       (factory: any, index: any) => (
                                         <li key={index}>
@@ -1300,32 +1212,21 @@ const Content = () => {
                                                     ...item,
                                                     factoryId: value,
                                                     isGlobalFactory: false,
-                                                    locationId:
-                                                      typeof item.locationId ===
-                                                      "object"
-                                                        ? (item.locationId
-                                                            ?._id as string)
-                                                        : "",
                                                   },
                                                   callBackReq
                                                 )
+                                                setIsOpenFactory(undefined)
                                               } else {
                                                 mutate(
                                                   {
                                                     ...item,
                                                     factoryId: null,
                                                     isGlobalFactory: true,
-                                                    role: USER_ROLES.Corporate as T_UserRole,
-                                                    locationId:
-                                                      typeof item.locationId ===
-                                                      "object"
-                                                        ? (item.locationId
-                                                            ?._id as string)
-                                                        : "",
                                                   },
                                                   callBackReq
                                                 )
                                               }
+                                              setIsOpenFactory(undefined)
                                             }}
                                           >
                                             {factory.name}
