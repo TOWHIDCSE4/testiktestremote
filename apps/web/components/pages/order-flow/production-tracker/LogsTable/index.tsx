@@ -322,7 +322,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   useEffect(() => {
     setPartId(partsSelected)
     setPage(1)
-  }, [parts, setPartId])
+  }, [partsSelected, setPartId])
 
   // useEffect(() => {
   //   setStartDateRange(dateRange)
