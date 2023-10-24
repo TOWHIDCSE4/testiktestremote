@@ -8,6 +8,7 @@ const TEAMMEMBERS_ADMIN_ROLES = [
   USER_ROLES.Super,
   USER_ROLES.Administrator,
   USER_ROLES.HR,
+  USER_ROLES.HR_Director,
 ]
 
 const Content = () => {
@@ -20,6 +21,7 @@ const Content = () => {
           | "Production"
           | "Personnel"
           | "HR"
+          | "HR_Director"
           | "Accounting"
           | "Sales"
           | "Super"
@@ -33,6 +35,7 @@ const Content = () => {
             | "Production"
             | "Personnel"
             | "HR"
+            | "HR_Director"
             | "Accounting"
             | "Sales"
             | "Super"

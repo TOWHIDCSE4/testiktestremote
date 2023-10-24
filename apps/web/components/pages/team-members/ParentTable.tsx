@@ -40,8 +40,8 @@ interface ContentProps {
 }
 
 const Content: React.FC<ContentProps> = ({ userLog }) => {
-  const [userRole, setUserLog] = useState<string | undefined>(userLog)
-  const [items, setItem] = [
+  const [userRole, setUserRole] = useState<string | undefined>(userLog)
+  const [items, setItem] = useState<{ label: string; key: string }[]>([
     {
       label: "Administrator",
       key: "0",
@@ -66,41 +66,31 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       label: "Dev",
       key: "5",
     },
-  ]
-  // const items = [
-  //   {
-  //     label: "Administrator",
-  //     key: "0",
-  //   },
-  //   {
-  //     label: "HR",
-  //     key: "1",
-  //   },
-  //   {
-  //     label: "Production",
-  //     key: "2",
-  //   },
-  //   {
-  //     label: "Corporate",
-  //     key: "3",
-  //   },
-  //   {
-  //     label: "Personnel",
-  //     key: "4",
-  //   },
-  //   {
-  //     label: "Dev",
-  //     key: "5",
-  //   },
-  // ]
+    {
+      label: "HR_Director",
+      key: "6",
+    },
+  ])
 
-  const roleFilter = (): string[] | undefined => {
+  const roleFilter = (): string[] => {
     if (userRole === "HR") {
       return ["Production", "Corporate", "Personnel"]
     } else if (userRole === "Production") {
       return ["Personnel"]
+    } else if (userRole === "Administrator" || userRole === "HR_Director") {
+      return [
+        "Administrator",
+        "Production",
+        "Corporate",
+        "Personnel",
+        "Dev",
+        "HR",
+      ]
+    } else if (userRole === "Production") {
+      return ["Personnel"]
+    } else {
+      return [""]
     }
-    return undefined
   }
 
   dayjs.extend(utc.default)
@@ -114,6 +104,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           | "Production"
           | "Personnel"
           | "HR"
+          | "HR_Director"
           | "Accounting"
           | "Sales"
           | "Super"
@@ -127,6 +118,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
             | "Production"
             | "Personnel"
             | "HR"
+            | "HR_Director"
             | "Accounting"
             | "Sales"
             | "Super"
@@ -140,6 +132,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const queryClient = useQueryClient()
   const { data: userProfile } = useProfile()
+  console.log(userProfile)
+
   const [deleteModal, setDeleteModal] = useState(false)
   const [newModal, setNewModal] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState("Pending")
@@ -404,7 +398,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     id="cars"
                     className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0"
                     onChange={handleTeamListing}
-                    // value={selectedStatus}
+                    value={selectedStatus}
                   >
                     <MenuItem value="">Select Role</MenuItem>
                     {roleFilter().map((item, index) => (
@@ -693,7 +687,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       <div className="py-1">
                                         {item.status !== "Approved" &&
                                           (userRole === "HR" ||
-                                          userRole === "HR" ? (
+                                          userRole === "Administrator" ? (
                                             <>
                                               <Menu.Item>
                                                 {({ active }) => (
