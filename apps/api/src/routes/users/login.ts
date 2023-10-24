@@ -30,6 +30,10 @@ export const auth = async (req: Request, res: Response) => {
         if (!user || (user && user.deletedAt)) {
           throw new Error("Account does not exist in our system")
         }
+        //@ts-expect-error
+        if (user && user.blockedAt) {
+          throw new Error("Account was prohibited to login due to violations")
+        }
         if (user && !user.approvedBy) {
           throw new Error("Your account status is still pending")
         }
@@ -46,7 +50,10 @@ export const auth = async (req: Request, res: Response) => {
               email: user.email,
               role: user.role,
             },
-            keys.signKey as string
+            keys.signKey as string,
+            {
+              expiresIn: "168h",
+            }
           )
           if (res.locals.user) {
             delete res.locals.user
@@ -63,7 +70,7 @@ export const auth = async (req: Request, res: Response) => {
           if (zodParsedSession.success) {
             const now = new Date(Date.now())
             await redisClient.hSet(`${token}`, {
-              expireIn: `${dayjs(addHours(now, 4)).format()}`,
+              expireIn: `${dayjs(addHours(now, 168)).format()}`,
             })
             res.json({
               error: false,

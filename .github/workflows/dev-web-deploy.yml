@@ -1,8 +1,7 @@
 name: dev-web-deploy
 
 on:
-  push:
-    branches: ["dev"]
+  workflow_dispatch:
 
 jobs:
   deployment:

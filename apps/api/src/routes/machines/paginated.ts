@@ -8,12 +8,7 @@ import {
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, factoryId, machineClassId, name } = req.query
   if (page && locationId) {
-    console.log(
-      "🚀 ~ file: paginated.ts:10 ~ paginated ~ factoryId:",
-      factoryId
-    )
     const verified = !((factoryId as string)?.toLowerCase() === "not verified")
-    console.log("🚀 ~ file: paginated.ts:16 ~ paginated ~ verified:", verified)
     try {
       const query = {
         locationId: locationId,
@@ -35,7 +30,6 @@ export const paginated = async (req: Request, res: Response) => {
               ]),
         ],
       }
-      console.log("🚀 ~ file: paginated.ts:48 ~ paginated ~ query:", query)
       const partsCount = await Machines.find(query).countDocuments()
 
       const getAllParts = await Machines.find(query)

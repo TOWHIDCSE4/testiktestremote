@@ -221,10 +221,6 @@ export const findMachineClassByLocation = async (
     })
   }
   const distinctMachineClassesIds = await timerLogs.distinct("machineClassId")
-  console.log(
-    "🚀 ~ file: default.ts:225 ~ distinctMachineClassesIds:",
-    distinctMachineClassesIds
-  )
   try {
     const locationToBeFound = locations
       //@ts-expect-error

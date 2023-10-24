@@ -12,6 +12,7 @@ import isEmpty from "lodash/isEmpty"
 import { ZCycleTimer } from "custom-validator"
 import { date } from "zod"
 import * as Sentry from "@sentry/node"
+import { getIo } from "../../config/setup-socket"
 
 export const getAllCycleTimers = async (req: Request, res: Response) => {
   try {
@@ -60,7 +61,9 @@ export const getCycleTimer = async (req: Request, res: Response) => {
 }
 
 export const addCycleTimer = async (req: Request, res: Response) => {
+  const io = getIo()
   const { timerId } = req.body
+  io.emit(`timer-${timerId}`, { action: "pre-add" })
   if (timerId) {
     const newCycleTimer = new CycleTimer({
       timerId,
@@ -76,6 +79,7 @@ export const addCycleTimer = async (req: Request, res: Response) => {
         })
         if (getExistingCycleTimer.length === 0) {
           const createCycleTimer = await newCycleTimer.save()
+          io.emit(`timer-${timerId}`, { action: "add", ...createCycleTimer })
           res.json({
             error: false,
             item: createCycleTimer,

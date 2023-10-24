@@ -21,6 +21,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
   const [inputValue, setInputValue] = useState<string>("")
   const [deleteModal, setDeleteModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
+  const [clickRender, setClickRender] = useState(false)
 
   const { data, isLoading, setJobStatuses, setJobLocation } = useCountStatus()
 
@@ -40,6 +41,9 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.currentTarget.value
     setInputValue(newValue)
+  }
+  const pageFuncRender = () => {
+    setClickRender(!clickRender)
   }
 
   useEffect(() => {
@@ -111,7 +115,10 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                           "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center text-sm font-bold hover:bg-gray-50 focus:z-10"
                         )}
                         aria-current={tab.current ? "page" : undefined}
-                        onClick={() => setCurrentTab(tab.name as T_JobStatus)}
+                        onClick={() => {
+                          pageFuncRender()
+                          setCurrentTab(tab.name as T_JobStatus)
+                        }}
                       >
                         <span>
                           {isLoading
@@ -177,6 +184,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
             {/* Table */}
             <div className="w-full overflow-x-auto relative">
               <TabTable
+                pageRender={clickRender}
                 tab={currentTab}
                 locationId={locationId}
                 searchInput={inputValue}

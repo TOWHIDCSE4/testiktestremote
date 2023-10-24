@@ -1,11 +1,13 @@
 import { Request, Response } from "express"
 import {
+  JOB_ACTION,
   REQUIRED_VALUES_MISSING,
   UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
 import Jobs from "../../models/jobs"
 import JobTimer from "../../models/jobTimer"
 import * as Sentry from "@sentry/node"
+import { getJobTimer } from "../jobTimer/default"
 
 export const assignJob = async (req: Request, res: Response) => {
   if (
@@ -17,6 +19,12 @@ export const assignJob = async (req: Request, res: Response) => {
     try {
       const getDayJobTimer = await JobTimer.findOne({
         timerId: req.body.timerId,
+      })
+      const job = await Jobs.findOne({
+        _id: getDayJobTimer?.jobId,
+        $and: [
+          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
+        ],
       })
       if (!getDayJobTimer) {
         const jobs = await Jobs.find({
@@ -94,6 +102,65 @@ export const assignJob = async (req: Request, res: Response) => {
               item: null,
               itemCount: null,
               message: null,
+            })
+          }
+        }
+      } else if (getDayJobTimer && !job) {
+        const jobs = await Jobs.find({
+          locationId: req.body.locationId,
+          factoryId: req.body.factoryId,
+          partId: req.body.partId,
+          status: "Pending",
+          isStock: false,
+        })
+        if (jobs?.length > 0) {
+          // TODO: ADD SORTING FOR DATES
+          const highPriorityJobs = jobs.filter(
+            (job) => job.priorityStatus === "High"
+          )
+          const mediumPriorityJobs = jobs.filter(
+            (job) => job.priorityStatus === "Medium"
+          )
+          const lowPriorityJobs = jobs.filter(
+            (job) => job.priorityStatus === "Low"
+          )
+          let selectedJobId = null
+          if (highPriorityJobs.length > 0) {
+            selectedJobId = highPriorityJobs[0]._id
+          } else if (mediumPriorityJobs.length > 0) {
+            selectedJobId = mediumPriorityJobs[0]._id
+          } else if (lowPriorityJobs.length > 0) {
+            selectedJobId = lowPriorityJobs[0]._id
+          }
+          if (selectedJobId) {
+            const updateDayJobTimer = await JobTimer.updateOne(
+              { _id: getDayJobTimer._id },
+              { timerId: req.body.timerId, jobId: selectedJobId }
+            )
+            await Jobs.findByIdAndUpdate(
+              selectedJobId,
+              {
+                $set: {
+                  status: "Active",
+                },
+                updatedAt: Date.now(),
+              },
+              { new: true }
+            )
+            res.json({
+              error: false,
+              item: updateDayJobTimer,
+              recommendation: JOB_ACTION.SWITCH,
+              itemCount: null,
+              message: null,
+            })
+          } else {
+            res.json({
+              error: true,
+              item: null,
+              recommendation: JOB_ACTION.STOP,
+              itemCount: null,
+              message: "Job not found please create a new job",
             })
           }
         }

@@ -6,7 +6,7 @@ import {
   T_Timer,
   T_User,
 } from "custom-validator"
-import React, { Dispatch, useEffect, useState } from "react"
+import React, { Dispatch, useEffect, useState, useRef } from "react"
 import useUpdateTimer from "../../../../hooks/timers/useUpdateTimer"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
@@ -16,10 +16,12 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import useGetCycleTimerRealTime from "../../../../hooks/timers/useGetCycleTimerRealTime"
-import { hourMinuteSecond } from "../../../../helpers/timeConverter"
+import { hourMinuteSecondMilli } from "../../../../helpers/timeConverter"
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
-import combineClasses from "../../../../helpers/combineClasses"
+import { initializeSocket } from "../../../../helpers/socket"
+import { Socket } from "socket.io-client"
+import useGetAllTimerLogsCount from "../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 
 type T_Props = {
   timer: T_Timer
@@ -46,24 +48,91 @@ const Timer = ({
   dayjs.extend(timezone.default)
   const queryClient = useQueryClient()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
-  const { data: totalTonsUnit, isLoading: isTotalTonsUnitCreated } =
-    useTotalTonsUnit({
+  const { data: totalTonsUnit } = useTotalTonsUnit({
+    locationId: timer.locationId as string,
+    timerId: timer._id as string,
+  })
+  const { data: timerLogsCount, refetch: refetchTimerLogs } =
+    useGetAllTimerLogsCount({
       locationId: timer.locationId as string,
       timerId: timer._id as string,
     })
-  const { data: cycleTimer, isLoading: isCycleTimerLoading } =
-    useGetCycleTimerRealTime(timer._id as string)
+  const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimerRealTime(
+    timer._id as string
+  )
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
   const [cycleClockInSeconds, setCycleClockInSeconds] = useState(0)
   const [cycleClockTimeArray, setCycleCockTimeArray] = useState<
     Array<number | string>
   >([])
-  const [cycleClockIntervalId, setCycleClockIntervalId] = useState<number>(0)
   const [partQuery, setPartQuery] = useState("")
   const [selectedPart, setSelectedPart] = useState({
     id: typeof timer.partId === "string" && timer.partId ? timer.partId : "",
     name: timer?.part ? timer?.part?.name : "",
   })
+  let socket: Socket
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    socket = initializeSocket()!
+    const runSocket = (data: any) => {
+      if (data.action === "add") {
+        runCycle()
+      }
+      if (data.action === "endAndAdd") {
+        setCycleClockInSeconds(0)
+        runCycle()
+        refetchTimerLogs()
+      }
+      if (data.action === "end") {
+        setCycleClockInSeconds(0)
+        stopInterval()
+      }
+      if (data.action === "update-cycle" && data.timers.length > 0) {
+        const timeZone = timer?.location?.timeZone
+        const timerStart = dayjs.tz(
+          dayjs(data.timers[0].createdAt),
+          timeZone ? timeZone : ""
+        )
+        const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
+        const secondsLapse = currentDate.diff(timerStart, "seconds", true)
+        setCycleClockInSeconds(secondsLapse)
+      }
+      if (data.action === "end-controller") {
+        setCycleClockInSeconds(0)
+        stopInterval()
+      }
+    }
+    socket?.on(`timer-${timer._id}`, runSocket)
+
+    return () => {
+      socket?.off(`timer-${timer._id}`, runSocket)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Refocusing when tab minimize or change the tab
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      // If condition working for when tab is visible
+      if (document.visibilityState === "visible") {
+        cycleRefetch()
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [])
+
+  const intervalRef = useRef<any>()
+  useEffect(() => {
+    return () => {
+      clearInterval(intervalRef.current)
+    }
+  }, [])
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
@@ -101,14 +170,16 @@ const Timer = ({
     return value
   }
   const runCycle = () => {
-    const interval: any = setInterval(() => {
-      setCycleClockInSeconds((previousState: number) => previousState + 1)
-    }, 1000)
-    setCycleClockIntervalId(interval)
+    stopInterval()
+    setIsCycleClockRunning(true)
+    intervalRef.current = setInterval(() => {
+      setCycleClockInSeconds((previousState: number) => previousState + 0.1)
+    }, 100)
   }
   useEffect(() => {
-    setCycleCockTimeArray(hourMinuteSecond(cycleClockInSeconds))
+    setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
   }, [cycleClockInSeconds])
+
   useEffect(() => {
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
       const timeZone = timer?.location?.timeZone
@@ -124,10 +195,10 @@ const Timer = ({
         setIsCycleClockRunning(true)
       }
     } else {
-      clearInterval(cycleClockIntervalId)
       setIsCycleClockRunning(false)
     }
   }, [cycleTimer])
+
   useEffect(() => {
     if (timer.part) {
       setSelectedPart({
@@ -156,6 +227,12 @@ const Timer = ({
       mutate({ ...timerCopy, partId: id }, callBackReq)
     }
   }
+
+  const stopInterval = () => {
+    clearInterval(intervalRef.current)
+    setIsCycleClockRunning(false)
+  }
+
   return (
     <div
       key={timer._id as string}
@@ -265,8 +342,8 @@ const Timer = ({
         </p>
         <div>
           <h2 className="font-semibold text-gray-400 text-5xl">
-            {totalTonsUnit?.item?.dailyUnits
-              ? addZeroFront(totalTonsUnit?.item.dailyUnits)
+            {timerLogsCount?.item?.count
+              ? addZeroFront(timerLogsCount?.item?.count)
               : "000"}
           </h2>
           <h6 className="text-gray-700 font-semibold uppercase text-lg">
@@ -286,15 +363,15 @@ const Timer = ({
         <div className="flex justify-between text-gray-900">
           <span>Average Ton/hr:</span>
           <span>
-            {totalTonsUnit?.item?.tons
+            {totalTonsUnit?.item?.tonsPerHour
               ? totalTonsUnit?.item?.tonsPerHour.toFixed(3)
               : "0.000"}
           </span>
         </div>
         <div className="flex justify-between text-gray-900">
-          <span>Average Unit/hr:</span>
+          <span>Average Unit/hr: </span>
           <span>
-            {totalTonsUnit?.item?.tons
+            {totalTonsUnit?.item?.unitPerHour
               ? Math.round(totalTonsUnit?.item.unitPerHour)
               : "0"}
           </span>
@@ -317,5 +394,4 @@ const Timer = ({
     </div>
   )
 }
-
 export default Timer

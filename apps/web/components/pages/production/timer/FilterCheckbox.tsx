@@ -8,6 +8,8 @@ type T_Props = {
     (T_MachineClass & { isSelected: boolean })[]
   >
   selectedMachineClasses: (T_MachineClass & { isSelected: boolean })[]
+  filterCheck: Function
+  checkBoxValues: object | string
 }
 
 const FilterCheckbox = ({
@@ -15,9 +17,18 @@ const FilterCheckbox = ({
   isAllSelected,
   setSelectedMachineClasses,
   selectedMachineClasses,
+  filterCheck,
+  checkBoxValues,
 }: T_Props) => {
   const [isChecked, setIsChecked] = useState(false)
-  const handleOnChange = () => {
+
+  const handleOnChange = (e: any) => {
+    const { id, checked } = e.target
+    filterCheck({
+      //@ts-expect-error
+      ...checkBoxValues,
+      [id]: checked,
+    })
     const machineClassIndex = selectedMachineClasses.findIndex(
       (selectedMachineClass) => selectedMachineClass._id === machineClass._id
     )
@@ -40,8 +51,11 @@ const FilterCheckbox = ({
           aria-describedby="pipe-box-description"
           name={machineClass._id as string}
           type="checkbox"
-          checked={isChecked}
-          onChange={handleOnChange}
+          checked={
+            //@ts-expect-error
+            checkBoxValues[machineClass.name] || isChecked
+          }
+          onChange={(e) => handleOnChange(e)}
           className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
         />
       </div>

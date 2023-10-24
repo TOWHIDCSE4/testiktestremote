@@ -10,35 +10,52 @@ import useUsers from "../../../../../hooks/users/useUsers"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
-import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
-import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
+import useUpdateTimerJob from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
+import useProfile from "../../../../../hooks/users/useProfile"
 
 type T_Props = {
-  timerDetails: T_Timer
-  isLoading: boolean
-  readingMessages: string[]
+  timerDetails: T_Timer // Show all details of controller
+  isTimerDetailDataLoading: boolean // Loadind timer details
+  readingMessages: string[] // Using for messages
   sectionDiv: React.RefObject<HTMLDivElement>
-  jobTimer: T_JobTimer
-  isJobTimerLoading: boolean
-  isCycleClockRunning: boolean
+  jobTimer: T_JobTimer // Timer jobs list
+  jobUpdateId: string
+  defaultOperator: any
+  timerId: string
+  updateTimer: any
+  isJobTimerLoading: boolean // Timer jobs list loading
+  isCycleClockRunning: boolean // Tracker run loading
+  timerJobs: T_Job[] | undefined
+  setFactoryId: any
+  setLocationId: any
+  setPartId: any
+  isTimerJobsLoading: boolean
 }
 
 const Details = ({
   timerDetails,
-  isLoading,
+  isTimerDetailDataLoading,
   readingMessages,
   sectionDiv,
   jobTimer,
+  jobUpdateId,
+  timerId,
+  updateTimer,
+  defaultOperator,
   isJobTimerLoading,
   isCycleClockRunning,
+  timerJobs,
+  setFactoryId,
+  setLocationId,
+  setPartId,
+  isTimerJobsLoading,
 }: T_Props) => {
   const queryClient = useQueryClient()
   const { data: users, isLoading: isUsersLoading } = useUsers()
   const isComboboxDisabled = isCycleClockRunning
-  console.log(isComboboxDisabled)
   const locationId =
     typeof timerDetails?.locationId === "object" && timerDetails?.locationId._id
       ? timerDetails?.locationId._id
@@ -51,22 +68,43 @@ const Details = ({
     typeof timerDetails?.partId === "object" && timerDetails?.partId._id
       ? timerDetails?.partId._id
       : ""
-  const {
-    data: timerJobs,
-    isLoading: isTimerJobsLoading,
-    setFactoryId,
-    setLocationId,
-    setPartId,
-  } = useGetTimerJobs()
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
-  const { mutate: updateJobTimer, isLoading: isUpdateJobTimerLoading } =
-    useUpdateJobTimer()
+  const { mutate: updateTimerJob, isLoading: isUpdateTimerJobLoading } =
+    useUpdateTimerJob()
   const [operatorQuery, setOperatorQuery] = useState("")
   const [openNewJobModal, setOpenNewJobModal] = useState(false)
   const [selectedOperator, setSelectedOperator] = useState({
     id: "",
     name: "",
   })
+
+  const [operator, setOperator] = useState({
+    id: "",
+    name: "",
+  })
+
+  useEffect(() => {
+    if (timerDetails?._id !== updateTimer.data?._id) {
+      mutate({ ...timerDetails, partId: updateTimer.data?.partId }, callBackReq)
+      updateTimerJob({ ...jobTimer, jobId: updateTimer.jobToBe }, callBackReq)
+    }
+  }, [updateTimer])
+
+  useEffect(() => {
+    if (defaultOperator) {
+      setSelectedOperator({
+        id: defaultOperator._id,
+        name: defaultOperator.firstName + " " + defaultOperator.lastName,
+      })
+      setOperator({
+        id: defaultOperator._id,
+        name: defaultOperator.firstName + " " + defaultOperator.lastName,
+      })
+      mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
+    }
+  }, [defaultOperator])
+
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
@@ -76,7 +114,6 @@ const Details = ({
         queryClient.invalidateQueries({
           queryKey: ["job-timer-timer"],
         })
-        toast.success("Timer has been updated")
       } else {
         toast.error(String(data.message))
       }
@@ -140,7 +177,7 @@ const Details = ({
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Factory:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isLoading ? (
+          {isTimerDetailDataLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
             </div>
@@ -156,7 +193,7 @@ const Details = ({
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Machine:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isLoading ? (
+          {isTimerDetailDataLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
             </div>
@@ -172,7 +209,7 @@ const Details = ({
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Product:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isLoading ? (
+          {isTimerDetailDataLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
             </div>
@@ -188,7 +225,7 @@ const Details = ({
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Average Time:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isLoading ? (
+          {isTimerDetailDataLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
             </div>
@@ -205,7 +242,7 @@ const Details = ({
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Weight:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isLoading ? (
+          {isTimerDetailDataLoading ? (
             <div className="animate-pulse flex space-x-4">
               <div className="h-3 w-24 bg-slate-200 rounded"></div>
             </div>
@@ -270,25 +307,25 @@ const Details = ({
         id="jobs"
         name="jobs"
         disabled={
-          isLoading ||
+          isTimerDetailDataLoading ||
           isTimerJobsLoading ||
           isJobTimerLoading ||
-          isUpdateJobTimerLoading
+          isUpdateTimerJobLoading
         }
         defaultValue="Select Job"
         required
-        value={jobTimer?.jobId as string}
+        value={jobUpdateId ? jobUpdateId : ""}
         className={`block mt-2 w-full xl:w-80 ipadair:w-[250px] 2xl:w-[350px] rounded-md border-0 py-1.5 pl-3 pr-10 dark:bg-gray-300 bg-zinc-100 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-1xl sm:xl:leading-7`}
         onChange={(e) => {
           if (e.target.value === "Add New Job") {
             setOpenNewJobModal(true)
           } else {
-            updateJobTimer({ ...jobTimer, jobId: e.target.value }, callBackReq)
+            updateTimerJob({ ...jobTimer, jobId: e.target.value }, callBackReq)
           }
         }}
       >
-        <option value="">Select Job</option>
-        {timerJobs?.items.map((item: T_Job, index: number) => {
+        {/* <option value="">Select Job</option> */}
+        {timerJobs?.map((item: T_Job, index: number) => {
           return (
             <option key={index} value={item._id as string}>
               {item.name}

@@ -41,7 +41,10 @@ const Clocks = ({
     userRole === "Super"
   const [isAllFilterSelected, setIsAllFilterSelected] = useState(true)
   const [openFilter, setOpenFilter] = useState(false)
+  // const [openFilter, setOpenFilter] = useState({})
   const [openSetProduction, setOpenProduction] = useState(false)
+  const [checkAll, setCheckAll] = useState(false)
+  const [filterCheck, setFilterCheck] = useState({})
 
   const { data: location, isLoading: isLocationLoading } =
     useGetLocation(locationId)
@@ -50,7 +53,8 @@ const Clocks = ({
     .tz(dayjs(), !isLocationLoading ? location?.item.timeZone : "")
     .format("MMM DD YYYY")
 
-  const handleOnChange = () => {
+  const handleOnChange = (e: any) => {
+    setCheckAll(!checkAll)
     const updatedMachineClasses = selectedMachineClasses.map(
       (machineClass: T_MachineClass) => ({
         ...machineClass,
@@ -67,6 +71,20 @@ const Clocks = ({
     }
   }
 
+  const filterCheckHandler = () => {
+    setFilterCheck({
+      ...filterCheck,
+    })
+  }
+
+  useEffect(() => {
+    setFilterCheck(filterCheck)
+  }, [filterCheck])
+
+  useEffect(() => {
+    setCheckAll(!checkAll)
+  }, [])
+
   return (
     <>
       <div className="flex justify-between pt-4 pb-3 items-center">
@@ -77,7 +95,10 @@ const Clocks = ({
           <div>
             <Menu.Button
               className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-              onClick={() => setOpenFilter((openFilter) => !openFilter)}
+              onClick={() => {
+                setOpenFilter((openFilter) => !openFilter)
+                filterCheckHandler()
+              }}
             >
               Show Only Filter
               <ChevronDownIcon
@@ -112,8 +133,11 @@ const Clocks = ({
                           name="all"
                           type="checkbox"
                           className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                          defaultChecked
-                          onChange={handleOnChange}
+                          defaultChecked={checkAll}
+                          onChange={(e) => {
+                            handleOnChange(e)
+                            setFilterCheck({})
+                          }}
                         />
                       </div>
                       <div className="ml-3 text-sm leading-6">
@@ -129,6 +153,8 @@ const Clocks = ({
                     <Menu.Item key={index}>
                       {({ active }) => (
                         <FilterCheckbox
+                          filterCheck={setFilterCheck}
+                          checkBoxValues={filterCheck}
                           machineClass={machineClass}
                           isAllSelected={isAllFilterSelected}
                           setSelectedMachineClasses={setSelectedMachineClasses}

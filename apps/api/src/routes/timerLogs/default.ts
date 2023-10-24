@@ -9,11 +9,15 @@ import {
   ADD_SUCCESS_MESSAGE,
   UPDATE_SUCCESS_MESSAGE,
   DELETE_SUCCESS_MESSAGE,
+  JOB_ACTION,
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZTimerLog } from "custom-validator"
 import Jobs from "../../models/jobs"
 import * as Sentry from "@sentry/node"
+import { getIo } from "../../config/setup-socket"
+import jobTimer from "../../models/jobTimer"
+import { trusted } from "mongoose"
 
 export const getAllTimeLogs = async (req: Request, res: Response) => {
   try {
@@ -63,46 +67,136 @@ export const getTimeLog = async (req: Request, res: Response) => {
   }
 }
 
+// export const addTimeLog = async (req: Request, res: Response) => {
+//   const parsedTimerLog = ZTimerLog.safeParse(req.body)
+//   if (parsedTimerLog.success) {
+//     try {
+//       const checkIfHasData = await TimerLogs.findOne()
+//       const lastTimerLog = await TimerLogs.find()
+//         .limit(1)
+//         .sort({ $natural: -1 })
+//       if (req.body.jobId) {
+//         const job = await Jobs.findOne({ _id: req.body.jobId })
+//         const targetCountJob = job?.count
+//         const currCountJob = await TimerLogs.find({
+//           stopReason: { $in: ["Unit Created"] },
+//           jobId: req.body.jobId,
+//         }).countDocuments()
+//         if (targetCountJob && currCountJob === targetCountJob) {
+//           const newTimerLog = new TimerLogs({
+//             ...req.body,
+//             globalCycle: !checkIfHasData
+//               ? 100000
+//               : (lastTimerLog[0].globalCycle
+//                   ? lastTimerLog[0].globalCycle
+//                   : 0) + 1,
+//           })
+//           await newTimerLog.save()
+//           await Jobs.findByIdAndUpdate(
+//             req.body.jobId,
+//             {
+//               status: "Testing",
+//               updatedAt: Date.now(),
+//             },
+//             { new: true }
+//           )
+//           res.json({
+//             error: true,
+//             item: null,
+//             itemCount: null,
+//             message: "Target count reached, please change the timer job",
+//           })
+//         } else if (targetCountJob && currCountJob > targetCountJob) {
+//           const getStockJob = await Jobs.findOne({
+//             locationId: req.body.locationId,
+//             partId: req.body.partId,
+//             factoryId: req.body.factoryId,
+//             isStock: true,
+//             $and: [
+//               { status: { $ne: "Deleted" } },
+//               { status: { $ne: "Archived" } },
+//             ],
+//             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+//           })
+//           if (getStockJob) {
+//             const newTimerLog = new TimerLogs({
+//               ...req.body,
+//               jobId: getStockJob?._id,
+//               globalCycle: !checkIfHasData
+//                 ? 100000
+//                 : (lastTimerLog[0].globalCycle
+//                     ? lastTimerLog[0].globalCycle
+//                     : 0) + 1,
+//             })
+//             await newTimerLog.save()
+//           }
+//           res.json({
+//             error: true,
+//             item: null,
+//             itemCount: null,
+//             message: "Target count exceeded, log was assigned to stock.",
+//           })
+//         } else {
+//           const newTimerLog = new TimerLogs({
+//             ...req.body,
+//             globalCycle: !checkIfHasData
+//               ? 100000
+//               : (lastTimerLog[0].globalCycle
+//                   ? lastTimerLog[0].globalCycle
+//                   : 0) + 1,
+//           })
+//           const createTimerLog = await newTimerLog.save()
+//           res.json({
+//             error: false,
+//             item: createTimerLog,
+//             itemCount: 1,
+//             message: ADD_SUCCESS_MESSAGE,
+//           })
+//         }
+//       }
+//     } catch (err: any) {
+//       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+//       Sentry.captureException(err)
+//       res.json({
+//         error: true,
+//         message: message,
+//         items: null,
+//         itemCount: null,
+//       })
+//     }
+//   } else {
+//     res.json({
+//       error: true,
+//       message: parsedTimerLog.error.issues,
+//       items: null,
+//       itemCount: null,
+//     })
+//   }
+// }
+
 export const addTimeLog = async (req: Request, res: Response) => {
-  const parsedTimerLog = ZTimerLog.safeParse(req.body)
-  if (parsedTimerLog.success) {
-    try {
-      const checkIfHasData = await TimerLogs.findOne()
-      const lastTimerLog = await TimerLogs.find()
-        .limit(1)
-        .sort({ $natural: -1 })
-      if (req.body.jobId) {
-        const job = await Jobs.findOne({ _id: req.body.jobId })
-        const targetCountJob = job?.count
-        const currCountJob = await TimerLogs.find({
-          stopReason: { $in: ["Unit Created"] },
-          jobId: req.body.jobId,
-        }).countDocuments()
-        if (targetCountJob && currCountJob === targetCountJob) {
-          const newTimerLog = new TimerLogs({
-            ...req.body,
-            globalCycle: !checkIfHasData
-              ? 100000
-              : (lastTimerLog[0].globalCycle
-                  ? lastTimerLog[0].globalCycle
-                  : 0) + 1,
+  try {
+    const io = getIo()
+    const parsedTimerLog = ZTimerLog.safeParse(req.body)
+    if (parsedTimerLog.success) {
+      try {
+        const checkIfHasData = await TimerLogs.findOne()
+        const lastTimerLog = await TimerLogs.find()
+          .limit(1)
+          .sort({ $natural: -1 })
+        if (req.body.jobId) {
+          const job = await Jobs.findOne({
+            _id: req.body.jobId,
+            and: [
+              { status: { $ne: "Deleted" } },
+              { status: { $ne: "Archived" } },
+            ],
           })
-          await newTimerLog.save()
-          await Jobs.findByIdAndUpdate(
-            req.body.jobId,
-            {
-              status: "Testing",
-              updatedAt: Date.now(),
-            },
-            { new: true }
-          )
-          res.json({
-            error: true,
-            item: null,
-            itemCount: null,
-            message: "Target count reached, please change the timer job",
-          })
-        } else if (targetCountJob && currCountJob > targetCountJob) {
+          const targetCountJob = job?.count
+          const currCountJob = await TimerLogs.find({
+            stopReason: { $in: ["Unit Created"] },
+            jobId: req.body.jobId,
+          }).countDocuments()
           const getStockJob = await Jobs.findOne({
             locationId: req.body.locationId,
             partId: req.body.partId,
@@ -114,56 +208,191 @@ export const addTimeLog = async (req: Request, res: Response) => {
             ],
             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
           })
-          if (getStockJob) {
+          let secondJob = await Jobs.findOne({
+            locationId: req.body.locationId,
+            partId: req.body.partId,
+            factoryId: req.body.factoryId,
+            isStock: false,
+            $and: [
+              { status: { $ne: "Deleted" } },
+              { status: { $ne: "Archived" } },
+              { status: { $ne: "Testing" } },
+            ],
+            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+          })
+          console.log(secondJob)
+          if (!secondJob) {
+            secondJob = await Jobs.findOne({
+              locationId: req.body.locationId,
+              factoryId: req.body.factoryId,
+              machineClassId: req.body.machineClassId,
+              isStock: true,
+              $and: [
+                { status: { $ne: "Deleted" } },
+                { status: { $ne: "Archived" } },
+              ],
+              $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+            })
+            console.log(secondJob)
+          }
+          if ((targetCountJob && currCountJob === targetCountJob) || !job) {
+            const limitReached = currCountJob + 1 === targetCountJob || false
+            const recommendation =
+              getStockJob && limitReached && !job
+                ? JOB_ACTION.SWITCH
+                : !getStockJob && !secondJob && limitReached
+                ? JOB_ACTION.STOP
+                : JOB_ACTION.CONTINUE
+            const jobToBe =
+              recommendation === JOB_ACTION.SWITCH
+                ? getStockJob
+                  ? getStockJob?._id
+                  : secondJob?._id
+                : recommendation === JOB_ACTION.CONTINUE
+                ? req?.body?.jobId
+                : null
+            if (getStockJob || secondJob) {
+              const newTimerLog = new TimerLogs({
+                ...req.body,
+                jobId: getStockJob ? getStockJob._id : secondJob?._id,
+                globalCycle: !checkIfHasData
+                  ? 100000
+                  : (lastTimerLog[0].globalCycle
+                      ? lastTimerLog[0].globalCycle
+                      : 0) + 1,
+              })
+              const data =
+                jobToBe === getStockJob?._id ? getStockJob : secondJob
+              await newTimerLog.save()
+              if (
+                recommendation === JOB_ACTION.STOP ||
+                recommendation === JOB_ACTION.SWITCH
+              ) {
+                io.emit(`timer-${req.body.timerId}`, {
+                  action: `job-change`,
+                  route: "POST/timer-log",
+                  data: {
+                    completed: limitReached,
+                    recommendation,
+                    jobToBe,
+                    data: data,
+                  },
+                })
+                const updateJob = jobTimer.findByIdAndUpdate(req.body.timerId, {
+                  jobId: jobToBe,
+                })
+              }
+              if (limitReached) {
+                await Jobs.findByIdAndUpdate(
+                  req.body.jobId,
+                  {
+                    status: "Testing",
+                    updatedAt: Date.now(),
+                  },
+                  { new: true }
+                )
+              }
+              return res.json({
+                error: false,
+                item: null,
+                completed: limitReached,
+                recommendation,
+                jobToBe,
+                data: data,
+                itemCount: null,
+                message: "Target count exceeded, log was assigned to stock.",
+              })
+            }
+          } else if (job) {
             const newTimerLog = new TimerLogs({
               ...req.body,
-              jobId: getStockJob?._id,
               globalCycle: !checkIfHasData
                 ? 100000
                 : (lastTimerLog[0].globalCycle
                     ? lastTimerLog[0].globalCycle
                     : 0) + 1,
             })
-            await newTimerLog.save()
+            const createTimerLog = await newTimerLog.save()
+            const limitReached = currCountJob + 1 === targetCountJob || false
+            const recommendation =
+              getStockJob && secondJob && limitReached
+                ? JOB_ACTION.SWITCH
+                : !getStockJob && !secondJob && limitReached
+                ? JOB_ACTION.STOP
+                : JOB_ACTION.CONTINUE
+            const jobToBe =
+              recommendation === JOB_ACTION.SWITCH
+                ? getStockJob
+                  ? getStockJob._id
+                  : secondJob?.id
+                : recommendation === JOB_ACTION.CONTINUE
+                ? req?.body?.jobId
+                : null
+            if (
+              recommendation === JOB_ACTION.STOP ||
+              recommendation === JOB_ACTION.SWITCH
+            ) {
+              io.emit(`timer-${req.body.timerId}`, {
+                action: `job-change`,
+                route: "POST/timer-log",
+                data: {
+                  completed: limitReached,
+                  recommendation,
+                  jobToBe,
+                  data: job,
+                },
+              })
+              const updateJob = jobTimer.findByIdAndUpdate(req.body.timerId, {
+                jobId: jobToBe,
+              })
+            }
+            if (limitReached) {
+              await Jobs.findByIdAndUpdate(
+                req.body.jobId,
+                {
+                  status: "Testing",
+                  updatedAt: Date.now(),
+                },
+                { new: true }
+              )
+            }
+            res.json({
+              error: false,
+              completed: limitReached,
+              recommendation,
+              jobToBe,
+              item: createTimerLog,
+              data: job,
+              itemCount: 1,
+              message: limitReached
+                ? "Target count exceeded, log was assigned to stock."
+                : ADD_SUCCESS_MESSAGE,
+            })
           }
-          res.json({
-            error: true,
-            item: null,
-            itemCount: null,
-            message: "Target count exceeded, log was assigned to stock.",
-          })
-        } else {
-          const newTimerLog = new TimerLogs({
-            ...req.body,
-            globalCycle: !checkIfHasData
-              ? 100000
-              : (lastTimerLog[0].globalCycle
-                  ? lastTimerLog[0].globalCycle
-                  : 0) + 1,
-          })
-          const createTimerLog = await newTimerLog.save()
-          res.json({
-            error: false,
-            item: createTimerLog,
-            itemCount: 1,
-            message: ADD_SUCCESS_MESSAGE,
-          })
         }
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
+        res.json({
+          error: true,
+          message: message,
+          items: null,
+          itemCount: null,
+        })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      Sentry.captureException(err)
+    } else {
       res.json({
         error: true,
-        message: message,
+        message: parsedTimerLog.error.issues,
         items: null,
         itemCount: null,
       })
     }
-  } else {
+  } catch (error: any) {
+    Sentry.captureException(error)
     res.json({
       error: true,
-      message: parsedTimerLog.error.issues,
+      message: error,
       items: null,
       itemCount: null,
     })

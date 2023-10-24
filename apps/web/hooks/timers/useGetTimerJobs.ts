@@ -37,7 +37,6 @@ function useGetTimerJobs() {
     () => getMachineLocationCount(locationId, factoryId, partId),
     {
       staleTime: THREE_MINUTES,
-      refetchOnWindowFocus: false,
       enabled: !!locationId && !!factoryId && !!partId,
     }
   )

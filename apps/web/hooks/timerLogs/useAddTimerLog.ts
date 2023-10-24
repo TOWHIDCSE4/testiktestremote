@@ -13,7 +13,8 @@ export async function addTimerLog(props: T_TimerLog) {
       Authorization: `Bearer ${token}`,
     },
   })
-  return (await res.json()) as T_BackendResponse
+  const data = (await res.json()) as T_BackendResponse
+  return data
 }
 
 function useAddTimerLog() {

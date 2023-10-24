@@ -90,6 +90,8 @@ export const globalLogs = async (req: Request, res: Response) => {
         .populate("partId")
         .populate("operator")
         .populate("machineId")
+        .populate("locationId")
+        .populate("machineClassId")
         .sort({ ...sortObj })
         .skip(5 * (Number(page) - 1))
         .limit(5)
@@ -130,13 +132,10 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     page,
     sort,
     key,
+    limit,
     startDate = dayjs().startOf("week"),
     endDate = dayjs().endOf("week"),
   } = req.query
-  console.log(
-    "🚀 ~ file: globalLogs.ts:131 ~ globalLogsMulti ~ partId:",
-    partId
-  )
 
   const sortObj = {}
   if (sort && key) {
@@ -274,9 +273,11 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
         .populate("partId")
         .populate("operator")
         .populate("machineId")
+        .populate("locationId")
+        .populate("machineClassId")
         .sort({ ...sortObj })
         .skip(10 * (Number(page) - 1))
-        .limit(10)
+        .limit(limit !== null && limit !== undefined ? Number(limit) : 10)
 
       res.json({
         error: false,
@@ -390,7 +391,7 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
         },
       },
     ]
-    const totalUnits = await timerLogs.find(query).countDocuments()
+    const totalUnits = await TimerLogs.find(query).countDocuments()
     const [result] = await parts.aggregate(aggregation).exec()
     const { totalTons } = result
     const globalUnitsPerHour = totalUnits / totalTime
@@ -408,7 +409,7 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     console.log(err)
     //@ts-expect-error
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-    // Sentry.captureException(err)
+    Sentry.captureException(err)
     return {
       error: true,
       message,
