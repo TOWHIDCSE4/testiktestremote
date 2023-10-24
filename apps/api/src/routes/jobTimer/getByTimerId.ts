@@ -8,16 +8,21 @@ import {
 import JobTimer from "../../models/jobTimer"
 import * as Sentry from "@sentry/node"
 import TimerLogs from "../../models/timerLogs"
+import mongoose from "mongoose"
 
 export const getByTimerId = async (req: Request, res: Response) => {
   try {
     if (req.query.locationId && req.query.timerId) {
       const getDayJobTimer = await JobTimer.findOne({
         timerId: req.query.timerId,
-      }).populate("jobId")
+      })
+
+      const job = await Jobs.findOne({
+        _id: new mongoose.Types.ObjectId(getDayJobTimer?.jobId),
+      })
 
       //@ts-expect-error
-      const targetCountJob = getDayJobTimer?.jobId?.count
+      const targetCountJob = job.count
       console.log(
         "🚀 ~ file: getByTimerId.ts:16 ~ getByTimerId ~ getDayJobTimer:",
         targetCountJob
@@ -29,12 +34,8 @@ export const getByTimerId = async (req: Request, res: Response) => {
 
       const getStockJob = await Jobs.findOne({
         locationId: req.query.locationId,
-
-        //@ts-expect-error
-        partId: getDayJobTimer?.jobId?.partId,
-
-        //@ts-expect-error
-        factoryId: getDayJobTimer?.jobId?.factoryId,
+        partId: job?.partId,
+        factoryId: job?.factoryId,
         isStock: true,
         $and: [{ status: { $ne: "Deleted" } }, { status: { $ne: "Archived" } }],
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
@@ -42,7 +43,7 @@ export const getByTimerId = async (req: Request, res: Response) => {
 
       const currCountJob = await TimerLogs.find({
         stopReason: { $in: ["Unit Created"] },
-        jobId: req.body.jobId,
+        jobId: getDayJobTimer?.jobId,
       }).countDocuments()
 
       console.log(
@@ -50,7 +51,7 @@ export const getByTimerId = async (req: Request, res: Response) => {
         currCountJob
       )
 
-      if ((targetCountJob && currCountJob) === currCountJob <= targetCountJob) {
+      if (targetCountJob && currCountJob && currCountJob <= targetCountJob) {
         const limitReached = currCountJob <= targetCountJob || false
 
         const recommendation =
@@ -64,7 +65,7 @@ export const getByTimerId = async (req: Request, res: Response) => {
           recommendation === JOB_ACTION.SWITCH
             ? getStockJob?._id
             : recommendation === JOB_ACTION.CONTINUE
-            ? req?.body?.jobId
+            ? getDayJobTimer?.jobId
             : null
 
         if (jobToBe) {
