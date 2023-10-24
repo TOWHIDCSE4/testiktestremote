@@ -98,8 +98,7 @@ export const addUser = async (req: Request, res: Response) => {
       lastName,
       role,
       email,
-      status:
-        VALID_EMAIL.indexOf(emailDomain[1]) > -1 ? "Requested" : "Rejected",
+      status: VALID_EMAIL.indexOf(emailDomain[1]) > -1 ? "Pending" : "Rejected",
       password: encryptPassword,
       locationId,
       profile: null,

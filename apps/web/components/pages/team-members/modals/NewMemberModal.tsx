@@ -1,22 +1,35 @@
+// import { Fragment, useState } from "react"
+// import { Dialog, Transition } from "@headlessui/react"
+
+// import { HeartIcon } from "@heroicons/react/24/solid"
+// import Image from "next/image"
+// import Link from "next/link"
+// import DarkLogo from "../../../assets/logo/logo-dark.png"
+// import { useForm } from "react-hook-form"
+// import useRegister from "../../../../hooks/users/useRegister"
+// import { useRouter } from "next/navigation"
+// import { T_User, T_UserStatus } from "custom-validator/ZUser"
+// import toast from "react-hot-toast"
+// import { T_BackendResponse } from "custom-validator"
+// import { USER_ROLES } from "../../../../helpers/constants"
+// import useLocations from "../../../../hooks/locations/useLocations"
+// import { useQueryClient } from "@tanstack/react-query"
+// import useUpdateUser from "../../../../hooks/users/useUpdateUser"
+// import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
+// import useStoreSession from "../../../../../../apps/web/store/useStoreSession"
+
 import { Fragment, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-
-import { HeartIcon } from "@heroicons/react/24/solid"
-import Image from "next/image"
-import Link from "next/link"
-import DarkLogo from "../../../assets/logo/logo-dark.png"
 import { useForm } from "react-hook-form"
 import useRegister from "../../../../hooks/users/useRegister"
 import { useRouter } from "next/navigation"
 import { T_User, T_UserStatus } from "custom-validator/ZUser"
+import useProfile from "../../../../hooks/users/useProfile"
 import toast from "react-hot-toast"
 import { T_BackendResponse } from "custom-validator"
-import { USER_ROLES } from "../../../../helpers/constants"
+import { USER_ROLES, USER_STATUSES } from "../../../../helpers/constants"
 import useLocations from "../../../../hooks/locations/useLocations"
-import { useQueryClient } from "@tanstack/react-query"
-import useUpdateUser from "../../../../hooks/users/useUpdateUser"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
-import useStoreSession from "../../../../../../apps/web/store/useStoreSession"
 
 interface NewModalProps {
   isOpen: boolean
@@ -24,58 +37,48 @@ interface NewModalProps {
 }
 
 const NewMemberModal = ({ isOpen, onClose }: NewModalProps) => {
-  const queryClient = useQueryClient()
   const [isDeleted, setIsDeleted] = useState(false)
+  const [isNotChecked, setIsNotChecked] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const [action, setAction] = useState<T_UserStatus | null>(null)
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword)
+  }
+  const { data: locations, isLoading: isLocationsLoading } = useLocations()
+  const [password, setPassword] = useState("")
+  const { register, handleSubmit, reset } = useForm<T_User>()
+  const { mutate, isLoading } = useRegister()
+  const router = useRouter()
 
   const close = () => {
     onClose()
     setIsDeleted(false)
   }
-
-  const [showPassword, setShowPassword] = useState(false)
-  const [action, setAction] = useState<T_UserStatus | null>(null)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const togglePasswordVisibility = () => {
-    setShowPassword((prevShowPassword) => !prevShowPassword)
-  }
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword)
-  }
-  const { data: locations, isLoading: isLocationsLoading } = useLocations()
-  const [password, setPassword] = useState("")
-  const [confirmPass, setConfirmPass] = useState("")
-
-  const { register, handleSubmit, reset } = useForm<T_User>()
-  const { mutate, isLoading } = useRegister()
-
-  const router = useRouter()
-
   const onSubmit = (data: T_User) => {
-    if (password === confirmPass) {
-      const callBackReq = {
-        onSuccess: (data: T_BackendResponse) => {
-          if (!data.error) {
-            router.push("/")
-            resetForm()
-          } else {
-            toast.error(String(data.message))
-          }
-        },
-        onError: (err: any) => {
-          toast.error(String(err))
-        },
-      }
-
-      mutate({ ...data, status: "Pending" }, callBackReq)
-    } else {
-      toast.error("Password doesn't match")
+    const callBackReq = {
+      onSuccess: (data: T_BackendResponse) => {
+        console.log(data)
+        if (!data.error) {
+          // router.push("/team-members");
+          resetForm()
+        } else {
+          toast.error(String(data.message))
+        }
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+      },
     }
+    mutate(
+      { ...data, status: "Pending", approvedBy: userProfile?.item._id },
+      callBackReq
+    )
   }
 
   const resetForm = () => {
     reset()
     setPassword("")
-    setConfirmPass("")
   }
 
   const ARR_USER_ROLES = [
@@ -117,6 +120,11 @@ const NewMemberModal = ({ isOpen, onClose }: NewModalProps) => {
   //       return "delete"
   //   }
   // }
+
+  const handleCheckboxChange = () => {
+    console.log(isNotChecked)
+    setIsNotChecked(!isNotChecked)
+  }
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -304,23 +312,26 @@ const NewMemberModal = ({ isOpen, onClose }: NewModalProps) => {
                               )}
                             </button>
                           </div>
-                        </div>
-                        <div className="mt-4">
-                          <div className="flex items-center mb-4">
-                            <input
-                              id="default-checkbox"
-                              type="checkbox"
-                              value=""
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              htmlFor="default-checkbox"
-                              className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                            >
-                              Approve
-                            </label>
+                          <div className="mt-2 relative">
+                            <div className="flex items-center mb-4">
+                              <input
+                                id="default-checkbox"
+                                type="checkbox"
+                                value=""
+                                checked={isNotChecked}
+                                onChange={handleCheckboxChange}
+                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                              />
+                              <label
+                                htmlFor="default-checkbox"
+                                className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                              >
+                                Approve
+                              </label>
+                            </div>
                           </div>
                         </div>
+
                         <div className="md:flex items-center justify-end mt-5">
                           <div className="flex space-x-2">
                             <button

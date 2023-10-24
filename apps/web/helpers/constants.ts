@@ -8,6 +8,7 @@ export const USER_ROLES = {
   Administrator: "Administrator",
   Personnel: "Personnel",
   HR: "HR",
+  HR_Director: "HR_Director",
   Sales: "Sales",
   Accounting: "Accounting",
   Super: "Super",

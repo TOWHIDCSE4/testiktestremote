@@ -40,8 +40,8 @@ interface ContentProps {
 }
 
 const Content: React.FC<ContentProps> = ({ userLog }) => {
-  const [userRole, setUserLog] = useState<string | undefined>(userLog)
-  const [items, setItem] = [
+  const [userRole, setUserRole] = useState<string | undefined>(userLog)
+  const [items, setItem] = useState<{ label: string; key: string }[]>([
     {
       label: "Administrator",
       key: "0",
@@ -66,7 +66,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       label: "Dev",
       key: "5",
     },
-  ]
+  ])
+
   // const items = [
   //   {
   //     label: "Administrator",
@@ -94,13 +95,25 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   //   },
   // ]
 
-  const roleFilter = (): string[] | undefined => {
+  const roleFilter = (): string[] => {
     if (userRole === "HR") {
       return ["Production", "Corporate", "Personnel"]
     } else if (userRole === "Production") {
       return ["Personnel"]
+    } else if (userRole === "Administrator" || userRole === "HR-Director") {
+      return [
+        "Administrator",
+        "Production",
+        "Corporate",
+        "Personnel",
+        "Dev",
+        "HR",
+      ]
+    } else if (userRole === "Production") {
+      return ["Personnel"]
+    } else {
+      return [""]
     }
-    return undefined
   }
 
   dayjs.extend(utc.default)
@@ -114,6 +127,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           | "Production"
           | "Personnel"
           | "HR"
+          | "HR_Director"
           | "Accounting"
           | "Sales"
           | "Super"
@@ -127,6 +141,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
             | "Production"
             | "Personnel"
             | "HR"
+            | "HR_Director"
             | "Accounting"
             | "Sales"
             | "Super"
@@ -398,13 +413,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           <div className="flex justify-between h-32">
             <div className="flex flex-col w-72 sm:flex-none cursor-pointer h-6">
               <div className="flex ml-1">
-                <FormControl variant="outlined">
+                <FormControl>
                   <Select
                     label="Select Role"
                     id="cars"
                     className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0"
                     onChange={handleTeamListing}
-                    // value={selectedStatus}
+                    value={selectedStatus}
                   >
                     <MenuItem value="">Select Role</MenuItem>
                     {roleFilter().map((item, index) => (
@@ -693,7 +708,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       <div className="py-1">
                                         {item.status !== "Approved" &&
                                           (userRole === "HR" ||
-                                          userRole === "HR" ? (
+                                          userRole === "Administrator" ? (
                                             <>
                                               <Menu.Item>
                                                 {({ active }) => (
@@ -900,7 +915,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       </a> */}
                     </th>
                     <th className="w-[20%]">
-                      <div className="flex items-center text justify-center ml-14">
+                      <div className="flex items-center justify-center ml-14">
                         <span> City</span>
                         <button onClick={(e) => {}}>
                           <svg
@@ -1137,7 +1152,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   }
                                 )}
                               </select> */}
-                              <td className="text-sm text-gray-500 items-center fixed justify-center pl-10">
+                              <td className="text-sm text-gray-500 items-center justify-center pl-10">
                                 <button
                                   id="dropdownFactoryButton"
                                   data-dropdown-toggle="dropdown"
@@ -1447,7 +1462,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                     "Personnel" &&
                                                     "Corporate" &&
                                                     "Production" &&
-                                                    "HR",
+                                                    "HR" &&
+                                                    "HR_Director",
                                                 },
                                                 callBackReq
                                               )
@@ -1508,7 +1524,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                     "Personnel" &&
                                                     "Corporate" &&
                                                     "Production" &&
-                                                    "HR",
+                                                    "HR" &&
+                                                    "HR_Director",
                                                 },
                                                 callBackReq
                                               )
