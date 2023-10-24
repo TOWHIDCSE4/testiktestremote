@@ -314,7 +314,7 @@ const Details = ({
         }
         defaultValue="Select Job"
         required
-        value={jobUpdateId}
+        value={jobUpdateId ? jobUpdateId : ""}
         className={`block mt-2 w-full xl:w-80 ipadair:w-[250px] 2xl:w-[350px] rounded-md border-0 py-1.5 pl-3 pr-10 dark:bg-gray-300 bg-zinc-100 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-1xl sm:xl:leading-7`}
         onChange={(e) => {
           if (e.target.value === "Add New Job") {
