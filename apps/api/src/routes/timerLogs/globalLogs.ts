@@ -316,7 +316,7 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     endDate,
   } = req.query
   try {
-    const startTime =startDate
+    const startTime = startDate
       ? dayjs(startDate as string)
       : dayjs().startOf("week")
     const endTime = endDate ? dayjs(endDate as string) : dayjs().endOf("week")

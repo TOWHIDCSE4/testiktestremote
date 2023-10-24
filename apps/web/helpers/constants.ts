@@ -11,6 +11,7 @@ export const USER_ROLES = {
   Administrator: "Administrator",
   Personnel: "Personnel",
   HR: "HR",
+  HR_Director: "HR_Director",
   Sales: "Sales",
   Accounting: "Accounting",
   Super: "Super",
@@ -21,7 +22,7 @@ export const USER_STATUSES = {
   Rejected: "Rejected",
   Archived: "Archived",
   Blocked: "Blocked",
-  Requested: "Requested",
+  Pending: "Pending",
 }
 
 export const ONE_DAY = 1000 * 60 * 60 * 24 // 24 hours

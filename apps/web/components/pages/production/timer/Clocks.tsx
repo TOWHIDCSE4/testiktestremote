@@ -46,7 +46,6 @@ const Clocks = ({
   const [checkAll, setCheckAll] = useState(false)
   const [filterCheck, setFilterCheck] = useState({})
 
-
   const { data: location, isLoading: isLocationLoading } =
     useGetLocation(locationId)
 
@@ -54,8 +53,8 @@ const Clocks = ({
     .tz(dayjs(), !isLocationLoading ? location?.item.timeZone : "")
     .format("MMM DD YYYY")
 
-  const handleOnChange = (e:any) => {
-      setCheckAll(!checkAll)
+  const handleOnChange = (e: any) => {
+    setCheckAll(!checkAll)
     const updatedMachineClasses = selectedMachineClasses.map(
       (machineClass: T_MachineClass) => ({
         ...machineClass,
@@ -82,7 +81,6 @@ const Clocks = ({
     setFilterCheck(filterCheck)
   }, [filterCheck])
 
-
   useEffect(() => {
     setCheckAll(!checkAll)
   }, [])
@@ -98,8 +96,8 @@ const Clocks = ({
             <Menu.Button
               className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
               onClick={() => {
-                  setOpenFilter((openFilter) => !openFilter)
-                  filterCheckHandler()
+                setOpenFilter((openFilter) => !openFilter)
+                filterCheckHandler()
               }}
             >
               Show Only Filter
