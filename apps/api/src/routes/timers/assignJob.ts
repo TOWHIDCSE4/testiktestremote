@@ -81,7 +81,7 @@ export const assignJob = async (req: Request, res: Response) => {
             locationId: req.body.locationId,
             factoryId: req.body.factoryId,
             partId: req.body.partId,
-            status: "Pending",
+            status: { $in: ["Pending", "Active"] },
             isStock: true,
           })
           if (stockJob) {
@@ -165,12 +165,33 @@ export const assignJob = async (req: Request, res: Response) => {
           }
         }
       } else {
-        res.json({
-          error: true,
-          item: null,
-          itemCount: null,
-          message: "Job already assigned",
+        const stockJob = await Jobs.findOne({
+          locationId: req.body.locationId,
+          factoryId: req.body.factoryId,
+          partId: req.body.partId,
+          status: { $in: ["Pending", "Active"] },
+          isStock: true,
         })
+        if (stockJob) {
+          const newJobTimer = new JobTimer({
+            timerId: req.body.timerId,
+            jobId: stockJob._id,
+          })
+          const createJobTimer = await newJobTimer.save()
+          res.json({
+            error: false,
+            item: createJobTimer,
+            itemCount: null,
+            message: null,
+          })
+        } else {
+          res.json({
+            error: true,
+            item: null,
+            itemCount: null,
+            message: "Job already assigned",
+          })
+        }
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
