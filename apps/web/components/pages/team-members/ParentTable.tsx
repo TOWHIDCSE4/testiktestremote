@@ -1348,6 +1348,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                           index: string
                                         ) => (
                                           <a
+                                            key={index}
                                             className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
                                               const value = machineClassId._id
@@ -1426,6 +1427,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       {Object.values(USER_ROLES).map(
                                         (role, index) => (
                                           <a
+                                            key={index}
                                             className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
                                               mutate(
