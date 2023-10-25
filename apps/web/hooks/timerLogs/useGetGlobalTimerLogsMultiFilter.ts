@@ -34,7 +34,7 @@ export async function getGlobalTimerLogs({
   keyword: string
 }) {
   const token = Cookies.get("tfl")
-
+  console.log("partId", partId)
   //@ts-expect-error
   const locationIdQueryString = new URLSearchParams({
     locationId: locationId,
