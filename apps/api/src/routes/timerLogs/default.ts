@@ -422,10 +422,20 @@ export const addTimeLog = async (req: Request, res: Response) => {
             factoryId: req.body.factoryId,
             isStock: true,
             $and: [
-              { status: { $ne: "Deleted" } },
-              { status: { $ne: "Archived" } },
+              {
+                $or: [{ status: "Pending" }, { status: "Active" }],
+              },
+              {
+                $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+              },
             ],
-            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+            // $and: [
+            //   { status: { $ne: "Deleted" } },
+            //   { status: { $ne: "Archived" } },
+            //   {
+            //     $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+            //   }
+            // ],
           })
           if (targetCountJob && currCountJob === targetCountJob) {
             const limitReached = currCountJob + 1 === targetCountJob || false
