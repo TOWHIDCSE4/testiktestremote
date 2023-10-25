@@ -74,7 +74,6 @@ const GlobalTableReport = ({
     const newValue = e.currentTarget.value
     setKeyword(key)
     setSortType(sortType === "asc" ? "desc" : "asc")
-    console.log(key, sortType)
   }
   //@ts-expect-error
   const locationIdQueryString = new URLSearchParams({
@@ -98,11 +97,6 @@ const GlobalTableReport = ({
   useEffect(() => {
     const fetchpaginated = async () => {
       const token = Cookies.get("tfl")
-      console.log(
-        `${API_URL_TIMER_LOGS}/global/multi/filter?${locationIdQueryString}&${factoryIdQueryString}&${partIdQueryString}&${machineIdQueryString}&${machineClassIdQueryString}&startDate=${startDateRange}&endDate=${endDateRange}&sort=${sortType}&key=${keyword}locationId=${city}&page=${1}&limit=${
-          paginated?.itemCount
-        }`
-      )
       const res = await fetch(
         `${API_URL_TIMER_LOGS}/global/multi/filter?${locationIdQueryString}&${factoryIdQueryString}&${partIdQueryString}&${machineIdQueryString}&${machineClassIdQueryString}&startDate=${startDateRange}&endDate=${endDateRange}&sort=${sortType}&key=${keyword}locationId=${city}&page=${1}&limit=${
           paginated?.itemCount
@@ -167,7 +161,7 @@ const GlobalTableReport = ({
 
     head.appendChild(style)
   }, [])
-  console.log("🚀 ~ file: GlobalReport.tsx:75 ~ paginated:", paginated)
+
   return (
     <>
       <header className="flex w-full justify-between bg-neutral-900 px-8 py-3">
