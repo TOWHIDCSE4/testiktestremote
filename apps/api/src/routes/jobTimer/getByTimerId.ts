@@ -37,8 +37,22 @@ export const getByTimerId = async (req: Request, res: Response) => {
         partId: job?.partId,
         factoryId: job?.factoryId,
         isStock: true,
-        $and: [{ status: { $ne: "Deleted" } }, { status: { $ne: "Archived" } }],
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        $and: [
+          {
+            $or: [{ status: "Pending" }, { status: "Active" }],
+          },
+          {
+            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+          },
+        ],
+        // $and: [
+        //   { status: { $ne: "Deleted" } },
+        //   { status: { $ne: "Archived" } },
+        //   { status: { $ne: "Testing" } },
+        //   {
+        //     $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        //   },
+        // ],
       })
 
       const currCountJob = await TimerLogs.find({
