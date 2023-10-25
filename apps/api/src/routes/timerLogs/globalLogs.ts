@@ -418,3 +418,26 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     }
   }
 }
+export const batchActionUpdate = async (req: Request, res: Response) => {
+  const { ids, data } = req.body
+  try {
+    const result = await TimerLogs.updateMany(
+      { _id: { $in: ids } },
+      { $set: data },
+      { multi: true }
+    )
+    res.json({
+      error: false,
+      items: result,
+      message: null,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
+    res.json({
+      error: true,
+      message: message,
+      items: null,
+    })
+  }
+}
