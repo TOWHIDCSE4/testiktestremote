@@ -849,12 +849,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 }
               </table>
             ) : (
-              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-auto">
+              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
                     <th scope="col" className="w-[6%] text-slate-900"></th>
-                    <th scope="col" className="w-[12%]">
-                      <div className="flex items-start justify-start ml-6">
+                    <th scope="col" className="">
+                      <div className="flex items-start justify-start">
                         {/* <a href="#" className="group inline-flex items-center"> */}
                         User
                         <button onClick={(e) => {}}>
@@ -877,8 +877,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </span>
                                       </a> */}
                     </th>
-                    <th className="w-[20%]">
-                      <div className="flex items-center justify-center ml-14">
+                    <th className="">
+                      <div className="flex items-center justify-center ml-8">
                         <span> City</span>
                         <button onClick={(e) => {}}>
                           <svg
@@ -907,8 +907,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </span>
                   </a>
                 </th> */}
-                    <th className="w-[10%]">
-                      <div className="flex items-start justify-start ml-20 ">
+                    <th className="">
+                      <div className="flex items-start justify-start ml-7">
                         <span className="flex">
                           Factory<p className="text-red-600 ml-1">*</p>
                         </span>
@@ -933,9 +933,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </a> */}
                     </th>
                     {selectedRole === "Personnel" ? (
-                      <th colSpan={1} className="w-[25%]">
-                        <div className="flex items-start justify-start px-0 py-3 pl-4">
-                          <div className="flex items-center ml-12">
+                      <th colSpan={1} className="">
+                        <div className="flex items-start justify-start px-0 py-3 ml-9">
+                          <div className="flex items-center overflow-ellipsis whitespace-nowrap">
                             Machine Class
                             <p className="text-red-600 ml-1">*</p>
                             <button onClick={(e) => {}}>
@@ -961,7 +961,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </a> */}
                       </th>
                     ) : (
-                      <th colSpan={1} className="w-[25%]">
+                      <th colSpan={1} className="">
                         <div className="flex items-start justify-start px-0 py-3 pl-4">
                           <div className="flex items-center ml-12">
                             Department
@@ -1028,7 +1028,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               }`}
                               aria-colspan={6}
                             >
-                              <td className="pr-6">
+                              <td className="">
                                 <div
                                   data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
                                   aria-controls={`accordion-arrow-icon-body-${idx}`}
@@ -1071,7 +1071,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   )}
                                 </div>
                               </td>
-                              <td className="py-0 pl-4 pr-3 text-sm font-medium overflow-hidden whitespace-nowrap overflow-ellipsis">
+                              <td className="py-0 text-sm font-medium overflow-hidden whitespace-nowrap overflow-ellipsis">
                                 {item.firstName + " " + item.lastName}
                               </td>
 
@@ -1115,11 +1115,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   }
                                 )}
                               </select> */}
-                              <td className="text-sm text-gray-500 items-center justify-center pl-10">
+                              <td className="text-sm text-gray-500 items-center justify-center">
                                 <button
                                   id="dropdownFactoryButton"
                                   data-dropdown-toggle="dropdown"
-                                  className="w-full rounded-md text-center space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                  className="w-full rounded-md justify-center text-center whitespace-nowrap overflow-ellipsis space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                   type="button"
                                   disabled={
                                     isLocationsLoading ||
@@ -1192,12 +1192,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </div>
                               </td>
                               <td
-                                className={`text-sm text-gray-500 items-start justify-center pl-20`}
+                                className={`text-sm text-gray-500 items-start justify-center`}
                               >
                                 <button
                                   id="dropdownFactoryButton"
                                   data-dropdown-toggle="dropdown"
-                                  className="w-full rounded-md text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                  className="w-full rounded-md whitespace-nowrap overflow-ellipsis text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                   type="button"
                                   disabled={
                                     isLocationsLoading ||
@@ -1277,12 +1277,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
                               {selectedRole === "Personnel" ? (
                                 <td
-                                  className={`text-sm text-gray-500 items-start justify-start`}
+                                  className={`text-sm text-gray-500 items-center justify-center`}
                                 >
                                   <button
                                     id="dropdownFactoryButton"
                                     data-dropdown-toggle="dropdown"
-                                    className="w-full rounded-md text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
+                                    className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                     type="button"
                                     onClick={() => handleHideRole(idx)}
                                   >
@@ -1369,7 +1369,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <button
                                     id="dropdownFactoryButton"
                                     data-dropdown-toggle="dropdown"
-                                    className="w-full rounded-md text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
+                                    className="w-full rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
                                     type="button"
                                     onClick={() => handleHideRole(idx)}
                                   >
@@ -1427,7 +1427,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </td>
                               )}
                               {selectedRole === "HR" && (
-                                <td>
+                                <td colSpan={1}>
                                   <div
                                     style={{
                                       display: "flex",
