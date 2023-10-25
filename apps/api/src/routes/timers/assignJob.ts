@@ -195,7 +195,7 @@ export const assignJob = async (req: Request, res: Response) => {
         } else {
           return res.json({
             error: true,
-            item: null,
+            item: getDayJobTimer,
             itemCount: null,
             message: "Job already assigned",
           })
