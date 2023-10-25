@@ -10,7 +10,9 @@ export const paginated = async (req: Request, res: Response) => {
   if (page) {
     try {
       const usersCount = await Users.find({
-        ...(role && role !== "null" ? { role: role } : {}),
+        ...(role && role !== "null"
+          ? { role: role == "HR" ? { $in: ["HR", "HR_Director"] } : role }
+          : {}),
         ...(locationId && locationId !== undefined
           ? { locationId: locationId }
           : {}),
@@ -33,7 +35,9 @@ export const paginated = async (req: Request, res: Response) => {
         ],
       }).countDocuments()
       const getAllUsers = await Users.find({
-        ...(role && role !== "null" ? { role: role } : {}),
+        ...(role && role !== "null"
+          ? { role: role == "HR" ? { $in: ["HR", "HR_Director"] } : role }
+          : {}),
         ...(locationId && { locationId: locationId }),
         ...(status && status !== "null" ? { status: status } : {}),
         ...(excludeUser && excludeUser !== "undefined"

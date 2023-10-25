@@ -272,12 +272,21 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setName(e.target.value)
   }
 
-  const handleDirectorCheck = (idx: number, item: any) => {
+  const handleDirectorCheck = (idx: any, item: any) => {
     const updatedstates = [...directorStates]
-    updatedstates[idx] = directorStates[idx]
-    const updatedItem = {
-      ...item,
-      role: "HR_Director" as T_UserRole,
+    updatedstates[idx] = !directorStates[idx]
+    setDirectorStates(updatedstates)
+    let updatedItem = {}
+    if (item.role === "HR") {
+      updatedItem = {
+        ...item,
+        role: "HR_Director" as T_UserRole,
+      }
+    } else {
+      updatedItem = {
+        ...item,
+        role: "HR" as T_UserRole,
+      }
     }
     mutate(updatedItem, callBackReq)
   }
@@ -285,18 +294,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   return (
     <>
       <div
-        className={`relative w-full mt-6 bg-white overflow-auto drop-shadow-lg rounded-md ${
+        className={`relative w-full mt-6 bg-white overflow-visible drop-shadow-lg rounded-md ${
           paginated ? "overflow-visible" : "overflow-x-auto"
         }`}
       >
-        <div className="px-1 w-full pt-2 ">
+        <div className="px-1 w-full pt-1 ">
           <div className="flex w-[100%] h-32">
             <div className="flex flex-col sm:flex-none cursor-pointer w-[30%]">
               <div className="flex flex-col md:flex-col sm:flex-col lg:flex-col xl:flex-row 2xl:flex-row">
                 <div className="flex items-center">
                   {/* <div className="w-[100%] md:w-[100%] sm:w-[100%] lg:w-[100%] xl:w-[50%] 2xl:w-[50%]"> */}
                   <select
-                    id="cars"
+                    id="role"
                     className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
                     onChange={handleTeamListing}
                     value={selectedStatus}
@@ -331,7 +340,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   {selectedStatus}
                 </span>
                 {isOpen && (
-                  <div className="top-35 absolute overflow- mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
+                  <div className="top-[4rem] sm:top-[4rem] absolute overflow- mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
                     <ul>
                       {statusArray.map((status, index) => (
                         <li
@@ -1327,7 +1336,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     id="dropdownFactory"
                                     className={`z-50 fixed ${
                                       isOpenRole == idx ? "block" : "hidden"
-                                    } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                                    } bg-white divide-y overflow-y-auto h-36 divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
                                   >
                                     <ul
                                       className="py-2 text-sm text-gray-700 dark:text-gray-200"
@@ -1408,7 +1417,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     id="dropdownFactory"
                                     className={`z-50 fixed ${
                                       isOpenRole == idx ? "block" : "hidden"
-                                    } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                                    } bg-white divide-y divide-gray-100 overflow-y-auto h-36 rounded-lg shadow w-44 dark:bg-gray-700`}
                                   >
                                     <ul
                                       className="py-2 text-sm text-gray-700 dark:text-gray-200"
@@ -1438,7 +1447,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </td>
                               )}
                               <td
-                                className={`pl-0 w-full sm:mr-4 flex mt-5 text-sm text-gray-500 relative`}
+                                className={`pl-0 w-full py-[12%] sm:mr-4 flex text-sm text-gray-500 relative`}
                               >
                                 {selectedRole === "HR" && (
                                   <div
@@ -1453,7 +1462,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     <input
                                       type="checkbox"
                                       style={{ marginLeft: "3px" }}
-                                      checked={directorStates[idx] || false}
+                                      checked={
+                                        item.role === "HR_Director" || false
+                                      }
                                       onChange={() =>
                                         handleDirectorCheck(idx, item)
                                       }
@@ -1485,8 +1496,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     leaveFrom="transform opacity-100 scale-100"
                                     leaveTo="transform opacity-0 scale-95"
                                   >
-                                    <Menu.Items className="absolute right-9 text-end mt-1 w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                      <div className="py-1">
+                                    <Menu.Items className="absolute right-9 text-end w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                      <div className="">
                                         {item.status !== "Approved" && (
                                           <Menu.Item>
                                             {({ active }) => (
