@@ -63,6 +63,7 @@ const NewModal = ({
   const {
     data: parts,
     isLoading: isPartsLoading,
+    selectedMachineClassId: selectedPartMachineClassId,
     setSelectedMachineClassId: setSelectedPartMachineClassId,
     setSelectedLocationId: setSelectedPartLocationId,
   } = useGetPartByMachineClassLocation()
@@ -165,11 +166,13 @@ const NewModal = ({
   }, [locationId])
   useEffect(() => {
     if (selectedPart.id) {
+      setPartQuery(selectedPart.name)
       setValue("partId", selectedPart.id)
     }
   }, [selectedPart])
   useEffect(() => {
     if (selectedMachine?._id) {
+      setMachineQuery(selectedMachine.name)
       setValue("machineId", selectedMachine?._id as string)
     }
   }, [selectedMachine])
@@ -267,6 +270,7 @@ const NewModal = ({
                               id: "",
                               name: "",
                             })
+                            setPartQuery("")
                           }}
                           disabled={
                             isMutateLoading || filteredMachines?.length === 0
@@ -279,14 +283,18 @@ const NewModal = ({
                                 id: string
                                 name: string
                               }) => {
-                                return selected ? selected.name : ""
+                                return selected ? selected.name : machineQuery
                               }}
                               required
                               onChange={(event) =>
                                 setMachineQuery(event.target.value)
                               }
+                              value={machineQuery}
                               placeholder="Search Machine"
                               autoComplete="off"
+                              onBlur={() => {
+                                machineQuery
+                              }}
                             />
                             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                               <ChevronUpDownIcon
@@ -341,14 +349,20 @@ const NewModal = ({
                                 id: string
                                 name: string
                               }) => {
-                                return selected ? selected.name : ""
+                                return selected ? selected.name : partQuery
                               }}
                               required
                               onChange={(event) =>
                                 setPartQuery(event.target.value)
                               }
+                              value={
+                                selectedPartMachineClassId ? partQuery : ""
+                              }
                               placeholder="Search Part"
                               autoComplete="off"
+                              onBlur={() => {
+                                partQuery
+                              }}
                             />
                             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                               <ChevronUpDownIcon
@@ -473,6 +487,8 @@ const NewModal = ({
                           id: "",
                           name: "",
                         })
+                        setPartQuery("")
+                        setMachineQuery("")
                       }}
                       ref={cancelButtonRef}
                     >
