@@ -276,7 +276,6 @@ const TabTable = ({
                       <div className="flex items-center">
                         {job?.count ? (
                           <>
-                            {/* {console.log(sumOfElements(job.timerLogs))} */}
                             {job.timerLogs
                               ? calculateCountSum(job.timerLogs)
                               : 0}
