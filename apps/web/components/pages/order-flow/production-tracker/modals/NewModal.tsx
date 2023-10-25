@@ -55,6 +55,7 @@ const NewModal = ({
   const {
     data: parts,
     isLoading: isPartsLoading,
+    selectedMachineClassId,
     setSelectedMachineClassId,
     setSelectedLocationId: setLocationId,
   } = useGetPartByMachineClassLocation()
@@ -139,6 +140,7 @@ const NewModal = ({
   }, [locationId])
 
   useEffect(() => {
+    setPartQuery(selectedPart.name)
     setValue("partId", selectedPart.id as string)
   }, [selectedPart])
 
@@ -279,6 +281,7 @@ const NewModal = ({
                               id: "",
                               name: "",
                             })
+                            setPartQuery("")
                             setSelectedMachineClassId(e.target.value)
                           }
                         }}
@@ -329,14 +332,18 @@ const NewModal = ({
                                 name: string
                                 factoryId: string
                               }) => {
-                                return selected ? selected.name : ""
+                                return selected ? selected.name : partQuery
                               }}
                               required
                               onChange={(event) =>
                                 setPartQuery(event.target.value)
                               }
+                              value={selectedMachineClassId ? partQuery : ""}
                               placeholder="Search Part"
                               autoComplete="off"
+                              onBlur={() => {
+                                partQuery
+                              }}
                             />
                             <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                               <ChevronUpDownIcon

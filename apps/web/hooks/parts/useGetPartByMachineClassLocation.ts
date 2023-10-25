@@ -60,6 +60,11 @@ function useGetPartByMachineClassLocation() {
     }
   }, [selectedMachineClassId, selectedLocationId])
 
-  return { ...query, setSelectedMachineClassId, setSelectedLocationId }
+  return {
+    ...query,
+    selectedMachineClassId,
+    setSelectedMachineClassId,
+    setSelectedLocationId,
+  }
 }
 export default useGetPartByMachineClassLocation
