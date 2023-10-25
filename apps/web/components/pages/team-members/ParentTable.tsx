@@ -530,15 +530,121 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           </div>
           <div className="flex"></div>
           {isPaginatedLoading ? (
-            <div className="flex items-center justify-center mb-4 mt-9 w-full h-96">
-              <div
-                className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
-                role="status"
-                aria-label="loading"
-              >
-                <span className="sr-only">Loading...</span>
+            <>
+              <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
+                <tr className="">
+                  <th scope="col" className="w-[6%] text-slate-900"></th>
+                  <th scope="col" className="">
+                    <div className="flex items-start justify-start">
+                      {/* <a href="#" className="group inline-flex items-center"> */}
+                      User
+                      <button onClick={(e) => {}}>
+                        <svg
+                          className="w-3 h-3 ml-1.5"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </th>
+                  <th className="">
+                    <div className="flex items-center justify-center ml-8">
+                      <span> City</span>
+                      <button onClick={(e) => {}}>
+                        <svg
+                          className="w-3 h-3 ml-1.5"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </th>
+                  <th className="">
+                    <div className="flex items-start justify-start ml-7">
+                      <span className="flex">
+                        Factory<p className="text-red-600 ml-1">*</p>
+                      </span>
+                      <button onClick={(e) => {}}>
+                        <svg
+                          className="w-3 h-3 ml-1"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                        </svg>
+                      </button>
+                    </div>
+                    {/* <span className="ml-2 flex-none rounded text-gray-400">
+                      <ChevronUpDownIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                      />
+                    </span>
+                    </a> */}
+                  </th>
+                  {selectedRole === "Personnel" ? (
+                    <th colSpan={1} className="">
+                      <div className="flex items-start justify-start px-0 py-3 ml-9">
+                        <div className="flex items-center overflow-ellipsis whitespace-nowrap">
+                          Machine Class
+                          <p className="text-red-600 ml-1">*</p>
+                          <button onClick={(e) => {}}>
+                            <svg
+                              className="w-3 h-3 ml-1"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </th>
+                  ) : (
+                    <th colSpan={1} className="">
+                      <div className="flex items-start justify-start px-0 py-3 ml-11">
+                        <div className="flex items-center ml-12">
+                          Department
+                          <p className="text-red-600 ml-1">*</p>
+                          <button onClick={(e) => {}}>
+                            <svg
+                              className="w-3 h-3 ml-1"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <div className="flex items-center justify-center mb-4 mt-1 w-full h-96 border-t-4 border-indigo-900">
+                <div
+                  className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
+                  role="status"
+                  aria-label="loading"
+                >
+                  <span className="sr-only">Loading...</span>
+                </div>
               </div>
-            </div>
+            </>
           ) : null}
           {!isPaginatedLoading &&
           paginated?.items &&
@@ -590,7 +696,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           <React.Fragment key={item._id}>
                             <tr
                               key={idx}
-                              className={`bg-gray h-4 text-slate-900 font-medium border-b ${rowClass}  ${
+                              className={`bg-gray h-10 text-slate-900 font-medium border-b ${rowClass}  ${
                                 !item._id ? "bg-red-50" : ""
                               }`}
                               aria-colspan={6}
@@ -962,7 +1068,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </th>
                     ) : (
                       <th colSpan={1} className="">
-                        <div className="flex items-start justify-start px-0 py-3 pl-4">
+                        <div className="flex items-start justify-start px-0 py-3 ml-11">
                           <div className="flex items-center ml-12">
                             Department
                             <p className="text-red-600 ml-1">*</p>
@@ -1023,7 +1129,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           <React.Fragment key={item._id}>
                             <tr
                               key={idx}
-                              className={`bg-gray h-4 text-slate-900 font-medium border-b ${rowClass}  ${
+                              className={`bg-gray text-slate-900 font-medium border-b ${rowClass}  ${
                                 !item._id ? "bg-red-50" : ""
                               }`}
                               aria-colspan={6}
@@ -1369,7 +1475,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <button
                                     id="dropdownFactoryButton"
                                     data-dropdown-toggle="dropdown"
-                                    className="w-full rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
+                                    className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
                                     type="button"
                                     onClick={() => handleHideRole(idx)}
                                   >
@@ -1446,7 +1552,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               )}
 
                               <td
-                                className={`pl-0 w-full py-0 text-sm text-gray-500 relative`}
+                                className={`pl-0 w-full py-[2%] text-sm text-gray-500 relative`}
                               >
                                 <Menu as="div" className="w-full text-end pr-4">
                                   <Menu.Button>
@@ -1567,7 +1673,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
                                 className={`${isAccordionOpen ? "open" : ""}`}
                               >
-                                <td colSpan={7}>
+                                <td colSpan={6}>
                                   <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
                                     <div className="w-[73%]">
                                       <div className="flex justify-between">
@@ -1644,11 +1750,117 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           {!isPaginatedLoading &&
           paginated?.items &&
           paginated?.items.length === 0 ? (
-            <div className="flex items-center justify-center mb-4 mt-9 w-full h-96">
-              <div className="text-gray-500 text-lg font-semibold">
-                No users found
+            <>
+              <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
+                <tr className="">
+                  <th scope="col" className="w-[6%] text-slate-900"></th>
+                  <th scope="col" className="">
+                    <div className="flex items-start justify-start">
+                      {/* <a href="#" className="group inline-flex items-center"> */}
+                      User
+                      <button onClick={(e) => {}}>
+                        <svg
+                          className="w-3 h-3 ml-1.5"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </th>
+                  <th className="">
+                    <div className="flex items-center justify-center ml-8">
+                      <span> City</span>
+                      <button onClick={(e) => {}}>
+                        <svg
+                          className="w-3 h-3 ml-1.5"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </th>
+                  <th className="">
+                    <div className="flex items-start justify-start ml-7">
+                      <span className="flex">
+                        Factory<p className="text-red-600 ml-1">*</p>
+                      </span>
+                      <button onClick={(e) => {}}>
+                        <svg
+                          className="w-3 h-3 ml-1"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                        </svg>
+                      </button>
+                    </div>
+                    {/* <span className="ml-2 flex-none rounded text-gray-400">
+                      <ChevronUpDownIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                      />
+                    </span>
+                    </a> */}
+                  </th>
+                  {selectedRole === "Personnel" ? (
+                    <th colSpan={1} className="">
+                      <div className="flex items-start justify-start px-0 py-3 ml-9">
+                        <div className="flex items-center overflow-ellipsis whitespace-nowrap">
+                          Machine Class
+                          <p className="text-red-600 ml-1">*</p>
+                          <button onClick={(e) => {}}>
+                            <svg
+                              className="w-3 h-3 ml-1"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </th>
+                  ) : (
+                    <th colSpan={1} className="">
+                      <div className="flex items-start justify-start px-0 py-3 ml-11">
+                        <div className="flex items-center ml-12">
+                          Department
+                          <p className="text-red-600 ml-1">*</p>
+                          <button onClick={(e) => {}}>
+                            <svg
+                              className="w-3 h-3 ml-1"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <div className="flex items-center justify-center mb-4 mt-1 border-t-4 border-indigo-900 w-full h-96">
+                <div className="text-gray-500 text-lg font-semibold">
+                  No users found
+                </div>
               </div>
-            </div>
+            </>
           ) : null}
           <div className="border-t border-gray-300">
             <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
