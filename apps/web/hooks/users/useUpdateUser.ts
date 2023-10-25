@@ -5,6 +5,7 @@ import Cookies from "js-cookie"
 
 export async function updateUser(props: T_User) {
   const token = Cookies.get("tfl")
+  console.log("props._id", props)
   const res = await fetch(`${API_URL_USERS}/${props._id}`, {
     method: "PATCH",
     body: JSON.stringify(props),

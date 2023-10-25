@@ -154,6 +154,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [action, setAction] = useState<T_UserStatus | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenRole, setIsOpenRole] = useState()
+  const [directorStates, setDirectorStates] = useState([])
   const [isOpenFactory, setIsOpenFactory] = useState()
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -269,6 +270,16 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const onSearch = (e: any) => {
     setName(e.target.value)
+  }
+
+  const handleDirectorCheck = (idx: number, item: any) => {
+    const updatedstates = [...directorStates]
+    updatedstates[idx] = directorStates[idx]
+    const updatedItem = {
+      ...item,
+      role: "HR_Director" as T_UserRole,
+    }
+    mutate(updatedItem, callBackReq)
   }
 
   return (
@@ -649,7 +660,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               </td>
 
                               <td
-                                className={`pl-0 w-full py-0 text-sm text-gray-500 relative`}
+                                className={`pl-0 w-full py-[2%] text-sm text-gray-500 relative`}
                               >
                                 <Menu as="div" className="w-full text-end pr-4">
                                   <Menu.Button className="font-normal text-gray-400">
@@ -1364,7 +1375,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </td>
                               ) : (
                                 <td
-                                  className={`text-sm text-gray-500 items-start justify-start`}
+                                  className={`text-sm py-[2%] text-gray-500 items-start justify-start`}
                                 >
                                   <button
                                     id="dropdownFactoryButton"
@@ -1426,8 +1437,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   </div>
                                 </td>
                               )}
-                              {selectedRole === "HR" && (
-                                <td colSpan={1}>
+                              <td
+                                className={`pl-0 w-full sm:mr-4 flex mt-5 text-sm text-gray-500 relative`}
+                              >
+                                {selectedRole === "HR" && (
                                   <div
                                     style={{
                                       display: "flex",
@@ -1440,14 +1453,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     <input
                                       type="checkbox"
                                       style={{ marginLeft: "3px" }}
+                                      checked={directorStates[idx] || false}
+                                      onChange={() =>
+                                        handleDirectorCheck(idx, item)
+                                      }
                                     />
                                   </div>
-                                </td>
-                              )}
-
-                              <td
-                                className={`pl-0 w-full py-[2%] text-sm text-gray-500 relative`}
-                              >
+                                )}
                                 <Menu as="div" className="w-full text-end pr-4">
                                   <Menu.Button>
                                     <svg
