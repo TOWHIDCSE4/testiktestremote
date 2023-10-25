@@ -12,6 +12,7 @@ import { timer, timerCount, timerUnitsCreatedCount } from "./timer"
 import { productInventory } from "./productInventory"
 import { overallUnitTons } from "./overallUnitTons"
 import {
+  batchActionUpdate,
   calculateGlobalMetrics,
   globalLogs,
   globalLogsMulti,
@@ -27,6 +28,7 @@ router.get("/global", isUserLoggedIn, globalLogs)
 router.get("/global/multi/filter", isUserLoggedIn, globalLogsMulti)
 router.get("/inventory/:partId", isUserLoggedIn, productInventory)
 router.get("/overall-unit-tons", isUserLoggedIn, overallUnitTons)
+router.put("/batch-action", batchActionUpdate)
 router.get("/get-global-metrics", isUserLoggedIn, calculateGlobalMetrics)
 
 //default
