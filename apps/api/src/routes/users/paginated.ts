@@ -5,59 +5,49 @@ import {
 } from "../../utils/constants"
 import Users from "../../models/users"
 import * as Sentry from "@sentry/node"
+
 export const paginated = async (req: Request, res: Response) => {
   const { page, role, locationId, status, name, excludeUser } = req.query
   if (page) {
     try {
-      const usersCount = await Users.find({
-        ...(role && role !== "null"
-          ? { role: role == "HR" ? { $in: ["HR", "HR_Director"] } : role }
-          : {}),
-        ...(locationId && locationId !== undefined
-          ? { locationId: locationId }
-          : {}),
-        ...(status && status !== "null" ? { status: status } : {}),
-        ...(excludeUser && excludeUser !== "undefined"
-          ? { _id: { $ne: excludeUser } }
-          : {}),
+      const queryFilters = []
+
+      if (role && role !== "null") {
+        if (role === "HR") {
+          queryFilters.push({ role: { $in: ["HR", "HR_Director"] } })
+        } else {
+          queryFilters.push({ role })
+        }
+      }
+
+      if (locationId) {
+        queryFilters.push({ locationId })
+      }
+
+      if (status && status !== "null") {
+        queryFilters.push({ status })
+      }
+
+      if (excludeUser && excludeUser !== "undefined") {
+        queryFilters.push({ _id: { $ne: excludeUser } })
+      }
+
+      const orFilters = []
+      if (name) {
+        orFilters.push(
+          { firstName: { $regex: `.*${name}.*`, $options: "i" } },
+          { lastName: { $regex: `.*${name}.*`, $options: "i" } }
+        )
+      }
+
+      queryFilters.push({
         $and: [
           { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
-          ...(name && name !== ""
-            ? [
-                {
-                  $or: [
-                    { firstName: { $regex: `.*${name}.*`, $options: "i" } },
-                    { lastName: { $regex: `.*${name}.*`, $options: "i" } },
-                  ],
-                },
-              ]
-            : []),
-        ],
-      }).countDocuments()
-      const getAllUsers = await Users.find({
-        ...(role && role !== "null"
-          ? { role: role == "HR" ? { $in: ["HR", "HR_Director"] } : role }
-          : {}),
-        ...(locationId && { locationId: locationId }),
-        ...(status && status !== "null" ? { status: status } : {}),
-        ...(excludeUser && excludeUser !== "undefined"
-          ? { _id: { $ne: excludeUser } }
-          : {}),
-        // _id: { $ne: excludeUser },
-        $and: [
-          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
-          ...(name
-            ? [
-                {
-                  $or: [
-                    { firstName: { $regex: `.*${name}.*`, $options: "i" } },
-                    { lastName: { $regex: `.*${name}.*`, $options: "i" } },
-                  ],
-                },
-              ]
-            : []),
+          ...(orFilters.length ? [{ $or: orFilters }] : []),
         ],
       })
+
+      const getAllUsers = await Users.find({ $and: queryFilters })
         .populate("locationId")
         .populate("factoryId")
         .sort({
@@ -65,6 +55,11 @@ export const paginated = async (req: Request, res: Response) => {
         })
         .skip(7 * (Number(page) - 1))
         .limit(7)
+
+      const usersCount = await Users.find({
+        $and: queryFilters,
+      }).countDocuments()
+
       res.json({
         error: false,
         items: getAllUsers,

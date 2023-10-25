@@ -30,10 +30,6 @@ export async function getGlobalMatrics({
   startDateRanges: string
   endDateRanges: string
 }) {
-  //   console.log(
-  //     "🚀 ~ file: useGetGlobalTimerLogsMultiFilter.ts:36 ~ partId:",
-  //     partId
-  //   )
   const token = Cookies.get("tfl")
 
   //@ts-expect-error
@@ -54,10 +50,6 @@ export async function getGlobalMatrics({
   }).toString()
   //@ts-expect-error
   const partIdQueryString = new URLSearchParams({ partId: partIds }).toString()
-  //   console.log(
-  //     "🚀 ~ file: useGetGlobalTimerLogsMultiFilter.ts:57 ~ partIdQueryString:",
-  //     partIdQueryString
-  //   )
   //   locationId.forEach((id) => params.append('locationId', id));
   //   factoryId.forEach((id) => params.append('factoryId', id));
   //   machineId.forEach((id) => params.append('machineId', id));
