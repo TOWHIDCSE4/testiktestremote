@@ -144,6 +144,7 @@ export const assignJob = async (req: Request, res: Response) => {
               { timerId: req.body.timerId, jobId: selectedJobId },
               { new: true }
             )
+            const timerJob = await JobTimer.findOne({ _id: getDayJobTimer._id })
             await Jobs.findByIdAndUpdate(
               selectedJobId,
               {
@@ -156,7 +157,7 @@ export const assignJob = async (req: Request, res: Response) => {
             )
             return res.json({
               error: false,
-              item: updateDayJobTimer,
+              item: timerJob,
               recommendation: JOB_ACTION.SWITCH,
               itemCount: null,
               message: null,
