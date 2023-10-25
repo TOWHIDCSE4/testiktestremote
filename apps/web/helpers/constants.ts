@@ -14,6 +14,7 @@ export const USER_ROLES = {
   Sales: "Sales",
   Accounting: "Accounting",
   Super: "Super",
+  HR_Director: "HR_Director",
 }
 
 export const USER_STATUSES = {

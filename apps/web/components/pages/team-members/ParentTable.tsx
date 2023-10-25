@@ -3,12 +3,7 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import { Fragment, useEffect, useState } from "react"
-import {
-  T_BackendResponse,
-  T_Locations,
-  T_UserRole,
-  ZUserRoles,
-} from "custom-validator"
+import { T_BackendResponse, T_UserRole } from "custom-validator"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
 import NewMemberModal from "./modals/NewMemberModal"
@@ -27,14 +22,6 @@ import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
 import React from "react"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
-
-const ARR_USER_STATUSES = [
-  USER_STATUSES.Pending,
-  USER_STATUSES.Approved,
-  USER_STATUSES.Archived,
-  USER_STATUSES.Blocked,
-  USER_STATUSES.Rejected,
-]
 interface ContentProps {
   userLog: string
 }
@@ -42,32 +29,6 @@ interface ContentProps {
 const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [userRole, setUserRole] = useState<string | undefined>(userLog)
   const [checkedProved, setCheckedProved] = useState<boolean>(true)
-  const [items, setItem] = useState<{ label: string; key: string }[]>([
-    {
-      label: "Administrator",
-      key: "0",
-    },
-    {
-      label: "HR",
-      key: "1",
-    },
-    {
-      label: "Production",
-      key: "2",
-    },
-    {
-      label: "Corporate",
-      key: "3",
-    },
-    {
-      label: "Personnel",
-      key: "4",
-    },
-    {
-      label: "Dev",
-      key: "5",
-    },
-  ])
 
   const roleFilter = (): string[] => {
     if (userRole === "HR") {
@@ -93,7 +54,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const approveChecking = (item: any, userId: string) => {
     if (
       item._id === userId ||
-      storeSession?.role === ("Administrator" || "HR_Director")
+      storeSession?.role === "Administrator" ||
+      "HR_Director"
     ) {
       setCheckedProved(true)
     } else {
@@ -140,22 +102,19 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const queryClient = useQueryClient()
   const { data: userProfile } = useProfile()
-  console.log(userProfile)
-
-  const [deleteModal, setDeleteModal] = useState(false)
   const [newModal, setNewModal] = useState(false)
+  const [deleteModal, setDeleteModal] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState("Pending")
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [selectedColor, setSelectedColor] = useState("text-yellow-900")
   const [selectedRole, setSelectedRole] = useState(storeSession?.role)
-  const [selectedMachineClass, setSelectedMachineClass] = useState()
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
   const [action, setAction] = useState<T_UserStatus | null>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenRole, setIsOpenRole] = useState()
-  const [directorStates, setDirectorStates] = useState([])
   const [isOpenFactory, setIsOpenFactory] = useState()
+  const [directorStates, setDirectorStates] = useState([])
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
@@ -217,9 +176,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
-    if (storeSession?.role === "Super" || "Administrator") {
+    debugger
+    if (storeSession?.role === "Super" || "Administrator" || "HR_Director") {
       setLocationId("")
     } else {
+      debugger
       setLocationId(userProfile?.item?.locationId as string)
     }
   }, [userProfile, selectedRole, selectedStatus])
@@ -273,10 +234,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   const handleDirectorCheck = (idx: any, item: any) => {
-    const updatedstates = [...directorStates]
+    const updatedstates: any = [...directorStates]
     updatedstates[idx] = !directorStates[idx]
     setDirectorStates(updatedstates)
-    let updatedItem = {}
+    let updatedItem: any = {}
     if (item.role === "HR") {
       updatedItem = {
         ...item,
@@ -369,7 +330,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D]">:</span>
                   {locations && locations.items
-                    ? storeSession?.role === ("Administrator" || "Super")
+                    ? storeSession?.role === "Administrator" ||
+                      "Super" ||
+                      "HR_Director"
                       ? locations.items.map((location, index) => (
                           <span key={index}>
                             {index > 0 ? ", " : ""}
@@ -1424,7 +1387,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       className="py-2 text-sm text-gray-700 dark:text-gray-200"
                                       aria-labelledby="dropdownFactoryButton"
                                     >
-                                      {Object.values(USER_ROLES).map(
+                                      {Object.values(ARR_USER_ROLES).map(
                                         (role, index) => (
                                           <a
                                             key={index}
@@ -1466,6 +1429,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       style={{ marginLeft: "3px" }}
                                       checked={
                                         item.role === "HR_Director" || false
+                                      }
+                                      disabled={
+                                        isLocationsLoading ||
+                                        isUpdateUserLoading ||
+                                        isPaginatedLoading
                                       }
                                       onChange={() =>
                                         handleDirectorCheck(idx, item)
