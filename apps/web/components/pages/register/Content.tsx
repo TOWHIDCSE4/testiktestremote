@@ -48,7 +48,7 @@ const Content = () => {
         },
       }
 
-      mutate({ ...data, status: "Requested" }, callBackReq)
+      mutate({ ...data, status: "Pending" }, callBackReq)
     } else {
       toast.error("Password doesn't match")
     }

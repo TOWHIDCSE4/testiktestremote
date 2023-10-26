@@ -19,7 +19,7 @@ import * as Sentry from "@sentry/node"
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const query = { status: "Approved" }
+    const query = { status: "Pending" }
     const usersCounts = await Users.find(query).countDocuments()
     const getAllUsers = await Users.find(query).sort({ createdAt: -1 })
     res.json({
@@ -99,8 +99,7 @@ export const addUser = async (req: Request, res: Response) => {
       lastName,
       role,
       email,
-      status:
-        VALID_EMAIL.indexOf(emailDomain[1]) > -1 ? "Requested" : "Rejected",
+      status: VALID_EMAIL.indexOf(emailDomain[1]) > -1 ? "Pending" : "Rejected",
       password: encryptPassword,
       locationId,
       profile: null,

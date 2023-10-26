@@ -13,6 +13,7 @@ const users = new Schema({
       "Production",
       "Personnel",
       "HR",
+      "HR_Director",
       "Accounting",
       "Sales",
     ],
@@ -44,7 +45,7 @@ const users = new Schema({
   },
   status: {
     type: String,
-    enum: ["Approved", "Rejected", "Archived", "Blocked", "Requested"],
+    enum: ["Approved", "Rejected", "Archived", "Blocked", "Pending"],
   },
   createdAt: {
     type: Date,
