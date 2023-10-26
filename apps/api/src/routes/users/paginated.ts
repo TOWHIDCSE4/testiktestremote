@@ -47,13 +47,14 @@ export const paginated = async (req: Request, res: Response) => {
             ],
           })
         }
-        if (fullName.length > 1)
+        if (fullName.length > 1) {
           orFilters.push({
             $and: [
               { lastName: { $regex: `.*${lastName}.*`, $options: "i" } },
               { firstName: { $regex: `.*${firstName}.*`, $options: "i" } },
             ],
           })
+        }
       }
 
       queryFilters.push({
@@ -82,7 +83,7 @@ export const paginated = async (req: Request, res: Response) => {
         itemCount: usersCount,
         message: null,
       })
-    } catch (err: any) {
+    } catch (err) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       Sentry.captureException(err)
       res.json({
