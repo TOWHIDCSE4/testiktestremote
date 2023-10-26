@@ -34,10 +34,26 @@ export const paginated = async (req: Request, res: Response) => {
 
       const orFilters = []
       if (name) {
-        orFilters.push(
-          { firstName: { $regex: `.*${name}.*`, $options: "i" } },
-          { lastName: { $regex: `.*${name}.*`, $options: "i" } }
-        )
+        // @ts-expect-error
+        const fullName = name?.split(" ")
+
+        const [firstName, lastName] = fullName
+
+        if (fullName.length == 1) {
+          orFilters.push({
+            $or: [
+              { firstName: { $regex: `.*${firstName}.*`, $options: "i" } },
+              { lastName: { $regex: `.*${firstName}.*`, $options: "i" } },
+            ],
+          })
+        }
+        if (fullName.length > 1)
+          orFilters.push({
+            $and: [
+              { lastName: { $regex: `.*${lastName}.*`, $options: "i" } },
+              { firstName: { $regex: `.*${firstName}.*`, $options: "i" } },
+            ],
+          })
       }
 
       queryFilters.push({
