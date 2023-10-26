@@ -611,7 +611,11 @@ export const getMetricsforEveryFactoryinLocation = async (
 
       factoryMetrics.push(dailyStats)
     }
-    res.json(factoryMetrics)
+    res.json({
+      error: false,
+      items: factoryMetrics,
+      message: null,
+    })
   } catch (error: any) {
     console.log(error)
     Sentry.captureException(error)
