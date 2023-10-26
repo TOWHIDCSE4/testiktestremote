@@ -499,7 +499,11 @@ export const getMetricsForAMachineClass = async (
       responseArray.push(hourData)
     }
 
-    res.json(responseArray)
+    res.json({
+      error: false,
+      items: responseArray,
+      message: null,
+    })
   } catch (error: any) {
     console.log(error)
     Sentry.captureException(error)
@@ -555,7 +559,11 @@ export const getMetricsForAMachineClassAsWhole = async (
       allMetrics.push(hourMetrics)
     }
 
-    res.json(allMetrics)
+    res.json({
+      error: false,
+      items: allMetrics,
+      message: null,
+    })
   } catch (error: any) {
     console.log(error)
     Sentry.captureException(error)
