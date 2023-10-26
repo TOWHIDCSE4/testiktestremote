@@ -14,6 +14,9 @@ import { overallUnitTons } from "./overallUnitTons"
 import {
   batchActionUpdate,
   calculateGlobalMetrics,
+  getMetricsForAMachineClass,
+  getMetricsForAMachineClassAsWhole,
+  getMetricsforEveryFactoryinLocation,
   globalLogs,
   globalLogsMulti,
 } from "./globalLogs"
@@ -28,8 +31,23 @@ router.get("/global", isUserLoggedIn, globalLogs)
 router.get("/global/multi/filter", isUserLoggedIn, globalLogsMulti)
 router.get("/inventory/:partId", isUserLoggedIn, productInventory)
 router.get("/overall-unit-tons", isUserLoggedIn, overallUnitTons)
-router.put("/batch-action", batchActionUpdate)
+router.put("/batch-action", isUserLoggedIn, batchActionUpdate)
 router.get("/get-global-metrics", isUserLoggedIn, calculateGlobalMetrics)
+router.get(
+  "/get-machine-class-metrics",
+  isUserLoggedIn,
+  getMetricsForAMachineClass
+)
+router.get(
+  "/get-machine-class-metrics-as-whole",
+  isUserLoggedIn,
+  getMetricsForAMachineClassAsWhole
+)
+router.get(
+  "/get-factory-metrics",
+  isUserLoggedIn,
+  getMetricsforEveryFactoryinLocation
+)
 
 //default
 router.get("/", isUserLoggedIn, getAllTimeLogs)
