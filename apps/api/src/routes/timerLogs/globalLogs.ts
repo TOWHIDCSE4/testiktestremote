@@ -9,7 +9,11 @@ import parts from "../../models/parts"
 import dayjs from "dayjs"
 import timerLogs from "../../models/timerLogs"
 import * as Sentry from "@sentry/node"
-
+import machines from "../../models/machines"
+import { start } from "repl"
+import { machine } from "os"
+import location from "../../models/location"
+import factories from "../../models/factories"
 export const globalLogs = async (req: Request, res: Response) => {
   const {
     locationId,
@@ -438,6 +442,175 @@ export const batchActionUpdate = async (req: Request, res: Response) => {
       error: true,
       message: message,
       items: null,
+    })
+  }
+}
+export const getMetricsForAMachineClass = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { machineClassId, locationId } = req.query
+    if (!machineClassId) throw new Error("Machine class ID is required")
+    if (!locationId) throw new Error("Location ID is required")
+    const startDate = dayjs().startOf("day")
+    const endDate = dayjs().endOf("day")
+
+    const getMachineIds = await machines
+      .find({
+        machineClassId: new mongoose.Types.ObjectId(machineClassId as string),
+        locationId: new mongoose.Types.ObjectId(locationId as string),
+      })
+      .distinct("_id")
+
+    const hourlyStats: Record<string, Record<string, any>> = {} // Hourly stats for each machine
+
+    for (const machineId of getMachineIds) {
+      let hour = startDate.clone() // Start at 00:00
+
+      while (hour.isBefore(endDate)) {
+        const startHour = hour
+        const endHour = startHour.add(1, "hour")
+
+        const count = await TimerLogs.countDocuments({
+          machineId: new mongoose.Types.ObjectId(machineId as string),
+          createdAt: { $gte: startHour, $lt: endHour },
+        })
+
+        const hourString = startHour.format("HH:mm") // Use a 24-hour format
+
+        if (!hourlyStats[hourString]) {
+          hourlyStats[hourString] = {}
+        }
+
+        hourlyStats[hourString][machineId] = count // Store the count for this hour
+
+        hour = hour.add(1, "hour") // Move to the next hour
+      }
+    }
+
+    // Create the response array
+    const responseArray = []
+    for (const hourString in hourlyStats) {
+      const hourData: Record<any, string> = { hour: hourString }
+      for (const machineId of getMachineIds) {
+        hourData[machineId] = hourlyStats[hourString][machineId] || 0
+      }
+      responseArray.push(hourData)
+    }
+
+    res.json(responseArray)
+  } catch (error: any) {
+    console.log(error)
+    Sentry.captureException(error)
+    res.json({
+      error: true,
+      items: null,
+      message: error.message,
+    })
+  }
+}
+export const getMetricsForAMachineClassAsWhole = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { machineClassId } = req.query
+    if (!machineClassId) throw new Error("Machine class ID is required")
+    const locationIds = await location.find().distinct("_id") // Assuming you have a "locations" model
+
+    const allMetrics = [] // Store metrics for all locations
+
+    for (let hour = 0; hour < 24; hour++) {
+      const startHour = dayjs().set("hour", hour).startOf("hour")
+      const endHour = startHour.add(1, "hour")
+
+      const hourMetrics: Record<string, any> = {
+        hour: startHour.format("HH:mm"),
+      }
+
+      for (const locationId of locationIds) {
+        const machineIds = await machines
+          .find({
+            machineClassId: new mongoose.Types.ObjectId(
+              machineClassId as string
+            ),
+            locationId: new mongoose.Types.ObjectId(locationId as string),
+          })
+          .distinct("_id")
+
+        let totalMachineCount = 0
+
+        for (const machineId of machineIds) {
+          const count = await TimerLogs.countDocuments({
+            machineId: new mongoose.Types.ObjectId(machineId as string),
+            createdAt: { $gte: startHour, $lt: endHour },
+          })
+          totalMachineCount += count
+        }
+
+        hourMetrics[locationId] = totalMachineCount
+      }
+
+      allMetrics.push(hourMetrics)
+    }
+
+    res.json(allMetrics)
+  } catch (error: any) {
+    console.log(error)
+    Sentry.captureException(error)
+    res.json({
+      error: true,
+      items: null,
+      message: error.message,
+    })
+  }
+}
+export const getMetricsforEveryFactoryinLocation = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { locationId } = req.query
+    if (!locationId) throw new Error("Location ID is required")
+    const startDate = dayjs().startOf("week")
+    const endDate = dayjs().endOf("week")
+
+    const Factories: Array<Record<string, any>> = await factories.find()
+    if (!Factories.length)
+      throw new Error("No factories found for this location")
+
+    const factoryMetrics = []
+
+    for (let day = startDate; day.isBefore(endDate); day = day.add(1, "day")) {
+      const dayStart = day.startOf("day")
+      const dayEnd = day.endOf("day")
+
+      const dailyStats: Record<string, any> = {
+        Day: day.format("d"), // Using 'd' format for the day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+      }
+
+      for (const factory of Factories) {
+        const factoryId = factory._id
+        const count = await TimerLogs.countDocuments({
+          factoryId: new mongoose.Types.ObjectId(factoryId as string),
+          locationId: new mongoose.Types.ObjectId(locationId as string),
+          createdAt: { $gte: dayStart, $lte: dayEnd },
+        })
+
+        dailyStats[factoryId] = count
+      }
+
+      factoryMetrics.push(dailyStats)
+    }
+    res.json(factoryMetrics)
+  } catch (error: any) {
+    console.log(error)
+    Sentry.captureException(error)
+    res.json({
+      error: true,
+      items: null,
+      message: error.message,
     })
   }
 }
