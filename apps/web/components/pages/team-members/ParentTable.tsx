@@ -1601,9 +1601,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                           </p>
                                         </span>
                                         <div className="flex flex-col py-2">
-                                          <span className="flex  w-[22rem] text-[13px] ">
+                                          <span className="flex w-[22rem] text-[13px] ">
                                             <p
-                                              className={`px-3 text-sm  text-gray-500 font-semibold ${
+                                              className={`px-3 text-sm text-gray-500 font-semibold ${
                                                 item.email
                                                   ? "text-gray-900"
                                                   : "text-red-500"
@@ -1612,7 +1612,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               EMAIL:
                                             </p>
                                             <p
-                                              className={` text-sm text-gray-500 ${
+                                              className={`text-sm text-gray-500 ${
                                                 item.email
                                                   ? "text-gray-900"
                                                   : "text-red-500"
@@ -1624,23 +1624,29 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                           <span className="flex w-[22rem] text-[13px] text-slate-900 ">
                                             <p
                                               className={`px-3 text-sm text-gray-500 font-semibold ${
-                                                item.createdAt
+                                                item.createdAt &&
+                                                item.createdAt instanceof Date
                                                   ? "text-gray-900"
-                                                  : "text-red-500"
+                                                  : "text-gray-900"
                                               }`}
                                             >
                                               CREATED AT:
                                             </p>
                                             <p
-                                              className={`px-3 text-sm text-gray-500 ${
-                                                item.createdAt
+                                              className={`text-sm text-gray-500 ${
+                                                item.createdAt &&
+                                                item.createdAt instanceof Date
                                                   ? "text-gray-900"
-                                                  : "text-red-500"
+                                                  : "text-gray-900"
                                               }`}
                                             >
-                                              {item?.createdAt instanceof Date
-                                                ? item?.createdAt?.toLocaleString()
-                                                : ""}
+                                              {item.createdAt instanceof Date
+                                                ? item.createdAt.toLocaleString()
+                                                : item.createdAt
+                                                ? new Date(
+                                                    item.createdAt
+                                                  ).toLocaleString()
+                                                : "No valid date provided"}
                                             </p>
                                           </span>
                                         </div>
