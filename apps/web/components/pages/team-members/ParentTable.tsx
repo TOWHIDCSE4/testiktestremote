@@ -104,9 +104,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const { data: userProfile } = useProfile()
   const [newModal, setNewModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
-  const [selectedStatus, setSelectedStatus] = useState("Pending")
+  const [selectedStatus, setSelectedStatus] = useState("Approved")
   const [confirmationModal, setConfirmationModal] = useState(false)
-  const [selectedColor, setSelectedColor] = useState("text-yellow-900")
+  const [selectedColor, setSelectedColor] = useState("text-green-800")
   const [selectedRole, setSelectedRole] = useState(storeSession?.role)
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
@@ -130,7 +130,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setLocationId,
     setStatus,
     setName,
-  } = usePaginatedUsers("Pending", storeSession?.role)
+  } = usePaginatedUsers("Approved", storeSession?.role)
 
   const { data: machineClass, isLoading: isMachineLoading } =
     useMachineClasses()
@@ -295,10 +295,20 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               <div className="mt-4 flex flex-col">
                 <span
-                  className={`text-[2rem] uppercase md:pl-5 font-semibold text-xl cursor-pointer ${selectedColor}`}
+                  className={`text-[2rem] uppercase flex md:pl-5 font-semibold text-xl cursor-pointer ${selectedColor}`}
                   onClick={toggleDropdown}
                 >
                   {selectedStatus}
+                  <svg
+                    height="30"
+                    viewBox="0 0 48 48"
+                    width="30"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-1"
+                  >
+                    <path d="M14 20l10 10 10-10z" />
+                    <path d="M0 0h48v48h-48z" fill="none" />
+                  </svg>
                 </span>
                 {isOpen && (
                   <div className="top-[4rem] sm:top-[4rem] absolute overflow- mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">

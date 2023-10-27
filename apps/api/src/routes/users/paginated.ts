@@ -28,10 +28,6 @@ export const paginated = async (req: Request, res: Response) => {
         queryFilters.push({ status })
       }
 
-      if (excludeUser && excludeUser !== "undefined") {
-        queryFilters.push({ _id: { $ne: excludeUser } })
-      }
-
       const orFilters = []
       if (name) {
         // @ts-expect-error
