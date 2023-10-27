@@ -326,7 +326,7 @@ const Details = ({
           }
         }}
       >
-        {/* <option value="">Select Job</option> */}
+        <option value="">Select Job</option>
         {timerJobs?.map((item: T_Job, index: number) => {
           return (
             <option key={index} value={item._id as string}>
@@ -370,6 +370,7 @@ const Details = ({
         onClose={() => setOpenNewJobModal(false)}
         jobTimer={jobTimer}
         partId={partId}
+        timerDetails={timerDetails}
       />
     </div>
   )

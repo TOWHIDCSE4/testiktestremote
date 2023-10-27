@@ -155,6 +155,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       }
       if (data.action === "end") {
         setCycleClockInSeconds(0)
+        setProgress(0)
         setIsCycleClockStopping(true)
         setIsCycleClockRunning(false)
         setIsCycleClockStarting(false)
@@ -162,6 +163,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       }
       if (data.action === "end-controller") {
         setCycleClockInSeconds(0)
+        setProgress(0)
         setIsCycleClockStopping(true)
         setIsCycleClockRunning(false)
         setIsCycleClockStarting(false)
@@ -184,6 +186,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
           case "STOP":
             stopCounter()
+            setJobUpdateId("")
             break
         }
       }
