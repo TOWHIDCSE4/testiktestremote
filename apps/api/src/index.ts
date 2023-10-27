@@ -9,6 +9,8 @@ import sentryConfig from "./utils/sentry.config"
 import * as os from "os"
 const app: Application = express()
 Sentry.init(sentryConfig)
+console.log(process.env.local)
+console.log(process.env.local === "true" ? false : true)
 app.use(Sentry.Handlers.requestHandler({ user: true }))
 app.use(Sentry.Handlers.tracingHandler())
 app.use(express.json())
@@ -23,7 +25,7 @@ app.get("/", (req, res) => {
     error: false,
     message: "server is up and running ✅ (●'◡'●)",
     data: {
-      os: os.hostname(),
+      os: os.type(),
       user: os.userInfo().username,
       platform: os.platform(),
     },
