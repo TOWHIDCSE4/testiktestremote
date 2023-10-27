@@ -104,7 +104,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const { data: userProfile } = useProfile()
   const [newModal, setNewModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
-  const [selectedStatus, setSelectedStatus] = useState("Approved")
+  const [selectedStatus, setSelectedStatus] = useState("Pending")
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [selectedColor, setSelectedColor] = useState("text-green-800")
   const [selectedRole, setSelectedRole] = useState(storeSession?.role)
@@ -121,6 +121,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
+  // const {
+  //   data: DataPending,
+  //   isLoading: LoadingPanding,
+  //   page : PagePending,
+  //   setPage: PagePending,
+  //   setRole: RolePending,
+  //   setLocationId: LocationIdPending,
+  //   setStatus: StatusPending,
+  //   setName: NamePending,
+  // } = usePaginatedUsers("Pending", storeSession?.role)
+
   const {
     data: paginated,
     isLoading: isPaginatedLoading,
@@ -130,7 +141,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setLocationId,
     setStatus,
     setName,
-  } = usePaginatedUsers("Approved", storeSession?.role)
+  } = usePaginatedUsers("Pending", storeSession?.role)
+
+  useEffect(() => {
+    if (paginated?.items?.length === 0) {
+      handleSelectDropdown("Approved")
+    }
+  }, [])
 
   const { data: machineClass, isLoading: isMachineLoading } =
     useMachineClasses()
@@ -188,9 +205,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setOpenAccordion(null)
     setSelectedRole(event.target.value)
     setRole(event.target.value)
+    setStatus("Pending")
+    setSelectedStatus("Pending")
   }
-
-  console.log("factories", factories)
 
   const statusArray = Object.values(USER_STATUSES)
 
@@ -252,6 +269,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     mutate(updatedItem, callBackReq)
   }
 
+  const count = paginated?.itemCount ? paginated?.itemCount : 0
+  console.log("count", count)
+
+  const arrayLength =
+    selectedStatus === "Pending" ? paginated?.items?.length : 0
+
+  console.log("arrayLength", arrayLength)
   return (
     <>
       <div
@@ -323,7 +347,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           }}
                           className="cursor-pointer px-4 py-2 hover:bg-gray-200"
                         >
-                          {status}
+                          {status === "Pending" ? (
+                            <span>
+                              {status}
+                              <div className="inline-block mx-4 relative">
+                                <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-4 -right-4 dark:border-gray-900">
+                                  {count}
+                                </div>
+                              </div>
+                            </span>
+                          ) : (
+                            status
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -331,7 +366,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 )}
               </div>
             </div>
-            <div className="space-y-2 w-[40%]">
+            <div className="space-y-2 w-[40%] ">
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   {" "}
@@ -1001,7 +1036,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   >
                     {paginated?.items &&
                       paginated?.items.map((item, idx) => {
-                        console.log(paginated)
                         const rowClass =
                           idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
                         const isAccordionOpen =
