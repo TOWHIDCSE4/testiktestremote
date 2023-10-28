@@ -9,7 +9,6 @@
   },
   "devDependencies": {
     "@swc/cli": "^0.1.62",
-    "@next/swc-linux-x64-gnu": "^13.4.2",
     "@swc/core": "^1.3.95",
     "@turbo/gen": "^1.9.7",
     "@types/js-cookie": "^3.0.3",
