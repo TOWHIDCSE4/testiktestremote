@@ -75,6 +75,7 @@ function usePaginatedUsers(
   return {
     ...query,
     page,
+    status,
     setPage,
     role,
     setRole,

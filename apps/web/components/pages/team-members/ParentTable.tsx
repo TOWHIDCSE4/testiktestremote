@@ -25,6 +25,12 @@ import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 interface ContentProps {
   userLog: string
 }
+const colorMapping: { [key: string]: string } = {
+  Pending: "text-yellow-700",
+  Approved: "text-green-800",
+  Rejected: "text-red-800",
+  Archived: "text-yellow-500",
+}
 
 const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [userRole, setUserRole] = useState<string | undefined>(userLog)
@@ -104,9 +110,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const { data: userProfile } = useProfile()
   const [newModal, setNewModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
-  const [selectedStatus, setSelectedStatus] = useState("Pending")
   const [confirmationModal, setConfirmationModal] = useState(false)
-  const [selectedColor, setSelectedColor] = useState("text-yellow-900")
   const [selectedRole, setSelectedRole] = useState(storeSession?.role)
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
@@ -116,21 +120,32 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [isOpenFactory, setIsOpenFactory] = useState()
   const [directorStates, setDirectorStates] = useState([])
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
+  const [isTableInitialize, setIsTableInitialize] = useState(false)
+  const [pendingCount, setPendingCount] = useState(0)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
-    []
-  )
+
   const {
     data: paginated,
     isLoading: isPaginatedLoading,
     page,
+    status: userStatus,
     setPage,
     setRole,
     setLocationId,
     setStatus,
     setName,
   } = usePaginatedUsers("Pending", storeSession?.role)
+
+  useEffect(() => {
+    if (paginated?.items?.length === 0 && isTableInitialize === false) {
+      handleSelectDropdown("Approved")
+      setIsTableInitialize(true)
+      setPendingCount(0)
+    } else if (userStatus === "Pending") {
+      setPendingCount(paginated?.itemCount ?? 0)
+    }
+  }, [paginated])
 
   const { data: machineClass, isLoading: isMachineLoading } =
     useMachineClasses()
@@ -155,10 +170,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     USER_ROLES.Sales,
   ]
 
-  const isChecked = (id: string) => {
-    return checkedProduction.filter((item) => item.id === id).length > 0
-  }
-
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
@@ -181,16 +192,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     } else {
       setLocationId(userProfile?.item?.locationId as string)
     }
-  }, [userProfile, selectedRole, selectedStatus])
+  }, [userProfile, selectedRole])
 
   const handleTeamListing = (event: any) => {
     setIsOpenRole(undefined)
     setOpenAccordion(null)
     setSelectedRole(event.target.value)
     setRole(event.target.value)
+    setIsTableInitialize(false)
+    setStatus("Pending")
+    setPendingCount(paginated?.itemCount ?? 0)
   }
-
-  console.log("factories", factories)
 
   const statusArray = Object.values(USER_STATUSES)
 
@@ -200,18 +212,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const handleSelectDropdown = (value: T_UserStatus) => {
     setIsOpenRole(undefined)
-    setSelectedStatus(value)
     setOpenAccordion(null)
-    setIsOpen(!isOpen)
+    setIsOpen(false)
     setStatus(value)
-
-    const colorMapping: { [key: string]: string } = {
-      Pending: "text-yellow-700",
-      Approved: "text-green-800",
-      Rejected: "text-red-800",
-      Archived: "text-yellow-500",
-    }
-    setSelectedColor(colorMapping[value] || "")
   }
 
   const handleHideFactory = (idx: any) => {
@@ -269,7 +272,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     id="role"
                     className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
                     onChange={handleTeamListing}
-                    value={selectedStatus}
+                    value={userStatus ?? ""}
                   >
                     <option className="hidden">Select Role</option>
                     {roleFilter().map((item, index) => (
@@ -295,10 +298,22 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               <div className="mt-4 flex flex-col">
                 <span
-                  className={`text-[2rem] uppercase md:pl-5 font-semibold text-xl cursor-pointer ${selectedColor}`}
+                  className={`text-[2rem] uppercase flex md:pl-5 font-semibold text-xl cursor-pointer ${
+                    colorMapping[userStatus ?? "Approved"]
+                  }`}
                   onClick={toggleDropdown}
                 >
-                  {selectedStatus}
+                  {userStatus}
+                  <svg
+                    height="30"
+                    viewBox="0 0 48 48"
+                    width="30"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ml-1"
+                  >
+                    <path d="M14 20l10 10 10-10z" />
+                    <path d="M0 0h48v48h-48z" fill="none" />
+                  </svg>
                 </span>
                 {isOpen && (
                   <div className="top-[4rem] sm:top-[4rem] absolute overflow- mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
@@ -313,7 +328,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           }}
                           className="cursor-pointer px-4 py-2 hover:bg-gray-200"
                         >
-                          {status}
+                          {status === "Pending" ? (
+                            <span>
+                              {status}
+                              <div className="inline-block mx-4 relative">
+                                <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-4 -right-4 dark:border-gray-900">
+                                  {pendingCount}
+                                </div>
+                              </div>
+                            </span>
+                          ) : (
+                            status
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -321,7 +347,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 )}
               </div>
             </div>
-            <div className="space-y-2 w-[40%]">
+            <div className="space-y-2 w-[40%] ">
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   {" "}
@@ -571,7 +597,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
                         const isAccordionOpen =
                           openAccordion === `accordion-arrow-icon-body-${idx}`
-                        const checked = isChecked(item._id ?? "")
                         return (
                           <React.Fragment key={item._id}>
                             <tr
@@ -991,12 +1016,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   >
                     {paginated?.items &&
                       paginated?.items.map((item, idx) => {
-                        console.log(paginated)
                         const rowClass =
                           idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
                         const isAccordionOpen =
                           openAccordion === `accordion-arrow-icon-body-${idx}`
-                        const checked = isChecked(item._id ?? "")
                         return (
                           <React.Fragment key={item._id}>
                             <tr
