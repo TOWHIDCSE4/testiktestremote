@@ -24,15 +24,15 @@ type T_Props = {
   jobTimer: T_JobTimer // Timer jobs list
   jobUpdateId: string
   defaultOperator: any
-  timerId: string
-  updateTimer: any
   isJobTimerLoading: boolean // Timer jobs list loading
   isCycleClockRunning: boolean // Tracker run loading
   timerJobs: T_Job[] | undefined
-  setFactoryId: any
-  setLocationId: any
-  setPartId: any
+  setFactoryId: React.Dispatch<React.SetStateAction<string>>
+  setLocationId: React.Dispatch<React.SetStateAction<string>>
+  setPartId: React.Dispatch<React.SetStateAction<string>>
   isTimerJobsLoading: boolean
+  isJobSwitch: boolean
+  setIsJobSwitch: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const Details = ({
@@ -42,8 +42,6 @@ const Details = ({
   sectionDiv,
   jobTimer,
   jobUpdateId,
-  timerId,
-  updateTimer,
   defaultOperator,
   isJobTimerLoading,
   isCycleClockRunning,
@@ -52,6 +50,8 @@ const Details = ({
   setLocationId,
   setPartId,
   isTimerJobsLoading,
+  isJobSwitch,
+  setIsJobSwitch,
 }: T_Props) => {
   const queryClient = useQueryClient()
   const { data: users, isLoading: isUsersLoading } = useUsers()
@@ -85,11 +85,14 @@ const Details = ({
   })
 
   useEffect(() => {
-    if (timerDetails?._id !== updateTimer.data?._id) {
-      mutate({ ...timerDetails, partId: updateTimer.data?.partId }, callBackReq)
-      updateTimerJob({ ...jobTimer, jobId: updateTimer.jobToBe }, callBackReq)
+    if (isJobSwitch) {
+      updateTimerJob({ ...jobTimer, jobId: jobUpdateId }, callBackReq)
+      toast.success("Job switch succesfully", {
+        duration: 5000,
+      })
+      setIsJobSwitch(false)
     }
-  }, [updateTimer])
+  }, [isJobSwitch])
 
   useEffect(() => {
     if (defaultOperator) {
@@ -312,9 +315,8 @@ const Details = ({
           isJobTimerLoading ||
           isUpdateTimerJobLoading
         }
-        defaultValue="Select Job"
         required
-        value={jobUpdateId ? jobUpdateId : ""}
+        value={jobUpdateId}
         className={`block mt-2 w-full xl:w-80 ipadair:w-[250px] 2xl:w-[350px] rounded-md border-0 py-1.5 pl-3 pr-10 dark:bg-gray-300 bg-zinc-100 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-1xl sm:xl:leading-7`}
         onChange={(e) => {
           if (e.target.value === "Add New Job") {
@@ -324,7 +326,7 @@ const Details = ({
           }
         }}
       >
-        {/* <option value="">Select Job</option> */}
+        <option value="">Select Job</option>
         {timerJobs?.map((item: T_Job, index: number) => {
           return (
             <option key={index} value={item._id as string}>
@@ -368,6 +370,7 @@ const Details = ({
         onClose={() => setOpenNewJobModal(false)}
         jobTimer={jobTimer}
         partId={partId}
+        timerDetails={timerDetails}
       />
     </div>
   )

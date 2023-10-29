@@ -8,6 +8,7 @@ import {
   T_Machine,
   T_MachineClass,
   T_Part,
+  T_Timer,
   T_User,
 } from "custom-validator"
 import { useForm } from "react-hook-form"
@@ -30,6 +31,7 @@ interface NewModalProps {
   onClose: () => void
   jobTimer?: T_JobTimer
   partId?: string
+  timerDetails?: T_Timer
 }
 
 const NewModal = ({
@@ -39,6 +41,7 @@ const NewModal = ({
   onClose,
   jobTimer,
   partId,
+  timerDetails,
 }: NewModalProps) => {
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
@@ -65,16 +68,44 @@ const NewModal = ({
   const { mutate: updateJobTimer, isLoading: isUpdateJobTimerLoading } =
     useUpdateJobTimer()
 
+  const isTimerJobAdd = () => {
+    if (Object.keys(timerDetails ?? {})?.length > 0) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  useEffect(() => {
+    if (timerDetails && Object.keys(timerDetails ?? {})?.length > 0) {
+      setValue(
+        "machineClassId",
+        (typeof timerDetails?.machineClassId === "object"
+          ? timerDetails?.machineClassId?._id
+          : timerDetails?.machineClassId) ?? ""
+      )
+
+      typeof timerDetails?.partId === "object"
+        ? setSelectedPart({
+            id: timerDetails?.partId?._id as string,
+            name: timerDetails?.partId?.name,
+          })
+        : setSelectedPart({
+            id: timerDetails?.partId as string,
+            name: "",
+          })
+    }
+  }, [timerDetails, isOpen])
   const mutateJobTimer = (jobId: string) => {
     if (jobTimer) {
       const callBackReq = {
         onSuccess: (data: T_BackendResponse) => {
           if (!data.error) {
             queryClient.invalidateQueries({
-              queryKey: ["timer-jobs", locationId, partId],
+              queryKey: ["job-timer-timer"],
             })
             queryClient.invalidateQueries({
-              queryKey: ["job-timer-timer"],
+              queryKey: ["timer-jobs"],
             })
             toast.success("Timer has been updated")
             closeModal()
@@ -100,6 +131,10 @@ const NewModal = ({
             queryKey: ["jobs"],
           })
           toast.success(String(data.message))
+          setSelectedPart({
+            id: "",
+            name: "",
+          })
           if (jobTimer) {
             mutateJobTimer(data?.item?._id as string)
           } else {
@@ -271,10 +306,24 @@ const NewModal = ({
                       <select
                         id="machineClass"
                         required
-                        className={`block mt-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                        disabled={isMachineClassesLoading || isAddNewJobLoading}
+                        className={`block mt-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 ${
+                          isTimerJobAdd() ||
+                          isMachineClassesLoading ||
+                          isAddNewJobLoading
+                            ? "cursor-not-allowed"
+                            : ""
+                        }`}
+                        disabled={
+                          isTimerJobAdd() ||
+                          isMachineClassesLoading ||
+                          isAddNewJobLoading
+                        }
                         {...register("machineClassId", { required: true })}
-                        defaultValue="Select Machine Class"
+                        defaultValue={
+                          (typeof timerDetails?.machineClassId === "object"
+                            ? timerDetails?.machineClassId?._id
+                            : timerDetails?.machineClassId) ?? ""
+                        }
                         onChange={(e) => {
                           {
                             setSelectedPart({
@@ -318,6 +367,7 @@ const NewModal = ({
                           value={selectedPart}
                           onChange={setSelectedPart}
                           disabled={
+                            isTimerJobAdd() ||
                             isPartsLoading ||
                             isAddNewJobLoading ||
                             isUpdateJobTimerLoading ||
