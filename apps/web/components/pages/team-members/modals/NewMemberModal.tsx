@@ -1,23 +1,3 @@
-// import { Fragment, useState } from "react"
-// import { Dialog, Transition } from "@headlessui/react"
-
-// import { HeartIcon } from "@heroicons/react/24/solid"
-// import Image from "next/image"
-// import Link from "next/link"
-// import DarkLogo from "../../../assets/logo/logo-dark.png"
-// import { useForm } from "react-hook-form"
-// import useRegister from "../../../../hooks/users/useRegister"
-// import { useRouter } from "next/navigation"
-// import { T_User, T_UserStatus } from "custom-validator/ZUser"
-// import toast from "react-hot-toast"
-// import { T_BackendResponse } from "custom-validator"
-// import { USER_ROLES } from "../../../../helpers/constants"
-// import useLocations from "../../../../hooks/locations/useLocations"
-// import { useQueryClient } from "@tanstack/react-query"
-// import useUpdateUser from "../../../../hooks/users/useUpdateUser"
-// import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
-// import useStoreSession from "../../../../../../apps/web/store/useStoreSession"
-
 import { Fragment, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { useForm } from "react-hook-form"
@@ -88,36 +68,6 @@ const NewMemberModal = ({ isOpen, onClose }: NewModalProps) => {
     USER_ROLES.Accounting,
     USER_ROLES.Sales,
   ]
-
-  // const callBackReq = {
-  //   onSuccess: (returnData: T_BackendResponse) => {
-  //     if (!returnData.error) {
-  //       if (returnData.item) {
-  //         queryClient.invalidateQueries({
-  //           queryKey: ["paginated-users"],
-  //         })
-  //         onClose()
-  //         toast.success(`User ${status}`)
-  //       }
-  //     } else {
-  //       toast.error(returnData.message as string)
-  //     }
-  //   },
-  //   onError: (err: any) => {
-  //     toast.error(String(err))
-  //   },
-  // }
-
-  // const formatStatus = (status: T_UserStatus) => {
-  //   switch (status) {
-  //     case "Rejected":
-  //       return "reject"
-  //     case "Blocked":
-  //       return "block"
-  //     case "Archived":
-  //       return "delete"
-  //   }
-  // }
 
   const handleCheckboxChange = () => {
     console.log(isNotChecked)

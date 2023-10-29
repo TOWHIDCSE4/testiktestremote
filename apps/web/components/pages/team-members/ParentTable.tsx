@@ -176,11 +176,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
-    debugger
     if (storeSession?.role === "Super" || "Administrator" || "HR_Director") {
       setLocationId("")
     } else {
-      debugger
       setLocationId(userProfile?.item?.locationId as string)
     }
   }, [userProfile, selectedRole, selectedStatus])
