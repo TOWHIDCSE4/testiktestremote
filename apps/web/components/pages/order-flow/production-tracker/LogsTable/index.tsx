@@ -117,7 +117,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     const newValue = e.currentTarget.value
     setKeyword(key)
     setSortType(sortType === "asc" ? "desc" : "asc")
-    console.log(key, sortType)
   }
 
   const handleProcess = () => {
@@ -130,15 +129,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses(city)
 
-  // const defaultDateRange = [moment('2023-10-01'), moment('2023-10-10')];
-  // console.log("🚀 ~ file: index.tsx:155 ~ defaultDateRange:", defaultDateRange)
-  // useEffect(() => {
-  //   setMachineClass(machineClasses)
-  // },[city])
-
   const { data: machines, isLoading: isMachinesLoading } =
     useGetMachinesByMachineClasses(machineClass)
-  // const {data: partsData, isLoading: IsPartsLoading} = useGetPartsByMachineClasses(city, machineClass)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const {
     data: allParts,
@@ -167,96 +159,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }
 
   useEffect(() => {
-    // console.log("Part selector after update:", partSelector)
     setPartSelector(partSelector)
   }, [partSelector])
 
-  // const customStyles = {
-  //   control: (provided: any, state: any) => ({
-  //     ...provided,
-  //     width: "15rem",
-  //     height: "2rem",
-  //     overflow: "hidden",
-  //     flex: "nowrap",
-  //     display: "flex",
-  //     borderRadius: "15px",
-  //     border: "1px solid #ccc",
-  //     marginLeft: "5px",
-  //     boxShadow: state.isFocused ? "0 0 0 2px #ccc" : null,
-  //   }),
-  //   option: (provided: any, state: any) => ({
-  //     ...provided,
-  //     backgroundColor: state.isFocused ? "#3699FF" : null,
-  //     color: state.isFocused ? "white" : null,
-  //   }),
-  // }
-
-  // const loadOptions = (inputValue: string) => {
-  //   // Assuming the response is an array of items
-  //   const newOptions =
-  //     allParts?.items?.map((item: T_Part) => ({
-  //       value: item._id as string,
-  //       label: item.name,
-  //     })) || []
-
-  //   const totalPages = allParts?.itemCount
-  //   console.log(totalPages)
-
-  //   // Check if the map function has reached the end of allParts
-  //   if (newOptions.length === allParts?.items?.length) {
-  //     if (numberOfPartsPages > partsPage) {
-  //       // Increment partsPage by 1 when mapping is finished
-  //       setPartsPage(partsPage + 1)
-  //     }
-  //   }
-
-  //   return {
-  //     options: newOptions || [],
-  //     hasMore: true,
-  //   }
-  // }
-
-  // const loadOptions = async (inputValue: string, loadOption: any, {page}:any) => {
-  //   // Check if the search box is not empty
-  //   // if (inputValue.trim() !== "") {
-  //   //   setLoadOptionsCount(loadOptionsCount + 1)
-  //   //   setPartsPage(1) // Reset partsPage to an empty value
-  //   // } else {
-  //   //   setLoadOptionsCount(0)
-  //   // }
-  //   // //   // Assuming the response is an array of items
-  //   const newOptions = await
-  //     allParts?.items?.map((item: T_Part) => ({
-  //       value: item._id as string,
-  //       label: item.name as string,
-  //     })) || []
-
-  //   // // Filter options based on the inputValue
-  //   // const filteredOptions = newOptions.filter((option) =>
-  //   //   option.label.toLowerCase().includes(inputValue.toLowerCase())
-  //   // )
-
-  //   // // Check if the map function has reached the end of allParts
-  //   // if (filteredOptions.length === allParts?.items?.length) {
-  //   //   if (numberOfPartsPages > partsPage) {
-  //   //     // Increment partsPage by 1 when mapping is finished
-  //   //     setPartsPage(partsPage + 1)
-  //   //   }
-  //   // }
-  //   // setLoadedListOptions(filteredOptions)
-  //   console.log("the filteredOptions", newOptions)
-  //   setPage(page + 1)
-  //   return {
-  //     options: newOptions || [],
-  //     hasMore: true,
-  //     additional: {
-  //       page: page,
-  //     }
-  //   }
-  // }
-  // type T_DBReturn = Omit<T_BackendResponse, "items"> & {
-  //   items: T_Part[]
-  // }
   useEffect(() => {
     const token = Cookies.get("tfl")
     //@ts-expect-error
@@ -322,7 +227,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   useEffect(() => {
     setPartId(partsSelected)
     setPage(1)
-  }, [parts, setPartId])
+  }, [partsSelected, setPartId])
 
   // useEffect(() => {
   //   setStartDateRange(dateRange)
@@ -383,8 +288,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setIsCheckboxChecked(isChecked)
 
     if (isChecked) {
-      const currentDate = dayjs().toDate() // Get the current date
-      // console.log(dayjs().format('YYYY-MM-DD'))
+      const currentDate = dayjs().toDate()
       setDateRange([dayjs().format("YYYY-MM-DD"), dayjs().format("YYYY-MM-DD")])
       datePick([currentDate, currentDate]) // Call datePick with the current date
     } else {
@@ -439,16 +343,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   // const { Option } = Select
 
   const handleLocationChange = (event: any) => {
-    // if(Array.isArray(event.target.value[0])){
-    //   const cityInfo = event.target.value[0]
-    //   console.log("handleLocationChange", cityInfo[0], cityInfo[1] )
-    //   setCity(cityInfo[0])
-    //   setCityLocation([...cityLocation, cityInfo[1]])
-    //   setCounter(selectedValues.length);
-    // }else{
-    //   setCity(event.target.value[0])
-    //   setCityLocation(event.target.value[1])
-    // }
     const selectedMachineClass: Array<any> = []
     setCity(event.target.value)
     setMachineClass(selectedMachineClass)
@@ -458,11 +352,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setCityCounter(city.length)
   }, [city])
 
-  // useEffect(() => {
-  //   if(!city){
-  //     setMachineClass([])
-  //   }
-  // }, [city])
   const handleMachineClassChange = (event: SelectChangeEvent) => {
     const selectedMachineClasses: string = event.target.value
 
@@ -470,7 +359,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     //@ts-expect-error
     setMachineClass(selectedMachineClasses)
     setMachine(selectedMachines)
-    // setSelectedMachineClasses(selectedMachineClasses);
   }
 
   useEffect(() => {
@@ -490,24 +378,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }, [machine])
 
   const handlePartsChange = (event: any) => {
-    // console.log(`selected ${value}`);
-    // setSelectedMachineValues(event.target.value);
     setPartsSelected(event.target.value)
   }
 
   useEffect(() => {
     setPartsCounter(partsSelected.length)
   }, [partsSelected])
-
-  // const TextWithCheckbox = (props: any) => {
-  //   return (
-  //     <div className="w-full flex justify-between">
-  //       {props.children}
-  //       <Checkbox checked={props.checked} />
-  //     </div>
-  //   );
-  // };
-  console.log("dateRange", dateRange)
 
   useEffect(() => {
     const filterInputs = () => {

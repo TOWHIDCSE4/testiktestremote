@@ -84,6 +84,7 @@ export const addJob = async (req: Request, res: Response) => {
           $and: [
             { status: { $ne: "Deleted" } },
             { status: { $ne: "Archived" } },
+            { status: { $ne: "Testing" } }, //TODO: discuss with jamiel
           ],
           $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
         })
@@ -113,6 +114,7 @@ export const addJob = async (req: Request, res: Response) => {
           $and: [
             { status: { $ne: "Deleted" } },
             { status: { $ne: "Archived" } },
+            { status: { $ne: "Testing" } }, //TODO: discuss with jamiel
           ],
           $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
         })

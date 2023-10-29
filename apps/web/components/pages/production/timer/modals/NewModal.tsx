@@ -67,6 +67,7 @@ const NewModal = ({
     setSelectedMachineClassId: setSelectedPartMachineClassId,
     setSelectedLocationId: setSelectedPartLocationId,
   } = useGetPartByMachineClassLocation()
+
   const { data: specificPart, isLoading: isSpecificPartLoading } = usePart(
     selectedPart.id
   )
@@ -234,9 +235,10 @@ const NewModal = ({
                         className={`block mt-2 md:mt-0 w-full md:w-[60%] rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         disabled={isMachineClassesLoading}
                         defaultValue="Select Machine Class"
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setSelectedMachineClassId(e.target.value)
-                        }
+                          setMachineQuery("")
+                        }}
                       >
                         <option value="">Select Machine Class</option>
                         {machineClasses?.items?.map(
@@ -488,7 +490,7 @@ const NewModal = ({
                           name: "",
                         })
                         setPartQuery("")
-                        setMachineQuery("")
+                        // setMachineQuery("")
                       }}
                       ref={cancelButtonRef}
                     >

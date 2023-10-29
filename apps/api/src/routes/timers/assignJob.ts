@@ -23,9 +23,15 @@ export const assignJob = async (req: Request, res: Response) => {
       const job = await Jobs.findOne({
         _id: getDayJobTimer?.jobId,
         $and: [
-          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
+          {
+            $or: [{ status: "Pending" }, { status: "Active" }],
+          },
+          {
+            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+          },
         ],
       })
+      console.log("🚀 ~ file: assignJob.ts:34 ~ assignJob ~ job:", job)
       if (!getDayJobTimer) {
         const jobs = await Jobs.find({
           locationId: req.body.locationId,
@@ -81,7 +87,7 @@ export const assignJob = async (req: Request, res: Response) => {
             locationId: req.body.locationId,
             factoryId: req.body.factoryId,
             partId: req.body.partId,
-            status: "Pending",
+            status: { $in: ["Pending", "Active"] },
             isStock: true,
           })
           if (stockJob) {
@@ -110,7 +116,7 @@ export const assignJob = async (req: Request, res: Response) => {
           locationId: req.body.locationId,
           factoryId: req.body.factoryId,
           partId: req.body.partId,
-          status: "Pending",
+          status: { $in: ["Pending", "Active"] },
           isStock: false,
         })
         if (jobs?.length > 0) {
@@ -135,8 +141,10 @@ export const assignJob = async (req: Request, res: Response) => {
           if (selectedJobId) {
             const updateDayJobTimer = await JobTimer.updateOne(
               { _id: getDayJobTimer._id },
-              { timerId: req.body.timerId, jobId: selectedJobId }
+              { timerId: req.body.timerId, jobId: selectedJobId },
+              { new: true }
             )
+            const timerJob = await JobTimer.findOne({ _id: getDayJobTimer._id })
             await Jobs.findByIdAndUpdate(
               selectedJobId,
               {
@@ -147,15 +155,15 @@ export const assignJob = async (req: Request, res: Response) => {
               },
               { new: true }
             )
-            res.json({
+            return res.json({
               error: false,
-              item: updateDayJobTimer,
+              item: timerJob,
               recommendation: JOB_ACTION.SWITCH,
               itemCount: null,
               message: null,
             })
           } else {
-            res.json({
+            return res.json({
               error: true,
               item: null,
               recommendation: JOB_ACTION.STOP,
@@ -165,17 +173,38 @@ export const assignJob = async (req: Request, res: Response) => {
           }
         }
       } else {
-        res.json({
-          error: true,
-          item: null,
-          itemCount: null,
-          message: "Job already assigned",
+        const stockJob = await Jobs.findOne({
+          locationId: req.body.locationId,
+          factoryId: req.body.factoryId,
+          partId: req.body.partId,
+          status: { $in: ["Pending", "Active"] },
+          isStock: true,
         })
+        if (stockJob) {
+          const newJobTimer = new JobTimer({
+            timerId: req.body.timerId,
+            jobId: stockJob._id,
+          })
+          const createJobTimer = await newJobTimer.save()
+          return res.json({
+            error: false,
+            item: createJobTimer,
+            itemCount: null,
+            message: null,
+          })
+        } else {
+          return res.json({
+            error: true,
+            item: getDayJobTimer,
+            itemCount: null,
+            message: "Job already assigned",
+          })
+        }
       }
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       Sentry.captureException(err)
-      res.json({
+      return res.json({
         error: true,
         message: message,
         items: null,
@@ -183,7 +212,7 @@ export const assignJob = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.json({
+    return res.json({
       error: true,
       itemCount: null,
       message: REQUIRED_VALUES_MISSING,

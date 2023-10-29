@@ -79,7 +79,7 @@ export const paginated = async (req: Request, res: Response) => {
         itemCount: usersCount,
         message: null,
       })
-    } catch (err: any) {
+    } catch (err) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       Sentry.captureException(err)
       res.json({
