@@ -32,6 +32,7 @@ export const ALLOWED_ALL_ROLES = [
   "Production",
   "Personnel",
   "HR",
+  // "HR_Director",
 ]
 //Success Message
 export const ADD_SUCCESS_MESSAGE = "Successfully added"

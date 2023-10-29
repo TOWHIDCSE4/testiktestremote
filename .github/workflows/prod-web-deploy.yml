@@ -1,5 +1,8 @@
 name: prod-web-deploy
 
+env:
+  SENTRY_WEB_DSN: ${{ secrets.SENTRY_WEB_DSN_PROD }}
+
 on:
   push:
     branches: ["main"]

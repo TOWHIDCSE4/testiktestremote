@@ -490,6 +490,7 @@ const NewModal = ({
                           name: "",
                         })
                         setPartQuery("")
+                        // setMachineQuery("")
                       }}
                       ref={cancelButtonRef}
                     >
