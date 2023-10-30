@@ -190,8 +190,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setRole(event.target.value)
   }
 
-  const statusArray = Object.values(USER_STATUSES)
-
+  const statusArray = Object.values(USER_STATUSES).filter(
+    (status) => status !== USER_STATUSES.Blocked
+  )
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
   }
@@ -293,7 +294,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               <div className="mt-4 flex flex-col">
                 <span
-                  className={`text-[2.5rem] uppercase md:pl-5 font-semibold text-xl cursor-pointer ${selectedColor}`}
+                  className={`text-[2rem] uppercase md:pl-6 mt-3 font-semibold text-xl cursor-pointer ${selectedColor}`}
                   onClick={toggleDropdown}
                 >
                   {selectedStatus}
@@ -361,7 +362,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               {selectedRole === "Personnel" ? (
                 <div className="flex justify-end text-gray-900 space-x-1">
-                  <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
+                  <span className="text-[#7F1D1D] text-[12px] uppercase font-semibold">
                     Machine Class
                   </span>
                   <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
