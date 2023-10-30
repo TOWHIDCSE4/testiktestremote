@@ -135,13 +135,17 @@ const TabTable = ({
               <th scope="col" className="w-4"></th>
               <th
                 scope="col"
-                className="pl-4 py-3.5  text-left text-sm font-semibold text-gray-900  uppercase"
+                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
               >
                 User
               </th>
               <th
                 scope="col"
-                className=" pl-4 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase  "
+                className={`${
+                  jobs.items[0].isStock
+                    ? "md:w-[20%] lg:w-[20%] lg:pl-[3rem] md:pl-[3rem]"
+                    : "md:w-[15%] lg:w-[15%]"
+                } pl-5 py-3.5  md:pl-6  text-left text-sm font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Factory
@@ -149,7 +153,9 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-6 lg:pl-8 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
+                className={`${
+                  jobs.items[0].isStock ? "w-[30%]" : "w-[20%]"
+                } py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Name
@@ -157,7 +163,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="pl-4 lg:pl-8 xl:pl-12 py-3.5 text-left text-sm font-semibold text-gray-900  lg:w-[8rem] xl:w-[14rem]  uppercase"
+                className="md:w-[20%] py-3.5 text-left text-sm font-semibold text-gray-900  lg:w-[8rem] xl:w-[14rem]  uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Part
@@ -171,30 +177,34 @@ const TabTable = ({
                   Drawing
                 </a>
               </th> */}
-              <th
+              {/* <th
                 scope="col"
                 className=" pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Count
                 </a>
-              </th>
+              </th> */}
               <th
                 scope="col"
-                className="pl-6  lg:pl-8 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
+                className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Priority
                 </a>
               </th>
-              <th
-                scope="col"
-                className=" pl-6  lg:pl-14  py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
-              >
-                <a href="#" className="group inline-flex">
-                  Due
-                </a>
-              </th>
+              {jobs.items[0].isStock ? (
+                ""
+              ) : (
+                <th
+                  scope="col"
+                  className=" pl-5 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
+                >
+                  <a href="#" className="group inline-flex">
+                    Due
+                  </a>
+                </th>
+              )}
               <th
                 scope="col"
                 className="relative md:pl-16 lg:pl-16 py-3.5  md:w-0   text-center"
@@ -258,21 +268,25 @@ const TabTable = ({
                         )}
                       </div>
                     </td>
-                    <td className="py-3 lg:pl-6 text-sm text-gray-800 pl-4">
+                    <td
+                      className={
+                        job.isStock
+                          ? "py-3 lg:pl-[3rem] md:pl-[3rem] text-sm text-gray-800 pl-4"
+                          : "py-3 lg:pl-6 text-sm text-gray-800 pl-4 md:pl-[1.5rem]"
+                      }
+                    >
                       {typeof job?.factory === "object"
                         ? job?.factory?.name
                         : ""}
                     </td>
-                    <td className="py-3 xl:pl-4 first-letter:pl-4 text-sm text-gray-800">
-                      {job?.name}
-                    </td>
-                    <td className="py-3 lg:pl-10 xl:pl-10 text-sm text-gray-800">
+                    <td className="py-3 text-sm text-gray-800">{job?.name}</td>
+                    <td className="py-3 text-sm text-gray-800">
                       {job?.part?.name}
                     </td>
                     {/* <td className="py-3 pl-6 text-sm text-gray-800">
                       {job?.drawingNumber}
                     </td> */}
-                    <td className="py-3 pl-6 text-sm text-gray-800">
+                    {/* <td className="py-3 pl-6 text-sm text-gray-800">
                       <div className="flex items-center">
                         {job?.count ? (
                           <>
@@ -286,8 +300,8 @@ const TabTable = ({
                         )}{" "}
                         <br />
                       </div>
-                    </td>
-                    <td className="py-3 pl-8 text-sm text-gray-800">
+                    </td> */}
+                    <td className="py-3 text-sm text-gray-800">
                       {/* <ChartBarIcon
                       className={`h-5 w-5 ${
                         job?.priorityStatus === "High"
@@ -330,15 +344,19 @@ const TabTable = ({
                         ></div>
                       </div>
                     </td>
-                    <td className="py-3 pl-4 text-sm text-gray-800">
-                      {job?.dueDate ? (
-                        dayjs(job?.dueDate).format("DD/MM/YYYY")
-                      ) : (
-                        <span className="text-2xl">∞</span>
-                      )}{" "}
-                      <br />
-                      <span className="text-red-500 hidden">Overdue</span>
-                    </td>
+                    {job?.isStock ? (
+                      ""
+                    ) : (
+                      <td className="py-3 pl-4 text-sm text-gray-800">
+                        {job?.dueDate ? (
+                          dayjs(job?.dueDate).format("DD/MM/YYYY")
+                        ) : (
+                          <span className="text-2xl">∞</span>
+                        )}{" "}
+                        <br />
+                        <span className="text-red-500 hidden">Overdue</span>
+                      </td>
+                    )}
                     <td className="py-3 lg:pl-16 md:pl-16 text-left text-sm font-medium sm:pr-6 lg:pr-8">
                       <Menu as="div">
                         <Menu.Button onClick={(e) => e.stopPropagation()}>

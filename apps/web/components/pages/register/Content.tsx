@@ -66,8 +66,6 @@ const Content = () => {
     USER_ROLES.Personnel,
     USER_ROLES.Corporate,
     USER_ROLES.HR,
-    USER_ROLES.Accounting,
-    USER_ROLES.Sales,
   ]
 
   return (

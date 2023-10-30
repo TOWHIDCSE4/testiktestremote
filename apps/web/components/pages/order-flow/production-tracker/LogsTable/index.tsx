@@ -131,6 +131,14 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   const { data: machines, isLoading: isMachinesLoading } =
     useGetMachinesByMachineClasses(machineClass)
+  useEffect(() => {
+    if (machines && machines.items) {
+      console.log("machines", machines)
+      const initialMachineSelection = machines?.items?.map((item) => item._id)
+      setMachine(initialMachineSelection)
+      setMachineCounter(machine.length)
+    }
+  }, [machines])
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const {
     data: allParts,
@@ -609,10 +617,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             value={item._id as string}
                           >
                             <ListItemText primary={item.name} />
-                            <Checkbox
-                              //@ts-expect-error
-                              checked={city.includes(item._id)}
-                            />
+                            <Checkbox checked={city.includes(item._id)} />
                           </MenuItem>
                         )
                       )}
@@ -680,7 +685,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             >
                               <ListItemText primary={item.name} />
                               <Checkbox
-                                //@ts-expect-error
                                 checked={machineClass.includes(item._id)}
                               />
                             </MenuItem>
@@ -757,10 +761,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                               value={item._id as string}
                             >
                               <ListItemText primary={item.name} />
-                              <Checkbox
-                                //@ts-expect-error
-                                checked={machine.includes(item._id)}
-                              />
+                              <Checkbox checked={machine.includes(item._id)} />
                             </MenuItem>
                           )
                         )
@@ -1131,10 +1132,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                 .tz(dayjs(item.createdAt), "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
-                            <td className=" py-4">
-                              {/* @ts-expect-error */}
-                              {item?.machineId.name}
-                            </td>
+                            <td className=" py-4">{item?.machineId.name}</td>
                             <td
                               className={` py-4 text-sm text-gray-500 flex flex-col ${
                                 item.jobId ? "text-gray-900" : "text-red-500"
@@ -1225,7 +1223,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                             : ""}
                                         </p>
                                       </span>
-                                      <span className="flex w-[22rem] text-[13px] text-slate-900 ">
+                                      <span className="flex w-[30rem] text-[13px] text-slate-900 ">
                                         <p
                                           className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
                                             item.jobId
@@ -1236,7 +1234,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                           STOP REASON :
                                         </p>
                                         <p
-                                          className={`px-3 py-4 text-sm text-gray-500 ${
+                                          className={`px-3 py-4 text-sm  text-gray-500 ${
                                             item.jobId
                                               ? "text-gray-900"
                                               : "text-red-500"
@@ -1501,7 +1499,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    {/* <th scope="col" className="px-6 py-3 text-slate-900">
                       <input
                         id={`checkbox-table-search`}
                         type="checkbox"
@@ -1509,7 +1507,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
                         onClick={(e) => handleSelectAllProduction(e)}
                       />
-                    </th>
+                    </th> */}
                     <th scope="col" className="px-6 py-3 text-slate-900">
                       <div className="flex items-center">
                         DATE
@@ -1619,7 +1617,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-controls="accordion-arrow-icon-body-0"
                   >
                     <td className="pr-6 py-5">
-                      <div className="flex items-center">
+                      {/* <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -1642,7 +1640,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           htmlFor="checkbox-table-search-0"
                           className="sr-only"
                         ></label>
-                      </div>
+                      </div> */}
                     </td>
                     <th
                       scope="row"
@@ -1665,7 +1663,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-controls="accordion-arrow-icon-body-0"
                   >
                     <td className="pr-6 py-5">
-                      <div className="flex items-center">
+                      {/* <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -1688,7 +1686,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           htmlFor="checkbox-table-search-0"
                           className="sr-only"
                         ></label>
-                      </div>
+                      </div> */}
                     </td>
                     <th
                       scope="row"
@@ -1711,7 +1709,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-controls="accordion-arrow-icon-body-0"
                   >
                     <td className="pr-6 py-5">
-                      <div className="flex items-center">
+                      {/* <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -1734,7 +1732,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           htmlFor="checkbox-table-search-0"
                           className="sr-only"
                         ></label>
-                      </div>
+                      </div> */}
                     </td>
                     <th
                       scope="row"
@@ -1757,7 +1755,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-controls="accordion-arrow-icon-body-0"
                   >
                     <td className="pr-6 py-5">
-                      <div className="flex items-center">
+                      {/* <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -1780,7 +1778,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           htmlFor="checkbox-table-search-0"
                           className="sr-only"
                         ></label>
-                      </div>
+                      </div> */}
                     </td>
                     <th
                       scope="row"
@@ -1803,7 +1801,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-controls="accordion-arrow-icon-body-0"
                   >
                     <td className="pr-6 py-5">
-                      <div className="flex items-center">
+                      {/* <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -1826,7 +1824,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           htmlFor="checkbox-table-search-0"
                           className="sr-only"
                         ></label>
-                      </div>
+                      </div> */}
                     </td>
                     <th
                       scope="row"
@@ -1849,7 +1847,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-controls="accordion-arrow-icon-body-1"
                   >
                     <td className="pr-6 py-5">
-                      <div className="flex items-center">
+                      {/* <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -1872,7 +1870,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           htmlFor="checkbox-table-search-1"
                           className="sr-only"
                         ></label>
-                      </div>
+                      </div> */}
                     </td>
                     <th
                       scope="row"
@@ -1895,7 +1893,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-controls="accordion-arrow-icon-body-2"
                   >
                     <td className="pr-6 py-5">
-                      <div className="flex items-center">
+                      {/* <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -1918,7 +1916,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           htmlFor="checkbox-table-search-2"
                           className="sr-only"
                         ></label>
-                      </div>
+                      </div> */}
                     </td>
                     <th
                       scope="row"
@@ -1941,7 +1939,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-controls="accordion-arrow-icon-body-3"
                   >
                     <td className="pr-6 py-5">
-                      <div className="flex items-center">
+                      {/* <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -1964,7 +1962,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           htmlFor="checkbox-table-search-3"
                           className="sr-only"
                         ></label>
-                      </div>
+                      </div> */}
                     </td>
                     <th
                       scope="row"
@@ -1987,7 +1985,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     aria-controls="accordion-arrow-icon-body-4"
                   >
                     <td className="pr-6 py-5">
-                      <div className="flex items-center">
+                      {/* <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
@@ -2010,7 +2008,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                           htmlFor="checkbox-table-search-4"
                           className="sr-only"
                         ></label>
-                      </div>
+                      </div> */}
                     </td>
                     <th
                       scope="row"
