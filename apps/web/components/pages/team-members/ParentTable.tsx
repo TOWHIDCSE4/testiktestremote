@@ -776,7 +776,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     <div className="w-[73%]">
                                       <div className="flex justify-between">
                                         <span className="flex w-[12rem] text-[14px] text-green-800 font-semibold border-r-4 border-gray-500 p-0 pb-8">
-                                          <p className="w-[20rem]">
+                                          <p className="w-[20rem] ml-2">
                                             ADDITIONAL INFO
                                           </p>
                                         </span>
