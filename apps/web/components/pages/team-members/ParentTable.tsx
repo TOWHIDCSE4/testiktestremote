@@ -25,12 +25,6 @@ import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 interface ContentProps {
   userLog: string
 }
-const colorMapping: { [key: string]: string } = {
-  Pending: "text-yellow-700",
-  Approved: "text-green-800",
-  Rejected: "text-red-800",
-  Archived: "text-yellow-500",
-}
 
 const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [userRole, setUserRole] = useState<string | undefined>(userLog)
@@ -110,7 +104,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const { data: userProfile } = useProfile()
   const [newModal, setNewModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState("Pending")
   const [confirmationModal, setConfirmationModal] = useState(false)
+  const [selectedColor, setSelectedColor] = useState("text-yellow-900")
   const [selectedRole, setSelectedRole] = useState(storeSession?.role)
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
@@ -120,32 +116,21 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [isOpenFactory, setIsOpenFactory] = useState()
   const [directorStates, setDirectorStates] = useState([])
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
-  const [isTableInitialize, setIsTableInitialize] = useState(false)
-  const [pendingCount, setPendingCount] = useState(0)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-
+  const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
+    []
+  )
   const {
     data: paginated,
     isLoading: isPaginatedLoading,
     page,
-    status: userStatus,
     setPage,
     setRole,
     setLocationId,
     setStatus,
     setName,
   } = usePaginatedUsers("Pending", storeSession?.role)
-
-  useEffect(() => {
-    if (paginated?.items?.length === 0 && isTableInitialize === false) {
-      handleSelectDropdown("Approved")
-      setIsTableInitialize(true)
-      setPendingCount(0)
-    } else if (userStatus === "Pending") {
-      setPendingCount(paginated?.itemCount ?? 0)
-    }
-  }, [paginated])
 
   const { data: machineClass, isLoading: isMachineLoading } =
     useMachineClasses()
@@ -170,6 +155,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     USER_ROLES.Sales,
   ]
 
+  const isChecked = (id: string) => {
+    return checkedProduction.filter((item) => item.id === id).length > 0
+  }
+
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
@@ -187,21 +176,20 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
+    debugger
     if (storeSession?.role === "Super" || "Administrator" || "HR_Director") {
       setLocationId("")
     } else {
+      debugger
       setLocationId(userProfile?.item?.locationId as string)
     }
-  }, [userProfile, selectedRole])
+  }, [userProfile, selectedRole, selectedStatus])
 
   const handleTeamListing = (event: any) => {
     setIsOpenRole(undefined)
     setOpenAccordion(null)
     setSelectedRole(event.target.value)
     setRole(event.target.value)
-    setIsTableInitialize(false)
-    setStatus("Pending")
-    setPendingCount(paginated?.itemCount ?? 0)
   }
 
   const statusArray = Object.values(USER_STATUSES)
@@ -212,9 +200,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const handleSelectDropdown = (value: T_UserStatus) => {
     setIsOpenRole(undefined)
+    setSelectedStatus(value)
     setOpenAccordion(null)
-    setIsOpen(false)
+    setIsOpen(!isOpen)
     setStatus(value)
+
+    const colorMapping: { [key: string]: string } = {
+      Pending: "text-yellow-700",
+      Approved: "text-green-800",
+      Rejected: "text-red-800",
+      Archived: "text-yellow-500",
+    }
+    setSelectedColor(colorMapping[value] || "")
   }
 
   const handleHideFactory = (idx: any) => {
@@ -272,7 +269,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     id="role"
                     className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
                     onChange={handleTeamListing}
-                    value={userStatus ?? ""}
+                    value={selectedStatus}
                   >
                     <option className="hidden">Select Role</option>
                     {roleFilter().map((item, index) => (
@@ -298,22 +295,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               <div className="mt-4 flex flex-col">
                 <span
-                  className={`text-[2rem] uppercase flex md:pl-5 font-semibold text-xl cursor-pointer ${
-                    colorMapping[userStatus ?? "Approved"]
-                  }`}
+                  className={`text-[2.5rem] uppercase md:pl-5 font-semibold text-xl cursor-pointer ${selectedColor}`}
                   onClick={toggleDropdown}
                 >
-                  {userStatus}
-                  <svg
-                    height="30"
-                    viewBox="0 0 48 48"
-                    width="30"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="ml-1"
-                  >
-                    <path d="M14 20l10 10 10-10z" />
-                    <path d="M0 0h48v48h-48z" fill="none" />
-                  </svg>
+                  {selectedStatus}
                 </span>
                 {isOpen && (
                   <div className="top-[4rem] sm:top-[4rem] absolute overflow- mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
@@ -328,18 +313,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           }}
                           className="cursor-pointer px-4 py-2 hover:bg-gray-200"
                         >
-                          {status === "Pending" ? (
-                            <span>
-                              {status}
-                              <div className="inline-block mx-4 relative">
-                                <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-4 -right-4 dark:border-gray-900">
-                                  {pendingCount}
-                                </div>
-                              </div>
-                            </span>
-                          ) : (
-                            status
-                          )}
+                          {status}
                         </li>
                       ))}
                     </ul>
@@ -347,7 +321,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 )}
               </div>
             </div>
-            <div className="space-y-2 w-[40%] ">
+            <div className="space-y-2 w-[40%]">
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   {" "}
@@ -387,15 +361,29 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   <span>All</span>
                 </div>
               </div>
-              <div className="flex justify-end text-gray-900 space-x-1">
-                <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
-                  Department
-                </span>
-                <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
-                  <span className="text-start text-[#7F1D1D]">:</span>
-                  <span>All</span>
+              {selectedRole === "Personnel" ? (
+                <div className="flex justify-end text-gray-900 space-x-1">
+                  <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
+                    Machine Class
+                  </span>
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                    <span className="text-start text-[#7F1D1D]">:</span>
+                    <span>All</span>
+                  </div>
                 </div>
-              </div>
+              ) : selectedRole === "HR" || selectedRole === "Corporate" ? (
+                <div className="flex justify-end text-gray-900 space-x-1">
+                  <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
+                    Department
+                  </span>
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                    <span className="text-start text-[#7F1D1D]">:</span>
+                    <span>All</span>
+                  </div>
+                </div>
+              ) : (
+                <div></div>
+              )}
             </div>
             <div className="space-y-8 w-[30%] px-5">
               <div className="flex justify-center text-end text-gray-900 ">
@@ -597,6 +585,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
                         const isAccordionOpen =
                           openAccordion === `accordion-arrow-icon-body-${idx}`
+                        const checked = isChecked(item._id ?? "")
                         return (
                           <React.Fragment key={item._id}>
                             <tr
@@ -1016,10 +1005,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   >
                     {paginated?.items &&
                       paginated?.items.map((item, idx) => {
+                        console.log(paginated)
                         const rowClass =
                           idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
                         const isAccordionOpen =
                           openAccordion === `accordion-arrow-icon-body-${idx}`
+                        const checked = isChecked(item._id ?? "")
                         return (
                           <React.Fragment key={item._id}>
                             <tr
@@ -1617,16 +1608,16 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 <td colSpan={6}>
                                   <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
                                     <div className="w-[73%]">
-                                      <div className="flex justify-between">
-                                        <span className="flex w-[17rem] text-[14px]  text-green-800 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                      <div className="flex justify-start">
+                                        <span className="flex w-[16rem] text-[14px]  text-green-800 font-semibold border-r-4 border-gray-500 p-0 pb-8">
                                           <p className="w-2/3 text-right">
                                             ADDITIONAL INFO
                                           </p>
                                         </span>
-                                        <div className="flex flex-col py-2">
-                                          <span className="flex w-[22rem] text-[13px] ">
+                                        <div className="flex flex-col py-2 pl-3 space-y-2">
+                                          <span className="flex w-[20rem] space-x-1 text-[13px] justify-end items-end">
                                             <p
-                                              className={`px-3 text-sm text-gray-500 font-semibold ${
+                                              className={`px-1 text-sm text-gray-500 font-semibold ${
                                                 item.email
                                                   ? "text-gray-900"
                                                   : "text-red-500"
@@ -1644,9 +1635,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               {item.email || "-"}
                                             </p>
                                           </span>
-                                          <span className="flex w-[22rem] text-[13px] text-slate-900 ">
+                                          <span className="flex w-[20rem] space-x-1 text-[13px] text-slate-900 justify-end items-end">
                                             <p
-                                              className={`px-3 text-sm text-gray-500 font-semibold ${
+                                              className={` text-sm text-gray-500 font-semibold ${
                                                 item.createdAt &&
                                                 item.createdAt instanceof Date
                                                   ? "text-gray-900"
@@ -1691,117 +1682,344 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           {!isPaginatedLoading &&
           paginated?.items &&
           paginated?.items.length === 0 ? (
-            <>
-              <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
-                <tr className="">
-                  <th scope="col" className="w-[6%] text-slate-900"></th>
-                  <th scope="col" className="">
-                    <div className="flex items-start justify-start">
-                      {/* <a href="#" className="group inline-flex items-center"> */}
-                      User
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th className="">
-                    <div className="flex items-center justify-center ml-8">
-                      <span> City</span>
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th className="">
-                    <div className="flex items-start justify-start ml-7">
-                      <span className="flex">
-                        Factory<p className="text-red-600 ml-1">*</p>
-                      </span>
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                    {/* <span className="ml-2 flex-none rounded text-gray-400">
-                      <ChevronUpDownIcon
-                      className="h-5 w-5"
-                      aria-hidden="true"
-                      />
-                    </span>
-                    </a> */}
-                  </th>
-                  {selectedRole === "Personnel" ? (
-                    <th colSpan={1} className="">
-                      <div className="flex items-start justify-start px-0 py-3 ml-9">
-                        <div className="flex items-center overflow-ellipsis whitespace-nowrap">
-                          Machine Class
-                          <p className="text-red-600 ml-1">*</p>
-                          <button onClick={(e) => {}}>
+            <div className="flex mb-4 w-full">
+              <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
+                  <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
+                    <tr>
+                      <th scope="col" className=" py-3 text-slate-900"></th>
+                      <th scope="col" className=" py-3 text-slate-900">
+                        <div className="flex items-center">
+                          User
+                          <button>
                             <svg
-                              className="w-3 h-3 ml-1"
+                              className="w-3 h-3 ml-1.5"
                               aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
                               fill="currentColor"
                               viewBox="0 0 24 24"
                             >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
                             </svg>
                           </button>
                         </div>
-                      </div>
-                    </th>
-                  ) : (
-                    <th colSpan={1} className="">
-                      <div className="flex items-start justify-start px-0 py-3 ml-11">
-                        <div className="flex items-center ml-12">
-                          Department
-                          <p className="text-red-600 ml-1">*</p>
-                          <button onClick={(e) => {}}>
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-slate-900">
+                        <div className="flex items-center">
+                          City
+                          <button>
                             <svg
-                              className="w-3 h-3 ml-1"
+                              className="w-3 h-3 ml-1.5"
                               aria-hidden="true"
                               xmlns="http://www.w3.org/2000/svg"
                               fill="currentColor"
                               viewBox="0 0 24 24"
                             >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
                             </svg>
                           </button>
                         </div>
-                      </div>
-                    </th>
-                  )}
-                </tr>
-              </thead>
-              <div className="flex items-center justify-center mb-4 mt-1 border-t-4 border-indigo-900 w-full h-96">
-                <div className="text-gray-500 text-lg font-semibold">
-                  No users found
-                </div>
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-slate-900">
+                        <div className="flex items-center">
+                          Factory
+                          <button>
+                            <svg
+                              className="w-3 h-3 ml-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </th>
+                      {selectedRole == "Personnel" ? (
+                        <th scope="col" className="px-6 py-3 text-slate-900">
+                          <div className="flex items-center ">
+                            Machine Class
+                            <button>
+                              <svg
+                                className="w-3 h-3 ml-1.5"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </th>
+                      ) : (
+                        <th scope="col" className="px-6 py-3 text-slate-900">
+                          <div className="flex items-center ">
+                            Department
+                            <button>
+                              <svg
+                                className="w-3 h-3 ml-1.5"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody
+                    data-accordion="open"
+                    className="border-t-4 border-indigo-900"
+                  >
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="flex items-center">
+                          <svg
+                            height="16"
+                            viewBox="0 0 48 48"
+                            width="15"
+                            className="ml-2"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M-838-2232H562v3600H-838z" fill="none" />
+                            <path d="M16 10v28l22-14z" />
+                            <path d="M0 0h48v48H0z" fill="none" />
+                          </svg>
+
+                          <label
+                            htmlFor="checkbox-table-search-0"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="flex items-center">
+                          <svg
+                            height="16"
+                            viewBox="0 0 48 48"
+                            width="15"
+                            className="ml-2"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M-838-2232H562v3600H-838z" fill="none" />
+                            <path d="M16 10v28l22-14z" />
+                            <path d="M0 0h48v48H0z" fill="none" />
+                          </svg>
+
+                          <label
+                            htmlFor="checkbox-table-search-0"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="flex items-center">
+                          <svg
+                            height="16"
+                            viewBox="0 0 48 48"
+                            width="15"
+                            className="ml-2"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M-838-2232H562v3600H-838z" fill="none" />
+                            <path d="M16 10v28l22-14z" />
+                            <path d="M0 0h48v48H0z" fill="none" />
+                          </svg>
+
+                          <label
+                            htmlFor="checkbox-table-search-0"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="flex items-center">
+                          <svg
+                            height="16"
+                            viewBox="0 0 48 48"
+                            width="15"
+                            className="ml-2"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M-838-2232H562v3600H-838z" fill="none" />
+                            <path d="M16 10v28l22-14z" />
+                            <path d="M0 0h48v48H0z" fill="none" />
+                          </svg>
+
+                          <label
+                            htmlFor="checkbox-table-search-0"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="flex items-center">
+                          <svg
+                            height="16"
+                            viewBox="0 0 48 48"
+                            width="15"
+                            className="ml-2"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M-838-2232H562v3600H-838z" fill="none" />
+                            <path d="M16 10v28l22-14z" />
+                            <path d="M0 0h48v48H0z" fill="none" />
+                          </svg>
+
+                          <label
+                            htmlFor="checkbox-table-search-0"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                      data-accordion-target="#accordion-arrow-icon-body-1"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-1"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="flex items-center">
+                          <svg
+                            height="16"
+                            viewBox="0 0 48 48"
+                            width="15"
+                            className="ml-2"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M-838-2232H562v3600H-838z" fill="none" />
+                            <path d="M16 10v28l22-14z" />
+                            <path d="M0 0h48v48H0z" fill="none" />
+                          </svg>
+                          <label
+                            htmlFor="checkbox-table-search-1"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-            </>
+            </div>
           ) : null}
           <div className="border-t border-gray-300">
             <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
