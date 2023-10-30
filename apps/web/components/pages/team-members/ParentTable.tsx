@@ -775,13 +775,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
                                     <div className="w-[73%]">
                                       <div className="flex justify-between">
-                                        <span className="flex w-[17rem] text-[14px] text-green-800 font-semibold border-r-4 border-gray-500 p-0 pb-8">
-                                          <p className="w-2/3 text-right">
+                                        <span className="flex w-[12rem] text-[14px] text-green-800 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                          <p className="w-[20rem]">
                                             ADDITIONAL INFO
                                           </p>
                                         </span>
-                                        <div className="flex flex-col py-2">
-                                          <span className="flex  w-[22rem] text-[13px] ">
+                                        <div className="flex pl-3">
+                                          <span className="flex w-[20rem] space-x-1 text-[13px] justify-center items-center">
                                             <p
                                               className={`px-3 text-sm  text-gray-500 font-semibold ${
                                                 item.email
@@ -807,9 +807,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               {item.email || "-"}
                                             </p>
                                           </span>
-                                          <span className="flex w-[22rem] text-[13px] text-slate-900 ">
+                                          <span className="flex w-[22rem] text-[13px] text-slate-900 justify-center items-center">
                                             <p
-                                              className={`px-3 text-sm text-gray-500 font-semibold ${
+                                              className={`px-0 text-sm text-gray-500 font-semibold ${
                                                 item.locationId
                                                   ? "text-gray-900"
                                                   : "text-red-500"
@@ -1606,14 +1606,14 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 <td colSpan={6}>
                                   <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
                                     <div className="w-[73%]">
-                                      <div className="flex justify-start">
-                                        <span className="flex w-[16rem] text-[14px]  text-green-800 font-semibold border-r-4 border-gray-500 p-0 pb-8">
-                                          <p className="w-2/3 text-right">
+                                      <div className="flex justify-between">
+                                        <span className="flex w-[12rem] text-[14px] text-green-800 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                          <p className="w-[25rem] ml-2">
                                             ADDITIONAL INFO
                                           </p>
                                         </span>
-                                        <div className="flex flex-col py-2 pl-3 space-y-2">
-                                          <span className="flex w-[20rem] space-x-1 text-[13px] justify-end items-end">
+                                        <div className="flex py-2">
+                                          <span className="flex w-[15rem] space-x-1 text-[13px] justify-center items-center">
                                             <p
                                               className={`px-1 text-sm text-gray-500 font-semibold ${
                                                 item.email
@@ -1633,7 +1633,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               {item.email || "-"}
                                             </p>
                                           </span>
-                                          <span className="flex w-[20rem] space-x-1 text-[13px] text-slate-900 justify-end items-end">
+                                          <span className="flex w-[20rem] space-x-1 text-[13px] text-slate-900 justify-center items-center">
                                             <p
                                               className={` text-sm text-gray-500 font-semibold ${
                                                 item.createdAt &&
@@ -1977,6 +1977,45 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </tr>
                     <tr
                       className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                      data-accordion-target="#accordion-arrow-icon-body-1"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-1"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="flex items-center">
+                          <svg
+                            height="16"
+                            viewBox="0 0 48 48"
+                            width="15"
+                            className="ml-2"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M-838-2232H562v3600H-838z" fill="none" />
+                            <path d="M16 10v28l22-14z" />
+                            <path d="M0 0h48v48H0z" fill="none" />
+                          </svg>
+                          <label
+                            htmlFor="checkbox-table-search-1"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100  "
                       data-accordion-target="#accordion-arrow-icon-body-1"
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-1"
