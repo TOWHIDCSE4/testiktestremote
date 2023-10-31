@@ -133,9 +133,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     useGetMachinesByMachineClasses(machineClass)
   useEffect(() => {
     if (machines && machines.items) {
-      console.log("machines", machines)
       const initialMachineSelection = machines?.items?.map((item) => item._id)
-      setMachine(initialMachineSelection)
+      setMachine(initialMachineSelection as string[])
       setMachineCounter(machine.length)
     }
   }, [machines])
@@ -617,7 +616,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             value={item._id as string}
                           >
                             <ListItemText primary={item.name} />
-                            <Checkbox checked={city.includes(item._id)} />
+                            <Checkbox
+                              checked={city.includes(item._id as string)}
+                            />
                           </MenuItem>
                         )
                       )}
@@ -685,7 +686,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             >
                               <ListItemText primary={item.name} />
                               <Checkbox
-                                checked={machineClass.includes(item._id)}
+                                checked={machineClass.includes(
+                                  item._id as string
+                                )}
                               />
                             </MenuItem>
                           )
@@ -761,7 +764,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                               value={item._id as string}
                             >
                               <ListItemText primary={item.name} />
-                              <Checkbox checked={machine.includes(item._id)} />
+                              <Checkbox
+                                checked={machine.includes(item._id as string)}
+                              />
                             </MenuItem>
                           )
                         )
@@ -1132,7 +1137,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                 .tz(dayjs(item.createdAt), "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
-                            <td className=" py-4">{item?.machineId.name}</td>
+                            {/* @ts-ignore */}
+                            <td className=" py-4">
+                              {item?.machineId?.name as string}
+                            </td>
                             <td
                               className={` py-4 text-sm text-gray-500 flex flex-col ${
                                 item.jobId ? "text-gray-900" : "text-red-500"
