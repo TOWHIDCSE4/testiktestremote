@@ -81,6 +81,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
+  const [bulkSelectCheckbox, setBulkSelectCheckbox] = useState(false)
   const [partsSelected, setPartsSelected] = useState<string[]>([])
   const [partSelector, setPartSelector] = useState<string[]>([])
   const [machine, setMachine] = useState<string[]>([])
@@ -489,19 +490,25 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }
   }, [filterBy])
 
-  const handleSelectAllProduction = (event: any) => {
+  const handleSelectAllProduction = () => {
     const data = paginated?.items ?? []
     let updatedArray = [] as any
-    updatedArray =
-      data?.length > 0 && event.target.checked
-        ? data
-            ?.filter((item) => item?._id !== undefined)
-            .map((item) => ({ id: item?._id }))
-        : []
+
+    if (checkedProduction.length === data.length) {
+      updatedArray = []
+    } else {
+      updatedArray = data
+        ?.filter((item) => item?._id !== undefined)
+        .map((item) => ({ id: item?._id }))
+    }
+
     setCheckedProduction(updatedArray)
   }
 
-  // const handleCurrentDateChecked = (event: any) => {
+  useEffect(() => {
+    if (paginated?.items.length == checkedProduction.length) {
+    }
+  })
 
   const isChecked = (id: string) => {
     return checkedProduction.filter((item) => item.id === id).length > 0
@@ -965,9 +972,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       <input
                         id={`checkbox-table-search`}
                         type="checkbox"
-                        checked={checkedProduction.length == 5}
+                        checked={
+                          checkedProduction.length == paginated.items.length
+                        }
                         className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
-                        onClick={(e) => handleSelectAllProduction(e)}
+                        onChange={handleSelectAllProduction}
                       />
                     </th>
                     <th scope="col" className="w-[10%] text-slate-900">
