@@ -13,22 +13,23 @@ export const paginated = async (req: Request, res: Response) => {
       const query = {
         locationId: locationId,
         ...(factoryId &&
-          factoryId != "all" && // verified &&
-          { factoryId: factoryId }),
+          factoryId != "all" && { // verified &&
+            factoryId: factoryId,
+          }),
         ...(machineClassId &&
           machineClassId != "all" && { machineClassId: machineClassId }),
         ...(name &&
           name != "all" && { name: { $regex: `.*${name}.*`, $options: "i" } }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-        $and: [
-          // ...(verified
-          //   ? [{ verified: true }]
-          //   : [
-          //       {
-          //         $or: [{ verified: { $exists: false } }, { verified: false }],
-          //       },
-          //     ]),
-        ],
+        // $and: [
+        // ...(verified
+        //   ? [{ verified: true }]
+        //   : [
+        //       {
+        //         $or: [{ verified: { $exists: false } }, { verified: false }],
+        //       },
+        //     ]),
+        // ],
       }
       const partsCount = await Machines.find(query).countDocuments()
 
