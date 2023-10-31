@@ -6,7 +6,7 @@ import {
 import TimerLogs from "../../models/timerLogs"
 import mongoose from "mongoose"
 import parts from "../../models/parts"
-import dayjs from "dayjs"
+import dayjs, { Dayjs } from "dayjs"
 import timerLogs from "../../models/timerLogs"
 import * as Sentry from "@sentry/node"
 import machines from "../../models/machines"
@@ -24,10 +24,14 @@ export const globalLogs = async (req: Request, res: Response) => {
     page,
     sort,
     key,
-    startDate = dayjs().startOf("week"),
-    endDate = dayjs().endOf("week"),
   } = req.query
-
+  let { startDate, endDate } = req.query
+  startDate = startDate
+    ? dayjs(startDate as string).format()
+    : dayjs().startOf("week").format()
+  endDate = endDate
+    ? dayjs(endDate as string).format()
+    : dayjs().endOf("week").format()
   const sortObj = {}
   if (sort && key) {
     //@ts-expect-error
@@ -137,10 +141,14 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     sort,
     key,
     limit,
-    startDate = dayjs().startOf("week"),
-    endDate = dayjs().endOf("week"),
   } = req.query
-
+  let { startDate, endDate } = req.query
+  startDate = !startDate
+    ? dayjs().startOf("week").format()
+    : dayjs(startDate as string).format()
+  endDate = !endDate
+    ? dayjs().endOf("week").format()
+    : dayjs(endDate as string).format()
   const sortObj = {}
   if (sort && key) {
     //@ts-expect-error
@@ -310,23 +318,17 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
   }
 }
 export const calculateGlobalMetrics = async (req: Request, res: Response) => {
-  const {
-    locationId,
-    factoryId,
-    machineId,
-    machineClassId,
-    partId,
-    startDate,
-    endDate,
-  } = req.query
+  const { locationId, factoryId, machineId, machineClassId, partId } = req.query
+  let { startDate, endDate } = req.query
   try {
-    const startTime = startDate
-      ? dayjs(startDate as string)
-      : dayjs().startOf("week")
-    const endTime = endDate ? dayjs(endDate as string) : dayjs().endOf("week")
-
+    startDate = startDate
+      ? dayjs(startDate as string).format()
+      : dayjs().startOf("week").format()
+    endDate = endDate
+      ? dayjs(endDate as string).format()
+      : dayjs().endOf("week").format()
     // Calculate the total time in hours
-    const totalTime = dayjs(endTime).diff(startTime, "hour")
+    const totalTime = dayjs(startDate).diff(endDate, "hour")
     let query = {}
 
     if (locationId) {
