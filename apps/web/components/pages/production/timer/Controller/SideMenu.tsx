@@ -8,10 +8,12 @@ const SideMenu = ({
   endMenu,
   setEndMenu,
   setIsEndProductionModalOpen,
+  endTimer,
 }: {
   endMenu: boolean
   setEndMenu: Dispatch<boolean>
   setIsEndProductionModalOpen: Dispatch<boolean>
+  endTimer: Dispatch<boolean>
 }) => {
   return (
     <div
@@ -39,7 +41,10 @@ const SideMenu = ({
             type="button"
             className="bg-[#274263] xl:text-xl 2xl:text-4xl rounded-md ml-1 2xl:ml-3 text-yellow-200 uppercase w-full py-2 text-center"
             // onClick={() => stopTimer()}
-            onClick={() => setIsEndProductionModalOpen(true)}
+            onClick={() => {
+              setIsEndProductionModalOpen(true)
+              endTimer(true)
+            }}
           >
             End Production
           </button>
