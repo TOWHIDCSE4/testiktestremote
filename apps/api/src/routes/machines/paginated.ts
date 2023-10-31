@@ -13,7 +13,8 @@ export const paginated = async (req: Request, res: Response) => {
       const query = {
         locationId: locationId,
         ...(factoryId &&
-          factoryId != "all" && { // verified &&
+          factoryId != "all" && {
+            // verified &&
             factoryId: factoryId,
           }),
         ...(machineClassId &&
