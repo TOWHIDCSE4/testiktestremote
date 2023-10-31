@@ -23,7 +23,7 @@ const TIMER_ADMIN_ROLES = [
   USER_ROLES.Production,
   USER_ROLES.Personnel,
 ]
-const TIMER_CITY_ROLES = [USER_ROLES.Personnel && USER_ROLES.Production]
+const TIMER_CITY_ROLES = [USER_ROLES.Personnel, USER_ROLES.Production]
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
