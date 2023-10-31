@@ -50,17 +50,13 @@ const NewModal = ({
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const [isStock, setIsStock] = useState(false)
-  const [partQuery, setPartQuery] = useState(timer ? partId : "")
+  const [partQuery, setPartQuery] = useState("")
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses()
-  const [selectedPart, setSelectedPart] = useState(
-    timer
-      ? partId
-      : {
-          id: "",
-          name: "",
-        }
-  )
+  const [selectedPart, setSelectedPart] = useState({
+    id: "",
+    name: "",
+  })
   const {
     data: parts,
     isLoading: isPartsLoading,
@@ -183,11 +179,6 @@ const NewModal = ({
     setValue("locationId", locationId as string)
     setLocationId(locationId as string)
   }, [locationId])
-
-  // useEffect(() => {
-  //   setPartQuery(selectedPart?.name as string)
-  //   setValue("partId", selectedPart?.id as string)
-  // }, [selectedPart])
 
   useEffect(() => {
     if (selectedPart && typeof selectedPart === "object") {
