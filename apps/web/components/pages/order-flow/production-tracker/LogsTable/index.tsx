@@ -1198,7 +1198,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                         </p>
                                       </span>
 
-                                      <span className="flex w-[22rem] text-[13px] ">
+                                      <span className="flex w-[30rem] text-[13px] ">
                                         <p
                                           className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
                                             item.jobId
