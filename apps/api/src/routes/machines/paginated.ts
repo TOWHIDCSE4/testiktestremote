@@ -8,26 +8,26 @@ import {
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, factoryId, machineClassId, name } = req.query
   if (page && locationId) {
-    const verified = !((factoryId as string)?.toLowerCase() === "not verified")
+    // const verified = !((factoryId as string)?.toLowerCase() === "not verified")
     try {
       const query = {
         locationId: locationId,
         ...(factoryId &&
-          factoryId != "all" &&
-          verified && { factoryId: factoryId }),
+          factoryId != "all" && // verified &&
+          { factoryId: factoryId }),
         ...(machineClassId &&
           machineClassId != "all" && { machineClassId: machineClassId }),
         ...(name &&
           name != "all" && { name: { $regex: `.*${name}.*`, $options: "i" } }),
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
         $and: [
-          ...(verified
-            ? [{ verified: true }]
-            : [
-                {
-                  $or: [{ verified: { $exists: false } }, { verified: false }],
-                },
-              ]),
+          // ...(verified
+          //   ? [{ verified: true }]
+          //   : [
+          //       {
+          //         $or: [{ verified: { $exists: false } }, { verified: false }],
+          //       },
+          //     ]),
         ],
       }
       const partsCount = await Machines.find(query).countDocuments()
