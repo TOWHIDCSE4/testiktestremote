@@ -7,6 +7,21 @@ module.exports = {
   ],
   theme: {
     extend: {
+      animation: {
+        text: "text 5s ease infinite",
+      },
+      keyframes: {
+        text: {
+          "0%, 100%": {
+            "background-size": "200% 200%",
+            "background-position": "left center",
+          },
+          "50%": {
+            "background-size": "200% 200%",
+            "background-position": "right center",
+          },
+        },
+      },
       colors: {
         "light-cyan-blue": "#F5F7FA",
         "dark-cyan-blue": "#2E3C4F",

@@ -863,6 +863,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <Space direction="vertical" className="w-full" size={12}>
                       <RangePicker
                         disabled={isCheckboxChecked}
+                        //@ts-expect-error
                         value={isCheckboxChecked ? [null] : dateRange}
                         disabledDate={disabledDate}
                         onChange={(e) => datePick(e)}
