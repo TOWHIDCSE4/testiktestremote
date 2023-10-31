@@ -1240,7 +1240,19 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                               : "text-red-500"
                                           }`}
                                         >
-                                          {item.stopReason.join(", ")}
+                                          <span
+                                            className={`${
+                                              item.stopReason.join(", ") ===
+                                              "Unit Created"
+                                                ? "text-green-500"
+                                                : item.stopReason.join(", ") ===
+                                                  "Worker Break"
+                                                ? "text-yellow-500"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {item.stopReason.join(", ")}
+                                          </span>
                                         </p>
                                       </span>
                                     </div>
