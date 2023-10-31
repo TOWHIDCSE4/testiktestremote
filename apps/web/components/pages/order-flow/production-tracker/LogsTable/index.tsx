@@ -950,7 +950,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       : ""
                   }
                   endDateRange={
-                    dateRange && dateRange.length > 0
+                    dateRange && dateRange.length > 1
                       ? dayjs(dateRange[1])
                           .endOf("day")
                           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")

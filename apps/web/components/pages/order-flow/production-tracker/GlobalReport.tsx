@@ -203,8 +203,14 @@ const GlobalTableReport = ({
               <div className="text-sm">
                 <span className="text-gray-800 font-bold">Date Range:</span>{" "}
                 {[
+                  console.log(
+                    endDateRange,
+                    dayjs(endDateRange as string).format("MM/DD/YYYY")
+                  ),
                   dayjs(startDateRange as string).format("MM/DD/YYYY"),
-                  dayjs(endDateRange as string).format("MM/DD/YYYY"),
+                  dayjs(endDateRange as string)
+                    .subtract(1, "day")
+                    .format("MM/DD/YYYY"),
                 ]
                   .map((item) => item)
                   .join(" - ")}
