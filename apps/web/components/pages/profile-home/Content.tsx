@@ -8,14 +8,6 @@ const Content = () => {
   const { data: location, setSelectedLocationId } = useLocation()
   const [showText, setShowText] = useState(true)
 
-  // useEffect(()=>{
-  //   const timer = setTimeout(() => {
-  //     setShowText(false);
-  //   }, 5000);
-
-  //   return () => clearTimeout(timer);
-  // })
-
   useEffect(() => {
     if (data?.item.locationId)
       setSelectedLocationId(data?.item.locationId as string)
