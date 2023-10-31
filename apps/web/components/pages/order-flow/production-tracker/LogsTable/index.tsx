@@ -293,12 +293,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const handleCheckboxChange = (e: any) => {
     const isChecked = e.target.checked
     setIsCheckboxChecked(isChecked)
-
     if (isChecked) {
       const currentDate = dayjs().toDate()
       setDateRange([dayjs().format("YYYY-MM-DD"), dayjs().format("YYYY-MM-DD")])
-      datePick([currentDate, currentDate]) // Call datePick with the current date
+      datePick([currentDate, currentDate])
     } else {
+      setDateRange([])
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -863,7 +863,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <Space direction="vertical" className="w-full" size={12}>
                       <RangePicker
                         disabled={isCheckboxChecked}
-                        // value={dateRange}
+                        value={isCheckboxChecked ? [null] : dateRange}
                         disabledDate={disabledDate}
                         onChange={(e) => datePick(e)}
                       />
@@ -880,7 +880,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   </button>
                 </div>
               </div>
-              <div className="w-full flex text-[12px] px-[30.3%] font-semibold">
+              <div className="w-full flex text-[12px] px-[27%] font-semibold">
                 <div>
                   <label htmlFor="checkbox-date">Current Date</label>
                   <input
@@ -935,14 +935,14 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     ) ?? []
                   }
                   startDateRange={
-                    dateRange.length > 0
+                    dateRange && dateRange.length > 0
                       ? dayjs(dateRange[0])
                           .startOf("day")
                           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
                       : ""
                   }
                   endDateRange={
-                    dateRange.length > 0
+                    dateRange && dateRange.length > 0
                       ? dayjs(dateRange[1])
                           .endOf("day")
                           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
@@ -1264,242 +1264,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               </table>
             ) : null}
           </div>
-          {/* <div className="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <label
-                  htmlFor="filterBy"
-                  className="block text-sm font-medium text-gray-900"
-                >
-                  Filter By
-                </label>
-                <select
-                  id="filterBy"
-                  name="filterBy"
-                  className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                  onChange={(e) => setFilterBy(e.target.value)}
-                >
-                  <option value="All">All</option>
-                  <option value="Factories">Factory</option>
-                  <option value="Machine Classes">Machine Class</option>
-                  <option value="Machines">Machine</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="location"
-                  className="block text-sm font-medium text-gray-900"
-                >
-                  {filterBy}
-                </label>
-                {filterInputs()}
-              </div>
-            </div> */}
         </div>
-        {/* {isPaginatedLoading ? (
-          <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
-            <div
-              className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
-              role="status"
-              aria-label="loading"
-            >
-              <span className="sr-only">Loading...</span>
-            </div>
-          </div>
-        ) : null} */}
-        {/* {!isPaginatedLoading &&
-          paginated?.items &&
-          paginated?.items.length > 0 ? (
-            <table className="w-full divide-y divide-gray-300 border-t border-gray-300">
-              <thead>
-                <tr>
-                  <th
-                    scope="col"
-                    className={`text-sm py-3.5 pr-3 text-left font-semibold text-gray-900 pl-4 lg:pl-8 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      ID
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Date
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Product
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Operator
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Status
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Time
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Stop Reason
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {paginated?.items &&
-                  paginated?.items.map((item, idx) => (
-                    <tr key={idx} className={`${!item.jobId ? "bg-red-50" : ""}`}>
-                      <td
-                        className={`py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 lg:pl-8 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {item.globalCycle ? item.globalCycle : ""}
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 flex flex-col ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        <span>
-                          {dayjs
-                            .tz(dayjs(item.createdAt), "America/Chicago")
-                            .format("MM/DD/YYYY")}
-                        </span>
-                        <span>
-                          {dayjs
-                            .tz(dayjs(item.createdAt), "America/Chicago")
-                            .format("h:mm A")}
-                        </span>
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {typeof item.partId === "object" ? item.partId.name : ""}
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {typeof item.operator === "object"
-                          ? item.operator?.firstName
-                          : ""}{" "}
-                        {typeof item.operator === "object"
-                          ? item.operator?.lastName
-                          : ""}
-                      </td>
-                      <td className={`px-3 py-4 text-sm text-gray-500`}>
-                        {item.status === "Gain" ? (
-                          <span
-                            className={`font-bold ${
-                              item.jobId ? "text-green-500" : "text-red-500"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        ) : (
-                          <span className="font-bold text-red-500">
-                            {item.status}
-                          </span>
-                        )}
-                      </td>
-                      <td className={`px-3 py-4 text-sm`}>
-                        {item.status === "Gain" ? (
-                          <span
-                            className={`font-bold ${
-                              item.jobId ? "text-green-500" : "text-red-500"
-                            }`}
-                          >
-                            {item.time.toFixed(2)}s
-                          </span>
-                        ) : (
-                          <span className="font-bold text-red-500">
-                            {item.time.toFixed(2)}s
-                          </span>
-                        )}
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {item.stopReason.join(", ")}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          ) : null} */}
         {isPaginatedLoading ||
         (paginated?.items && paginated?.items.length === 0) ? (
           <div className="flex mb-4 w-full">
