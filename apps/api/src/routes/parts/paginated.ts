@@ -23,16 +23,16 @@ export const paginated = async (req: Request, res: Response) => {
           name != "all" && {
             name: { $regex: new RegExp(name as string), $options: "i" },
           }),
-        $and: [
-          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
-          // ...(verified
-          //   ? [{ verified: true }]
-          //   : [
-          //       {
-          //         $or: [{ verified: { $exists: false } }, { verified: false }],
-          //       },
-          //     ]),
-        ],
+        // $and: [
+        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        // ...(verified
+        //   ? [{ verified: true }]
+        //   : [
+        //       {
+        //         $or: [{ verified: { $exists: false } }, { verified: false }],
+        //       },
+        //     ]),
+        // ],
       }).countDocuments()
       const getAllParts = await Parts.find({
         locationId: locationId,
@@ -47,18 +47,18 @@ export const paginated = async (req: Request, res: Response) => {
           name != "all" && {
             name: { $regex: new RegExp(name as string), $options: "i" },
           }),
-        $and: [
-          { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
-          // ...(isNotAssigned ? [{ $or: [{ time: 0 }, { tons: 0 }] }] : []),
-          //verified condition starts from here
-          // ...(verified
-          //   ? [{ verified: true }]
-          //   : [
-          //       {
-          //         $or: [{ verified: { $exists: false } }, { verified: false }],
-          //       },
-          //     ]),
-        ],
+        // $and: [
+        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        // ...(isNotAssigned ? [{ $or: [{ time: 0 }, { tons: 0 }] }] : []),
+        //verified condition starts from here
+        // ...(verified
+        //   ? [{ verified: true }]
+        //   : [
+        //       {
+        //         $or: [{ verified: { $exists: false } }, { verified: false }],
+        //       },
+        //     ]),
+        // ],
       })
         .sort({
           createdAt: -1,
