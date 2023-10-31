@@ -1137,8 +1137,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                 .tz(dayjs(item.createdAt), "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
-                            {/* @ts-ignore */}
                             <td className=" py-4">
+                              {/* @ts-ignore */}
                               {item?.machineId?.name as string}
                             </td>
                             <td
