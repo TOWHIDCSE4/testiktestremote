@@ -28,10 +28,10 @@ export const globalLogs = async (req: Request, res: Response) => {
   let { startDate, endDate } = req.query
   startDate = startDate
     ? dayjs(startDate as string).format()
-    : dayjs().startOf("week").add(1, "day").format()
+    : dayjs().startOf("week").format()
   endDate = endDate
     ? dayjs(endDate as string).format()
-    : dayjs().endOf("week").add(1, "day").format()
+    : dayjs().endOf("week").format()
   const sortObj = {}
   if (sort && key) {
     //@ts-expect-error
@@ -144,10 +144,10 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
   } = req.query
   let { startDate, endDate } = req.query
   startDate = !startDate
-    ? dayjs().startOf("week").add(1, "day").format()
+    ? dayjs().startOf("week").format()
     : dayjs(startDate as string).format()
   endDate = !endDate
-    ? dayjs().endOf("week").add(1, "day").format()
+    ? dayjs().endOf("week").format()
     : dayjs(endDate as string).format()
   const sortObj = {}
   if (sort && key) {
@@ -323,10 +323,10 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
   try {
     startDate = startDate
       ? dayjs(startDate as string).format()
-      : dayjs().startOf("week").add(1, "day").format()
+      : dayjs().startOf("week").format()
     endDate = endDate
       ? dayjs(endDate as string).format()
-      : dayjs().endOf("week").add(1, "day").format()
+      : dayjs().endOf("week").format()
     // Calculate the total time in hours
     const totalTime = dayjs(startDate).diff(endDate, "hour")
     let query = {}
