@@ -120,6 +120,7 @@ const Content = () => {
         }
         locationId={currentLocationTab}
         onClose={() => setOpenNewModal(false)}
+        timer={false}
       />
     </>
   )
