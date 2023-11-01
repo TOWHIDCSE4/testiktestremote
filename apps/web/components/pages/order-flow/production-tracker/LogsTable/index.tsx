@@ -383,6 +383,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   useEffect(() => {
     setMachineCounter(machine.length)
     setMachineClassCounter(machineClass.length)
+    if (machine.length === 0) {
+      setPartsSelected([])
+    }
   }, [machine])
 
   const handlePartsChange = (event: any) => {
@@ -997,7 +1000,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="w-[10%] text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[10%] md:w-[12%] md:px-2 text-slate-900"
+                    >
                       <div className="flex items-center">
                         MACHINE
                         <button
@@ -1015,7 +1021,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="w-[40%] py-3 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[45%] md:w-[30%] py-3 text-slate-900"
+                    >
                       <div className="flex items-center">
                         PART
                         <button onClick={(e) => handleInputChange(e, "partId")}>
@@ -1067,7 +1076,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     </th>
                     <th
                       scope="col"
-                      className="w-[15%] px-6 py-3 text-slate-900"
+                      className="w-[15%] md:w-[20%] px-6 py-3 text-slate-900"
                     >
                       <div className="flex items-center ">
                         TIME
@@ -1147,12 +1156,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                 .tz(dayjs(item.createdAt), "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
-                            <td className=" py-4">
+                            <td className=" md:px-3 py-4">
                               {/* @ts-ignore */}
                               {item?.machineId?.name as string}
                             </td>
                             <td
-                              className={` py-4 text-sm text-gray-500 flex flex-col ${
+                              className={`py-4 text-sm text-gray-500 flex flex-col ${
                                 item.jobId ? "text-gray-900" : "text-red-500"
                               }`}
                             >
@@ -1160,7 +1169,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                 ? item.partId.name
                                 : ""}
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-5 py-4">
                               {item.globalCycle ? item.globalCycle : ""}
                             </td>
                             <td className="px-6 py-4">
