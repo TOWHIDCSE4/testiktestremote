@@ -106,6 +106,7 @@ const Content = () => {
                         className="block text-sm font-medium leading-6 text-gray-900"
                       >
                         First Name
+                        <span className="text-red-500 text-lg">{" *"}</span>
                       </label>
                       <div className="mt-2">
                         <input
@@ -125,6 +126,7 @@ const Content = () => {
                         className="block text-sm font-medium leading-6 text-gray-900"
                       >
                         Last Name
+                        <span className="text-red-500 text-lg">{" *"}</span>
                       </label>
                       <div className="mt-2">
                         <input
@@ -145,6 +147,7 @@ const Content = () => {
                       className="block text-sm font-medium text-gray-900"
                     >
                       Department
+                      <span className="text-red-500 text-lg">{" *"}</span>
                     </label>
                     <select
                       id="role"
@@ -170,6 +173,7 @@ const Content = () => {
                       className="block text-sm font-medium text-gray-900"
                     >
                       Location
+                      <span className="text-red-500 text-lg">{" *"}</span>
                     </label>
                     <select
                       id="location"
@@ -199,6 +203,7 @@ const Content = () => {
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
                       Email
+                      <span className="text-red-500 text-lg">{" *"}</span>
                     </label>
                     <div className="mt-2">
                       <input
@@ -218,6 +223,7 @@ const Content = () => {
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
                       Password
+                      <span className="text-red-500 text-lg">{" *"}</span>
                     </label>
                     <div className="mt-2 relative">
                       <input
@@ -251,6 +257,7 @@ const Content = () => {
                       className="block text-sm font-medium leading-6 text-gray-900"
                     >
                       Confirm Password
+                      <span className="text-red-500 text-lg">{" *"}</span>
                     </label>
                     <div className="mt-2 relative">
                       <input

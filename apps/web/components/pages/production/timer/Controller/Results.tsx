@@ -15,8 +15,8 @@ const Results = ({
   return (
     <>
       {/* Small screen show timer data */}
-      <div className="md:hidden mt-8  dark:bg-dark-blue dark:text-white">
-        <h6 className="text-center uppercase text-lg text-gray-500 font-semibold leading-none">
+      <div className="md:hidden mt-8 dark:bg-dark-blue dark:text-white">
+        <h6 className="text-center  uppercase text-lg text-gray-500 font-semibold leading-none">
           Units Created
         </h6>
         <h1 className="text-[65px] font-semibold text-gray-300 leading-none mt-2 text-center">
@@ -46,9 +46,9 @@ const Results = ({
         <h6 className="text-right ipadair:mt-0 uppercase text-lg md:text-xl xl:text-[1.7vw] 2xl:text-2xl xl:mt-5 2xl:mt-5 text-gray-500 font-semibold leading-none mb-28  dark:bg-dark-blue dark:text-white">
           Units Created
         </h6>
-        <div className="flex ipadair:mt-5 absolute md:space-x-8 items-end md:right-0 top-0 mt-10">
+        <div className="flex ipadair:mt-5 absolute left-[1%] md:space-x-8 items-end md:right-0 top-0 mt-10">
           <div className="-translate-y-1.5 md:-translate-y-2 lg:-translate-y-3.5 md:w-[200px] lg:w-[30rem] xl:-translate-y-6">
-            <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6 grid-cols-4 grid justify-items-stretch">
+            <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-medium text-gray-800 mt-2 justify-items-stretch">
               <label className="justify-self-end col-span-3 dark:text-white">
                 Units Per Hour&nbsp;:
               </label>
@@ -56,7 +56,7 @@ const Results = ({
                 {totals?.unitsPerHour ? Math.round(totals?.unitsPerHour) : "0"}
               </span>
             </h5>
-            <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6 grid-cols-4 grid justify-items-stretch">
+            <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-medium text-gray-800 mt-2 justify-items-stretch">
               <label className="justify-self-end col-span-3 dark:text-white">
                 Tons Per Hour&nbsp;:
               </label>
@@ -64,7 +64,7 @@ const Results = ({
                 {totals?.tonsPerHour ? totals?.tonsPerHour.toFixed(3) : "0.000"}
               </span>
             </h5>
-            <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-medium text-gray-800 mt-2 md:text-right xl:leading-6 grid-cols-4 grid justify-items-stretch dark:text-white">
+            <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-medium text-gray-800 mt-2 justify-items-stretch dark:text-white">
               <label className="justify-self-end col-span-3">
                 Total Tons&nbsp;:
               </label>

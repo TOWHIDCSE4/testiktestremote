@@ -371,6 +371,7 @@ const Details = ({
         jobTimer={jobTimer}
         partId={partId}
         timerDetails={timerDetails}
+        timer={true}
       />
     </div>
   )

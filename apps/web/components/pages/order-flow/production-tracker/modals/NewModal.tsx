@@ -32,6 +32,7 @@ interface NewModalProps {
   jobTimer?: T_JobTimer
   partId?: string
   timerDetails?: T_Timer
+  timer: boolean
 }
 
 const NewModal = ({
@@ -42,6 +43,7 @@ const NewModal = ({
   jobTimer,
   partId,
   timerDetails,
+  timer,
 }: NewModalProps) => {
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
@@ -131,10 +133,14 @@ const NewModal = ({
             queryKey: ["jobs"],
           })
           toast.success(String(data.message))
-          setSelectedPart({
-            id: "",
-            name: "",
-          })
+          setSelectedPart(
+            timer
+              ? selectedPart
+              : {
+                  id: "",
+                  name: "",
+                }
+          )
           if (jobTimer) {
             mutateJobTimer(data?.item?._id as string)
           } else {
@@ -175,9 +181,21 @@ const NewModal = ({
   }, [locationId])
 
   useEffect(() => {
-    setPartQuery(selectedPart.name)
-    setValue("partId", selectedPart.id as string)
+    if (selectedPart && typeof selectedPart === "object") {
+      setPartQuery(selectedPart.name as string)
+      setValue("partId", selectedPart.id as string)
+    } else if (typeof selectedPart === "string") {
+    }
   }, [selectedPart])
+
+  useEffect(() => {
+    if (timer) {
+      if (typeof selectedPart === "object" && selectedPart.name) {
+        setPartQuery(selectedPart.name)
+      } else if (typeof selectedPart === "string") {
+      }
+    }
+  })
 
   useEffect(() => {
     if (locationId) {
@@ -330,7 +348,9 @@ const NewModal = ({
                               id: "",
                               name: "",
                             })
-                            setPartQuery("")
+                            if (!timer) {
+                              setPartQuery("")
+                            }
                             setSelectedMachineClassId(e.target.value)
                           }
                         }}
@@ -388,7 +408,13 @@ const NewModal = ({
                               onChange={(event) =>
                                 setPartQuery(event.target.value)
                               }
-                              value={selectedMachineClassId ? partQuery : ""}
+                              value={
+                                timer
+                                  ? partQuery
+                                  : selectedMachineClassId
+                                  ? partQuery
+                                  : ""
+                              }
                               placeholder="Search Part"
                               autoComplete="off"
                               onBlur={() => {
@@ -434,7 +460,7 @@ const NewModal = ({
                         <div className="block w-90">
                           {selectedPart?.name && (
                             <p className="text-gray-300 italic ml-22 sm:ml-28">
-                              (STOCK) {selectedPart.name}
+                              (STOCK) {selectedPart?.name}
                             </p>
                           )}
                         </div>
@@ -575,10 +601,14 @@ const NewModal = ({
                         closeModal()
                         reset()
                         setIsStock(false)
-                        setSelectedPart({
-                          id: "",
-                          name: "",
-                        })
+                        setSelectedPart(
+                          timer
+                            ? selectedPart
+                            : {
+                                id: "",
+                                name: "",
+                              }
+                        )
                       }}
                       ref={cancelButtonRef}
                     >

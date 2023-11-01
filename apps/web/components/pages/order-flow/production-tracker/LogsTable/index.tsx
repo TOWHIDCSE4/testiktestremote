@@ -1221,7 +1221,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                         </p>
                                       </span>
 
-                                      <span className="flex w-[22rem] text-[13px] ">
+                                      <span className="flex w-[30rem] text-[13px] ">
                                         <p
                                           className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
                                             item.jobId
@@ -1263,7 +1263,19 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                               : "text-red-500"
                                           }`}
                                         >
-                                          {item.stopReason.join(", ")}
+                                          <span
+                                            className={`${
+                                              item.stopReason.join(", ") ===
+                                              "Unit Created"
+                                                ? "text-green-500"
+                                                : item.stopReason.join(", ") ===
+                                                  "Worker Break"
+                                                ? "text-yellow-500"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {item.stopReason.join(", ")}
+                                          </span>
                                         </p>
                                       </span>
                                     </div>

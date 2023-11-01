@@ -114,6 +114,7 @@ const Content = () => {
         </div>
       </div>
       <NewModal
+        timer={false}
         isOpen={openNewModal}
         locationState={
           currentLocationTabName ? currentLocationTabName : "Loading..."

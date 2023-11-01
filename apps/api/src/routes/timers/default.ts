@@ -115,13 +115,14 @@ export const getTimer = async (req: Request, res: Response) => {
         },
       })
     }
-
+    //@ts-expect-error
+    const { operator, operatorName, ...rest } = getTimer
     res.json({
       error: false,
       completed: limitReached,
       recommendation,
       jobToBe,
-      item: getTimer,
+      item: { ...rest, operator: operator ? operator : { name: operatorName } },
       itemCount: 1,
       message: null,
     })
@@ -197,14 +198,20 @@ export const updateTimer = async (req: Request, res: Response) => {
     _id: req.params.id,
     $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
   })
+  console.log(getTimer)
   const condition = req.body
   if (getTimer.length > 0) {
     if (!isEmpty(condition)) {
       try {
+        const { operatorName, operator, ...rest } = req.body
         const updateTimer = await Timers.findByIdAndUpdate(
           req.params.id,
           {
-            $set: req.body,
+            $set: {
+              ...rest,
+              operatorName: operatorName ? operatorName : null,
+              operator: operator ? operator : null,
+            },
             updatedAt: Date.now(),
           },
           { new: true }
