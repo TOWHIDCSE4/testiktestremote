@@ -353,9 +353,9 @@ const GlobalTableReport = ({
                       </td>
                       <td className="border-r-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {log?.createdAt
-                          ? `${dayjs(log?.createdAt as string).format(
-                              "MM/DD/YYYY"
-                            )}`
+                          ? `${dayjs
+                              .tz(log?.createdAt as string, "America/Chicago")
+                              .format("MM/DD/YYYY")}`
                           : ""}{" "}
                         <span className="font-bold">
                           {log?.createdAt

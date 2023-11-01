@@ -311,8 +311,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setPage(1)
     setDateRange(inputValue)
     if (isCheckboxChecked) {
-      // If the checkbox is checked, set the start and end dates to the current date
-      // const currentDate = dayjs().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       setStartDateRange(
         dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
@@ -326,7 +324,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
     } else if (inputValue && inputValue[0] && inputValue[1]) {
-      // Handle the case when the checkbox is not checked, but both start and end dates are provided
       setStartDateRange(
         dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
@@ -340,7 +337,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
     } else {
-      // Handle the case when one or both dates are empty
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -953,7 +949,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       : ""
                   }
                   endDateRange={
-                    dateRange && dateRange.length > 1
+                    dateRange && dateRange.length > 0
                       ? dayjs(dateRange[1])
                           .endOf("day")
                           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
@@ -1153,7 +1149,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                               className=" py-4 font-medium text-gray-900 whitespace-nowrap"
                             >
                               {dayjs
-                                .tz(dayjs(item.createdAt), "America/Chicago")
+                                .tz(item.createdAt, "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
                             <td className=" md:px-3 py-4">
