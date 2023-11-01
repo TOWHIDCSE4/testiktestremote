@@ -4,8 +4,7 @@ import {
 } from "../../utils/constants"
 import { Request, Response } from "express"
 import Machines from "../../models/machines"
-import machineClasses from "../../models/machineClasses"
-import { Types } from "mongoose"
+import mongoose from "mongoose"
 import timerLogs from "../../models/timerLogs"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
@@ -13,13 +12,53 @@ export const locationMachineClass = async (req: Request, res: Response) => {
   if (locationId && machineClassId) {
     try {
       const machinesCountByClass = await Machines.find({
-        locationId,
-        machineClassId,
+        ...(locationId &&
+          !!locationId?.length && {
+            locationId: {
+              $in: locationId
+                //@ts-expect-error
+                ?.split(",")
+                //@ts-expect-error
+                .map((e) => new mongoose.Types.ObjectId(e)),
+            },
+          }),
+        ...(machineClassId &&
+          !!machineClassId?.length && {
+            locationId: {
+              $in: machineClassId
+                //@ts-expect-error
+                ?.split(",")
+                //@ts-expect-error
+                .map((e) => new mongoose.Types.ObjectId(e)),
+            },
+          }),
+        // locationId,
+        // machineClassId,
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       }).countDocuments()
       const getMachineByClass = await Machines.find({
-        locationId,
-        machineClassId,
+        ...(locationId &&
+          !!locationId?.length && {
+            locationId: {
+              $in: locationId
+                //@ts-expect-error
+                ?.split(",")
+                //@ts-expect-error
+                .map((e) => new mongoose.Types.ObjectId(e)),
+            },
+          }),
+        ...(machineClassId &&
+          !!machineClassId?.length && {
+            locationId: {
+              $in: machineClassId
+                //@ts-expect-error
+                ?.split(",")
+                //@ts-expect-error
+                .map((e) => new mongoose.Types.ObjectId(e)),
+            },
+          }),
+        // locationId,
+        // machineClassId,
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       })
       res.json({

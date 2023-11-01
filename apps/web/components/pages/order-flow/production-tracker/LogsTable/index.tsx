@@ -37,14 +37,16 @@ import Select, { SelectChangeEvent } from "@mui/material/Select"
 import Checkbox from "@mui/material/Checkbox"
 import useGetGlobalMetrics from "../../../../../hooks/timerLogs/useGetGlobalMetrics"
 import GlobalTableReport from "../GlobalReport"
+import { compact } from "@headlessui/react/dist/utils/render"
+import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/useGetMachineByMachineClassLocation"
 
 export type OptionType = {
   value: number
   label: string
 }
 
+const { RangePicker } = DatePicker
 const ITEM_HEIGHT = 48
-// const ITEM_PADDING_TOP = 2;
 const MenuProps = {
   PaperProps: {
     style: {
@@ -55,12 +57,7 @@ const MenuProps = {
   },
 }
 
-const { RangePicker } = DatePicker
-
 const LogsTable = ({ locationId }: { locationId: string }) => {
-  const queryClient = useQueryClient()
-  const [openAccordion, setOpenAccordion] = useState<string | null>(null)
-
   const toggleAccordion = (id: string) => {
     if (openAccordion === id) {
       setOpenAccordion(null)
@@ -69,6 +66,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }
   }
 
+  const queryClient = useQueryClient()
   const [parts, setParts] = useState([])
   const [keyword, setKeyword] = useState<string>("")
   const [showReport, setShowReport] = useState(false)
@@ -77,6 +75,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [machineClass, setMachineClass] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<Date[] | string[]>([])
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   const [city, setCity] = useState<string[]>(["64d5814fb996589a945a6402"])
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
@@ -125,12 +124,21 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
+
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses(city)
 
-  const { data: machines, isLoading: isMachinesLoading } =
-    useGetMachinesByMachineClasses(machineClass)
+  const {
+    data: machines,
+    isLoading: isMachinesLoading,
+    setSelectedMachineClassId,
+    setSelectedLocationId,
+  } = useGetMachinesByMachineClassLocation()
+
+  const { data: locations, isLoading: isLocationsLoading } = useLocations()
+
   useEffect(() => {
     if (machines && machines.items) {
       const initialMachineSelection = machines?.items?.map((item) => item._id)
@@ -138,7 +146,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
       setMachineCounter(machine.length)
     }
   }, [machines])
-  const { data: locations, isLoading: isLocationsLoading } = useLocations()
+
   const {
     data: allParts,
     isLoading: isGetAllPartsLoading,
@@ -200,6 +208,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const disabledDate = (current: any) => {
     return current && current >= today
   }
+
   // Filter `option.label` match the user type `input`
   const filterOption = (
     input: string,
@@ -207,6 +216,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
 
   const [filterBy, setFilterBy] = useState("All")
+
   const {
     data: paginated,
     isLoading: isPaginatedLoading,
@@ -220,7 +230,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setEndDateRange,
     setPartId,
   } = useGlobalTimerLogsMulti(city, sortType, keyword, process)
+  console.log("🚀 ~ file: index.tsx:229 ~ paginated:", machineClass)
+
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 10)
+
   useEffect(() => {
     setMachineClassId(machineClass)
     setPage(1)
@@ -236,10 +249,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setPage(1)
   }, [partsSelected, setPartId])
 
-  // useEffect(() => {
-  //   setStartDateRange(dateRange)
-  //   setPage(1)
-  // }, [dateRange, setStartDateRange])
   const {
     data: globalMetrics,
     isLoading: isGlobalMetricsLoading,
@@ -263,11 +272,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   useEffect(() => {
     setPartIds(partsSelected)
   }, [partsSelected, setPartIds])
-
-  // useEffect(() => {
-  //   setEndDateRanges(dateRange)
-  //   setPage(1)
-  // }, [dateRange, setEndDateRange])
 
   function formatTime(seconds: string) {
     const duration = moment.duration(seconds, "seconds")
@@ -350,9 +354,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   // const { Option } = Select
 
   const handleLocationChange = (event: any) => {
-    const selectedMachineClass: Array<any> = []
     setCity(event.target.value)
-    setMachineClass(selectedMachineClass)
+    setMachineClass([])
   }
 
   useEffect(() => {
@@ -362,10 +365,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const handleMachineClassChange = (event: SelectChangeEvent) => {
     const selectedMachineClasses: string = event.target.value
 
-    const selectedMachines: Array<any> = []
+    setMachine([])
+    setSelectedMachineClassId(selectedMachineClasses)
+    setSelectedLocationId(city)
     //@ts-expect-error
     setMachineClass(selectedMachineClasses)
-    setMachine(selectedMachines)
   }
 
   useEffect(() => {
@@ -550,18 +554,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 {/* city */}
                 <div className="flex w-1/2 text-[11px] items-center">
                   <p className="w-1/6 font-semibold text-right mr-2">CITY</p>
-                  {/* <Select
-                    // defaultValue={[colourOptions[2], colourOptions[3]]}
-                    isMulti
-                    name="colors"
-                    options={[
-                      { value: "chocolate", label: "Chocolate" },
-                      { value: "strawberry", label: "Strawberry" },
-                      { value: "vanilla", label: "Vanilla" },
-                    ]}
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                  /> */}
                   {/* <Space direction="vertical" className="min-w-full">
                     <Select
                       mode="multiple"
