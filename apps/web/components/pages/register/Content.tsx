@@ -38,8 +38,10 @@ const Content = () => {
       const callBackReq = {
         onSuccess: (data: T_BackendResponse) => {
           if (!data.error) {
-            router.push("/")
-            resetForm()
+            setTimeout(() => {
+              router.push("/")
+              resetForm()
+            }, 5000)
           } else {
             toast.error(String(data.message))
           }

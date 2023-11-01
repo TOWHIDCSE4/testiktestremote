@@ -351,7 +351,7 @@ const GlobalTableReport = ({
                       <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                         {log.cycle}
                       </td>
-                      <td className="border-r-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {log?.createdAt
                           ? `${dayjs
                               .tz(log?.createdAt as string, "America/Chicago")
@@ -365,17 +365,17 @@ const GlobalTableReport = ({
                             : ""}
                         </span>
                       </td>
-                      <td className="border-r-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {typeof log?.machineId === "object"
                           ? log?.machineId.name
                           : ""}
                       </td>
-                      <td className="border-r-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {typeof log?.partId === "object"
                           ? log?.partId.name
                           : ""}
                       </td>
-                      <td className="border-r-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {typeof log.operator === "object"
                           ? log.operator?.firstName
                           : ""}{" "}
@@ -383,10 +383,10 @@ const GlobalTableReport = ({
                           ? log.operator?.lastName
                           : ""}
                       </td>
-                      <td className="border-r-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {log.globalCycle ? log.globalCycle : ""}
                       </td>
-                      <td className="border-r-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {log.status === "Gain" ? (
                           <span className="font-bold text-green-500">
                             {log.status}
@@ -397,10 +397,10 @@ const GlobalTableReport = ({
                           </span>
                         )}
                       </td>
-                      <td className="border-r-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {log.time.toFixed(2)}s
                       </td>
-                      <td className="border-r-[1px] border-neutral-300 whitespace-normal px-3 text-center py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-normal px-3 text-center py-2 text-sm text-gray-500">
                         {log?.stopReason ? log?.stopReason : ""}
                       </td>
                     </tr>
