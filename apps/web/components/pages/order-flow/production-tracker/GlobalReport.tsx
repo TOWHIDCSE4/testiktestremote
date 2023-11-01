@@ -203,8 +203,14 @@ const GlobalTableReport = ({
               <div className="text-sm">
                 <span className="text-gray-800 font-bold">Date Range:</span>{" "}
                 {[
+                  console.log(
+                    endDateRange,
+                    dayjs(endDateRange as string).format("MM/DD/YYYY")
+                  ),
                   dayjs(startDateRange as string).format("MM/DD/YYYY"),
-                  dayjs(endDateRange as string).format("MM/DD/YYYY"),
+                  dayjs(endDateRange as string)
+                    .subtract(1, "day")
+                    .format("MM/DD/YYYY"),
                 ]
                   .map((item) => item)
                   .join(" - ")}
@@ -270,13 +276,13 @@ const GlobalTableReport = ({
               <tr>
                 <th
                   scope="col"
-                  className="py-3.5 pl-0 w-4 pr-0 text-center text-sm font-semibold text-gray-900 sm:pl-0"
+                  className="py-3.5 border-[1px] border-neutral-300 px-2 w-12 pr-0 text-center text-sm font-semibold text-gray-900 sm:pl-0"
                 >
                   Cycle
                 </th>
                 <th
                   scope="col"
-                  className="px-3 py-3.5 w-48 text-center text-sm font-semibold text-gray-900 min-w-[9rem] md:min-w-[14rem]"
+                  className="px-3 border-[1px] border-neutral-300 py-3.5 w-48 text-center text-sm font-semibold text-gray-900 min-w-[9rem] md:min-w-[14rem]"
                 >
                   Start Time
                   <button onClick={(e) => handleInputChange(e, "createdAt")}>
@@ -293,43 +299,43 @@ const GlobalTableReport = ({
                 </th>
                 <th
                   scope="col"
-                  className="px-3 py-3.5 w-48 text-center text-sm font-semibold text-gray-900 min-w-[7rem] md:min-w-[5rem]"
+                  className="px-3 border-[1px] border-neutral-300 py-3.5 w-48 text-center text-sm font-semibold text-gray-900 min-w-[7rem] md:min-w-[5rem]"
                 >
                   Machine
                 </th>
                 <th
                   scope="col"
-                  className="px-3 py-3.5 w-48 text-center text-sm font-semibold text-gray-900 min-w-[12rem] md:min-w-[16rem]"
+                  className="px-3 border-[1px] border-neutral-300 py-3.5 w-48 text-center text-sm font-semibold text-gray-900 min-w-[12rem] md:min-w-[16rem]"
                 >
                   Part
                 </th>
                 <th
                   scope="col"
-                  className="px-3 py-3.5 w-56 text-center text-sm font-semibold text-gray-900 min-w-[7rem] md:min-w-[10rem]"
+                  className="px-3 border-[1px] border-neutral-300 py-3.5 w-56 text-center text-sm font-semibold text-gray-900 min-w-[7rem] md:min-w-[10rem]"
                 >
                   Operator
                 </th>
                 <th
                   scope="col"
-                  className="px-3 py-3.5 w-56 text-center text-sm font-semibold text-gray-900 min-w-[5rem] md:min-w-[5rem]"
+                  className="px-3 border-[1px] border-neutral-300 py-3.5 w-56 text-center text-sm font-semibold text-gray-900 min-w-[5rem] md:min-w-[5rem]"
                 >
                   ID
                 </th>
                 <th
                   scope="col"
-                  className="px-3 py-3.5 w-56 text-center text-sm font-semibold text-gray-900 min-w-[7rem] md:min-w-[7rem]"
+                  className="px-3 border-[1px] border-neutral-300 py-3.5 w-56 text-center text-sm font-semibold text-gray-900 min-w-[7rem] md:min-w-[7rem]"
                 >
                   Status
                 </th>
                 <th
                   scope="col"
-                  className="px-3 py-3.5 w-56 text-center text-sm font-semibold text-gray-900 min-w-[4rem] md:min-w-[5rem]"
+                  className="px-3 border-[1px] border-neutral-300 py-3.5 w-56 text-center text-sm font-semibold text-gray-900 min-w-[4rem] md:min-w-[5rem]"
                 >
                   Duration
                 </th>
                 <th
                   scope="col"
-                  className="py-3.5 justify-center text-center text-sm font-semibold text-gray-900"
+                  className="py-3.5 border-[1px] border-neutral-300 justify-center text-center text-sm font-semibold text-gray-900"
                 >
                   Stop Reason
                 </th>
@@ -342,14 +348,14 @@ const GlobalTableReport = ({
                 paginated?.items?.map(
                   (log: any, index: Key | null | undefined) => (
                     <tr key={index}>
-                      <td className="whitespace-nowrap text-center py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                         {log.cycle}
                       </td>
-                      <td className="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {log?.createdAt
-                          ? `${dayjs(log?.createdAt as string).format(
-                              "MM/DD/YYYY"
-                            )}`
+                          ? `${dayjs
+                              .tz(log?.createdAt as string, "America/Chicago")
+                              .format("MM/DD/YYYY")}`
                           : ""}{" "}
                         <span className="font-bold">
                           {log?.createdAt
@@ -359,17 +365,17 @@ const GlobalTableReport = ({
                             : ""}
                         </span>
                       </td>
-                      <td className="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {typeof log?.machineId === "object"
                           ? log?.machineId.name
                           : ""}
                       </td>
-                      <td className="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {typeof log?.partId === "object"
                           ? log?.partId.name
                           : ""}
                       </td>
-                      <td className="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {typeof log.operator === "object"
                           ? log.operator?.firstName
                           : ""}{" "}
@@ -377,10 +383,10 @@ const GlobalTableReport = ({
                           ? log.operator?.lastName
                           : ""}
                       </td>
-                      <td className="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {log.globalCycle ? log.globalCycle : ""}
                       </td>
-                      <td className="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {log.status === "Gain" ? (
                           <span className="font-bold text-green-500">
                             {log.status}
@@ -391,10 +397,10 @@ const GlobalTableReport = ({
                           </span>
                         )}
                       </td>
-                      <td className="whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                         {log.time.toFixed(2)}s
                       </td>
-                      <td className="whitespace-normal px-3 text-center py-2 text-sm text-gray-500">
+                      <td className="border-[1px] border-neutral-300 whitespace-normal px-3 text-center py-2 text-sm text-gray-500">
                         {log?.stopReason ? log?.stopReason : ""}
                       </td>
                     </tr>

@@ -1,7 +1,7 @@
 "use client"
 import { HeartIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
@@ -17,6 +17,7 @@ import useLocations from "../../../hooks/locations/useLocations"
 const Content = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(false)
   const togglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword)
   }
@@ -37,8 +38,10 @@ const Content = () => {
       const callBackReq = {
         onSuccess: (data: T_BackendResponse) => {
           if (!data.error) {
-            router.push("/")
-            resetForm()
+            setTimeout(() => {
+              router.push("/")
+              resetForm()
+            }, 5000)
           } else {
             toast.error(String(data.message))
           }
@@ -52,6 +55,14 @@ const Content = () => {
     } else {
       toast.error("Password doesn't match")
     }
+  }
+
+  const handleCreateButtonClick = () => {
+    setShowWelcome(true)
+
+    setTimeout(() => {
+      setShowWelcome(false)
+    }, 10000)
   }
 
   const resetForm = () => {
@@ -277,6 +288,7 @@ const Content = () => {
                       <button
                         type="submit"
                         disabled={isLoading}
+                        onClick={handleCreateButtonClick}
                         className="flex items-center w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-4 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-70"
                       >
                         {isLoading ? (
@@ -330,6 +342,18 @@ const Content = () => {
 
         <Slider />
       </div>
+      {showWelcome && (
+        <div className="fixed top-0 left-0 w-full h-full items-center justify-center bg-white z-50 flex flex-col">
+          <div className=" p-4 rounded-md text-white space-y-4">
+            <h1 className="animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent text-5xl font-black">
+              THANK YOU
+            </h1>
+          </div>
+          <span className="text-xl font-semibold text-black">
+            You will be Redirected to Login Page Shortly
+          </span>
+        </div>
+      )}
     </>
   )
 }

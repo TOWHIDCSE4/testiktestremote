@@ -81,6 +81,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
+  const [bulkSelectCheckbox, setBulkSelectCheckbox] = useState(false)
   const [partsSelected, setPartsSelected] = useState<string[]>([])
   const [partSelector, setPartSelector] = useState<string[]>([])
   const [machine, setMachine] = useState<string[]>([])
@@ -293,12 +294,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const handleCheckboxChange = (e: any) => {
     const isChecked = e.target.checked
     setIsCheckboxChecked(isChecked)
-
     if (isChecked) {
       const currentDate = dayjs().toDate()
       setDateRange([dayjs().format("YYYY-MM-DD"), dayjs().format("YYYY-MM-DD")])
-      datePick([currentDate, currentDate]) // Call datePick with the current date
+      datePick([currentDate, currentDate])
     } else {
+      setDateRange([])
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -310,8 +311,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setPage(1)
     setDateRange(inputValue)
     if (isCheckboxChecked) {
-      // If the checkbox is checked, set the start and end dates to the current date
-      // const currentDate = dayjs().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       setStartDateRange(
         dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
@@ -325,7 +324,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
     } else if (inputValue && inputValue[0] && inputValue[1]) {
-      // Handle the case when the checkbox is not checked, but both start and end dates are provided
       setStartDateRange(
         dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
@@ -339,7 +337,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
     } else {
-      // Handle the case when one or both dates are empty
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -382,6 +379,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   useEffect(() => {
     setMachineCounter(machine.length)
     setMachineClassCounter(machineClass.length)
+    if (machine.length === 0) {
+      setPartsSelected([])
+    }
   }, [machine])
 
   const handlePartsChange = (event: any) => {
@@ -489,19 +489,25 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }
   }, [filterBy])
 
-  const handleSelectAllProduction = (event: any) => {
+  const handleSelectAllProduction = () => {
     const data = paginated?.items ?? []
     let updatedArray = [] as any
-    updatedArray =
-      data?.length > 0 && event.target.checked
-        ? data
-            ?.filter((item) => item?._id !== undefined)
-            .map((item) => ({ id: item?._id }))
-        : []
+
+    if (checkedProduction.length === data.length) {
+      updatedArray = []
+    } else {
+      updatedArray = data
+        ?.filter((item) => item?._id !== undefined)
+        .map((item) => ({ id: item?._id }))
+    }
+
     setCheckedProduction(updatedArray)
   }
 
-  // const handleCurrentDateChecked = (event: any) => {
+  useEffect(() => {
+    if (paginated?.items.length == checkedProduction.length) {
+    }
+  })
 
   const isChecked = (id: string) => {
     return checkedProduction.filter((item) => item.id === id).length > 0
@@ -863,7 +869,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <Space direction="vertical" className="w-full" size={12}>
                       <RangePicker
                         disabled={isCheckboxChecked}
-                        // value={dateRange}
+                        //@ts-expect-error
+                        value={isCheckboxChecked ? [null] : dateRange}
                         disabledDate={disabledDate}
                         onChange={(e) => datePick(e)}
                       />
@@ -880,7 +887,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   </button>
                 </div>
               </div>
-              <div className="w-full flex text-[12px] px-[30.3%] font-semibold">
+              <div className="w-full flex text-[12px] px-[27%] font-semibold">
                 <div>
                   <label htmlFor="checkbox-date">Current Date</label>
                   <input
@@ -935,14 +942,14 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     ) ?? []
                   }
                   startDateRange={
-                    dateRange.length > 0
+                    dateRange && dateRange.length > 0
                       ? dayjs(dateRange[0])
                           .startOf("day")
                           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
                       : ""
                   }
                   endDateRange={
-                    dateRange.length > 0
+                    dateRange && dateRange.length > 0
                       ? dayjs(dateRange[1])
                           .endOf("day")
                           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
@@ -964,9 +971,11 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       <input
                         id={`checkbox-table-search`}
                         type="checkbox"
-                        checked={checkedProduction.length == 5}
+                        checked={
+                          checkedProduction.length == paginated.items.length
+                        }
                         className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
-                        onClick={(e) => handleSelectAllProduction(e)}
+                        onChange={handleSelectAllProduction}
                       />
                     </th>
                     <th scope="col" className="w-[10%] text-slate-900">
@@ -987,7 +996,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="w-[10%] text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[10%] md:w-[12%] md:px-2 text-slate-900"
+                    >
                       <div className="flex items-center">
                         MACHINE
                         <button
@@ -1005,7 +1017,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="w-[40%] py-3 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[45%] md:w-[30%] py-3 text-slate-900"
+                    >
                       <div className="flex items-center">
                         PART
                         <button onClick={(e) => handleInputChange(e, "partId")}>
@@ -1057,7 +1072,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     </th>
                     <th
                       scope="col"
-                      className="w-[15%] px-6 py-3 text-slate-900"
+                      className="w-[15%] md:w-[20%] px-6 py-3 text-slate-900"
                     >
                       <div className="flex items-center ">
                         TIME
@@ -1134,15 +1149,15 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                               className=" py-4 font-medium text-gray-900 whitespace-nowrap"
                             >
                               {dayjs
-                                .tz(dayjs(item.createdAt), "America/Chicago")
+                                .tz(item.createdAt, "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
-                            <td className=" py-4">
+                            <td className=" md:px-3 py-4">
                               {/* @ts-ignore */}
                               {item?.machineId?.name as string}
                             </td>
                             <td
-                              className={` py-4 text-sm text-gray-500 flex flex-col ${
+                              className={`py-4 text-sm text-gray-500 flex flex-col ${
                                 item.jobId ? "text-gray-900" : "text-red-500"
                               }`}
                             >
@@ -1150,7 +1165,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                 ? item.partId.name
                                 : ""}
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-5 py-4">
                               {item.globalCycle ? item.globalCycle : ""}
                             </td>
                             <td className="px-6 py-4">
@@ -1276,242 +1291,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               </table>
             ) : null}
           </div>
-          {/* <div className="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <label
-                  htmlFor="filterBy"
-                  className="block text-sm font-medium text-gray-900"
-                >
-                  Filter By
-                </label>
-                <select
-                  id="filterBy"
-                  name="filterBy"
-                  className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                  onChange={(e) => setFilterBy(e.target.value)}
-                >
-                  <option value="All">All</option>
-                  <option value="Factories">Factory</option>
-                  <option value="Machine Classes">Machine Class</option>
-                  <option value="Machines">Machine</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="location"
-                  className="block text-sm font-medium text-gray-900"
-                >
-                  {filterBy}
-                </label>
-                {filterInputs()}
-              </div>
-            </div> */}
         </div>
-        {/* {isPaginatedLoading ? (
-          <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
-            <div
-              className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
-              role="status"
-              aria-label="loading"
-            >
-              <span className="sr-only">Loading...</span>
-            </div>
-          </div>
-        ) : null} */}
-        {/* {!isPaginatedLoading &&
-          paginated?.items &&
-          paginated?.items.length > 0 ? (
-            <table className="w-full divide-y divide-gray-300 border-t border-gray-300">
-              <thead>
-                <tr>
-                  <th
-                    scope="col"
-                    className={`text-sm py-3.5 pr-3 text-left font-semibold text-gray-900 pl-4 lg:pl-8 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      ID
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Date
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Product
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Operator
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Status
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Time
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Stop Reason
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {paginated?.items &&
-                  paginated?.items.map((item, idx) => (
-                    <tr key={idx} className={`${!item.jobId ? "bg-red-50" : ""}`}>
-                      <td
-                        className={`py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 lg:pl-8 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {item.globalCycle ? item.globalCycle : ""}
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 flex flex-col ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        <span>
-                          {dayjs
-                            .tz(dayjs(item.createdAt), "America/Chicago")
-                            .format("MM/DD/YYYY")}
-                        </span>
-                        <span>
-                          {dayjs
-                            .tz(dayjs(item.createdAt), "America/Chicago")
-                            .format("h:mm A")}
-                        </span>
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {typeof item.partId === "object" ? item.partId.name : ""}
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {typeof item.operator === "object"
-                          ? item.operator?.firstName
-                          : ""}{" "}
-                        {typeof item.operator === "object"
-                          ? item.operator?.lastName
-                          : ""}
-                      </td>
-                      <td className={`px-3 py-4 text-sm text-gray-500`}>
-                        {item.status === "Gain" ? (
-                          <span
-                            className={`font-bold ${
-                              item.jobId ? "text-green-500" : "text-red-500"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        ) : (
-                          <span className="font-bold text-red-500">
-                            {item.status}
-                          </span>
-                        )}
-                      </td>
-                      <td className={`px-3 py-4 text-sm`}>
-                        {item.status === "Gain" ? (
-                          <span
-                            className={`font-bold ${
-                              item.jobId ? "text-green-500" : "text-red-500"
-                            }`}
-                          >
-                            {item.time.toFixed(2)}s
-                          </span>
-                        ) : (
-                          <span className="font-bold text-red-500">
-                            {item.time.toFixed(2)}s
-                          </span>
-                        )}
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {item.stopReason.join(", ")}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          ) : null} */}
         {isPaginatedLoading ||
         (paginated?.items && paginated?.items.length === 0) ? (
           <div className="flex mb-4 w-full">
