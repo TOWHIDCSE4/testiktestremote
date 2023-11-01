@@ -204,7 +204,7 @@ const Report = ({
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     {typeof log.operator === "object"
                       ? log.operator?.firstName
-                      : ""}{" "}
+                      : log.operatorName}{" "}
                     {typeof log.operator === "object"
                       ? log.operator?.lastName
                       : ""}
