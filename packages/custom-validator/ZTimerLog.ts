@@ -33,6 +33,7 @@ export const ZTimerLog = z.object({
   timerId: z.union([z.string(), ZTimer]),
   time: z.number().positive(),
   operator: z.union([z.string(), ZUser]).nullable(),
+  operatorName: z.union([z.string(), ZUser]).nullable(),
   status: ZTimerLogStatus,
   stopReason: z.array(ZTimerStopReason),
   createdAt: z.date().nullable().optional(),
