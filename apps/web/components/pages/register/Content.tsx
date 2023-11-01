@@ -346,15 +346,31 @@ const Content = () => {
       {showWelcome && (
         <div className="fixed top-0 left-0 w-full h-full items-center justify-center bg-white z-50 flex flex-col">
           <div>
-            <Image src={GifTick} alt="Your Image" width={300} height={200} />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="#1e3a8a"
+              className="w-[300px] h-[200px]"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
           </div>
           <div className=" p-4 rounded-md text-white space-y-4">
-            <h1 className="animate-text bg-gradient-to-r outline-1 outline-black from-blue-900 via-blue-500 to-blue-900 bg-clip-text text-transparent text-7xl font-black">
-              THANK YOU
+            <h1 className=" font-roboto text-blue-700 bg-clip-text text-8xl font-black">
+              WELCOME
             </h1>
+            {/* <h1 className="animate-text font-sans bg-gradient-to-r outline-1 outline-black from-blue-900 via-blue-500 to-blue-900 bg-clip-text text-transparent text-8xl font-black">
+              THANK YOU
+            </h1> */}
           </div>
-          <span className="text-3xl font-semibold text-black">
-            You will be Redirected to Login Page Shortly
+          <span className="text-3xl tracking-tight font-semibold text-justify text-black">
+            You will be redirected to login page shortly
           </span>
         </div>
       )}
