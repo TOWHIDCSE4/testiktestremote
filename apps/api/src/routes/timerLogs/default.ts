@@ -481,14 +481,16 @@ export const addTimeLog = async (req: Request, res: Response) => {
                 })
               }
               if (limitReached) {
-                await Jobs.findByIdAndUpdate(
-                  req.body.jobId,
-                  {
-                    status: "Testing",
-                    updatedAt: Date.now(),
-                  },
-                  { new: true }
-                )
+                if (!job?.isStock) {
+                  await Jobs.findByIdAndUpdate(
+                    req.body.jobId,
+                    {
+                      status: "Testing",
+                      updatedAt: Date.now(),
+                    },
+                    { new: true }
+                  )
+                }
               }
               return res.json({
                 error: false,
@@ -543,14 +545,16 @@ export const addTimeLog = async (req: Request, res: Response) => {
               })
             }
             if (limitReached) {
-              await Jobs.findByIdAndUpdate(
-                req.body.jobId,
-                {
-                  status: "Testing",
-                  updatedAt: Date.now(),
-                },
-                { new: true }
-              )
+              if (!job?.isStock) {
+                await Jobs.findByIdAndUpdate(
+                  req.body.jobId,
+                  {
+                    status: "Testing",
+                    updatedAt: Date.now(),
+                  },
+                  { new: true }
+                )
+              }
             }
             res.json({
               error: false,
