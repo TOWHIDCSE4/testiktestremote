@@ -31,7 +31,7 @@ type T_Props = {
   setOpenDetailsModal: Dispatch<boolean>
   setOpenDeleteModal: Dispatch<boolean>
   machine: T_Machine
-  operator: T_User
+  operator: T_User | string
 }
 
 const Timer = ({
@@ -336,9 +336,11 @@ const Timer = ({
           <h2 className="font-bold text-stone-400 text-5xl">00:00:00</h2>
         )}
         <p className="text-amber-600 text-lg">
-          {operator
+          {typeof operator === "object"
             ? `${operator?.firstName} ${operator?.lastName}`
-            : "Please select operator"}
+            : typeof operator === "string"
+            ? `${operator}`
+            : `Please select operator`}
         </p>
         <div>
           <h2 className="font-semibold text-gray-400 text-5xl">

@@ -116,13 +116,19 @@ export const getTimer = async (req: Request, res: Response) => {
       })
     }
     //@ts-expect-error
-    const { operator, operatorName, ...rest } = getTimer
+    const { _doc } = getTimer
+    const { operator, operatorName, ...rest } = _doc
     res.json({
       error: false,
       completed: limitReached,
       recommendation,
       jobToBe,
-      item: { ...rest, operator: operator ? operator : { name: operatorName } },
+      item: {
+        ...rest,
+        operator: operator
+          ? operator
+          : { firstName: operatorName, lastName: "" },
+      },
       itemCount: 1,
       message: null,
     })
