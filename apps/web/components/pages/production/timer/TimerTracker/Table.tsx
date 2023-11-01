@@ -222,11 +222,10 @@ const Table = ({
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
-                    {typeof item.operator === "object"
-                      ? item.operator?.firstName
-                      : ""}{" "}
-                    {typeof item.operator === "object"
-                      ? item.operator?.lastName
+                    {item.operator === null
+                      ? item.operatorName
+                      : item.operator
+                      ? `${item.operator.firstName} ${item.operator.lastName}`
                       : ""}
                   </td>
                   <td

@@ -376,11 +376,10 @@ const GlobalTableReport = ({
                           : ""}
                       </td>
                       <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
-                        {typeof log.operator === "object"
-                          ? log.operator?.firstName
-                          : ""}{" "}
-                        {typeof log.operator === "object"
-                          ? log.operator?.lastName
+                        {log.operator === null
+                          ? log.operatorName
+                          : log.operator
+                          ? `${log.operator.firstName} ${log.operator.lastName}`
                           : ""}
                       </td>
                       <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
