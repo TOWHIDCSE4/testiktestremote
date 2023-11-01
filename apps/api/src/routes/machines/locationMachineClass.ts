@@ -8,63 +8,32 @@ import mongoose from "mongoose"
 import timerLogs from "../../models/timerLogs"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
-  const { locationId, machineClassId } = req.query
+  let { locationId, machineClassId } = req.query
   if (locationId && machineClassId) {
     try {
-      const machinesCountByClass = await Machines.find({
-        ...(locationId &&
-          !!locationId?.length && {
-            locationId: {
-              $in: locationId
-                //@ts-expect-error
-                ?.split(",")
-                //@ts-expect-error
-                .map((e) => new mongoose.Types.ObjectId(e)),
-            },
-          }),
-        ...(machineClassId &&
-          !!machineClassId?.length && {
-            locationId: {
-              $in: machineClassId
-                //@ts-expect-error
-                ?.split(",")
-                //@ts-expect-error
-                .map((e) => new mongoose.Types.ObjectId(e)),
-            },
-          }),
-        // locationId,
-        // machineClassId,
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      }).countDocuments()
-      const getMachineByClass = await Machines.find({
-        ...(locationId &&
-          !!locationId?.length && {
-            locationId: {
-              $in: locationId
-                //@ts-expect-error
-                ?.split(",")
-                //@ts-expect-error
-                .map((e) => new mongoose.Types.ObjectId(e)),
-            },
-          }),
-        ...(machineClassId &&
-          !!machineClassId?.length && {
-            locationId: {
-              $in: machineClassId
-                //@ts-expect-error
-                ?.split(",")
-                //@ts-expect-error
-                .map((e) => new mongoose.Types.ObjectId(e)),
-            },
-          }),
-        // locationId,
-        // machineClassId,
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      })
+      locationId = locationId as string
+      const locationIds = locationId
+        .split(",")
+        .map((e) => new mongoose.Types.ObjectId(e))
+      machineClassId = machineClassId as string
+      const machineClassIds = machineClassId
+        .split(",")
+        .map((e) => new mongoose.Types.ObjectId(e))
+      const getMachineByClass: Array<Record<string, any>> = []
+      for (const locationId of locationIds) {
+        for (const machineClassId of machineClassIds) {
+          const query = {
+            locationId: locationId,
+            machineClassId: machineClassId,
+            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+          }
+          getMachineByClass.push(...(await Machines.find(query)))
+        }
+      }
       res.json({
         error: false,
         items: getMachineByClass,
-        count: machinesCountByClass,
+        count: getMachineByClass.length + 1,
         message: null,
       })
     } catch (err: any) {
