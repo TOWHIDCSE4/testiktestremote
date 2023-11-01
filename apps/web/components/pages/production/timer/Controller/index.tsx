@@ -175,7 +175,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setCycleClockInSeconds(secondsLapse)
       }
       if (data.action === "update-operator") {
-        setDefaultOperator(data.user)
+        if (data.user) {
+          if (data.user.role === "Personnel") {
+            setDefaultOperator(data.user)
+          }
+        }
       }
       if (data.action === "job-change") {
         timerJobsRefetch()
