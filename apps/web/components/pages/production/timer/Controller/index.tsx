@@ -116,6 +116,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   const [readingMessages, setReadingMessages] = useState<string[]>([])
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
+  const [endTimer, setEndTimer] = useState<boolean>(false)
   const intervalRef = useRef<any>()
   let socket: Socket<any, any> | undefined
   const currentDate = dayjs
@@ -174,7 +175,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setCycleClockInSeconds(secondsLapse)
       }
       if (data.action === "update-operator") {
-        setDefaultOperator(data.user)
+        if (data.user) {
+          if (data.user.role === "Personnel") {
+            setDefaultOperator(data.user)
+          }
+        }
       }
       if (data.action === "job-change") {
         timerJobsRefetch()
@@ -266,6 +271,17 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }, 1000)
     setIsTimerClockRunning(true)
   }
+
+  useEffect(() => {
+    const stopTimer = () => {
+      if (endTimer) {
+        clearInterval(interval)
+        setIsTimerClockRunning(false)
+      }
+    }
+    stopTimer()
+  }, [endTimer])
+
   const stopTimer = () => {
     stopInterval()
     setProgress(0)
@@ -609,6 +625,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         <SideMenu
           endMenu={endMenu}
           setEndMenu={setEndMenu}
+          endTimer={setEndTimer}
           setIsEndProductionModalOpen={setIsEndProductionModalOpen}
         />
       </div>

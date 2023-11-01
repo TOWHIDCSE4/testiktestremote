@@ -243,7 +243,7 @@ const Timer = ({
           as="div"
           value={selectedPart}
           onChange={updateTimerPart}
-          disabled={isUpdateTimerLoading}
+          disabled={isCycleClockRunning ? true : isUpdateTimerLoading}
         >
           <div className="relative">
             <Combobox.Input

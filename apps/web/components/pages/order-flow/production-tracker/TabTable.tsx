@@ -135,17 +135,13 @@ const TabTable = ({
               <th scope="col" className="w-4"></th>
               <th
                 scope="col"
-                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
+                className="pl-8 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
               >
                 User
               </th>
               <th
                 scope="col"
-                className={`${
-                  jobs.items[0].isStock
-                    ? "md:w-[20%] lg:w-[20%] lg:pl-[3rem] md:pl-[3rem]"
-                    : "md:w-[15%] lg:w-[15%]"
-                } pl-5 py-3.5  md:pl-6  text-left text-sm font-semibold text-gray-900 uppercase`}
+                className={`md:w-[18%] lg:w-[18%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Factory
@@ -153,9 +149,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`${
-                  jobs.items[0].isStock ? "w-[30%]" : "w-[20%]"
-                } py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
+                className={`w-[25%] md:w-[20%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Name
@@ -163,7 +157,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="md:w-[20%] py-3.5 text-left text-sm font-semibold text-gray-900  lg:w-[8rem] xl:w-[14rem]  uppercase"
+                className="md:w-[20%] lg:w-1/4 py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem]  uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Part
@@ -193,22 +187,19 @@ const TabTable = ({
                   Priority
                 </a>
               </th>
-              {jobs.items[0].isStock ? (
+              {/* {jobs.items[0].isStock ? (
                 ""
-              ) : (
-                <th
-                  scope="col"
-                  className=" pl-5 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
-                >
-                  <a href="#" className="group inline-flex">
-                    Due
-                  </a>
-                </th>
-              )}
+              ) : ( */}
               <th
                 scope="col"
-                className="relative md:pl-16 lg:pl-16 py-3.5  md:w-0   text-center"
+                className=" pl-8 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
               >
+                <a href="#" className="group inline-flex">
+                  Due
+                </a>
+              </th>
+              {/* )} */}
+              <th scope="col" className="relative md:pl-24 lg:pl-24 py-3.5">
                 {locked ? (
                   <LockClosedIcon
                     className="w-[1.5rem] h-[1.5rem]"
@@ -243,7 +234,7 @@ const TabTable = ({
                         <ChevronRightIcon className="w-4 h-4 stroke-2 stroke-blue-950" />
                       )}
                     </td>
-                    <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-6">
+                    <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
                       <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
                         {typeof job?.user === "object" &&
                         job?.user?.profile?.photo ? (
@@ -268,13 +259,7 @@ const TabTable = ({
                         )}
                       </div>
                     </td>
-                    <td
-                      className={
-                        job.isStock
-                          ? "py-3 lg:pl-[3rem] md:pl-[3rem] text-sm text-gray-800 pl-4"
-                          : "py-3 lg:pl-6 text-sm text-gray-800 pl-4 md:pl-[1.5rem]"
-                      }
-                    >
+                    <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4">
                       {typeof job?.factory === "object"
                         ? job?.factory?.name
                         : ""}
@@ -301,7 +286,7 @@ const TabTable = ({
                         <br />
                       </div>
                     </td> */}
-                    <td className="py-3 text-sm text-gray-800">
+                    <td className="py-3 text-sm pl-4 text-gray-800">
                       {/* <ChartBarIcon
                       className={`h-5 w-5 ${
                         job?.priorityStatus === "High"
@@ -344,20 +329,22 @@ const TabTable = ({
                         ></div>
                       </div>
                     </td>
-                    {job?.isStock ? (
+                    {/* {job?.isStock ? (
                       ""
-                    ) : (
-                      <td className="py-3 pl-4 text-sm text-gray-800">
-                        {job?.dueDate ? (
-                          dayjs(job?.dueDate).format("DD/MM/YYYY")
-                        ) : (
-                          <span className="text-2xl">∞</span>
-                        )}{" "}
-                        <br />
-                        <span className="text-red-500 hidden">Overdue</span>
-                      </td>
-                    )}
-                    <td className="py-3 lg:pl-16 md:pl-16 text-left text-sm font-medium sm:pr-6 lg:pr-8">
+                    ) : ( */}
+                    <td className="py-3 pl-8 text-sm text-gray-800">
+                      {job.isStock ? (
+                        ""
+                      ) : job.dueDate ? (
+                        dayjs(job.dueDate).format("DD/MM/YYYY")
+                      ) : (
+                        <span className="text-2xl">∞</span>
+                      )}
+                      <br />
+                      <span className="text-red-500 hidden">Overdue</span>
+                    </td>
+                    {/* )} */}
+                    <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium">
                       <Menu as="div">
                         <Menu.Button onClick={(e) => e.stopPropagation()}>
                           <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
