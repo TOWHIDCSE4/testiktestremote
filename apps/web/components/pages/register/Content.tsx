@@ -3,6 +3,7 @@ import { HeartIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import GifTick from "../../../assets/images/sliders/icontick.png"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
 import Slider from "../../Slider"
@@ -344,12 +345,15 @@ const Content = () => {
       </div>
       {showWelcome && (
         <div className="fixed top-0 left-0 w-full h-full items-center justify-center bg-white z-50 flex flex-col">
+          <div>
+            <Image src={GifTick} alt="Your Image" width={300} height={200} />
+          </div>
           <div className=" p-4 rounded-md text-white space-y-4">
-            <h1 className="animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent text-5xl font-black">
+            <h1 className="animate-text bg-gradient-to-r outline-1 outline-black from-blue-900 via-blue-500 to-blue-900 bg-clip-text text-transparent text-7xl font-black">
               THANK YOU
             </h1>
           </div>
-          <span className="text-xl font-semibold text-black">
+          <span className="text-3xl font-semibold text-black">
             You will be Redirected to Login Page Shortly
           </span>
         </div>
