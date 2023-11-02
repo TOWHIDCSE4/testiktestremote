@@ -145,7 +145,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setCycleClockInSeconds(0)
         try {
           const { isSuccess } = await cycleRefetch()
-          if (isSuccess) {
+          if (isSuccess && jobUpdateId !== "") {
             runIntervalClock()
             setIsCycleClockStarting(false)
           }

@@ -110,7 +110,7 @@ const TabTable = ({
   }
   // Handle Pagination
   function numberPagesFunc(jobs: any, numberOfPages: number) {
-    if (jobs?.items.length < 1) {
+    if (jobs?.items?.length < 1) {
       return 1
     }
     return numberOfPages ? numberOfPages : 1
