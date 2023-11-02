@@ -53,6 +53,7 @@ const Details = ({
   isJobSwitch,
   setIsJobSwitch,
 }: T_Props) => {
+  console.log("operatorQuery", timerDetails)
   const queryClient = useQueryClient()
   const { data: users, isLoading: isUsersLoading } = useUsers()
   const isComboboxDisabled = isCycleClockRunning
@@ -83,6 +84,13 @@ const Details = ({
     id: "",
     name: "",
   })
+
+  const handleInputOperator = () => {
+    mutate(
+      { ...timerDetails, operator: "", operatorName: operatorQuery },
+      callBackReq
+    )
+  }
 
   useEffect(() => {
     if (isJobSwitch) {
@@ -284,6 +292,31 @@ const Details = ({
               aria-hidden="true"
             />
           </Combobox.Button>
+          {operatorQuery && (
+            <Combobox.Button
+              className="absolute inset-y-0 right-5 flex items-center rounded-r-md px-2 focus:outline-none"
+              onClick={() => handleInputOperator()}
+            >
+              <span className="flex justify-start items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.7"
+                  stroke="currentColor"
+                  className={`h-5 w-6 ${
+                    isUpdateTimerLoading ? "text-gray-400" : "text-gray-600"
+                  } mx-2`}
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                  />
+                </svg>
+              </span>
+            </Combobox.Button>
+          )}
 
           {filteredOperator && filteredOperator.length > 0 ? (
             <Combobox.Options className="absolute z-10 mt-1 max-h-60 xl:w-80 ipadair:w-[250px] 2xl:w-[350px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
