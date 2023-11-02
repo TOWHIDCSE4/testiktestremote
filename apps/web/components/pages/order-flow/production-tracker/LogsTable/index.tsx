@@ -1213,15 +1213,59 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             >
                               <td colSpan={7}>
                                 <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
-                                  <div className="w-[73%]">
+                                  <div className="w-[100%]">
                                     <div className="flex justify-between">
-                                      <span className="flex w-[27rem] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                      <span className="flex w-[30%] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
                                         <p className="w-2/3 text-right">
                                           ADDITIONAL INFO
                                         </p>
                                       </span>
-
-                                      <span className="flex w-[30rem] text-[13px] ">
+                                      <span className="flex w-[17%] text-[13px] ">
+                                        <p
+                                          className={`pl-3 py-4 text-sm text-gray-500 font-semibold ${
+                                            item.jobId
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          CITY :
+                                        </p>
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 ${
+                                            item.jobId
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          {typeof item.locationId === "object"
+                                            ? item.locationId?.name
+                                            : ""}{" "}
+                                        </p>
+                                      </span>
+                                      <span className="flex w-[35%] text-[13px] ">
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
+                                            item.jobId
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          MACHINE CLASS :
+                                        </p>
+                                        <p
+                                          className={`px-3 py-4 text-sm text-gray-500 ${
+                                            item.jobId
+                                              ? "text-gray-900"
+                                              : "text-red-500"
+                                          }`}
+                                        >
+                                          {typeof item.machineClassId ===
+                                          "object"
+                                            ? item.machineClassId?.name
+                                            : ""}{" "}
+                                        </p>
+                                      </span>
+                                      <span className="flex w-[30%] text-[13px] ">
                                         <p
                                           className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
                                             item.jobId
@@ -1246,7 +1290,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                             : ""}
                                         </p>
                                       </span>
-                                      <span className="flex w-[30rem] text-[13px] text-slate-900 ">
+                                      <span className="flex text-[13px] w-[40%] text-slate-900 ">
                                         <p
                                           className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
                                             item.jobId
