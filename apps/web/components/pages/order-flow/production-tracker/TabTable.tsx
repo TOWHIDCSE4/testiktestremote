@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/24/solid"
 import { T_Job, T_JobStatus } from "custom-validator"
 import usePaginatedJobs from "../../../../hooks/jobs/usePaginatedJobs"
+import FilterCheckbox from "../../production/timer/FilterCheckbox"
 import dayjs from "dayjs"
 import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
@@ -425,7 +426,6 @@ const TabTable = ({
                       </Menu>
                     </td>
                   </tr>
-
                   <tr>
                     <td colSpan={10}>
                       <TabTableDetail job={job} selected={selected} />

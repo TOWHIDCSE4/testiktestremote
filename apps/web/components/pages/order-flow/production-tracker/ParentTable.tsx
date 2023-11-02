@@ -1,13 +1,17 @@
 import {
+  ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/solid"
-import { useEffect, useState } from "react"
+import { useEffect, useState, Dispatch } from "react"
 import { Fragment } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import Image from "next/image"
 import DeleteModal from "./modals/DeleteModal"
+import FilterCheckbox from "../../production/timer/FilterCheckbox"
+import { T_MachineClass } from "custom-validator"
+import useMachineClasses from "../../../../hooks/machineClasses/useMachineClasses"
 import EditModal from "./modals/EditModal"
 import combineClasses from "../../../../helpers/combineClasses"
 import TabTable from "./TabTable"
@@ -15,10 +19,27 @@ import { T_JobStatus } from "custom-validator"
 import useCountStatus from "../../../../hooks/jobs/useCountStatus"
 import usePartLocationCount from "../../../../hooks/parts/useGetPartLocationCount"
 
-const ParentTable = ({ locationId }: { locationId: string }) => {
+const ParentTable = ({
+  locationId,
+  setSelectedMachineClasses,
+  selectedMachineClasses,
+}: {
+  locationId: string
+  setSelectedMachineClasses: Dispatch<
+    (T_MachineClass & { isSelected: boolean })[]
+  >
+  selectedMachineClasses: (T_MachineClass & { isSelected: boolean })[]
+}) => {
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [selectedValue, setSelectedValue] = useState<string>("client")
   const [inputValue, setInputValue] = useState<string>("")
+  const [isAllFilterSelected, setIsAllFilterSelected] = useState(true)
+  const { data: machineClasses, isLoading: isMachineClassesLoading } =
+    useMachineClasses()
+  const [openFilter, setOpenFilter] = useState(false)
+  // const [openFilter, setOpenFilter] = useState(false)
+  const [checkAll, setCheckAll] = useState(false)
+  const [filterCheck, setFilterCheck] = useState({})
   const [deleteModal, setDeleteModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
   const [clickRender, setClickRender] = useState(false)
@@ -32,6 +53,32 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
     { name: "Archived", count: 0, current: currentTab === "Archived" },
     { name: "Deleted", count: 0, current: currentTab === "Deleted" },
   ]
+
+  const handleOnChange = (e: any) => {
+    setCheckAll(!checkAll)
+    const updatedMachineClasses = selectedMachineClasses.map(
+      (machineClass: T_MachineClass) => ({
+        ...machineClass,
+        isSelected: !isAllFilterSelected,
+      })
+    )
+    setSelectedMachineClasses(updatedMachineClasses)
+    setIsAllFilterSelected(!isAllFilterSelected)
+  }
+
+  const filterCheckHandler = () => {
+    setFilterCheck({
+      ...filterCheck,
+    })
+  }
+
+  useEffect(() => {
+    setFilterCheck(filterCheck)
+  }, [filterCheck])
+
+  useEffect(() => {
+    setCheckAll(!checkAll)
+  }, [])
 
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOption = e.currentTarget.value
@@ -161,7 +208,81 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                 <div></div>
               )}
               <div></div>
-              <div className={`mt-2 mr-5`}>
+              <div className={`mt-2 mr-5 flex`}>
+                <Menu as="div" className="relative inline-block text-left">
+                  <div>
+                    <Menu.Button
+                      className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                      onClick={() => {
+                        setOpenFilter((openFilter) => !openFilter)
+                        filterCheckHandler()
+                      }}
+                    >
+                      Show Only Filter
+                      <ChevronDownIcon
+                        className="-mr-1 h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </Menu.Button>
+                  </div>
+
+                  <Transition
+                    show={openFilter}
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items
+                      static
+                      className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    >
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div className="relative px-4 py-0.5 flex items-start">
+                              <div className="flex h-6 items-center">
+                                <input
+                                  id="all"
+                                  aria-describedby="all-description"
+                                  name="all"
+                                  type="checkbox"
+                                  className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                  defaultChecked={checkAll}
+                                  onChange={(e) => {
+                                    handleOnChange(e)
+                                    setFilterCheck({})
+                                  }}
+                                />
+                              </div>
+                              <div className="ml-3 text-sm leading-6">
+                                <label htmlFor="all" className="text-gray-700">
+                                  All
+                                </label>
+                              </div>
+                            </div>
+                          )}
+                        </Menu.Item>
+
+                        <Menu.Item>
+                          <FilterCheckbox
+                            filterCheck={setFilterCheck}
+                            checkBoxValues={filterCheck}
+                            machineClass={machineClasses?.name}
+                            isAllSelected={isAllFilterSelected}
+                            setSelectedMachineClasses={
+                              setSelectedMachineClasses
+                            }
+                            selectedMachineClasses={selectedMachineClasses}
+                          />
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
                 <div className="flex">
                   <button className="px-3 py-1 rounded-md  text-gray-800 font-semibold text-lg">
                     SEARCH
