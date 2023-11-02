@@ -362,12 +362,9 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }
   const runCycle = (fromDb?: boolean) => {
-    const isJobTimer = timerJobs?.items?.some(
-      (job) => job._id === jobTimer?.item?.jobId
-    )
     if (!isLocationTimeEnded) {
       if (timerDetailData?.item?.operator) {
-        if (isJobTimer) {
+        if (jobUpdateId !== "") {
           if (!isTimerControllerEnded) {
             setIsCycleClockStarting(true)
             startingTimerReadings([
@@ -438,16 +435,12 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [readingMessages])
 
   useEffect(() => {
-    const isJobTimer = timerJobs?.items?.some(
-      (job) => job._id === jobTimer?.item?.jobId
-    )
-
-    if (cycleTimer?.items && cycleTimer?.items.length > 0 && isJobTimer) {
+    if (cycleTimer?.items && cycleTimer?.items.length > 0 && jobUpdateId) {
       const secondsLapse = handleInitializeSeconds(
         cycleTimer?.items[0].createdAt
       )
       setCycleClockInSeconds(secondsLapse)
-      if (!cycleTimer?.items[0].endAt && isJobTimer) {
+      if (!cycleTimer?.items[0].endAt && jobUpdateId !== "") {
         if (timerDetailData?.item?.partId.time === 0) {
           setProgress(0)
         } else {
@@ -457,7 +450,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         runCycle(true)
       }
     }
-  }, [cycleTimer, jobTimer, timerJobs])
+  }, [cycleTimer, jobUpdateId])
 
   const handleInitializeSeconds = (createdAt?: Date, endAt?: Date | null) => {
     const timeZone = timerDetailData?.item?.locationId.timeZone
