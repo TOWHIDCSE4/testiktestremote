@@ -1,7 +1,6 @@
 "use client"
 import { DatePicker, Space } from "antd"
 import NewWindow from "react-new-window"
-import Report from "../../../production/timer/Report"
 import dayjs from "dayjs"
 import moment from "moment"
 import * as timezone from "dayjs/plugin/timezone"
@@ -83,6 +82,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [partsSelected, setPartsSelected] = useState<string[]>([])
   const [partSelector, setPartSelector] = useState<string[]>([])
   const [machine, setMachine] = useState<string[]>([])
+  const [part, setPart] = useState<string[]>([])
   const [search, setSearch] = useState<string>("")
   const [loadOptionsCount, setLoadOptionsCount] = useState(0)
   const [cityCounter, setCityCounter] = useState<number>(city.length)
@@ -146,6 +146,18 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
       setMachineCounter(machine.length)
     }
   }, [machines])
+
+  useEffect(() => {
+    const initialPartsSelected: string[] = []
+    //@ts-expect-error
+    if (parts && parts.items && parts.items.length > 0) {
+      //@ts-expect-error
+      parts.items.forEach((item) => {
+        initialPartsSelected.push(item._id)
+      })
+    }
+    setPartsSelected(initialPartsSelected)
+  }, [parts])
 
   const {
     data: allParts,
@@ -230,7 +242,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setEndDateRange,
     setPartId,
   } = useGlobalTimerLogsMulti(city, sortType, keyword, process)
-  console.log("🚀 ~ file: index.tsx:229 ~ paginated:", machineClass)
 
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 10)
 
@@ -355,7 +366,9 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   const handleLocationChange = (event: any) => {
     setCity(event.target.value)
+    setPartsSelected([])
     setMachineClass([])
+    setMachine([])
   }
 
   useEffect(() => {
@@ -364,8 +377,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   const handleMachineClassChange = (event: SelectChangeEvent) => {
     const selectedMachineClasses: string = event.target.value
-
-    setMachine([])
     setSelectedMachineClassId(selectedMachineClasses)
     setSelectedLocationId(city)
     //@ts-expect-error
@@ -377,10 +388,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }, [machineClass])
 
   const handleMachineChange = (event: any) => {
-    const selectedParts: Array<any> = []
     setSelectedMachineValues(event.target.value)
     setMachine(event.target.value)
-    setPartsSelected(selectedParts)
   }
 
   useEffect(() => {
@@ -819,13 +828,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         parts && parts.items && parts.items.length > 0 ? (
                           //@ts-expect-error
                           parts.items.map((item, index) => (
-                            <MenuItem
-                              key={index}
-                              // value={[item._id, item.name ] as string[]}
-                              value={item._id as string}
-                            >
+                            <MenuItem key={index} value={item._id as string}>
                               <ListItemText primary={item.name} />
-
                               <Checkbox
                                 checked={partsSelected.includes(item._id)}
                               />
