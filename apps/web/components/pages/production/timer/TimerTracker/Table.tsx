@@ -223,9 +223,10 @@ const Table = ({
                     }`}
                   >
                     {item.operator === null
-                      ? item.operatorName
-                      : item.operator
-                      ? `${item.operator.firstName} ${item.operator.lastName}`
+                      ? (item.operatorName as string)
+                      : (item.operator as string)
+                      ? //@ts-expect-error
+                        `${item.operator?.firstName} ${item.operator?.lastName}`
                       : ""}
                   </td>
                   <td
