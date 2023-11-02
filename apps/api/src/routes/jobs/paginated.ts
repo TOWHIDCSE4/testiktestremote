@@ -10,14 +10,23 @@ import * as Sentry from "@sentry/node"
 
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, status, selectedjob, search } = req.query
+  let { machineClassids } = req.query
   if (page && locationId) {
     try {
+      machineClassids = machineClassids as string
+      const machineClassidz = machineClassids
+        ?.split(",")
+        .map((e) => new mongoose.Types.ObjectId(e))
       const jobsCount = await Jobs.find({
         locationId: locationId,
         ...(status && { status: status }),
         ...(selectedjob &&
           selectedjob?.length && {
             isStock: selectedjob === "STOCK" ? true : false,
+          }),
+        ...(machineClassids &&
+          machineClassidz.length > 0 && {
+            machineClassId: { $in: machineClassidz },
           }),
 
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],

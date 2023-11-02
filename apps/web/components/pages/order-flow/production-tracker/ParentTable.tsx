@@ -17,17 +17,14 @@ import combineClasses from "../../../../helpers/combineClasses"
 import TabTable from "./TabTable"
 import { T_JobStatus } from "custom-validator"
 import useCountStatus from "../../../../hooks/jobs/useCountStatus"
+import usePaginatedJobs from "../../../../hooks/jobs/usePaginatedJobs"
 import usePartLocationCount from "../../../../hooks/parts/useGetPartLocationCount"
 
 const ParentTable = ({
   locationId,
-  setSelectedMachineClasses,
   selectedMachineClasses,
 }: {
   locationId: string
-  setSelectedMachineClasses: Dispatch<
-    (T_MachineClass & { isSelected: boolean })[]
-  >
   selectedMachineClasses: (T_MachineClass & { isSelected: boolean })[]
 }) => {
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
@@ -37,14 +34,23 @@ const ParentTable = ({
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses()
   const [openFilter, setOpenFilter] = useState(false)
-  // const [openFilter, setOpenFilter] = useState(false)
   const [checkAll, setCheckAll] = useState(false)
-  const [filterCheck, setFilterCheck] = useState({})
+  const [machineClassArray, setMachineClassArray] = useState<string[]>([])
+  const {
+    machineClassId,
+    setMachineClassId,
+    isLoading: paginatedJobsLoading,
+  } = usePaginatedJobs()
   const [deleteModal, setDeleteModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
+  // const [selectedMachineClassIds, setSelectedMachineClassIds] = useState<string[]>([]);
   const [clickRender, setClickRender] = useState(false)
 
   const { data, isLoading, setJobStatuses, setJobLocation } = useCountStatus()
+
+  useEffect(() => {
+    setMachineClassId(machineClassArray)
+  }, [setMachineClassId, machineClassArray])
 
   const tabs = [
     { name: "Pending", count: 0, current: currentTab === "Pending" },
@@ -54,31 +60,40 @@ const ParentTable = ({
     { name: "Deleted", count: 0, current: currentTab === "Deleted" },
   ]
 
-  const handleOnChange = (e: any) => {
-    setCheckAll(!checkAll)
-    const updatedMachineClasses = selectedMachineClasses.map(
-      (machineClass: T_MachineClass) => ({
-        ...machineClass,
-        isSelected: !isAllFilterSelected,
-      })
-    )
-    setSelectedMachineClasses(updatedMachineClasses)
-    setIsAllFilterSelected(!isAllFilterSelected)
-  }
+  const handleSelectMachineClass = (e: any) => {
+    const isChecked = e.target.checked
+    setCheckAll(isChecked)
 
-  const filterCheckHandler = () => {
-    setFilterCheck({
-      ...filterCheck,
-    })
+    if (isChecked) {
+      const allMachineClassIds = machineClasses?.items.map(
+        (machineClass: T_MachineClass) => machineClass._id || ""
+      )
+      setMachineClassArray(allMachineClassIds)
+      console.log(allMachineClassIds)
+    } else {
+      setMachineClassArray([])
+    }
   }
 
   useEffect(() => {
-    setFilterCheck(filterCheck)
-  }, [filterCheck])
+    if (
+      !isMachineClassesLoading &&
+      machineClasses?.items &&
+      machineClasses?.items.length > 0
+    ) {
+      const updatedMachineClasses = machineClasses?.items?.map(
+        (machineClass: T_MachineClass) => ({
+          ...machineClass,
+          isSelected: !isAllFilterSelected,
+        })
+      )
+      setIsAllFilterSelected(!isAllFilterSelected)
+    }
+  }, [machineClasses])
 
-  useEffect(() => {
-    setCheckAll(!checkAll)
-  }, [])
+  // useEffect(() => {
+  //   console.log(machineClass);
+  // }, [machineClass]);
 
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOption = e.currentTarget.value
@@ -125,7 +140,6 @@ const ParentTable = ({
                   <label htmlFor="tabs" className="sr-only">
                     Select a tab
                   </label>
-                  {/* Use an "onChange" listener to redirect the user to the selected tab URL. */}
                   <select
                     id="tabs"
                     name="tabs"
@@ -215,7 +229,7 @@ const ParentTable = ({
                       className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                       onClick={() => {
                         setOpenFilter((openFilter) => !openFilter)
-                        filterCheckHandler()
+                        // filterCheckHandler();
                       }}
                     >
                       Show Only Filter
@@ -253,12 +267,11 @@ const ParentTable = ({
                                   className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
                                   defaultChecked={checkAll}
                                   onChange={(e) => {
-                                    handleOnChange(e)
-                                    setFilterCheck({})
+                                    handleSelectMachineClass(e)
                                   }}
                                 />
                               </div>
-                              <div className="ml-3 text-sm leading-6">
+                              <div className="ml-3 text-sm leading-6 flex flex-col">
                                 <label htmlFor="all" className="text-gray-700">
                                   All
                                 </label>
@@ -266,18 +279,54 @@ const ParentTable = ({
                             </div>
                           )}
                         </Menu.Item>
-
                         <Menu.Item>
-                          <FilterCheckbox
-                            filterCheck={setFilterCheck}
-                            checkBoxValues={filterCheck}
-                            machineClass={machineClasses?.name}
-                            isAllSelected={isAllFilterSelected}
-                            setSelectedMachineClasses={
-                              setSelectedMachineClasses
-                            }
-                            selectedMachineClasses={selectedMachineClasses}
-                          />
+                          <div className="relative px-4 py-0.5">
+                            {machineClasses?.items.map(
+                              (machineClassId: T_MachineClass) => (
+                                <div
+                                  key={machineClassId._id}
+                                  className="flex items-start"
+                                >
+                                  <div className="flex h-6 items-center">
+                                    <input
+                                      id={machineClassId._id || ""}
+                                      aria-describedby={`${machineClassId._id}-description`}
+                                      name={machineClassId._id || ""}
+                                      type="checkbox"
+                                      className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                      checked={machineClassArray.includes(
+                                        machineClassId._id || ""
+                                      )}
+                                      onChange={() => {
+                                        setMachineClassArray((prevIds) =>
+                                          prevIds.includes(
+                                            machineClassId._id || ""
+                                          )
+                                            ? prevIds.filter(
+                                                (id) =>
+                                                  id !== machineClassId._id ||
+                                                  ""
+                                              )
+                                            : [
+                                                ...prevIds,
+                                                machineClassId._id || "",
+                                              ]
+                                        )
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="ml-3 text-sm leading-6">
+                                    <label
+                                      htmlFor={machineClassId._id}
+                                      className="text-gray-700"
+                                    >
+                                      {machineClassId.name}
+                                    </label>
+                                  </div>
+                                </div>
+                              )
+                            )}
+                          </div>
                         </Menu.Item>
                       </div>
                     </Menu.Items>
