@@ -434,15 +434,324 @@ const TabTable = ({
                 </Fragment>
               )
             })}
+            {jobs?.items?.length == 1 && (
+              <>
+                <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                  <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+                  <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <div className="relative h-11 w-11 flex items-center justify-center"></div>
+                  </td>
+                  <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm pl-4 text-gray-800"></td>
+                  <td className="py-3 pl-8 text-sm text-gray-800">
+                    <br />
+                    <span className="text-red-500 hidden">Overdue</span>
+                  </td>
+                  <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+                </tr>
+                <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                  <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+                  <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <div className="relative h-11 w-11 flex items-center justify-center"></div>
+                  </td>
+                  <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm pl-4 text-gray-800"></td>
+                  <td className="py-3 pl-8 text-sm text-gray-800">
+                    <br />
+                    <span className="text-red-500 hidden">Overdue</span>
+                  </td>
+                  <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+                </tr>
+                <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                  <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+                  <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <div className="relative h-11 w-11 flex items-center justify-center"></div>
+                  </td>
+                  <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm pl-4 text-gray-800"></td>
+                  <td className="py-3 pl-8 text-sm text-gray-800">
+                    <br />
+                    <span className="text-red-500 hidden">Overdue</span>
+                  </td>
+                  <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+                </tr>
+                <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                  <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+                  <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <div className="relative h-11 w-11 flex items-center justify-center"></div>
+                  </td>
+                  <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm pl-4 text-gray-800"></td>
+                  <td className="py-3 pl-8 text-sm text-gray-800">
+                    <br />
+                    <span className="text-red-500 hidden">Overdue</span>
+                  </td>
+                  <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+                </tr>
+              </>
+            )}
+            {jobs?.items?.length == 2 && (
+              <>
+                <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                  <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+                  <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <div className="relative h-11 w-11 flex items-center justify-center"></div>
+                  </td>
+                  <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm pl-4 text-gray-800"></td>
+                  <td className="py-3 pl-8 text-sm text-gray-800">
+                    <br />
+                    <span className="text-red-500 hidden">Overdue</span>
+                  </td>
+                  <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+                </tr>
+                <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                  <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+                  <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <div className="relative h-11 w-11 flex items-center justify-center"></div>
+                  </td>
+                  <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm pl-4 text-gray-800"></td>
+                  <td className="py-3 pl-8 text-sm text-gray-800">
+                    <br />
+                    <span className="text-red-500 hidden">Overdue</span>
+                  </td>
+                  <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+                </tr>
+                <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                  <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+                  <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <div className="relative h-11 w-11 flex items-center justify-center"></div>
+                  </td>
+                  <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm pl-4 text-gray-800"></td>
+                  <td className="py-3 pl-8 text-sm text-gray-800">
+                    <br />
+                    <span className="text-red-500 hidden">Overdue</span>
+                  </td>
+                  <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+                </tr>
+              </>
+            )}
+            {jobs?.items?.length == 3 && (
+              <>
+                <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                  <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+                  <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <div className="relative h-11 w-11 flex items-center justify-center"></div>
+                  </td>
+                  <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm pl-4 text-gray-800"></td>
+                  <td className="py-3 pl-8 text-sm text-gray-800">
+                    <br />
+                    <span className="text-red-500 hidden">Overdue</span>
+                  </td>
+                  <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+                </tr>
+                <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                  <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+                  <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <div className="relative h-11 w-11 flex items-center justify-center"></div>
+                  </td>
+                  <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm pl-4 text-gray-800"></td>
+                  <td className="py-3 pl-8 text-sm text-gray-800">
+                    <br />
+                    <span className="text-red-500 hidden">Overdue</span>
+                  </td>
+                  <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+                </tr>
+              </>
+            )}
+            {jobs?.items?.length == 4 && (
+              <>
+                <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+                  <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+                  <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <div className="relative h-11 w-11 flex items-center justify-center"></div>
+                  </td>
+                  <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm text-gray-800"></td>
+                  <td className="py-3 text-sm pl-4 text-gray-800"></td>
+                  <td className="py-3 pl-8 text-sm text-gray-800">
+                    <br />
+                    <span className="text-red-500 hidden">Overdue</span>
+                  </td>
+                  <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+                </tr>
+              </>
+            )}
           </tbody>
         </table>
       ) : (
-        // no item
-        <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
-          <div className="text-gray-500 text-lg font-semibold">
-            No {tab.toLocaleLowerCase()} job found
-          </div>
-        </div>
+        //Static Table starts Here
+        <table className="w-full divide-y divide-gray-300 md:table-fixed">
+          <thead>
+            <tr className="">
+              <th scope="col" className="w-4"></th>
+              <th
+                scope="col"
+                className="pl-8 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
+              >
+                User
+              </th>
+              <th
+                scope="col"
+                className={`md:w-[18%] lg:w-[18%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
+              >
+                <a href="#" className="group inline-flex">
+                  Factory
+                </a>
+              </th>
+              <th
+                scope="col"
+                className={`w-[25%] md:w-[20%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
+              >
+                <a href="#" className="group inline-flex">
+                  Name
+                </a>
+              </th>
+              <th
+                scope="col"
+                className="md:w-[20%] lg:w-1/4 py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem]  uppercase"
+              >
+                <a href="#" className="group inline-flex">
+                  Part
+                </a>
+              </th>
+              <th
+                scope="col"
+                className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
+              >
+                <a href="#" className="group inline-flex">
+                  Priority
+                </a>
+              </th>
+              <th
+                scope="col"
+                className=" pl-8 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
+              >
+                <a href="#" className="group inline-flex">
+                  Due
+                </a>
+              </th>
+              <th scope="col" className="relative md:pl-24 lg:pl-24 py-3.5">
+                {locked ? (
+                  <LockClosedIcon
+                    className="w-[1.5rem] h-[1.5rem]"
+                    onClick={() => toggleLock()}
+                  />
+                ) : (
+                  <LockOpenIcon
+                    className="w-[1.5rem] h-[1.5rem]"
+                    onClick={() => toggleLock()}
+                  />
+                )}
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white">
+            <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+              <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+              <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                <div className="relative h-11 w-11  flex items-center justify-center"></div>
+              </td>
+              <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
+              <td className="py-3 text-sm pl-4 text-gray-800"></td>
+              <td className="py-3 pl-8 text-sm text-gray-800">
+                <br />
+                <span className="text-red-500 hidden">Overdue</span>
+              </td>
+              <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+            </tr>
+            <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+              <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+              <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                <div className="relative h-11 w-11 flex items-center justify-center"></div>
+              </td>
+              <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
+              <td className="py-3 text-sm pl-4 text-gray-800"></td>
+              <td className="py-3 pl-8 text-sm text-gray-800">
+                <br />
+                <span className="text-red-500 hidden">Overdue</span>
+              </td>
+              <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+            </tr>
+            <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+              <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+              <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                <div className="relative h-11 w-11 flex items-center justify-center"></div>
+              </td>
+              <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
+              <td className="py-3 text-sm pl-4 text-gray-800"></td>
+              <td className="py-3 pl-8 text-sm text-gray-800">
+                <br />
+                <span className="text-red-500 hidden">Overdue</span>
+              </td>
+              <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+            </tr>
+            <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+              <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+              <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                <div className="relative h-11 w-11 flex items-center justify-center"></div>
+              </td>
+              <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
+              <td className="py-3 text-sm pl-4 text-gray-800"></td>
+              <td className="py-3 pl-8 text-sm text-gray-800">
+                <br />
+                <span className="text-red-500 hidden">Overdue</span>
+              </td>
+              <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium">
+                {" "}
+              </td>
+            </tr>
+            <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
+              <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
+              <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                <div className="relative h-11 w-11 flex items-center justify-center"></div>
+              </td>
+              <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
+              <td className="py-3 text-sm pl-4 text-gray-800"></td>
+              <td className="py-3 pl-8 text-sm text-gray-800">
+                <br />
+                <span className="text-red-500 hidden">Overdue</span>
+              </td>
+              <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium"></td>
+            </tr>
+            <tr>
+              <td colSpan={10}></td>
+            </tr>
+          </tbody>
+        </table>
       )}
       <div className="inset-x-0">
         <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
