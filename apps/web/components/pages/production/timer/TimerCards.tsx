@@ -30,7 +30,6 @@ function TimerCards({
   isLoading: boolean
   locationId: string
 }) {
-  console.log("timerByMachineClass", timerByMachineClass)
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [selectedTimerId, setSelectedTimerId] = useState("")

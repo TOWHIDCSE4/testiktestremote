@@ -53,7 +53,6 @@ const Details = ({
   isJobSwitch,
   setIsJobSwitch,
 }: T_Props) => {
-  console.log("operatorQuery", timerDetails)
   const queryClient = useQueryClient()
   const { data: users, isLoading: isUsersLoading } = useUsers()
   const isComboboxDisabled = isCycleClockRunning
