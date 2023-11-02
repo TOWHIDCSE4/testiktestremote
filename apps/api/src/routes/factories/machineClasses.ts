@@ -32,11 +32,15 @@ export const machineClasses = async (req: Request, res: Response) => {
       message: REQUIRED_VALUES_MISSING,
     })
   } else {
+    const getAllMachines = await Machines.distinct("machineClassId")
+    const getAllMachinesClasses = await MachineClasses.find({
+      _id: { $in: getAllMachines },
+    })
     res.json({
       error: false,
       message: null,
-      items: [],
-      itemCount: 0,
+      items: getAllMachinesClasses,
+      itemCount: getAllMachinesClasses.length,
     })
   }
 }

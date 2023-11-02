@@ -57,7 +57,13 @@ const MenuProps = {
 
 const { RangePicker } = DatePicker
 
-const LogsTable = ({ locationId }: { locationId: string }) => {
+const LogsTable = ({
+  locationId,
+  userRole,
+}: {
+  locationId: string[]
+  userRole: string | undefined
+}) => {
   const queryClient = useQueryClient()
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
 
@@ -77,7 +83,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [machineClass, setMachineClass] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<Date[] | string[]>([])
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
-  const [city, setCity] = useState<string[]>(["64d5814fb996589a945a6402"])
+  const [city, setCity] = useState<string[]>(locationId)
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
@@ -354,7 +360,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     setCityCounter(city.length)
-  }, [city])
+    // console.log("cityCounter", city)
+  })
 
   const handleMachineClassChange = (event: SelectChangeEvent) => {
     const selectedMachineClasses: string = event.target.value
@@ -505,9 +512,13 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   }
 
   useEffect(() => {
-    if (paginated?.items.length == checkedProduction.length) {
+    if (
+      paginated &&
+      paginated.items &&
+      paginated.items.length === checkedProduction.length
+    ) {
     }
-  })
+  }, [paginated, checkedProduction])
 
   const isChecked = (id: string) => {
     return checkedProduction.filter((item) => item.id === id).length > 0
@@ -614,20 +625,29 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       renderValue={() => `${cityCounter} selected`}
                       MenuProps={MenuProps}
                     >
-                      {locations?.items?.map(
-                        (item: T_Locations, index: number) => (
-                          <MenuItem
-                            key={index}
-                            // value={[item._id, item.name ] as string[]}
-                            value={item._id as string}
-                          >
-                            <ListItemText primary={item.name} />
-                            <Checkbox
-                              checked={city.includes(item._id as string)}
-                            />
-                          </MenuItem>
-                        )
-                      )}
+                      {userRole === "Personnel"
+                        ? locations?.items
+                            ?.filter((item: T_Locations) =>
+                              city.includes(item._id as string)
+                            )
+                            .map((item: T_Locations, index: number) => (
+                              <MenuItem key={index} value={item._id as string}>
+                                <ListItemText primary={item.name} />
+                                <Checkbox
+                                  checked={city.includes(item._id as string)}
+                                />
+                              </MenuItem>
+                            ))
+                        : locations?.items?.map(
+                            (item: T_Locations, index: number) => (
+                              <MenuItem key={index} value={item._id as string}>
+                                <ListItemText primary={item.name} />
+                                <Checkbox
+                                  checked={city.includes(item._id as string)}
+                                />
+                              </MenuItem>
+                            )
+                          )}
                     </Select>
                   </FormControl>
                   {/* </Space> */}
@@ -967,7 +987,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
-                    <th scope="col" className="w-[10%] pl-10 text-slate-900">
+                    <th scope="col" className="w-[10%] pl-12 text-slate-900">
                       <input
                         id={`checkbox-table-search`}
                         type="checkbox"
@@ -1123,9 +1143,29 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             <td className="pr-6">
                               <div className="flex items-center">
                                 {isAccordionOpen ? (
-                                  <ChevronDownIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                                  <ChevronDownIcon
+                                    className={`${
+                                      item.stopReason.join(", ") ===
+                                      "Unit Created"
+                                        ? "text-green-500"
+                                        : item.stopReason.join(", ") ===
+                                          "Worker Break"
+                                        ? "text-yellow-500"
+                                        : "text-red-500"
+                                    } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
+                                  />
                                 ) : (
-                                  <ChevronRightIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                                  <ChevronRightIcon
+                                    className={`${
+                                      item.stopReason.join(", ") ===
+                                      "Unit Created"
+                                        ? "text-green-500"
+                                        : item.stopReason.join(", ") ===
+                                          "Worker Break"
+                                        ? "text-yellow-500"
+                                        : "text-red-500"
+                                    } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
+                                  />
                                 )}
                                 <input
                                   id={`checkbox-table-search-${idx}`}
@@ -1212,72 +1252,125 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                               className={`${isAccordionOpen ? "open" : ""}`}
                             >
                               <td colSpan={7}>
-                                <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
-                                  <div className="w-[73%]">
-                                    <div className="flex justify-between">
-                                      <span className="flex w-[27rem] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
-                                        <p className="w-2/3 text-right">
-                                          ADDITIONAL INFO
-                                        </p>
-                                      </span>
-
-                                      <span className="flex w-[30rem] text-[13px] ">
-                                        <p
-                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
-                                            item.jobId
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          OPERATOR :
-                                        </p>
-                                        <p
-                                          className={`px-3 py-4 text-sm text-gray-500 ${
-                                            item.jobId
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          {typeof item.operator === "object"
-                                            ? item.operator?.firstName
-                                            : ""}{" "}
-                                          {typeof item.operator === "object"
-                                            ? item.operator?.lastName
-                                            : ""}
-                                        </p>
-                                      </span>
-                                      <span className="flex w-[30rem] text-[13px] text-slate-900 ">
-                                        <p
-                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
-                                            item.jobId
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          STOP REASON :
-                                        </p>
-                                        <p
-                                          className={`px-3 py-4 text-sm  text-gray-500 ${
-                                            item.jobId
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          <span
-                                            className={`${
-                                              item.stopReason.join(", ") ===
-                                              "Unit Created"
-                                                ? "text-green-500"
-                                                : item.stopReason.join(", ") ===
-                                                  "Worker Break"
-                                                ? "text-yellow-500"
+                                <div className="border border-b-0 border-gray-100 bg-gray-100 h-13">
+                                  <div className="flex">
+                                    <span className="flex w-[30%] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                      <p className="px-4 pt-1 text-right">
+                                        ADDITIONAL INFO
+                                      </p>
+                                    </span>
+                                    <div className="w-full">
+                                      <div className="flex justify-around">
+                                        {" "}
+                                        {/* Use flex-wrap to wrap the elements */}
+                                        <span className="flex px-4 text-[13px] ">
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
                                                 : "text-red-500"
                                             }`}
                                           >
-                                            {item.stopReason.join(", ")}
-                                          </span>
-                                        </p>
-                                      </span>
+                                            CITY :
+                                          </p>
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {typeof item.locationId === "object"
+                                              ? item.locationId?.name
+                                              : ""}{" "}
+                                          </p>
+                                        </span>
+                                        <span className="flex px-4 text-[13px] ">
+                                          <p
+                                            className={`pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            MACHINE CLASS :
+                                          </p>
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {typeof item.machineClassId ===
+                                            "object"
+                                              ? item.machineClassId?.name
+                                              : ""}{" "}
+                                          </p>
+                                        </span>
+                                      </div>
+                                      <div className="w-full flex justify-around">
+                                        {" "}
+                                        {/* Use flex-wrap to wrap the elements */}
+                                        <span className="flex px-4 text-[13px] ">
+                                          <p
+                                            className={`pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            OPERATOR :
+                                          </p>
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {typeof item.operator === "object"
+                                              ? item.operator?.firstName
+                                              : ""}{" "}
+                                            {typeof item.operator === "object"
+                                              ? item.operator?.lastName
+                                              : ""}
+                                          </p>
+                                        </span>
+                                        <span className="flex text-[13px] px-4 text-slate-900 ">
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            STOP REASON :
+                                          </p>
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm  text-gray-500 ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            <span
+                                              className={`${
+                                                item.stopReason.join(", ") ===
+                                                "Unit Created"
+                                                  ? "text-green-500"
+                                                  : item.stopReason.join(
+                                                      ", "
+                                                    ) === "Worker Break"
+                                                  ? "text-yellow-500"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              {item.stopReason.join(", ")}
+                                            </span>
+                                          </p>
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
