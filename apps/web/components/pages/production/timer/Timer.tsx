@@ -22,6 +22,7 @@ import { Combobox } from "@headlessui/react"
 import { initializeSocket } from "../../../../helpers/socket"
 import { Socket } from "socket.io-client"
 import useGetAllTimerLogsCount from "../../../../hooks/timerLogs/useGetAllTimerLogsCount"
+import { useSocket } from "../../../../store/useSocket"
 
 type T_Props = {
   timer: T_Timer
@@ -31,7 +32,7 @@ type T_Props = {
   setOpenDetailsModal: Dispatch<boolean>
   setOpenDeleteModal: Dispatch<boolean>
   machine: T_Machine
-  operator: T_User
+  operator: T_User | string
 }
 
 const Timer = ({
@@ -70,11 +71,10 @@ const Timer = ({
     id: typeof timer.partId === "string" && timer.partId ? timer.partId : "",
     name: timer?.part ? timer?.part?.name : "",
   })
-  let socket: Socket
+  const socket = useSocket((store) => store.instance)
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    socket = initializeSocket()!
     const runSocket = (data: any) => {
       if (data.action === "add") {
         runCycle()
@@ -99,8 +99,12 @@ const Timer = ({
         setCycleClockInSeconds(secondsLapse)
       }
       if (data.action === "end-controller") {
-        setCycleClockInSeconds(0)
         stopInterval()
+        setCycleClockInSeconds(0)
+      }
+      if (data.action === "stop-press") {
+        stopInterval()
+        setCycleClockInSeconds(0)
       }
     }
     socket?.on(`timer-${timer._id}`, runSocket)
@@ -109,7 +113,7 @@ const Timer = ({
       socket?.off(`timer-${timer._id}`, runSocket)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [socket, timer._id])
 
   // Refocusing when tab minimize or change the tab
   useEffect(() => {
@@ -336,9 +340,11 @@ const Timer = ({
           <h2 className="font-bold text-stone-400 text-5xl">00:00:00</h2>
         )}
         <p className="text-amber-600 text-lg">
-          {operator
+          {typeof operator === "object"
             ? `${operator?.firstName} ${operator?.lastName}`
-            : "Please select operator"}
+            : typeof operator === "string"
+            ? `${operator}`
+            : `Please select operator`}
         </p>
         <div>
           <h2 className="font-semibold text-gray-400 text-5xl">

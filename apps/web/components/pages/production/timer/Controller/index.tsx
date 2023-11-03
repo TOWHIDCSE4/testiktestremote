@@ -39,10 +39,12 @@ import { initializeSocket } from "../../../../../helpers/socket"
 import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import useProfile from "../../../../../hooks/users/useProfile"
 import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
+import { useSocket } from "../../../../../store/useSocket"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
+  let socket = useSocket((store) => store.instance)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
@@ -118,7 +120,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
   const [endTimer, setEndTimer] = useState<boolean>(false)
   const intervalRef = useRef<any>()
-  let socket: Socket<any, any> | undefined
   const currentDate = dayjs
     .tz(
       dayjs(),
@@ -128,11 +129,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
     )
     .format("YYYY-MM-DD HH:mm:ss")
 
-  let interval: any
-
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    socket = initializeSocket()
     const runSocket = async (data: any) => {
       if (data.action === "pre-add") {
         setIsTimerClockRunning(true)
@@ -145,7 +143,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setCycleClockInSeconds(0)
         try {
           const { isSuccess } = await cycleRefetch()
-          if (isSuccess) {
+          if (isSuccess && jobUpdateId !== "") {
             runIntervalClock()
             setIsCycleClockStarting(false)
           }
@@ -175,7 +173,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setCycleClockInSeconds(secondsLapse)
       }
       if (data.action === "update-operator") {
-        setDefaultOperator(data.user)
+        if (data.user) {
+          if (data.user.role === "Personnel") {
+            setDefaultOperator(data.user)
+          }
+        }
       }
       if (data.action === "job-change") {
         timerJobsRefetch()
@@ -191,6 +193,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
             break
         }
       }
+      if (data.action === "stop-press") {
+        stopInterval()
+        setCycleClockInSeconds(0)
+      }
+      if (data.action === "change-job") {
+        setJobUpdateId(data.jobInfo.jobId ?? "")
+        toast.success("Job change succesfully")
+      }
     }
 
     socket?.on(`timer-${timerId}`, runSocket)
@@ -203,7 +213,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       socket?.off(`timer-${timerId}`, runSocket)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [socket, timerId])
 
   useEffect(() => {
     if (defaultOperator) {
@@ -242,6 +252,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       document.removeEventListener("visibilitychange", handleVisibilityChange)
     }
   }, [])
+  let interval: any
 
   useEffect(() => {
     return () => {
@@ -358,12 +369,9 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }
   const runCycle = (fromDb?: boolean) => {
-    const isJobTimer = timerJobs?.items?.some(
-      (job) => job._id === jobTimer?.item?.jobId
-    )
     if (!isLocationTimeEnded) {
       if (timerDetailData?.item?.operator) {
-        if (isJobTimer) {
+        if (jobUpdateId !== "") {
           if (!isTimerControllerEnded) {
             setIsCycleClockStarting(true)
             startingTimerReadings([
@@ -409,6 +417,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
     setIsCycleClockStarting(true)
     stopInterval()
     setCycleClockInSeconds(0)
+    socket?.emit("stop-press", {
+      action: "stop-press",
+      timerId: timerId,
+      message: "stop the timer",
+    })
     startingTimerReadings([
       `${currentDate} - Stopping timer`,
       `${currentDate} - Timer stopped`,
@@ -434,16 +447,12 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [readingMessages])
 
   useEffect(() => {
-    const isJobTimer = timerJobs?.items?.some(
-      (job) => job._id === jobTimer?.item?.jobId
-    )
-
-    if (cycleTimer?.items && cycleTimer?.items.length > 0 && isJobTimer) {
+    if (cycleTimer?.items && cycleTimer?.items.length > 0 && jobUpdateId) {
       const secondsLapse = handleInitializeSeconds(
         cycleTimer?.items[0].createdAt
       )
       setCycleClockInSeconds(secondsLapse)
-      if (!cycleTimer?.items[0].endAt && isJobTimer) {
+      if (!cycleTimer?.items[0].endAt && jobUpdateId !== "") {
         if (timerDetailData?.item?.partId.time === 0) {
           setProgress(0)
         } else {
@@ -453,7 +462,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         runCycle(true)
       }
     }
-  }, [cycleTimer, jobTimer, timerJobs])
+  }, [cycleTimer, jobUpdateId])
 
   const handleInitializeSeconds = (createdAt?: Date, endAt?: Date | null) => {
     const timeZone = timerDetailData?.item?.locationId.timeZone
@@ -528,7 +537,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
       jobId: jobId,
       partId: timerDetailData?.item?.partId._id as string,
       time: cycleClockInSeconds,
-      operator: timerDetailData?.item?.operator._id as string,
+      operator: (timerDetailData?.item?.operator?._id as string) || null,
+      operatorName: timerDetailData?.item?.operator?.firstName as string,
       status:
         (timerDetailData?.item?.partId.time as number) > cycleClockInSeconds
           ? "Gain"

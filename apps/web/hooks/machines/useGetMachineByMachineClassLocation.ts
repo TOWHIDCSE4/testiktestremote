@@ -15,29 +15,16 @@ export async function getMachinesByMachineClassLocation({
   locationId: string[] | string | undefined
   machineClassId: string[] | string | undefined
 }) {
-  console.log(
-    "🚀 ~ file: useGetMachineByMachineClassLocation.ts:18 ~ locationId:",
-    locationId
-  )
-
   const token = Cookies.get("tfl")
   //@ts-expect-error
   const locationIdQueryString = new URLSearchParams({
     locationId: locationId,
   }).toString()
-  console.log(
-    "🚀 ~ file: useGetMachineByMachineClassLocation.ts:24 ~ locationIdQueryString:",
-    locationIdQueryString
-  )
 
   //@ts-expect-error
   const machineClassIdQueryString = new URLSearchParams({
     machineClassId: machineClassId,
   }).toString()
-  console.log(
-    "🚀 ~ file: useGetMachineByMachineClassLocation.ts:30 ~ locationIdQueryString:",
-    machineClassIdQueryString
-  )
 
   const res = await fetch(
     `${API_URL_MACHINE}/location-machine-class?${locationIdQueryString}&${machineClassIdQueryString}`,
@@ -74,7 +61,7 @@ function useGetMachinesByMachineClassLocation() {
     {
       staleTime: THREE_MINUTES,
       refetchOnWindowFocus: false,
-      // enabled: selectedMachineClassId !== undefined && selectedLocationId !== undefined,
+      // enabled: selectedLocationId !== undefined,
     }
   )
 

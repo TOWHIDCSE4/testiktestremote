@@ -6,36 +6,54 @@ import { Request, Response } from "express"
 import Machines from "../../models/machines"
 import mongoose from "mongoose"
 import timerLogs from "../../models/timerLogs"
+import redisClient from "../../utils/redisClient"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
   let { locationId, machineClassId } = req.query
-  if (locationId && machineClassId) {
+  if (locationId !== null && locationId !== "undefined") {
     try {
-      locationId = locationId as string
-      const locationIds = locationId
-        .split(",")
-        .map((e) => new mongoose.Types.ObjectId(e))
-      machineClassId = machineClassId as string
-      const machineClassIds = machineClassId
-        .split(",")
-        .map((e) => new mongoose.Types.ObjectId(e))
-      const getMachineByClass: Array<Record<string, any>> = []
-      for (const locationId of locationIds) {
-        for (const machineClassId of machineClassIds) {
-          const query = {
-            locationId: locationId,
-            machineClassId: machineClassId,
-            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-          }
-          getMachineByClass.push(...(await Machines.find(query)))
+      const cacheKey = `locationMachineClass:${locationId}:${machineClassId}`
+      const cachedData = await redisClient.get(cacheKey)
+
+      if (cachedData) {
+        // Return data from cache
+        res.json({
+          error: false,
+          items: JSON.parse(cachedData),
+          count: JSON.parse(cachedData).length,
+          message: "Data from cache",
+        })
+      } else {
+        locationId = locationId as string
+        const locationIds = locationId
+          .split(",")
+          .map((e) => new mongoose.Types.ObjectId(e))
+
+        let query: any = {
+          locationId: { $in: locationIds },
+          $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
         }
+
+        if (machineClassId !== null && machineClassId !== "undefined") {
+          machineClassId = machineClassId as string
+          const machineClassIds = machineClassId
+            .split(",")
+            .map((e) => new mongoose.Types.ObjectId(e))
+
+          query.machineClassId = { $in: machineClassIds }
+        }
+
+        const getMachineByClass: Array<Record<string, any>> =
+          await Machines.find(query)
+        redisClient.set(cacheKey, JSON.stringify(getMachineByClass), { EX: 3 })
+
+        res.json({
+          error: false,
+          items: getMachineByClass,
+          count: getMachineByClass.length,
+          message: null,
+        })
       }
-      res.json({
-        error: false,
-        items: getMachineByClass,
-        count: getMachineByClass.length + 1,
-        message: null,
-      })
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       res.json({

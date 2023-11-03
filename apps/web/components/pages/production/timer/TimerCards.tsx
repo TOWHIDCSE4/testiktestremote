@@ -96,7 +96,11 @@ function TimerCards({
                       setOpenDeleteModal={setOpenDeleteModal}
                       setOpenDetailsModal={setOpenDetailsModal}
                       machine={timer?.machine as T_Machine}
-                      operator={timer?.assignedOperator as T_User}
+                      operator={
+                        timer?.assignedOperator
+                          ? (timer?.assignedOperator as T_User)
+                          : (timer.operatorName as string)
+                      }
                     />
                   ))
                 )}

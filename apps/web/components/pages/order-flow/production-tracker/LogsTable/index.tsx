@@ -5,16 +5,15 @@ import dayjs from "dayjs"
 import moment from "moment"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
-// import { usePathname } from "next/navigation"
-import React, { Dispatch, useEffect, useState, useRef, use } from "react"
-// import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGlobalTimerLogsMultiFilter"
+import React, { useEffect, useState, useRef, use } from "react"
 import useFactories from "../../../../../hooks/factories/useFactories"
 import {
   T_Factory,
   T_Machine,
   T_MachineClass,
-  T_Part,
   T_Locations,
+  T_Part,
+  T_BackendResponse,
 } from "custom-validator"
 import {
   ChevronLeftIcon,
@@ -27,7 +26,6 @@ import { API_URL_PARTS } from "../../../../../helpers/constants"
 import Cookies from "js-cookie"
 import { useQueryClient } from "@tanstack/react-query"
 import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGetGlobalTimerLogsMultiFilter"
-import useGetMachinesByMachineClasses from "../../../../../hooks/machines/useGetMachinesByMachineClasses"
 import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClassesByLocation"
 import MenuItem from "@mui/material/MenuItem"
 import FormControl from "@mui/material/FormControl"
@@ -36,37 +34,35 @@ import Select, { SelectChangeEvent } from "@mui/material/Select"
 import Checkbox from "@mui/material/Checkbox"
 import useGetGlobalMetrics from "../../../../../hooks/timerLogs/useGetGlobalMetrics"
 import GlobalTableReport from "../GlobalReport"
-import { compact } from "@headlessui/react/dist/utils/render"
 import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/useGetMachineByMachineClassLocation"
+import { CircularProgress } from "@mui/material"
 
 export type OptionType = {
   value: number
   label: string
 }
 
-const { RangePicker } = DatePicker
 const ITEM_HEIGHT = 48
 const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5,
       padding: 0,
-      // width: 200,
     },
   },
 }
 
-const LogsTable = ({ locationId }: { locationId: string }) => {
-  const toggleAccordion = (id: string) => {
-    if (openAccordion === id) {
-      setOpenAccordion(null)
-    } else {
-      setOpenAccordion(id)
-    }
-  }
+const { RangePicker } = DatePicker
 
+const LogsTable = ({
+  locationId,
+  userRole,
+}: {
+  locationId: string[]
+  userRole: string | undefined
+}) => {
   const queryClient = useQueryClient()
-  const [parts, setParts] = useState([])
+  const [parts, setParts] = useState<T_BackendResponse>()
   const [keyword, setKeyword] = useState<string>("")
   const [showReport, setShowReport] = useState(false)
   const [sortType, setSortType] = useState<string>("")
@@ -75,14 +71,14 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const [dateRange, setDateRange] = useState<Date[] | string[]>([])
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
-  const [city, setCity] = useState<string[]>(["64d5814fb996589a945a6402"])
+  const [city, setCity] = useState<string[]>(locationId)
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
+  const [bulkSelectCheckbox, setBulkSelectCheckbox] = useState(false)
   const [partsSelected, setPartsSelected] = useState<string[]>([])
   const [partSelector, setPartSelector] = useState<string[]>([])
   const [machine, setMachine] = useState<string[]>([])
-  const [part, setPart] = useState<string[]>([])
   const [search, setSearch] = useState<string>("")
   const [loadOptionsCount, setLoadOptionsCount] = useState(0)
   const [cityCounter, setCityCounter] = useState<number>(city.length)
@@ -94,13 +90,20 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const today = moment()
   const myRef = useRef<NewWindow | null>(null)
 
+  const toggleAccordion = (id: string) => {
+    if (openAccordion === id) {
+      setOpenAccordion(null)
+    } else {
+      setOpenAccordion(id)
+    }
+  }
+
   useEffect(() => {
     // Function to update the window width when the window is resized
     const handleResize = () => {
       setMinWidth(window.innerWidth)
     }
 
-    // Add an event listener for the "resize" event
     window.addEventListener("resize", handleResize)
 
     // Clean up the event listener when the component unmounts
@@ -149,9 +152,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     const initialPartsSelected: string[] = []
-    //@ts-expect-error
-    if (parts && parts.items && parts.items.length > 0) {
-      //@ts-expect-error
+    if (parts && parts?.items && parts.items?.length > 0) {
       parts.items.forEach((item) => {
         initialPartsSelected.push(item._id)
       })
@@ -159,18 +160,29 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setPartsSelected(initialPartsSelected)
   }, [parts])
 
+  useEffect(() => {
+    const initialMachineClassSelected: string[] = []
+    if (
+      machineClasses &&
+      machineClasses.items &&
+      machineClasses.items.length > 0
+    ) {
+      machineClasses.items.forEach((item: { _id: string }) => {
+        initialMachineClassSelected.push(item._id)
+      })
+    }
+    setMachineClass(initialMachineClassSelected)
+  }, [machineClasses])
+
   const {
     data: allParts,
-    isLoading: isGetAllPartsLoading,
     setLocationId,
     setPage: setPartsPage,
-    page: partsPage,
-    setName,
   } = usePaginatedParts()
   const numberOfPartsPages = Math.ceil((allParts?.itemCount as number) / 6)
 
   useEffect(() => {
-    setLocationId(city[0])
+    setSelectedLocationId(city)
     setPartsPage(1)
   }, [city, setLocationId])
 
@@ -179,11 +191,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
       queryKey: ["global-timer-logs"],
     })
   }, [partSelector])
-
-  const handlePartSelect = (e: any) => {
-    const val = e.map((i: any) => i)
-    setPartSelector(e)
-  }
 
   useEffect(() => {
     setPartSelector(partSelector)
@@ -220,12 +227,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const disabledDate = (current: any) => {
     return current && current >= today
   }
-
-  // Filter `option.label` match the user type `input`
-  const filterOption = (
-    input: string,
-    option?: { label: string; value: string }
-  ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
 
   const [filterBy, setFilterBy] = useState("All")
 
@@ -308,12 +309,12 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
   const handleCheckboxChange = (e: any) => {
     const isChecked = e.target.checked
     setIsCheckboxChecked(isChecked)
-
     if (isChecked) {
       const currentDate = dayjs().toDate()
       setDateRange([dayjs().format("YYYY-MM-DD"), dayjs().format("YYYY-MM-DD")])
-      datePick([currentDate, currentDate]) // Call datePick with the current date
+      datePick([currentDate, currentDate])
     } else {
+      setDateRange([])
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -325,8 +326,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     setPage(1)
     setDateRange(inputValue)
     if (isCheckboxChecked) {
-      // If the checkbox is checked, set the start and end dates to the current date
-      // const currentDate = dayjs().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       setStartDateRange(
         dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
@@ -340,7 +339,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
     } else if (inputValue && inputValue[0] && inputValue[1]) {
-      // Handle the case when the checkbox is not checked, but both start and end dates are provided
       setStartDateRange(
         dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
@@ -354,7 +352,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
         dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
       )
     } else {
-      // Handle the case when one or both dates are empty
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -373,7 +370,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     setCityCounter(city.length)
-  }, [city])
+    // console.log("cityCounter", city)
+  })
 
   const handleMachineClassChange = (event: SelectChangeEvent) => {
     const selectedMachineClasses: string = event.target.value
@@ -385,21 +383,104 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
 
   useEffect(() => {
     setMachineClassCounter(machineClass.length)
+    setSelectedMachineValues(machineClass)
   }, [machineClass])
 
   const handleMachineChange = (event: any) => {
-    setSelectedMachineValues(event.target.value)
-    setMachine(event.target.value)
+    const selectedMachines = event.target.value
+    setMachine(selectedMachines)
+    setMachineId(selectedMachines)
+
+    const updatedMachineClasses: any = {} // Object to track machines per class
+    const matchingMachines = machines?.items.filter((machine) =>
+      selectedMachines.includes(machine._id)
+    )
+
+    if (matchingMachines) {
+      for (const machine of matchingMachines) {
+        if (!updatedMachineClasses[machine?.machineClassId]) {
+          updatedMachineClasses[machine.machineClassId] = [machine._id]
+        } else {
+          updatedMachineClasses[machine.machineClassId].push(machine._id)
+        }
+      }
+    }
+
+    Object.keys(updatedMachineClasses).forEach((machineClassId) => {
+      updatedMachineClasses[machineClassId] = updatedMachineClasses[
+        machineClassId
+      ].filter((machineId: string) => machine.includes(machineId))
+    })
+
+    const machinesWithParts = Object.entries(updatedMachineClasses)
+      // @ts-expect-error
+      .filter(([_, parts]) => parts.length > 0)
+      .map(([machineId]) => machineId)
+    if (machineClass.length !== machinesWithParts.length) {
+      setSelectedMachineClassId(machinesWithParts)
+      setMachineClass(machinesWithParts)
+    }
+
+    if (machinesWithParts.length === 0) {
+      setCity([])
+      setPartsSelected([])
+    }
+  }
+
+  const handlePartsChange = (event: any) => {
+    const selectedParts = event.target.value
+    setPartId(selectedParts)
+    const isCurrentlySelected = partsSelected?.includes(selectedParts)
+
+    if (isCurrentlySelected) {
+      const updatedParts = partsSelected.filter(
+        (part) => part !== selectedParts
+      )
+      setPartsSelected(updatedParts)
+    } else {
+      setPartsSelected(selectedParts)
+    }
+
+    const updatedMachineClasses: any = {}
+    const matchingParts = parts?.items?.filter((part: any) =>
+      selectedParts.includes(part._id)
+    )
+    if (matchingParts) {
+      for (const part of matchingParts) {
+        if (!updatedMachineClasses[part?.machineClassId]) {
+          updatedMachineClasses[part?.machineClassId] = [part._id]
+        } else {
+          updatedMachineClasses[part?.machineClassId].push(part._id)
+        }
+      }
+    }
+
+    Object.keys(updatedMachineClasses).forEach((machineClassId) => {
+      updatedMachineClasses[machineClassId] = updatedMachineClasses[
+        machineClassId
+      ].filter((partId: string) => partsSelected.includes(partId))
+    })
+
+    const machinesWithParts = Object.entries(updatedMachineClasses)
+      // @ts-expect-error
+      .filter(([_, parts]) => parts.length > 0)
+      .map(([machineId]) => machineId)
+    if (machineClass.length !== machinesWithParts.length) {
+      console.log("called")
+      setSelectedMachineClassId(machinesWithParts)
+      setMachineClass(machinesWithParts)
+      setMachine([])
+    }
+    machinesWithParts.length === 0 ? setCity([]) : null
   }
 
   useEffect(() => {
     setMachineCounter(machine.length)
     setMachineClassCounter(machineClass.length)
+    if (machine.length === 0) {
+      setPartsSelected([])
+    }
   }, [machine])
-
-  const handlePartsChange = (event: any) => {
-    setPartsSelected(event.target.value)
-  }
 
   useEffect(() => {
     setPartsCounter(partsSelected.length)
@@ -502,19 +583,29 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
     }
   }, [filterBy])
 
-  const handleSelectAllProduction = (event: any) => {
+  const handleSelectAllProduction = () => {
     const data = paginated?.items ?? []
     let updatedArray = [] as any
-    updatedArray =
-      data?.length > 0 && event.target.checked
-        ? data
-            ?.filter((item) => item?._id !== undefined)
-            .map((item) => ({ id: item?._id }))
-        : []
+
+    if (checkedProduction.length === data.length) {
+      updatedArray = []
+    } else {
+      updatedArray = data
+        ?.filter((item) => item?._id !== undefined)
+        .map((item) => ({ id: item?._id }))
+    }
+
     setCheckedProduction(updatedArray)
   }
 
-  // const handleCurrentDateChecked = (event: any) => {
+  useEffect(() => {
+    if (
+      paginated &&
+      paginated.items &&
+      paginated.items.length === checkedProduction.length
+    ) {
+    }
+  }, [paginated, checkedProduction])
 
   const isChecked = (id: string) => {
     return checkedProduction.filter((item) => item.id === id).length > 0
@@ -609,20 +700,31 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       renderValue={() => `${cityCounter} selected`}
                       MenuProps={MenuProps}
                     >
-                      {locations?.items?.map(
-                        (item: T_Locations, index: number) => (
-                          <MenuItem
-                            key={index}
-                            // value={[item._id, item.name ] as string[]}
-                            value={item._id as string}
-                          >
-                            <ListItemText primary={item.name} />
-                            <Checkbox
-                              checked={city.includes(item._id as string)}
-                            />
-                          </MenuItem>
-                        )
-                      )}
+                      {userRole === "Personnel"
+                        ? locations?.items?.map(
+                            (item: T_Locations, index: number) => (
+                              <MenuItem
+                                key={index}
+                                value={item._id as string}
+                                disabled={!city.includes(item._id as string)}
+                              >
+                                <ListItemText primary={item.name} />
+                                <Checkbox
+                                  checked={city.includes(item._id as string)}
+                                />
+                              </MenuItem>
+                            )
+                          )
+                        : locations?.items?.map(
+                            (item: T_Locations, index: number) => (
+                              <MenuItem key={index} value={item._id as string}>
+                                <ListItemText primary={item.name} />
+                                <Checkbox
+                                  checked={city.includes(item._id as string)}
+                                />
+                              </MenuItem>
+                            )
+                          )}
                     </Select>
                   </FormControl>
                   {/* </Space> */}
@@ -677,32 +779,31 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     >
                       {machineClasses &&
                       machineClasses.items &&
-                      machineClasses.items.length > 0 ? (
-                        machineClasses?.items?.map(
-                          (item: T_MachineClass, index: number) => (
-                            <MenuItem
-                              key={index}
-                              // value={[item._id, item.name ] as string[]}
-                              value={item._id as string}
-                            >
-                              <ListItemText primary={item.name} />
-                              <Checkbox
-                                checked={machineClass.includes(
-                                  item._id as string
-                                )}
-                              />
-                            </MenuItem>
+                      machineClasses.items.length > 0
+                        ? machineClasses?.items?.map(
+                            (item: T_MachineClass, index: number) => (
+                              <MenuItem key={index} value={item._id as string}>
+                                <ListItemText primary={item.name} />
+                                <Checkbox
+                                  checked={machineClass.includes(
+                                    item._id as string
+                                  )}
+                                />
+                              </MenuItem>
+                            )
                           )
-                        )
-                      ) : (
-                        // Render "No data found" when no data is available
-                        <MenuItem disabled>
-                          <ListItemText
+                        : isMachineClassesLoading ?? (
+                            // Render "No data found" when no data is available
+                            <MenuItem disabled>
+                              <div className="animate-pulse flex space-x-4">
+                                <div className="h-9 w-9 rounded-full bg-slate-200"></div>
+                              </div>
+                              {/* <ListItemText
                             className="mx-4 pl-4"
                             primary="No data found"
-                          />
-                        </MenuItem>
-                      )}
+                          /> */}
+                            </MenuItem>
+                          )}
                     </Select>
                   </FormControl>
                 </div>
@@ -711,33 +812,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                 {/* machine */}
                 <div className="flex w-1/2 text-[11px] items-center">
                   <p className="w-1/6 font-semibold text-right mr-2">MACHINE</p>
-                  {/* <Space direction="vertical" className="min-w-full">
-                    <Select
-                      mode="multiple"
-                      style={{ width: "100%" }}
-                      placeholder={"Select machine"}
-                      // value={''}
-                      disabled={machineClass ? false : true}
-                      onChange={(value) => handleMachineChange(value)}
-                    >
-                      {machines?.items?.map(
-                        (item: T_Machine, index: number) => {
-                          return (
-                            <Option
-                              key={index}
-                              value={item._id as string}
-                              label={item.name}
-                            >
-                              <Space>{item.name}</Space>
-                            </Option>
-                          )
-                        }
-                      )}
-                    </Select>
-                    <div>{selectedMachineValues?.length} selected</div>
-                  </Space> */}
                   <FormControl className="w-2/3" size="small">
-                    {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
                     <Select
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
@@ -754,32 +829,31 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       renderValue={() => `${machineCounter} selected`}
                       MenuProps={MenuProps}
                     >
-                      {machines &&
-                      machines.items &&
-                      machines.items.length > 0 ? (
-                        machines?.items?.map(
-                          (item: T_Machine, index: number) => (
-                            <MenuItem
-                              key={index}
-                              // value={[item._id, item.name ] as string[]}
-                              value={item._id as string}
-                            >
-                              <ListItemText primary={item.name} />
-                              <Checkbox
-                                checked={machine.includes(item._id as string)}
-                              />
-                            </MenuItem>
-                          )
-                        )
-                      ) : (
-                        // Render "No data found" when no data is available
+                      {isMachinesLoading && !machines && (
                         <MenuItem disabled>
-                          <ListItemText
-                            className="mx-4 pl-4"
-                            primary="No data found"
-                          />
+                          <CircularProgress size={24} />{" "}
+                          {/* Display a loader while data is loading */}
                         </MenuItem>
                       )}
+                      {machines && machines.items && machines.items.length > 0
+                        ? machines?.items?.map(
+                            (item: T_Machine, index: number) => (
+                              <MenuItem key={index} value={item._id as string}>
+                                <ListItemText primary={item.name} />
+                                <Checkbox
+                                  checked={machine.includes(item._id as string)}
+                                />
+                              </MenuItem>
+                            )
+                          )
+                        : !isMachinesLoading && (
+                            <MenuItem disabled>
+                              <ListItemText
+                                className="mx-4 pl-4"
+                                primary="No data found"
+                              />
+                            </MenuItem>
+                          )}
                     </Select>
                   </FormControl>
                 </div>
@@ -788,22 +862,6 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   <p className="w-1/6 font-semibold text-right ml-0 pl-0 mr-2">
                     PART SELECTOR
                   </p>
-                  {/* <AsyncPaginate
-                    isMulti
-                    value={partSelector}
-                    isDisabled={machine ? false : true}
-                    debounceTimeout={1000}
-                    placeholder={"Select"}
-                    // onInputChange={(e) => onSearch(e)}
-                    //@ts-expect-error
-                    loadOptions={loadOptions}
-                    onChange={(e) => handlePartSelect(e)}
-                    reduceOptions={reduceGroupedOptions}
-                    styles={customStyles}
-                    additional={{
-                      page: 1,
-                    }}
-                  /> */}
                   <FormControl className="w-2/3" size="small">
                     {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
                     <Select
@@ -823,28 +881,24 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                       renderValue={() => `${partsCounter} selected`}
                       MenuProps={MenuProps}
                     >
-                      {
-                        //@ts-expect-error
-                        parts && parts.items && parts.items.length > 0 ? (
-                          //@ts-expect-error
-                          parts.items.map((item, index) => (
-                            <MenuItem key={index} value={item._id as string}>
-                              <ListItemText primary={item.name} />
-                              <Checkbox
-                                checked={partsSelected.includes(item._id)}
-                              />
-                            </MenuItem>
-                          ))
-                        ) : (
-                          // Render "No data found" when no data is available
-                          <MenuItem disabled>
-                            <ListItemText
-                              className="mx-4 pl-4"
-                              primary="No data found"
+                      {parts && parts.items && parts.items.length > 0 ? (
+                        parts.items.map((item, index) => (
+                          <MenuItem key={index} value={item._id as string}>
+                            <ListItemText primary={item.name} />
+                            <Checkbox
+                              checked={partsSelected.includes(item._id)}
                             />
                           </MenuItem>
-                        )
-                      }
+                        ))
+                      ) : (
+                        // Render "No data found" when no data is available
+                        <MenuItem disabled>
+                          <ListItemText
+                            className="mx-4 pl-4"
+                            primary="No data found"
+                          />
+                        </MenuItem>
+                      )}
                     </Select>
                   </FormControl>
                 </div>
@@ -859,7 +913,8 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     <Space direction="vertical" className="w-full" size={12}>
                       <RangePicker
                         disabled={isCheckboxChecked}
-                        // value={dateRange}
+                        //@ts-expect-error
+                        value={isCheckboxChecked ? [null] : dateRange}
                         disabledDate={disabledDate}
                         onChange={(e) => datePick(e)}
                       />
@@ -876,7 +931,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                   </button>
                 </div>
               </div>
-              <div className="w-full flex text-[12px] px-[30.3%] font-semibold">
+              <div className="w-full flex text-[12px] px-[27%] font-semibold">
                 <div>
                   <label htmlFor="checkbox-date">Current Date</label>
                   <input
@@ -931,14 +986,14 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     ) ?? []
                   }
                   startDateRange={
-                    dateRange.length > 0
+                    dateRange && dateRange.length > 0
                       ? dayjs(dateRange[0])
                           .startOf("day")
                           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
                       : ""
                   }
                   endDateRange={
-                    dateRange.length > 0
+                    dateRange && dateRange.length > 0
                       ? dayjs(dateRange[1])
                           .endOf("day")
                           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
@@ -956,13 +1011,15 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
-                    <th scope="col" className="w-[10%] pl-10 text-slate-900">
+                    <th scope="col" className="w-[10%] pl-12 text-slate-900">
                       <input
                         id={`checkbox-table-search`}
                         type="checkbox"
-                        checked={checkedProduction.length == 5}
+                        checked={
+                          checkedProduction.length == paginated.items.length
+                        }
                         className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
-                        onClick={(e) => handleSelectAllProduction(e)}
+                        onChange={handleSelectAllProduction}
                       />
                     </th>
                     <th scope="col" className="w-[10%] text-slate-900">
@@ -983,7 +1040,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="w-[10%] text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[10%] md:w-[12%] md:px-2 text-slate-900"
+                    >
                       <div className="flex items-center">
                         MACHINE
                         <button
@@ -1001,7 +1061,10 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="w-[40%] py-3 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[45%] md:w-[30%] py-3 text-slate-900"
+                    >
                       <div className="flex items-center">
                         PART
                         <button onClick={(e) => handleInputChange(e, "partId")}>
@@ -1053,7 +1116,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                     </th>
                     <th
                       scope="col"
-                      className="w-[15%] px-6 py-3 text-slate-900"
+                      className="w-[15%] md:w-[20%] px-6 py-3 text-slate-900"
                     >
                       <div className="flex items-center ">
                         TIME
@@ -1104,9 +1167,29 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                             <td className="pr-6">
                               <div className="flex items-center">
                                 {isAccordionOpen ? (
-                                  <ChevronDownIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                                  <ChevronDownIcon
+                                    className={`${
+                                      item.stopReason.join(", ") ===
+                                      "Unit Created"
+                                        ? "text-green-500"
+                                        : item.stopReason.join(", ") ===
+                                          "Worker Break"
+                                        ? "text-yellow-500"
+                                        : "text-red-500"
+                                    } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
+                                  />
                                 ) : (
-                                  <ChevronRightIcon className="w-4 ml-2 mr-4 h-4 stroke-2 stroke-blue-950" />
+                                  <ChevronRightIcon
+                                    className={`${
+                                      item.stopReason.join(", ") ===
+                                      "Unit Created"
+                                        ? "text-green-500"
+                                        : item.stopReason.join(", ") ===
+                                          "Worker Break"
+                                        ? "text-yellow-500"
+                                        : "text-red-500"
+                                    } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
+                                  />
                                 )}
                                 <input
                                   id={`checkbox-table-search-${idx}`}
@@ -1130,15 +1213,15 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                               className=" py-4 font-medium text-gray-900 whitespace-nowrap"
                             >
                               {dayjs
-                                .tz(dayjs(item.createdAt), "America/Chicago")
+                                .tz(item.createdAt, "America/Chicago")
                                 .format("MM/DD/YYYY")}
                             </th>
-                            <td className=" py-4">
+                            <td className=" md:px-3 py-4">
                               {/* @ts-ignore */}
                               {item?.machineId?.name as string}
                             </td>
                             <td
-                              className={` py-4 text-sm text-gray-500 flex flex-col ${
+                              className={`py-4 text-sm text-gray-500 flex flex-col ${
                                 item.jobId ? "text-gray-900" : "text-red-500"
                               }`}
                             >
@@ -1146,7 +1229,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                                 ? item.partId.name
                                 : ""}
                             </td>
-                            <td className="px-6 py-4">
+                            <td className="px-5 py-4">
                               {item.globalCycle ? item.globalCycle : ""}
                             </td>
                             <td className="px-6 py-4">
@@ -1193,72 +1276,124 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
                               className={`${isAccordionOpen ? "open" : ""}`}
                             >
                               <td colSpan={7}>
-                                <div className=" border border-b-0 border-gray-100 bg-gray-100  h-13">
-                                  <div className="w-[73%]">
-                                    <div className="flex justify-between">
-                                      <span className="flex w-[27rem] text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
-                                        <p className="w-2/3 text-right">
-                                          ADDITIONAL INFO
-                                        </p>
-                                      </span>
-
-                                      <span className="flex w-[30rem] text-[13px] ">
-                                        <p
-                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
-                                            item.jobId
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          OPERATOR :
-                                        </p>
-                                        <p
-                                          className={`px-3 py-4 text-sm text-gray-500 ${
-                                            item.jobId
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          {typeof item.operator === "object"
-                                            ? item.operator?.firstName
-                                            : ""}{" "}
-                                          {typeof item.operator === "object"
-                                            ? item.operator?.lastName
-                                            : ""}
-                                        </p>
-                                      </span>
-                                      <span className="flex w-[30rem] text-[13px] text-slate-900 ">
-                                        <p
-                                          className={`px-3 py-4 text-sm text-gray-500 font-semibold ${
-                                            item.jobId
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          STOP REASON :
-                                        </p>
-                                        <p
-                                          className={`px-3 py-4 text-sm  text-gray-500 ${
-                                            item.jobId
-                                              ? "text-gray-900"
-                                              : "text-red-500"
-                                          }`}
-                                        >
-                                          <span
-                                            className={`${
-                                              item.stopReason.join(", ") ===
-                                              "Unit Created"
-                                                ? "text-green-500"
-                                                : item.stopReason.join(", ") ===
-                                                  "Worker Break"
-                                                ? "text-yellow-500"
+                                <div className="border border-b-0 border-gray-100 bg-gray-100 h-13">
+                                  <div className="flex">
+                                    <span className="flex w-1/4 text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                      <p className="px-4 pt-1 text-right">
+                                        ADDITIONAL INFO
+                                      </p>
+                                    </span>
+                                    <div className="w-full">
+                                      <div className="flex">
+                                        {" "}
+                                        {/* Use flex-wrap to wrap the elements */}
+                                        <span className="w-1/3 flex px-4 text-[13px] ">
+                                          <p
+                                            className={`pl-3 sm:w-3/5 md:w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
                                                 : "text-red-500"
                                             }`}
                                           >
-                                            {item.stopReason.join(", ")}
-                                          </span>
-                                        </p>
-                                      </span>
+                                            CITY :
+                                          </p>
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {typeof item.locationId === "object"
+                                              ? item.locationId?.name
+                                              : ""}{" "}
+                                          </p>
+                                        </span>
+                                        <span className="w-2/3 flex px-4 text-[13px] ">
+                                          <p
+                                            className={`pt-2 pb-1 w-2/5 text-right text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            MACHINE CLASS :
+                                          </p>
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {typeof item.machineClassId ===
+                                            "object"
+                                              ? item.machineClassId?.name
+                                              : ""}{" "}
+                                          </p>
+                                        </span>
+                                      </div>
+                                      <div className="flex">
+                                        {" "}
+                                        <span className="flex w-1/3 sm:px-0 sm:pl-1 px-4 text-[13px] ">
+                                          <p
+                                            className={`pt-2 sm:w-3/5 md:w-2/5 text-right pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            OPERATOR :
+                                          </p>
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {typeof item.operator === "object"
+                                              ? item.operator?.firstName
+                                              : ""}{" "}
+                                            {typeof item.operator === "object"
+                                              ? item.operator?.lastName
+                                              : ""}
+                                          </p>
+                                        </span>
+                                        <span className="w-2/3 flex text-[13px] px-4 text-slate-900 ">
+                                          <p
+                                            className={`pl-3 w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            STOP REASON :
+                                          </p>
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm  text-gray-500 ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            <span
+                                              className={`${
+                                                item.stopReason.join(", ") ===
+                                                "Unit Created"
+                                                  ? "text-green-500"
+                                                  : item.stopReason.join(
+                                                      ", "
+                                                    ) === "Worker Break"
+                                                  ? "text-yellow-500"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              {item.stopReason.join(", ")}
+                                            </span>
+                                          </p>
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -1272,242 +1407,7 @@ const LogsTable = ({ locationId }: { locationId: string }) => {
               </table>
             ) : null}
           </div>
-          {/* <div className="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <label
-                  htmlFor="filterBy"
-                  className="block text-sm font-medium text-gray-900"
-                >
-                  Filter By
-                </label>
-                <select
-                  id="filterBy"
-                  name="filterBy"
-                  className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6"
-                  onChange={(e) => setFilterBy(e.target.value)}
-                >
-                  <option value="All">All</option>
-                  <option value="Factories">Factory</option>
-                  <option value="Machine Classes">Machine Class</option>
-                  <option value="Machines">Machine</option>
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="location"
-                  className="block text-sm font-medium text-gray-900"
-                >
-                  {filterBy}
-                </label>
-                {filterInputs()}
-              </div>
-            </div> */}
         </div>
-        {/* {isPaginatedLoading ? (
-          <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
-            <div
-              className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
-              role="status"
-              aria-label="loading"
-            >
-              <span className="sr-only">Loading...</span>
-            </div>
-          </div>
-        ) : null} */}
-        {/* {!isPaginatedLoading &&
-          paginated?.items &&
-          paginated?.items.length > 0 ? (
-            <table className="w-full divide-y divide-gray-300 border-t border-gray-300">
-              <thead>
-                <tr>
-                  <th
-                    scope="col"
-                    className={`text-sm py-3.5 pr-3 text-left font-semibold text-gray-900 pl-4 lg:pl-8 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      ID
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Date
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Product
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Operator
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Status
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Time
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                  <th
-                    scope="col"
-                    className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                  >
-                    <a href="#" className="group inline-flex items-center">
-                      Stop Reason
-                      <span className="ml-2 flex-none rounded text-gray-400">
-                        <ChevronUpDownIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </span>
-                    </a>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {paginated?.items &&
-                  paginated?.items.map((item, idx) => (
-                    <tr key={idx} className={`${!item.jobId ? "bg-red-50" : ""}`}>
-                      <td
-                        className={`py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 lg:pl-8 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {item.globalCycle ? item.globalCycle : ""}
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 flex flex-col ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        <span>
-                          {dayjs
-                            .tz(dayjs(item.createdAt), "America/Chicago")
-                            .format("MM/DD/YYYY")}
-                        </span>
-                        <span>
-                          {dayjs
-                            .tz(dayjs(item.createdAt), "America/Chicago")
-                            .format("h:mm A")}
-                        </span>
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {typeof item.partId === "object" ? item.partId.name : ""}
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {typeof item.operator === "object"
-                          ? item.operator?.firstName
-                          : ""}{" "}
-                        {typeof item.operator === "object"
-                          ? item.operator?.lastName
-                          : ""}
-                      </td>
-                      <td className={`px-3 py-4 text-sm text-gray-500`}>
-                        {item.status === "Gain" ? (
-                          <span
-                            className={`font-bold ${
-                              item.jobId ? "text-green-500" : "text-red-500"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        ) : (
-                          <span className="font-bold text-red-500">
-                            {item.status}
-                          </span>
-                        )}
-                      </td>
-                      <td className={`px-3 py-4 text-sm`}>
-                        {item.status === "Gain" ? (
-                          <span
-                            className={`font-bold ${
-                              item.jobId ? "text-green-500" : "text-red-500"
-                            }`}
-                          >
-                            {item.time.toFixed(2)}s
-                          </span>
-                        ) : (
-                          <span className="font-bold text-red-500">
-                            {item.time.toFixed(2)}s
-                          </span>
-                        )}
-                      </td>
-                      <td
-                        className={`px-3 py-4 text-sm text-gray-500 ${
-                          item.jobId ? "text-gray-900" : "text-red-500"
-                        }`}
-                      >
-                        {item.stopReason.join(", ")}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          ) : null} */}
         {isPaginatedLoading ||
         (paginated?.items && paginated?.items.length === 0) ? (
           <div className="flex mb-4 w-full">

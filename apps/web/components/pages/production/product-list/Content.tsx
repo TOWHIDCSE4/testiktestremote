@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import NewPartModal from "./modals/NewPartModal"
 import useLocations from "../../../../hooks/locations/useLocations"
 import Machine from "./Machine"
@@ -8,6 +8,8 @@ import Part from "./Part"
 import NewMachineModal from "./modals/NewMachineModal"
 import useStoreSession from "../../../../store/useStoreSession"
 import { USER_ROLES } from "../../../../helpers/constants"
+import useProfile from "../../../../hooks/users/useProfile"
+import useLocation from "../../../../hooks/locations/useLocation"
 
 type T_LocationTabs = {
   _id?: string
@@ -18,10 +20,13 @@ const PRODUCTION_ADMIN_ROLES = [
   USER_ROLES.Super,
   USER_ROLES.Administrator,
   USER_ROLES.Production,
+  USER_ROLES.Personnel,
 ]
 
 const Content = () => {
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
+  const { data: location, setSelectedLocationId } = useLocation()
   const [openNewPartModal, setOpenNewPartModal] = useState(false)
   const [openNewMachineModal, setOpenNewMachineModal] = useState(false)
   const [locationTabs, setLocationTabs] = useState<T_LocationTabs[]>([])
@@ -43,19 +48,46 @@ const Content = () => {
           }))
         )
       }
-      setCurrentLocationTab(locations?.items[0]?._id as string)
+      if (
+        !PRODUCTION_ADMIN_ROLES.includes(
+          userProfile?.item.role
+            ? userProfile?.item.role
+            : USER_ROLES.Administrator
+            ? USER_ROLES.Administrator
+            : USER_ROLES.Super
+        )
+      )
+        setCurrentLocationTab(locations?.items[0]?._id as string)
     }
   }, [locations])
 
   useEffect(() => {
-    if (locationTabs.length > 0) {
-      setCurrentLocationTab(locationTabs[0]._id as string)
+    if (
+      PRODUCTION_ADMIN_ROLES.includes(
+        userProfile?.item.role || USER_ROLES.Administrator
+      )
+    )
+      setCurrentLocationTab(location?.item._id || "") // Set based on location item
+  }, [location, userProfile])
+
+  useEffect(() => {
+    if (userProfile?.item.locationId) {
+      // console.log("userProfile?.item", userProfile?.item)
+      setSelectedLocationId(userProfile?.item.locationId as string)
+      setCurrentLocationTab(userProfile?.item.locationId as string)
     }
-  }, [typeState])
+  }, [userProfile])
 
   const currentLocationTabName = locationTabs.find(
     (tab) => tab._id === currentLocationTab
   )?.name
+
+  const isTimerCityRoles = useMemo(() => {
+    return PRODUCTION_ADMIN_ROLES.includes(
+      userProfile?.item.role || USER_ROLES.Administrator
+    )
+  }, [userProfile])
+
   if (!PRODUCTION_ADMIN_ROLES.includes(storeSession.role))
     return (
       <div className="mt-28">
