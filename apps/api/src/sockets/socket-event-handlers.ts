@@ -46,6 +46,18 @@ export default function chatSocket(io: Server) {
       }
     )
 
+    socket.on(
+      "change-job",
+      (data: { action: string; timerId: string; message?: string }) => {
+        // Handle chat message logic here (e.g., save to a database)
+        const { timerId } = data
+        if (!timerId) {
+          return ""
+        }
+        io.emit(`timer-${timerId}`, data)
+      }
+    )
+
     socket.on("disconnect", () => {
       console.log("User disconnected")
     })

@@ -22,6 +22,10 @@ const timers = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Location",
   },
+  operatorName: {
+    type: String,
+    nullable: true,
+  },
   operator: {
     type: mongoose.Schema.ObjectId,
     ref: "User",

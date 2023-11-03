@@ -1,4 +1,4 @@
-import AuthWrapper from "../../components/AuthWrapper"
+import AuthGuard from "../../components/AuthGuard"
 import QueryWrapper from "../../components/QueryWrapper"
 import MainNav from "../../components/MainNav"
 import "../globals.css"
@@ -18,12 +18,12 @@ export default function RootLayout({
       <body className={`bg-[#F5F7FA] ${exo.className}`}>
         <Toaster />
         <QueryWrapper>
-          <AuthWrapper>
+          <AuthGuard>
             <div className="absolute top-0">
               <MainNav />
             </div>
             <div className="lg:ml-80">{children}</div>
-          </AuthWrapper>
+          </AuthGuard>
         </QueryWrapper>
       </body>
     </html>

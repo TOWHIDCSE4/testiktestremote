@@ -28,8 +28,10 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
           </div>
         </div>
         <div className="flex flex-wrap space-x-1 text-[13px]">
-          <div>QA APPROVED :</div>
-          <div>Pending</div>
+          <div>FACTORY :</div>
+          <div>
+            {typeof job.factory === "string" ? job.factory : job.factory?.name}
+          </div>
         </div>
       </div>
       <div className="w-[5px] mr-2 mt-1 mb-1 rounded-lg bg-gray-400 flex justify-center items-center">
@@ -42,7 +44,7 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
               <tr>
                 <th></th>
                 <th>DATE/TIME</th>
-                <th>FACTORY</th>
+                {/* <th>FACTORY</th> */}
                 <th>MACHINE</th>
                 <th>COUNT</th>
                 <th>OPERATOR</th>
@@ -57,12 +59,12 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
                     {/* 12/12/2014 */}
                     {log.date}
                   </td>
-                  <td>
-                    {/* Steel and Pipe */}
+                  {/* <td>
+                    
                     {typeof job.factory === "string"
                       ? job.factory
                       : job.factory?.name}
-                  </td>
+                  </td> */}
                   <td>
                     {/* Tornado */}
                     {typeof log.items[0].machineId === "string"

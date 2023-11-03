@@ -1,15 +1,18 @@
 "use client"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import useLocation from "../../../hooks/locations/useLocation"
 import useProfile from "../../../hooks/users/useProfile"
 
 const Content = () => {
   const { data, isLoading: basicInfoLoading } = useProfile()
   const { data: location, setSelectedLocationId } = useLocation()
+  const [showText, setShowText] = useState(true)
+
   useEffect(() => {
     if (data?.item.locationId)
       setSelectedLocationId(data?.item.locationId as string)
   }, [data])
+
   return (
     <>
       <div className={`my-20 pb-10`}>

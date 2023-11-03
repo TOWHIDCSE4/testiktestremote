@@ -4,20 +4,22 @@ import { useRouter } from "next/navigation"
 import useSession from "../hooks/users/useSession"
 import useStoreSession from "../store/useStoreSession"
 import Cookies from "js-cookie"
-import { clarity } from "react-microsoft-clarity"
+import { useSocket } from "../store/useSocket"
 
 type Props = {
   children: React.ReactNode
 }
 
-const AuthWrapper = ({ children }: Props) => {
+const AuthGuard = ({ children }: Props) => {
   const { data, isLoading } = useSession()
   const router = useRouter()
   const updateStoreSession = useStoreSession((state) => state.update)
+  const initSocket = useSocket((store) => store.setInstance)
+
   useEffect(() => {
     if (!isLoading && !data?.error && data?.item) {
+      initSocket(data.item)
       updateStoreSession(data?.item)
-      // clarity.init(process.env.CLARITY_KEY as string)
     }
   }, [isLoading, data, updateStoreSession])
 
@@ -40,4 +42,4 @@ const AuthWrapper = ({ children }: Props) => {
   }
 }
 
-export default AuthWrapper
+export default AuthGuard
