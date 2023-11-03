@@ -125,8 +125,6 @@ const Details = ({
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
-        console.log("Job data", data)
-
         queryClient.invalidateQueries({
           queryKey: ["timer", timerDetails._id],
         })
