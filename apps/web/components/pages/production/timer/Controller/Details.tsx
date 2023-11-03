@@ -15,6 +15,7 @@ import { Combobox } from "@headlessui/react"
 import useUpdateTimerJob from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
 import useProfile from "../../../../../hooks/users/useProfile"
+import { useSocket } from "../../../../../store/useSocket"
 
 type T_Props = {
   timerDetails: T_Timer // Show all details of controller
@@ -54,6 +55,7 @@ const Details = ({
   setIsJobSwitch,
 }: T_Props) => {
   const queryClient = useQueryClient()
+  let socket = useSocket((store) => store.instance)
   const { data: users, isLoading: isUsersLoading } = useUsers()
   const isComboboxDisabled = isCycleClockRunning
   const locationId =
@@ -123,11 +125,18 @@ const Details = ({
   const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
+        console.log("Job data", data)
+
         queryClient.invalidateQueries({
           queryKey: ["timer", timerDetails._id],
         })
         queryClient.invalidateQueries({
           queryKey: ["job-timer-timer"],
+        })
+        socket?.emit("change-job", {
+          action: "change-job",
+          timerId: timerDetails._id,
+          jobInfo: data?.item,
         })
       } else {
         toast.error(String(data.message))

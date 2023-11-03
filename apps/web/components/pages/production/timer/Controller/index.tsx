@@ -197,6 +197,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
         stopInterval()
         setCycleClockInSeconds(0)
       }
+      if (data.action === "change-job") {
+        setJobUpdateId(data.jobInfo.jobId ?? "")
+        toast.success("Job change succesfully")
+      }
     }
 
     socket?.on(`timer-${timerId}`, runSocket)
