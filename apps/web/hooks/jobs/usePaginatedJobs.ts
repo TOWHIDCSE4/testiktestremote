@@ -121,9 +121,8 @@ export async function getAllParts({
   jobType?: string
   machineClassId: string[] // Define machineClassId as an array of strings
 }) {
-  //@ts-expect-error
   const machineClassIdQueryString = new URLSearchParams({
-    machineClassId: machineClassId,
+    machineClassIds: machineClassId.join(","),
   }).toString()
   console.log(machineClassId, machineClassIdQueryString)
   console.log("Macxine", machineClassIdQueryString)

@@ -28,12 +28,14 @@ const TabTable = ({
   locationId,
   jobSelection,
   searchInput,
+  machineClassIds,
 }: {
   tab: T_JobStatus
   pageRender: boolean
   locationId: string
   jobSelection: any
   searchInput: string
+  machineClassIds: string[]
 }) => {
   const {
     data: jobs,
@@ -46,6 +48,7 @@ const TabTable = ({
     setJobType,
     jobType,
     page,
+    setMachineClassId,
   } = usePaginatedJobs()
 
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
@@ -74,6 +77,9 @@ const TabTable = ({
     setLocked(locked ? false : true)
   }
 
+  useEffect(() => {
+    setMachineClassId(machineClassIds)
+  }, [machineClassIds])
   useEffect(() => {
     setSelectedJob([])
   }, [locked])

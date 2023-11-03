@@ -36,11 +36,14 @@ const ParentTable = ({
   const [openFilter, setOpenFilter] = useState(false)
   const [checkAll, setCheckAll] = useState(false)
   const [machineClassArray, setMachineClassArray] = useState<string[]>([])
-  const {
-    machineClassId,
-    setMachineClassId,
-    isLoading: paginatedJobsLoading,
-  } = usePaginatedJobs()
+  // const {
+  //   machineClassId,
+  //   setMachineClassId,
+  //   // page: jobPage,
+  //   // setPage: setJobPage,
+  //   setLocationId: setJobLocationId,
+  //   isLoading: paginatedJobsLoading,
+  // } = usePaginatedJobs()
   const [deleteModal, setDeleteModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
   // const [selectedMachineClassIds, setSelectedMachineClassIds] = useState<string[]>([]);
@@ -48,9 +51,12 @@ const ParentTable = ({
 
   const { data, isLoading, setJobStatuses, setJobLocation } = useCountStatus()
 
-  useEffect(() => {
-    setMachineClassId(machineClassArray)
-  }, [setMachineClassId, machineClassArray])
+  // useEffect(() => {
+  //   setMachineClassId(machineClassArray)
+  //   // setJobPage(1)
+  //   // console.log("clickRender", clickRender)
+  //   setJobLocationId(locationId)
+  // }, [setMachineClassId, machineClassArray])
 
   const tabs = [
     { name: "Pending", count: 0, current: currentTab === "Pending" },
@@ -358,6 +364,7 @@ const ParentTable = ({
               <TabTable
                 pageRender={clickRender}
                 tab={currentTab}
+                machineClassIds={machineClassArray}
                 locationId={locationId}
                 searchInput={inputValue}
                 jobSelection={currentTab === "Active" ? selectedValue : ""}
