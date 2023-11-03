@@ -85,10 +85,15 @@ const Details = ({
   })
 
   const handleInputOperator = () => {
-    mutate(
-      { ...timerDetails, operator: "", operatorName: operatorQuery },
-      callBackReq
-    )
+    const leadingTrailingSpaceRegex = /^\s|\s$/
+    if (leadingTrailingSpaceRegex.test(operatorQuery)) {
+      toast.error("Please remove trailing spaces")
+    } else {
+      mutate(
+        { ...timerDetails, operator: "", operatorName: operatorQuery },
+        callBackReq
+      )
+    }
   }
 
   useEffect(() => {
