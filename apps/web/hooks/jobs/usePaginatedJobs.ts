@@ -125,6 +125,7 @@ export async function getAllParts({
   const machineClassIdQueryString = new URLSearchParams({
     machineClassId: machineClassId,
   }).toString()
+  console.log(machineClassId, machineClassIdQueryString)
   console.log("Macxine", machineClassIdQueryString)
   const token = Cookies.get("tfl")
   const res = await fetch(

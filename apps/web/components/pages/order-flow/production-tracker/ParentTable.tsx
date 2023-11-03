@@ -60,20 +60,32 @@ const ParentTable = ({
     { name: "Deleted", count: 0, current: currentTab === "Deleted" },
   ]
 
-  const handleSelectMachineClass = (e: any) => {
-    const isChecked = e.target.checked
-    setCheckAll(isChecked)
-
-    if (isChecked) {
+  const handleSelectMachineClass = (e: any, id: any) => {
+    if (id === "all") {
+      const isChecked = e.target.checked
       const allMachineClassIds = machineClasses?.items.map(
         (machineClass: T_MachineClass) => machineClass._id || ""
       )
-      setMachineClassArray(allMachineClassIds)
-      console.log(allMachineClassIds)
+      setMachineClassArray(isChecked ? allMachineClassIds : [])
     } else {
-      setMachineClassArray([])
+      e.stopPropagation()
+      setMachineClassArray((prevIds) => {
+        const updatedIds = prevIds.includes(id)
+          ? prevIds.filter((existingId) => existingId !== id)
+          : [...prevIds, id]
+
+        return updatedIds
+      })
     }
   }
+
+  useEffect(() => {
+    if (machineClasses?.items.length === machineClassArray.length) {
+      setCheckAll(true)
+    } else {
+      setCheckAll(false)
+    }
+  })
 
   useEffect(() => {
     if (
@@ -265,9 +277,9 @@ const ParentTable = ({
                                   name="all"
                                   type="checkbox"
                                   className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                                  defaultChecked={checkAll}
+                                  checked={checkAll}
                                   onChange={(e) => {
-                                    handleSelectMachineClass(e)
+                                    handleSelectMachineClass(e, "all")
                                   }}
                                 />
                               </div>
@@ -297,20 +309,10 @@ const ParentTable = ({
                                       checked={machineClassArray.includes(
                                         machineClassId._id || ""
                                       )}
-                                      onChange={() => {
-                                        setMachineClassArray((prevIds) =>
-                                          prevIds.includes(
-                                            machineClassId._id || ""
-                                          )
-                                            ? prevIds.filter(
-                                                (id) =>
-                                                  id !== machineClassId._id ||
-                                                  ""
-                                              )
-                                            : [
-                                                ...prevIds,
-                                                machineClassId._id || "",
-                                              ]
+                                      onChange={(e) => {
+                                        handleSelectMachineClass(
+                                          e,
+                                          machineClassId._id
                                         )
                                       }}
                                     />
