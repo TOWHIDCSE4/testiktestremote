@@ -39,10 +39,12 @@ import { initializeSocket } from "../../../../../helpers/socket"
 import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import useProfile from "../../../../../hooks/users/useProfile"
 import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
+import { useSocket } from "../../../../../store/useSocket"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
+  let socket = useSocket((store) => store.instance)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
@@ -118,7 +120,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
   const [endTimer, setEndTimer] = useState<boolean>(false)
   const intervalRef = useRef<any>()
-  let socket: Socket<any, any> | undefined
   const currentDate = dayjs
     .tz(
       dayjs(),
@@ -128,11 +129,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
     )
     .format("YYYY-MM-DD HH:mm:ss")
 
-  let interval: any
-
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    socket = initializeSocket()
     const runSocket = async (data: any) => {
       if (data.action === "pre-add") {
         setIsTimerClockRunning(true)
@@ -195,6 +193,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
             break
         }
       }
+      if (data.action === "stop-press") {
+        stopInterval()
+        setCycleClockInSeconds(0)
+      }
+      if (data.action === "change-job") {
+        setJobUpdateId(data.jobInfo.jobId ?? "")
+        toast.success("Job change succesfully")
+      }
     }
 
     socket?.on(`timer-${timerId}`, runSocket)
@@ -207,7 +213,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       socket?.off(`timer-${timerId}`, runSocket)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [socket, timerId])
 
   useEffect(() => {
     if (defaultOperator) {
@@ -246,6 +252,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       document.removeEventListener("visibilitychange", handleVisibilityChange)
     }
   }, [])
+  let interval: any
 
   useEffect(() => {
     return () => {
@@ -410,6 +417,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
     setIsCycleClockStarting(true)
     stopInterval()
     setCycleClockInSeconds(0)
+    socket?.emit("stop-press", {
+      action: "stop-press",
+      timerId: timerId,
+      message: "stop the timer",
+    })
     startingTimerReadings([
       `${currentDate} - Stopping timer`,
       `${currentDate} - Timer stopped`,

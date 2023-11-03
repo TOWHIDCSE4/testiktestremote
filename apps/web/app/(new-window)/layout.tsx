@@ -1,4 +1,4 @@
-import AuthWrapper from "../../components/AuthWrapper"
+import AuthGuard from "../../components/AuthGuard"
 import QueryWrapper from "../../components/QueryWrapper"
 import { Toaster } from "react-hot-toast"
 import "../globals.css"
@@ -17,7 +17,7 @@ export default function RootLayout({
       <body className={exo.className}>
         <Toaster position="top-left" />
         <QueryWrapper>
-          <AuthWrapper>{children}</AuthWrapper>
+          <AuthGuard>{children}</AuthGuard>
         </QueryWrapper>
       </body>
     </html>
