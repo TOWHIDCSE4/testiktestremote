@@ -362,15 +362,12 @@ const Content = () => {
             </svg>
           </div>
           <div className=" p-4 rounded-md text-white space-y-4">
-            <h1 className=" font-roboto text-blue-700 bg-clip-text text-8xl font-black">
-              WELCOME
+            <h1 className=" flex font-roboto text-blue-900 bg-clip-text text-8xl font-black">
+              Thank You
             </h1>
-            {/* <h1 className="animate-text font-sans bg-gradient-to-r outline-1 outline-black from-blue-900 via-blue-500 to-blue-900 bg-clip-text text-transparent text-8xl font-black">
-              THANK YOU
-            </h1> */}
           </div>
           <span className="text-3xl tracking-tight font-semibold text-justify text-black">
-            You will be redirected to login page shortly
+            For signing up
           </span>
         </div>
       )}
