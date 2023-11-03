@@ -2,6 +2,7 @@
 import { HeartIcon } from "@heroicons/react/24/solid"
 import Image from "next/image"
 import { useState, useEffect } from "react"
+
 import Link from "next/link"
 import GifTick from "../../../assets/images/sliders/icontick.png"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
@@ -10,7 +11,7 @@ import Slider from "../../Slider"
 import { useForm } from "react-hook-form"
 import useRegister from "../../../hooks/users/useRegister"
 import { useRouter } from "next/navigation"
-import toast from "react-hot-toast"
+import { toast, useToaster } from "react-hot-toast"
 import { T_BackendResponse, T_User } from "custom-validator"
 import { USER_ROLES } from "../../../helpers/constants"
 import useLocations from "../../../hooks/locations/useLocations"
@@ -57,6 +58,18 @@ const Content = () => {
       toast.error("Password doesn't match")
     }
   }
+
+  const toaster = useToaster()
+
+  useEffect(() => {
+    if (showWelcome) {
+      // Show a welcome toast notification
+      toast.success("Thank You For signing up", {
+        position: "top-center",
+        duration: 5000,
+      })
+    }
+  }, [showWelcome])
 
   const handleCreateButtonClick = () => {
     setShowWelcome(true)
@@ -343,34 +356,34 @@ const Content = () => {
 
         <Slider />
       </div>
-      {showWelcome && (
-        <div className="fixed top-0 left-0 w-full h-full items-center justify-center bg-white z-50 flex flex-col">
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="#1e3a8a"
-              className="w-[300px] h-[200px]"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <div className=" p-4 rounded-md text-white space-y-4">
-            <h1 className=" flex font-roboto text-blue-900 bg-clip-text text-8xl font-black">
-              Thank You
-            </h1>
-          </div>
-          <span className="text-3xl tracking-tight font-semibold text-justify text-black">
-            For signing up
-          </span>
-        </div>
-      )}
+      {/* {showWelcome && (
+  <div className="fixed top-0 left-0 w-full h-full items-center justify-center bg-white z-50 flex flex-col">
+    <div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth="1.5"
+        stroke="#1e3a8a"
+        className="w-[300px] h-[200px]"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    </div>
+    <div className="p-4 rounded-md text-white space-y-4">
+      <h1 className="flex font-roboto text-blue-900 bg-clip-text text-8xl font-black">
+        Thank You
+      </h1>
+    </div>
+    <span className="text-3xl tracking-tight font-semibold text-justify text-black">
+      For signing up
+    </span>
+  </div>
+)} */}
     </>
   )
 }
