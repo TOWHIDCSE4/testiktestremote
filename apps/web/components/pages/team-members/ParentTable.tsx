@@ -251,6 +251,14 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     mutate(updatedItem, callBackReq)
   }
 
+  const checkCity = locations?.items.find(
+    (locationName: any) => locationName._id == userProfile?.item.locationId
+  )
+
+  const checkFactory = factories?.items.find(
+    (factoryName: any) => factoryName._id == userProfile?.item.factoryId
+  )
+
   return (
     <>
       <div
@@ -292,15 +300,29 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   </p>
                 </span>
               </div>
-              <div className="mt-4 flex flex-col">
+              <div className="mt-4 flex ml-2">
                 <span
-                  className={`text-[2rem] uppercase md:pl-6 mt-3 font-semibold text-xl cursor-pointer ${selectedColor}`}
+                  className={`text-[2rem] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${selectedColor}`}
                   onClick={toggleDropdown}
                 >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    className="mt-1 mr-2 w-5 h-7"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
                   {selectedStatus}
                 </span>
                 {isOpen && (
-                  <div className="top-[4rem] sm:top-[4rem] absolute overflow- mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
+                  <div className="sm:top-[6rem] absolute overflow- mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
                     <ul>
                       {statusArray.map((status, index) => (
                         <li
@@ -326,30 +348,41 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   {" "}
                   City{" "}
                 </span>
-                <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
-                  <span className="text-start text-[#7F1D1D]">:</span>
-                  {locations && locations.items
-                    ? storeSession?.role === "Administrator" ||
-                      "Super" ||
-                      "HR_Director"
-                      ? locations.items.map((location, index) => (
-                          <span key={index}>
-                            {index > 0 ? ", " : ""}
-                            {location.name.toUpperCase()}
-                          </span>
-                        ))
-                      : locations.items.map((location, index) => {
-                          if (location._id === userProfile?.item?.locationId) {
-                            return (
-                              <span key={index}>
-                                {location.name.toUpperCase()}
-                              </span>
-                            )
-                          }
-                          return ""
-                        })
-                    : ""}
-                </div>
+                {userProfile?.item.role == "Production" ? (
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                    <span className="text-start text-[#7F1D1D]">:</span>
+                    <span className="pl-0">
+                      {checkCity ? [checkCity.name] : "Please Select City"}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
+                    <span className="text-start text-[#7F1D1D]">:</span>
+                    {locations && locations.items
+                      ? storeSession?.role === "Administrator" ||
+                        "Super" ||
+                        "HR_Director"
+                        ? locations.items.map((location, index) => (
+                            <span key={index}>
+                              {index > 0 ? ", " : ""}
+                              {location.name.toUpperCase()}
+                            </span>
+                          ))
+                        : locations.items.map((location, index) => {
+                            if (
+                              location._id === userProfile?.item?.locationId
+                            ) {
+                              return (
+                                <span key={index}>
+                                  {location.name.toUpperCase()}
+                                </span>
+                              )
+                            }
+                            return ""
+                          })
+                      : ""}
+                  </div>
+                )}
               </div>
               <div className="flex justify-end text-gray-900 space-x-1">
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
@@ -357,12 +390,16 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 </span>
                 <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D]">:</span>
-                  <span>All</span>
+                  {userProfile?.item.role == "Production" ? (
+                    <span>{checkFactory ? [checkFactory.name] : ""}</span>
+                  ) : (
+                    <span>All</span>
+                  )}
                 </div>
               </div>
               {selectedRole === "Personnel" ? (
                 <div className="flex justify-end text-gray-900 space-x-1">
-                  <span className="text-[#7F1D1D] text-[12px] uppercase font-semibold">
+                  <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                     Machine Class
                   </span>
                   <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
@@ -1782,20 +1819,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-0"
                     >
-                      <td className="pr-6 py-5">
+                      <td className="pr-6 py-5 h-14">
                         <div className="flex items-center">
-                          <svg
-                            height="16"
-                            viewBox="0 0 48 48"
-                            width="15"
-                            className="ml-2"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M-838-2232H562v3600H-838z" fill="none" />
-                            <path d="M16 10v28l22-14z" />
-                            <path d="M0 0h48v48H0z" fill="none" />
-                          </svg>
-
                           <label
                             htmlFor="checkbox-table-search-0"
                             className="sr-only"
@@ -1822,20 +1847,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-0"
                     >
-                      <td className="pr-6 py-5">
+                      <td className="pr-6 py-5 h-14">
                         <div className="flex items-center">
-                          <svg
-                            height="16"
-                            viewBox="0 0 48 48"
-                            width="15"
-                            className="ml-2"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M-838-2232H562v3600H-838z" fill="none" />
-                            <path d="M16 10v28l22-14z" />
-                            <path d="M0 0h48v48H0z" fill="none" />
-                          </svg>
-
                           <label
                             htmlFor="checkbox-table-search-0"
                             className="sr-only"
@@ -1862,20 +1875,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-0"
                     >
-                      <td className="pr-6 py-5">
+                      <td className="pr-6 py-5 h-14">
                         <div className="flex items-center">
-                          <svg
-                            height="16"
-                            viewBox="0 0 48 48"
-                            width="15"
-                            className="ml-2"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M-838-2232H562v3600H-838z" fill="none" />
-                            <path d="M16 10v28l22-14z" />
-                            <path d="M0 0h48v48H0z" fill="none" />
-                          </svg>
-
                           <label
                             htmlFor="checkbox-table-search-0"
                             className="sr-only"
@@ -1902,20 +1903,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-0"
                     >
-                      <td className="pr-6 py-5">
+                      <td className="pr-6 py-5 h-14">
                         <div className="flex items-center">
-                          <svg
-                            height="16"
-                            viewBox="0 0 48 48"
-                            width="15"
-                            className="ml-2"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M-838-2232H562v3600H-838z" fill="none" />
-                            <path d="M16 10v28l22-14z" />
-                            <path d="M0 0h48v48H0z" fill="none" />
-                          </svg>
-
                           <label
                             htmlFor="checkbox-table-search-0"
                             className="sr-only"
@@ -1942,20 +1931,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-0"
                     >
-                      <td className="pr-6 py-5">
+                      <td className="pr-6 py-5 h-14">
                         <div className="flex items-center">
-                          <svg
-                            height="16"
-                            viewBox="0 0 48 48"
-                            width="15"
-                            className="ml-2"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M-838-2232H562v3600H-838z" fill="none" />
-                            <path d="M16 10v28l22-14z" />
-                            <path d="M0 0h48v48H0z" fill="none" />
-                          </svg>
-
                           <label
                             htmlFor="checkbox-table-search-0"
                             className="sr-only"
@@ -1982,19 +1959,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-1"
                     >
-                      <td className="pr-6 py-5">
+                      <td className="pr-6 py-5 h-14">
                         <div className="flex items-center">
-                          <svg
-                            height="16"
-                            viewBox="0 0 48 48"
-                            width="15"
-                            className="ml-2"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M-838-2232H562v3600H-838z" fill="none" />
-                            <path d="M16 10v28l22-14z" />
-                            <path d="M0 0h48v48H0z" fill="none" />
-                          </svg>
                           <label
                             htmlFor="checkbox-table-search-1"
                             className="sr-only"
@@ -2021,19 +1987,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-1"
                     >
-                      <td className="pr-6 py-5">
+                      <td className="pr-6 py-5 h-14">
                         <div className="flex items-center">
-                          <svg
-                            height="16"
-                            viewBox="0 0 48 48"
-                            width="15"
-                            className="ml-2"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M-838-2232H562v3600H-838z" fill="none" />
-                            <path d="M16 10v28l22-14z" />
-                            <path d="M0 0h48v48H0z" fill="none" />
-                          </svg>
                           <label
                             htmlFor="checkbox-table-search-1"
                             className="sr-only"

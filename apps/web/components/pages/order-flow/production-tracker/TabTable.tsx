@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/24/solid"
 import { T_Job, T_JobStatus } from "custom-validator"
 import usePaginatedJobs from "../../../../hooks/jobs/usePaginatedJobs"
+import FilterCheckbox from "../../production/timer/FilterCheckbox"
 import dayjs from "dayjs"
 import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
@@ -27,12 +28,14 @@ const TabTable = ({
   locationId,
   jobSelection,
   searchInput,
+  machineClassIds,
 }: {
   tab: T_JobStatus
   pageRender: boolean
   locationId: string
   jobSelection: any
   searchInput: string
+  machineClassIds: string[]
 }) => {
   const {
     data: jobs,
@@ -45,6 +48,7 @@ const TabTable = ({
     setJobType,
     jobType,
     page,
+    setMachineClassId,
   } = usePaginatedJobs()
 
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
@@ -73,6 +77,9 @@ const TabTable = ({
     setLocked(locked ? false : true)
   }
 
+  useEffect(() => {
+    setMachineClassId(machineClassIds)
+  }, [machineClassIds])
   useEffect(() => {
     setSelectedJob([])
   }, [locked])
@@ -130,7 +137,7 @@ const TabTable = ({
         </div>
       ) : !jobs?.error && jobs?.itemCount && jobs?.itemCount > 0 ? (
         <table className="w-full divide-y divide-gray-300 md:table-fixed">
-          <thead>
+          <thead className="border-b-4 border-indigo-900">
             <tr className="">
               <th scope="col" className="w-4"></th>
               <th
@@ -214,7 +221,7 @@ const TabTable = ({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white">
+          <tbody className="bg-white ">
             {jobs?.items?.map((job: T_Job, index) => {
               const selected = selectedJob.some((i) => i._id === job._id)
               return (
@@ -425,7 +432,6 @@ const TabTable = ({
                       </Menu>
                     </td>
                   </tr>
-
                   <tr>
                     <td colSpan={10}>
                       <TabTableDetail job={job} selected={selected} />
@@ -605,7 +611,7 @@ const TabTable = ({
       ) : (
         //Static Table starts Here
         <table className="w-full divide-y divide-gray-300 md:table-fixed">
-          <thead>
+          <thead className="border-b-4 border-indigo-900">
             <tr className="">
               <th scope="col" className="w-4"></th>
               <th
@@ -669,7 +675,7 @@ const TabTable = ({
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white">
+          <tbody className="bg-white border-t-4 border-indigo-900">
             <tr className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer">
               <td className="m-0 pl-3 w-1/5 mt-4 pt-12"></td>
               <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
@@ -753,7 +759,7 @@ const TabTable = ({
           </tbody>
         </table>
       )}
-      <div className="inset-x-0">
+      <div className="inset-x-0 border-t border-gray-300">
         <div className="flex w-full h-20 items-center justify-between px-4 py-3 sm:px-6">
           <div className="h-10 z-[-1] sm:hidden">
             <a
