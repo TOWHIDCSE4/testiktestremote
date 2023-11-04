@@ -22,10 +22,10 @@ import usePartLocationCount from "../../../../hooks/parts/useGetPartLocationCoun
 
 const ParentTable = ({
   locationId,
-  selectedMachineClasses,
-}: {
+}: // selectedMachineClasses,
+{
   locationId: string
-  selectedMachineClasses: (T_MachineClass & { isSelected: boolean })[]
+  // selectedMachineClasses: (T_MachineClass & { isSelected: boolean })[]
 }) => {
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [selectedValue, setSelectedValue] = useState<string>("client")
