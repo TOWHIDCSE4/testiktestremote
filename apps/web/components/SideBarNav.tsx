@@ -114,10 +114,10 @@ const SideBarNav = () => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
+          Cookies.remove("tfl")
           queryClient.invalidateQueries({
             queryKey: ["session"],
           })
-          Cookies.remove("tfl")
           router.push(`/`)
         } else {
           toast.error(String(data.message))
@@ -207,7 +207,8 @@ const SideBarNav = () => {
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <span
+                  <Link
+                    href="/"
                     onClick={() => logoutUser()}
                     className={combineClasses(
                       active ? "bg-gray-100" : "",
@@ -215,7 +216,7 @@ const SideBarNav = () => {
                     )}
                   >
                     Logout
-                  </span>
+                  </Link>
                 )}
               </Menu.Item>
             </Menu.Items>

@@ -399,7 +399,7 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     ]
     const totalUnits = await TimerLogs.find(query).countDocuments()
     const [result] = await parts.aggregate(aggregation).exec()
-    const { totalTons } = result
+    const totalTons = result?.totalTons || 0
     const globalUnitsPerHour = totalUnits / totalTime
     const globalTonsPerHour = totalTons / totalTime
     res.json({

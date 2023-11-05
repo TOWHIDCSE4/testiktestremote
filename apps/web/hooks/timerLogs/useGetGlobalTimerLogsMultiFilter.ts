@@ -1,4 +1,8 @@
-import { API_URL_TIMER_LOGS, REFETCH_ACTIVATED } from "../../helpers/constants"
+import {
+  API_URL_TIMER_LOGS,
+  REFETCH_ACTIVATED,
+  REFETCH_TIME,
+} from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse, T_TimerLog } from "custom-validator"
 import Cookies from "js-cookie"
@@ -125,7 +129,7 @@ function useGlobalTimerLogsMulti(
     {
       refetchOnWindowFocus: false,
       enabled: !!locationId.length && !process,
-      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
+      refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
     }
   )
 
