@@ -45,6 +45,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
         "HR",
       ]
     } else if (userRole === "Production") {
+      // setSelectedRole("Personnel")
       return ["Personnel"]
     } else {
       return [""]
@@ -154,6 +155,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     USER_ROLES.Accounting,
     USER_ROLES.Sales,
   ]
+  useEffect(() => {
+    setSelectedRole("Personnel")
+  }, [selectedRole])
 
   const isChecked = (id: string) => {
     return checkedProduction.filter((item) => item.id === id).length > 0
@@ -177,7 +181,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   useEffect(() => {
     if (storeSession?.role === "Super" || "Administrator" || "HR_Director") {
-      setLocationId("")
+      if (userProfile?.item?.role === "Production") {
+        setLocationId(userProfile?.item?.locationId as string)
+      } else {
+        setLocationId("")
+      }
     } else {
       setLocationId(userProfile?.item?.locationId as string)
     }
@@ -362,24 +370,28 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       ? storeSession?.role === "Administrator" ||
                         "Super" ||
                         "HR_Director"
-                        ? locations.items.map((location, index) => (
-                            <span key={index}>
-                              {index > 0 ? ", " : ""}
-                              {location.name.toUpperCase()}
-                            </span>
-                          ))
-                        : locations.items.map((location, index) => {
-                            if (
-                              location._id === userProfile?.item?.locationId
-                            ) {
-                              return (
-                                <span key={index}>
-                                  {location.name.toUpperCase()}
-                                </span>
-                              )
+                        ? locations.items.map(
+                            (location: any, index: number) => (
+                              <span key={index}>
+                                {index > 0 ? ", " : ""}
+                                {location.name.toUpperCase()}
+                              </span>
+                            )
+                          )
+                        : locations.items.map(
+                            (location: any, index: number) => {
+                              if (
+                                location._id === userProfile?.item?.locationId
+                              ) {
+                                return (
+                                  <span key={index}>
+                                    {location.name.toUpperCase()}
+                                  </span>
+                                )
+                              }
+                              return ""
                             }
-                            return ""
-                          })
+                          )
                       : ""}
                   </div>
                 )}
@@ -1365,10 +1377,14 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
                                               const value = machineClassId._id
+                                              const machineClassFactoryId =
+                                                machineClassId.factoryId
                                               if (value !== "Global") {
                                                 mutate(
                                                   {
                                                     ...item,
+                                                    factoryId:
+                                                      machineClassFactoryId,
                                                     machineClassId: value,
                                                     isGlobalFactory: false,
                                                   },
@@ -2102,7 +2118,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           status={action as T_UserStatus}
         />
 
-        <NewMemberModal isOpen={newModal} onClose={() => setNewModal(false)} />
+        <NewMemberModal
+          isOpen={newModal}
+          userRole={userProfile?.item.role}
+          userLocation={userProfile?.item?.locationId as string}
+          onClose={() => setNewModal(false)}
+        />
       </div>
     </>
   )
