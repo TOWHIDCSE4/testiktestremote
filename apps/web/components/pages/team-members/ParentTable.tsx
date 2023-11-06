@@ -3053,7 +3053,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </th>
                       {selectedRole == "Personnel" ? (
                         <th scope="col" className="px-6 py-3 text-slate-900">
-                          <div className="flex items-center ">
+                          <div className="flex text-xs whitespace-nowrap items-center ">
                             Machine Class
                             <button>
                               <svg
