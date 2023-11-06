@@ -60,9 +60,11 @@ const { RangePicker } = DatePicker
 const LogsTable = ({
   locationId,
   userRole,
+  renderData,
 }: {
   locationId: string[]
   userRole: string | undefined
+  renderData: boolean
 }) => {
   const queryClient = useQueryClient()
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
@@ -75,6 +77,10 @@ const LogsTable = ({
     }
   }
 
+  useEffect(() => {
+    setCity(locationId)
+  }, [renderData])
+
   const [parts, setParts] = useState([])
   const [keyword, setKeyword] = useState<string>("")
   const [showReport, setShowReport] = useState(false)
@@ -83,7 +89,7 @@ const LogsTable = ({
   const [machineClass, setMachineClass] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<Date[] | string[]>([])
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
-  const [city, setCity] = useState<string[]>(locationId)
+  const [city, setCity] = useState<string[]>([])
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
@@ -1387,7 +1393,8 @@ const LogsTable = ({
           </div>
         </div>
         {isPaginatedLoading ||
-        (paginated?.items && paginated?.items.length === 0) ? (
+        (paginated?.items && paginated?.items.length === 0) ||
+        !renderData ? (
           <div className="flex mb-4 w-full">
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">

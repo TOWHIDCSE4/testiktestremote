@@ -172,17 +172,16 @@ const Content = () => {
             )}
           </div>
           <ParentTable locationId={currentLocationTab} />
-          {renderLogsTable && (
-            <LogsTable
-              locationId={
-                userProfile?.item.role === "Personnel" ||
-                userProfile?.item.role === "Production"
-                  ? [currentLocationTab]
-                  : locationsArray
-              }
-              userRole={userProfile?.item.role}
-            />
-          )}
+          <LogsTable
+            locationId={
+              userProfile?.item.role === "Personnel" ||
+              userProfile?.item.role === "Production"
+                ? [currentLocationTab]
+                : locationsArray
+            }
+            userRole={userProfile?.item.role}
+            renderData={renderLogsTable}
+          />
         </div>
       </div>
       <NewModal
