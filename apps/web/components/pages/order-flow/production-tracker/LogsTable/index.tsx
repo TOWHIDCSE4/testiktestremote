@@ -1336,11 +1336,11 @@ const LogsTable = ({
                                                 : "text-red-500"
                                             }`}
                                           >
-                                            {typeof item.operator === "object"
-                                              ? item.operator?.firstName
-                                              : ""}{" "}
-                                            {typeof item.operator === "object"
-                                              ? item.operator?.lastName
+                                            {item.operator === null
+                                              ? (item.operatorName as string)
+                                              : (item.operator as string)
+                                              ? //@ts-expect-error
+                                                `${item.operator.firstName} ${item.operator.lastName}`
                                               : ""}
                                           </p>
                                         </span>
