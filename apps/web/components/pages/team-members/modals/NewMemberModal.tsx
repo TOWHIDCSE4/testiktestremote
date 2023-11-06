@@ -14,16 +14,9 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 interface NewModalProps {
   isOpen: boolean
   onClose: () => void
-  userRole: string | undefined
-  userLocation: string
 }
 
-const NewMemberModal = ({
-  isOpen,
-  onClose,
-  userRole,
-  userLocation,
-}: NewModalProps) => {
+const NewMemberModal = ({ isOpen, onClose }: NewModalProps) => {
   const [isDeleted, setIsDeleted] = useState(false)
   const [isNotChecked, setIsNotChecked] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -174,27 +167,15 @@ const NewMemberModal = ({
                             <option className="uppercase" value="">
                               Select Department
                             </option>
-                            {userRole === "Production"
-                              ? ARR_USER_ROLES.filter(
-                                  (role) => role === "Personnel"
-                                ).map((key: string) => (
-                                  <option
-                                    className="uppercase"
-                                    key={key}
-                                    value={key}
-                                  >
-                                    {key}
-                                  </option>
-                                ))
-                              : ARR_USER_ROLES.map((key: string) => (
-                                  <option
-                                    className="uppercase"
-                                    key={key}
-                                    value={key}
-                                  >
-                                    {key}
-                                  </option>
-                                ))}
+                            {ARR_USER_ROLES.map((key: string) => (
+                              <option
+                                className="uppercase"
+                                key={key}
+                                value={key}
+                              >
+                                {key}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div className="mt-4">
@@ -215,29 +196,15 @@ const NewMemberModal = ({
                             <option className="uppercase" value="">
                               Select Location
                             </option>
-                            {userRole === "Production"
-                              ? locations?.items
-                                  .filter(
-                                    (location) => location._id === userLocation
-                                  )
-                                  .map((key, index) => (
-                                    <option
-                                      className="uppercase"
-                                      key={index}
-                                      value={key._id}
-                                    >
-                                      {key.name}
-                                    </option>
-                                  ))
-                              : locations?.items.map((key, index) => (
-                                  <option
-                                    className="uppercase"
-                                    key={index}
-                                    value={key._id}
-                                  >
-                                    {key.name}
-                                  </option>
-                                ))}
+                            {locations?.items.map((key, index) => (
+                              <option
+                                className="uppercase"
+                                key={index}
+                                value={key._id}
+                              >
+                                {key.name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div className="mt-4">

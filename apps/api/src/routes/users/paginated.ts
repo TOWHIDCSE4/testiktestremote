@@ -15,8 +15,6 @@ export const paginated = async (req: Request, res: Response) => {
       if (role && role !== "null") {
         if (role === "HR") {
           queryFilters.push({ role: { $in: ["HR", "HR_Director"] } })
-        } else if (role === res.locals.user.role) {
-          queryFilters.push({ role: { $in: ["Personnel"] }, locationId })
         } else {
           queryFilters.push({ role })
         }
@@ -81,7 +79,7 @@ export const paginated = async (req: Request, res: Response) => {
         itemCount: usersCount,
         message: null,
       })
-    } catch (err) {
+    } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       Sentry.captureException(err)
       res.json({
