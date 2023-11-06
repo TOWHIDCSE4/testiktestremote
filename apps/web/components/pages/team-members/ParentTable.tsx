@@ -283,20 +283,20 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       value={selectedStatus}
                       className="w-5 py-0 pl-1 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0"
                     >
-                     <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    className="mt-1 mr-2 w-4 h-4"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                    />
-                  </svg>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        className="mt-1 mr-2 w-4 h-4"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                        />
+                      </svg>
                     </button>
 
                     {isOpenTeam && (
@@ -306,13 +306,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             key={index}
                             className="p-2 hover:bg-gray-100 cursor-pointer"
                             onClick={() => {
-                              handleTeamListing(item);
-                              setIsOpenTeam(false); 
+                              handleTeamListing(item)
+                              setIsOpenTeam(false)
                             }}
                           >
-                            <a className="px-4">
-                            {item}
-                            </a>
+                            <a className="px-4">{item}</a>
                           </div>
                         ))}
                       </div>
@@ -928,6 +926,623 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           </React.Fragment>
                         )
                       })}
+                    {paginated?.items.length == 1 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                          data-accordion-target="#accordion-arrow-icon-body-1"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-1"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-1"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+
+                    {paginated?.items.length == 2 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+
+                    {paginated?.items.length == 3 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+
+                    {paginated?.items.length == 4 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+
+                    {paginated?.items.length == 5 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+
+                    {paginated?.items.length == 6 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
                   </tbody>
                 }
               </table>
@@ -1756,6 +2371,623 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           </React.Fragment>
                         )
                       })}
+                      {paginated?.items.length == 1 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100  "
+                          data-accordion-target="#accordion-arrow-icon-body-1"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-1"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-1"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+
+                    {paginated?.items.length == 2 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+
+                    {paginated?.items.length == 3 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+
+                    {paginated?.items.length == 4 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+
+                    {paginated?.items.length == 5 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+
+                    {paginated?.items.length == 6 && (
+                      <>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
                   </tbody>
                 }
               </table>
