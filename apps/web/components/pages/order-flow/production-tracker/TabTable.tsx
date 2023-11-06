@@ -767,7 +767,7 @@ const TabTable = ({
         <table className="w-full divide-y divide-gray-300 md:table-fixed">
           <thead className="border-b-4 border-indigo-900">
             <tr className="">
-              <th scope="col" className="w-4"></th>
+              <th scope="col" className="w-1"></th>
               <th
                 scope="col"
                 className="pl-8 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
@@ -776,7 +776,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`md:w-[18%] lg:w-[18%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
+                className={`md:w-[15%] lg:w-[15%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Factory
@@ -784,7 +784,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`w-[25%] md:w-[20%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
+                className={`w-[20%] md:w-[15%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Name
@@ -792,12 +792,32 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="md:w-[20%] lg:w-1/4 py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem]  uppercase"
+                className="md:w-[10%] lg:w-[12%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem]  uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Part
                 </a>
               </th>
+              {tab == "Testing"?
+              <th
+              scope="col"
+              className="py-3.5 text-left pr-8 text-sm font-semibold text-gray-900 uppercase"
+            > 
+              <a href="#" className="group inline-flex">
+               Count
+              </a>
+            </th>
+            :
+            <th
+                scope="col"
+                className="hidden py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
+              > 
+                <a href="#" className="group inline-flex">
+                 Count
+                </a>
+              </th>
+            }
+              
               <th
                 scope="col"
                 className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
@@ -814,7 +834,7 @@ const TabTable = ({
                   Due
                 </a>
               </th>
-              <th scope="col" className="relative md:pl-24 lg:pl-24 py-3.5">
+              <th scope="col" className="relative md:pl-24 lg:pl-24 py-3">
                 {locked ? (
                   <LockClosedIcon
                     className="w-[1.5rem] h-[1.5rem]"
@@ -836,6 +856,7 @@ const TabTable = ({
                 <div className="relative h-11 w-11  flex items-center justify-center"></div>
               </td>
               <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
               <td className="py-3 text-sm text-gray-800"></td>
               <td className="py-3 text-sm text-gray-800"></td>
               <td className="py-3 text-sm pl-4 text-gray-800"></td>
