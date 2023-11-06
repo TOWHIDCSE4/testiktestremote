@@ -28,6 +28,7 @@ interface ContentProps {
 
 const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [userRole, setUserRole] = useState<string | undefined>(userLog)
+
   const [checkedProved, setCheckedProved] = useState<boolean>(true)
 
   const roleFilter = (): string[] => {
@@ -99,6 +100,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   )
 
   const queryClient = useQueryClient()
+  const [isOpenTeam, setIsOpenTeam] = useState(false)
   const { data: userProfile } = useProfile()
   const [newModal, setNewModal] = useState(false)
   const [deleteModal, setDeleteModal] = useState(false)
@@ -186,11 +188,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }, [userProfile, selectedRole, selectedStatus])
 
-  const handleTeamListing = (event: any) => {
+  const handleTeamListing = (item: any) => {
     setIsOpenRole(undefined)
     setOpenAccordion(null)
-    setSelectedRole(event.target.value)
-    setRole(event.target.value)
+    setIsOpenTeam(false)
+    setSelectedRole(item)
+    setRole(item)
   }
 
   const statusArray = Object.values(USER_STATUSES).filter(
@@ -275,7 +278,51 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               <div className="flex flex-col md:flex-col sm:flex-col lg:flex-col xl:flex-row 2xl:flex-row">
                 <div className="flex items-center">
                   {/* <div className="w-[100%] md:w-[100%] sm:w-[100%] lg:w-[100%] xl:w-[50%] 2xl:w-[50%]"> */}
-                  <select
+
+                  <div className="relative">
+                    <button
+                      // onChange={handleTeamListing}
+                      onClick={() => setIsOpenTeam(!isOpenTeam)}
+                      value={selectedStatus}
+                      className="w-5 py-0 pl-1 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0"
+                    >
+                     <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    className="mt-1 mr-2 w-4 h-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                    </button>
+
+                    {isOpenTeam && (
+                      <div className="absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                        {roleFilter().map((item: any, index: any) => (
+                          <div
+                            key={index}
+                            className="p-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => {
+                              handleTeamListing(item);
+                              setIsOpenTeam(false); 
+                            }}
+                          >
+                            <a className="px-4">
+                            {item}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* <select
                     id="role"
                     className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
                     onChange={handleTeamListing}
@@ -283,29 +330,29 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   >
                     <option className="hidden">Select Role</option>
                     {roleFilter().map((item, index) => (
-                      <option key={index} value={item}>
+                      <option className="space-y-3 py-2" key={index} value={item}>
                         {item}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
                   <label
-                    className="text-[#7F1D1D] uppercase font-semibold"
+                    className="text-[#7F1D1D] uppercase font-semibold pl-1"
                     style={{ whiteSpace: "nowrap", fontSize: "1rem" }}
                   >
                     Team Listing
                   </label>
                 </div>
 
-                <span className="text-md font-bold flex pl-1">
+                <span className="text-md font-bold flex pl-1 mt-[1px]">
                   -
                   <p className="pl-0.5 text-[#172554] uppercase">
                     {selectedRole}
                   </p>
                 </span>
               </div>
-              <div className="mt-4 flex ml-2">
+              <div className="mt-4 flex ml-0">
                 <span
-                  className={`text-[2rem] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${selectedColor}`}
+                  className={`text-[28px] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${selectedColor}`}
                   onClick={toggleDropdown}
                 >
                   <svg
@@ -314,7 +361,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    className="mt-1 mr-2 w-5 h-7"
+                    className="mt-1 mr-1 w-5 h-7"
                   >
                     <path
                       stroke-linecap="round"
@@ -325,7 +372,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   {selectedStatus}
                 </span>
                 {isOpen && (
-                  <div className="sm:top-[6rem] absolute overflow- mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
+                  <div className="sm:top-[6rem] absolute overflow mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
                     <ul>
                       {statusArray.map((status, index) => (
                         <li
@@ -352,14 +399,14 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   City{" "}
                 </span>
                 {userProfile?.item.role == "Production" ? (
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-1 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     <span className="pl-0">
                       {checkCity ? [checkCity.name] : "Please Select City"}
                     </span>
                   </div>
                 ) : (
-                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-[13.5rem] uppercase space-x-1 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     {locations && locations.items
                       ? storeSession?.role === "Administrator" ||
@@ -395,7 +442,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   Factory
                 </span>
-                <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D]">:</span>
                   {userProfile?.item.role == "Production" ? (
                     <span>{checkFactory ? [checkFactory.name] : ""}</span>
@@ -406,10 +453,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               {selectedRole === "Personnel" ? (
                 <div className="flex justify-end text-gray-900 space-x-1">
-                  <span className="text-[#7F1D1D] text-[12px] uppercase font-semibold">
+                  <span className="text-[#7F1D1D] text-[12px] uppercase whitespace-nowrap font-semibold">
                     Machine Class
                   </span>
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     <span>All</span>
                   </div>
@@ -419,7 +466,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                     Department
                   </span>
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     <span>All</span>
                   </div>
