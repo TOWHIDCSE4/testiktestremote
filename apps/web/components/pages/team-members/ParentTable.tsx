@@ -45,8 +45,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
         "Dev",
         "HR",
       ]
-    } else if (userRole === "Production") {
-      return ["Personnel"]
     } else {
       return [""]
     }
@@ -109,7 +107,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [selectedStatus, setSelectedStatus] = useState("Pending")
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [selectedColor, setSelectedColor] = useState("text-yellow-900")
-  const [selectedRole, setSelectedRole] = useState(storeSession?.role)
+  const [selectedRole, setSelectedRole] = useState(
+    storeSession?.role === "Production" ? "Personnel" : storeSession?.role
+  )
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
   const [action, setAction] = useState<T_UserStatus | null>(null)
@@ -132,7 +132,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setLocationId,
     setStatus,
     setName,
-  } = usePaginatedUsers("Pending", storeSession?.role)
+  } = usePaginatedUsers(
+    "Pending",
+    storeSession?.role === "Production" ? "Personnel" : storeSession?.role
+  )
 
   const { data: machineClass, isLoading: isMachineLoading } =
     useMachineClasses()
@@ -178,7 +181,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
-    if (storeSession?.role === "Super" || "Administrator" || "HR_Director") {
+    if (storeSession?.role === ("Super" || "Administrator" || "HR_Director")) {
       setLocationId("")
     } else {
       setLocationId(userProfile?.item?.locationId as string)
@@ -255,11 +258,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   const checkCity = locations?.items.find(
-    (locationName: any) => locationName._id == userProfile?.item.locationId
+    (locationName: any) => locationName._id === userProfile?.item.locationId
   )
 
   const checkFactory = factories?.items.find(
-    (factoryName: any) => factoryName._id == userProfile?.item.factoryId
+    (factoryName: any) => factoryName._id === userProfile?.item.factoryId
   )
 
   return (
@@ -407,24 +410,28 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       ? storeSession?.role === "Administrator" ||
                         "Super" ||
                         "HR_Director"
-                        ? locations.items.map((location, index) => (
-                            <span key={index}>
-                              {index > 0 ? ", " : ""}
-                              {location.name.toUpperCase()}
-                            </span>
-                          ))
-                        : locations.items.map((location, index) => {
-                            if (
-                              location._id === userProfile?.item?.locationId
-                            ) {
-                              return (
-                                <span key={index}>
-                                  {location.name.toUpperCase()}
-                                </span>
-                              )
+                        ? locations.items.map(
+                            (location: any, index: number) => (
+                              <span key={index}>
+                                {index > 0 ? ", " : ""}
+                                {location.name.toUpperCase()}
+                              </span>
+                            )
+                          )
+                        : locations.items.map(
+                            (location: any, index: number) => {
+                              if (
+                                location._id === userProfile?.item?.locationId
+                              ) {
+                                return (
+                                  <span key={index}>
+                                    {location.name.toUpperCase()}
+                                  </span>
+                                )
+                              }
+                              return ""
                             }
-                            return ""
-                          })
+                          )
                       : ""}
                   </div>
                 )}
@@ -444,7 +451,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               {selectedRole === "Personnel" ? (
                 <div className="flex justify-end text-gray-900 space-x-1">
-                  <span className="text-[#7F1D1D] text-[14px] uppercase whitespace-nowrap font-semibold">
+                  <span className="text-[#7F1D1D] text-[12px] uppercase whitespace-nowrap font-semibold">
                     Machine Class
                   </span>
                   <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
@@ -1703,7 +1710,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   >
                     {paginated?.items &&
                       paginated?.items.map((item, idx) => {
-                        console.log(paginated)
                         const rowClass =
                           idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
                         const isAccordionOpen =
@@ -2027,10 +2033,14 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
                                               const value = machineClassId._id
+                                              const machineClassFactoryId =
+                                                machineClassId.factoryId
                                               if (value !== "Global") {
                                                 mutate(
                                                   {
                                                     ...item,
+                                                    factoryId:
+                                                      machineClassFactoryId,
                                                     machineClassId: value,
                                                     isGlobalFactory: false,
                                                   },
