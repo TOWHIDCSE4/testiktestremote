@@ -120,6 +120,7 @@ export const addJob = async (req: Request, res: Response) => {
         })
         if (!getStockJob) {
           const newStockJob = new Jobs({
+            machineClassId: part?.machineClassId,
             locationId: req.body.locationId,
             partId: req.body.partId,
             factoryId: part?.factoryId,

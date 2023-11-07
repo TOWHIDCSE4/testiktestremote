@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import useLocations from "../../../../hooks/locations/useLocations"
 import combineClasses from "../../../../helpers/combineClasses"
 import NewModal from "./modals/NewModal"
@@ -68,7 +68,6 @@ const Content = () => {
 
   useEffect(() => {
     if (userProfile?.item.locationId) {
-      // console.log("userProfile?.item", userProfile?.item)
       setSelectedLocationId(userProfile?.item.locationId as string)
       setCurrentLocationTab(userProfile?.item.locationId as string)
     }
@@ -78,20 +77,13 @@ const Content = () => {
     (tab) => tab._id === currentLocationTab
   )?.name
 
-  const isTimerCityRoles = useMemo(() => {
-    return PRODUCTION_TRACKER_ADMIN_ROLES.includes(
-      userProfile?.item.role || USER_ROLES.Administrator
-    )
-  }, [userProfile])
-
   useEffect(() => {
     let tempArr: string[] = []
-    locations?.items.map((location) => {
-      //@ts-expect-error
-      tempArr.push(location._id)
+    locations?.items.forEach((location) => {
+      tempArr.push(String(location._id))
     })
     setLocationsArray(tempArr)
-  })
+  }, [setLocationsArray, locations])
 
   useEffect(() => {
     // If not, render after a 2-second delay

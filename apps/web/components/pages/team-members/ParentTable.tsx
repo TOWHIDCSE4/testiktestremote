@@ -22,6 +22,7 @@ import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
 import React from "react"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
+import { Alert, Space } from "antd"
 interface ContentProps {
   userLog: string
 }
@@ -36,7 +37,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       return ["Production", "Corporate", "Personnel"]
     } else if (userRole === "Production") {
       return ["Personnel"]
-    } else if (userRole === "Administrator" || userRole === "HR_Director") {
+    } else if (
+      userRole === "Administrator" ||
+      userRole === "HR_Director" ||
+      userRole === "Super"
+    ) {
       return [
         "Administrator",
         "Production",
@@ -106,14 +111,16 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [deleteModal, setDeleteModal] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState("Pending")
   const [confirmationModal, setConfirmationModal] = useState(false)
-  const [selectedColor, setSelectedColor] = useState("text-yellow-900")
+  const [selectedColor, setSelectedColor] = useState("text-green-900")
   const [selectedRole, setSelectedRole] = useState(
     storeSession?.role === "Production" ? "Personnel" : storeSession?.role
   )
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
+  const [errorMsg, setErrorMsg] = useState("")
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
   const [action, setAction] = useState<T_UserStatus | null>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [alertPrompt, setAlertPrompt] = useState(false)
   const [isOpenRole, setIsOpenRole] = useState()
   const [isOpenFactory, setIsOpenFactory] = useState()
   const [directorStates, setDirectorStates] = useState([])
@@ -149,6 +156,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }
 
+  useEffect(() => {
+    if (alertPrompt) {
+      const timeoutId = setTimeout(() => {
+        setAlertPrompt(false)
+      }, 4000) // 2000 milliseconds = 2 seconds
+
+      // Clear the timeout in case the component unmounts or alertPrompt becomes false before the timeout completes.
+      return () => clearTimeout(timeoutId)
+    }
+  }, [alertPrompt])
+
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
   const ARR_USER_ROLES = [
     ...(storeSession?.role === "Super" ? [USER_ROLES.Administrator] : []),
@@ -181,7 +199,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
-    if (storeSession?.role === ("Super" || "Administrator" || "HR_Director")) {
+    if (
+      storeSession?.role === "Super" ||
+      storeSession?.role === "Administrator" ||
+      storeSession?.role === "HR_Director"
+    ) {
       setLocationId("")
     } else {
       setLocationId(userProfile?.item?.locationId as string)
@@ -202,6 +224,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
   }
+
+  // useEffect(() => {
+  //   if (!isPaginatedLoading && paginated && paginated?.items.length === 0) {
+  //     setSelectedStatus("Approved")
+  //     setStatus("Approved")
+  //   }
+  // }, [])
 
   const handleSelectDropdown = (value: T_UserStatus) => {
     setIsOpenRole(undefined)
@@ -350,7 +379,15 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               <div className="mt-4 flex ml-0">
                 <span
-                  className={`text-[28px] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${selectedColor}`}
+                  className={`text-[28px] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${
+                    selectedStatus === "Pending"
+                      ? "text-yellow-700"
+                      : selectedStatus === "Approved"
+                      ? "text-green-800"
+                      : selectedStatus === "Rejected"
+                      ? "text-red-800"
+                      : "text-yellow-500"
+                  }`}
                   onClick={toggleDropdown}
                 >
                   <svg
@@ -367,7 +404,19 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                     />
                   </svg>
-                  {selectedStatus}
+                  <span
+                    className={`${
+                      selectedStatus === "Pending"
+                        ? "text-yellow-700"
+                        : selectedStatus === "Approved"
+                        ? "text-green-800"
+                        : selectedStatus === "Rejected"
+                        ? "text-red-800"
+                        : "text-yellow-500"
+                    }`}
+                  >
+                    {selectedStatus}
+                  </span>
                 </span>
                 {isOpen && (
                   <div className="sm:top-[6rem] absolute overflow mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
@@ -2207,12 +2256,38 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                 )}
                                                 onClick={() => {
                                                   setSelectedRow(item)
-                                                  approveChecking(
-                                                    item?.locationId,
-                                                    userProfile?.item
-                                                      ?.locationId as string
-                                                  )
-                                                  setConfirmationModal(true)
+                                                  if (
+                                                    item.role === "Personnel"
+                                                  ) {
+                                                    if (
+                                                      !item?.machineClassId &&
+                                                      !item?.factoryId
+                                                    ) {
+                                                      setErrorMsg(
+                                                        "Machine Class and Factory"
+                                                      )
+                                                      setAlertPrompt(true)
+                                                    } else {
+                                                      approveChecking(
+                                                        item?.locationId,
+                                                        userProfile?.item
+                                                          ?.locationId as string
+                                                      )
+                                                      setConfirmationModal(true)
+                                                    }
+                                                  } else {
+                                                    if (!item?.factoryId) {
+                                                      setErrorMsg("Factory")
+                                                      setAlertPrompt(true)
+                                                    } else {
+                                                      approveChecking(
+                                                        item?.locationId,
+                                                        userProfile?.item
+                                                          ?.locationId as string
+                                                      )
+                                                      setConfirmationModal(true)
+                                                    }
+                                                  }
                                                   setAction(
                                                     USER_STATUSES.Approved as T_UserStatus
                                                   )
@@ -2381,7 +2456,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           </React.Fragment>
                         )
                       })}
-                      {paginated?.items.length == 1 && (
+                    {paginated?.items.length == 1 && (
                       <>
                         <tr
                           className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
@@ -2403,7 +2478,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           ></th>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
-                          
+
                           <td className="px-6 py-4">
                             <span className="font-bold text-red-500"></span>
                           </td>
@@ -2429,7 +2504,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2457,7 +2532,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2485,7 +2560,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2513,7 +2588,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2541,7 +2616,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2574,7 +2649,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2602,7 +2677,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2630,7 +2705,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2658,7 +2733,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2686,7 +2761,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2719,7 +2794,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2747,7 +2822,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2775,7 +2850,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2803,7 +2878,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2836,7 +2911,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2864,7 +2939,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2892,7 +2967,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2925,7 +3000,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2953,7 +3028,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2986,7 +3061,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -3377,6 +3452,23 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
             </div>
           </div>
+        </div>
+        <div>
+          {alertPrompt ? (
+            <Alert
+              className={`${
+                !alertPrompt
+                  ? "transition duration-500 ease-out"
+                  : "transition duration-500 ease-linear"
+              } absolute w-[40%] md:-bottom-[15rem] lg:-bottom-0 bottom-0 md:-right-0 lg:-right-[4rem] shadow-md`}
+              message="Missing Information"
+              description={`${errorMsg} not selected. Please select a ${errorMsg} to proceed.`}
+              type="error"
+              showIcon
+            />
+          ) : (
+            ""
+          )}
         </div>
         <ConfirmationModal
           isOpen={confirmationModal}

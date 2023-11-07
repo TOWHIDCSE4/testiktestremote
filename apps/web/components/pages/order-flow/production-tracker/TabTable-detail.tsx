@@ -22,15 +22,15 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
           <div>{job.drawingNumber}</div>
         </div>
         <div className="flex flex-wrap space-x-1 text-[13px]">
-          <div>DATE CREATED :</div>
-          <div>
-            {job.createdAt && new Date(job.createdAt).toLocaleDateString()}
-          </div>
-        </div>
-        <div className="flex flex-wrap space-x-1 text-[13px]">
           <div>FACTORY :</div>
           <div>
             {typeof job.factory === "string" ? job.factory : job.factory?.name}
+          </div>
+        </div>
+        <div className="flex flex-wrap space-x-1 text-[13px]">
+          <div>DATE CREATED :</div>
+          <div>
+            {job.createdAt && new Date(job.createdAt).toLocaleDateString()}
           </div>
         </div>
       </div>

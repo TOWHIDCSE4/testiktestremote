@@ -27,6 +27,9 @@ export const paginated = async (req: Request, res: Response) => {
       if (status && status !== "null") {
         queryFilters.push({ status })
       }
+      if (excludeUser) {
+        queryFilters.push({ _id: { $ne: excludeUser } })
+      }
 
       const orFilters = []
       if (name) {
