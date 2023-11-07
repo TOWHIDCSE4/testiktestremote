@@ -16,7 +16,8 @@ export const logout = async (req: Request, res: Response) => {
       }
     )
     const RD_DeleteAuh = await redisClient.del(`${req.body.token}`)
-    if (logoutUser && RD_DeleteAuh) {
+    // if (logoutUser && RD_DeleteAuh ) { //TODO removing this temporarily
+    if (logoutUser) {
       res.json({
         error: false,
         message: "User has been logged out",

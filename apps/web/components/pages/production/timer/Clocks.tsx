@@ -54,6 +54,7 @@ const Clocks = ({
     .format("MMM DD YYYY")
 
   const handleOnChange = (e: any) => {
+    console.log(machineClasses)
     setCheckAll(!checkAll)
     const updatedMachineClasses = selectedMachineClasses.map(
       (machineClass: T_MachineClass) => ({

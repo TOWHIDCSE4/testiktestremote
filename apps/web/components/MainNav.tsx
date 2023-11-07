@@ -44,10 +44,10 @@ const MainNav = () => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
+          Cookies.remove("tfl")
           queryClient.invalidateQueries({
             queryKey: ["session"],
           })
-          Cookies.remove("tfl")
           router.push(`/`)
         } else {
           toast.error(String(data.message))
@@ -241,7 +241,8 @@ const MainNav = () => {
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <span
+                            <Link
+                              href="/"
                               onClick={() => logoutUser()}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
@@ -249,7 +250,7 @@ const MainNav = () => {
                               )}
                             >
                               Logout
-                            </span>
+                            </Link>
                           )}
                         </Menu.Item>
                       </Menu.Items>
