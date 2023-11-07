@@ -5,21 +5,16 @@ import {
   ChevronRightIcon,
   ChevronDownIcon,
   EllipsisVerticalIcon,
-  ChartBarIcon,
   LockClosedIcon,
   LockOpenIcon,
 } from "@heroicons/react/24/solid"
 import { T_Job, T_JobStatus } from "custom-validator"
 import usePaginatedJobs from "../../../../hooks/jobs/usePaginatedJobs"
-import FilterCheckbox from "../../production/timer/FilterCheckbox"
 import dayjs from "dayjs"
 import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
-import useProfile from "../../../../hooks/users/useProfile"
 import Image from "next/image"
 import combineClasses from "../../../../helpers/combineClasses"
-import JobDetails from "./modals/JobDetails"
-import { useCollapse } from "react-collapsed"
 import TabTableDetail from "./TabTable-detail"
 
 const TabTable = ({
@@ -51,8 +46,6 @@ const TabTable = ({
     setMachineClassId,
   } = usePaginatedJobs()
 
-  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
-
   const [editModal, setEditModal] = useState(false)
   const [selectedJob, setSelectedJob] = useState<T_Job[]>([])
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
@@ -69,7 +62,6 @@ const TabTable = ({
     } else {
       if (selected)
         return setSelectedJob((prev) => prev.filter((i) => i._id !== job._id))
-      // return setSelectedJob([job])
       return setSelectedJob((prev) => [...prev, job])
     }
   }
@@ -148,15 +140,15 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`md:w-[12%] lg:w-[12%] py-3.5 pl-2 text-left text-sm font-semibold text-gray-900 uppercase`}
+                className={`md:w-[3%] lg:w-[3%] py-3.5 pl-2 text-left text-sm font-semibold text-gray-900 uppercase`}
               >
-                <a href="#" className="group inline-flex">
+                {/* <a href="#" className="group inline-flex">
                   Factory
-                </a>
+                </a> */}
               </th>
               <th
                 scope="col"
-                className={`w-[22%] md:w-[18%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
+                className={`w-[17%] md:w-[13%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Name
@@ -165,29 +157,12 @@ const TabTable = ({
 
               <th
                 scope="col"
-                className="md:w-[20%] lg:w-[10%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem] uppercase"
+                className="md:w-[28%] lg:w-[10%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem] uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Part
                 </a>
               </th>
-              {/* <th
-                scope="col"
-                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-20 uppercase"
-              >
-                <a href="#" className="group inline-flex">
-                  Drawing
-                </a>
-              </th> */}
-              {/* <th
-                scope="col"
-                className=" pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
-              >
-                <a href="#" className="group inline-flex">
-                  Count
-                </a>
-              </th> */}
-
               <th
                 scope="col"
                 className="py-3.5 m-4 justify-start items-start text-start text-sm font-semibold text-gray-900 uppercase"
@@ -217,8 +192,6 @@ const TabTable = ({
                   Due
                 </a>
               </th>
-              {/* )} */}
-
               <th scope="col" className="relative md:pl-20 lg:pl-20  py-3.5">
                 {locked ? (
                   <LockClosedIcon
@@ -280,9 +253,9 @@ const TabTable = ({
                       </div>
                     </td>
                     <td className={`py-3 text-sm text-gray-800 pl-1`}>
-                      {typeof job?.factory === "object"
+                      {/* {typeof job?.factory === "object"
                         ? job?.factory?.name
-                        : ""}
+                        : ""} */}
                     </td>
                     <td className="py-3 text-sm text-gray-800">{job?.name}</td>
                     <td className="py-3 text-sm text-gray-800 w-20">
@@ -292,7 +265,7 @@ const TabTable = ({
                       {job?.drawingNumber}
                     </td> */}
 
-                    <td className="py-3 text-sm text-gray-800">
+                    <td className="py-3 pl-3 text-sm text-gray-800">
                       <div className="flex items-center">
                         {job?.count ? (
                           <>
@@ -302,25 +275,17 @@ const TabTable = ({
                             /{job?.count}
                           </>
                         ) : (
-                          <span className="text-2xl">∞</span>
+                          <span className="text-sm">
+                            {job.timerLogs
+                              ? calculateCountSum(job.timerLogs)
+                              : 0}
+                          </span>
                         )}{" "}
                         <br />
                       </div>
                     </td>
 
                     <td className="py-3 text-sm pl-4 text-gray-800">
-                      {/* <ChartBarIcon
-                      className={`h-5 w-5 ${
-                        job?.priorityStatus === "High"
-                          ? "text-red-500"
-                          : job?.priorityStatus === "Medium"
-                          ? "text-orange-500"
-                          : job?.priorityStatus === "Low"
-                          ? "text-yellow-500"
-                          : "text-gray-400"
-                      }`}
-                    /> */}
-
                       <div className="flex bars mt-2">
                         <div
                           className={`h-3 rounded-t-full rounded-b-full w-1 first-bar ${
@@ -351,8 +316,11 @@ const TabTable = ({
                         ></div>
                       </div>
                     </td>
-                    <td className="py-3 pl-8 text-sm text-gray-800"></td>
-                    {/* )} */}
+                    <td className="py-3 pl-8 text-sm text-gray-800 whitespace-nowrap">
+                      {job?.dueDate
+                        ? dayjs(job.dueDate).format("YYYY-MM-DD")
+                        : ""}
+                    </td>
 
                     <td className="py-3 lg:pl-20 md:pl-20 text-left text-sm font-medium">
                       <Menu as="div">
@@ -625,11 +593,9 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`md:w-[15%] lg:w-[15%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
+                className={`md:w-[8%] lg:w-[8%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
               >
-                <a href="#" className="group inline-flex">
-                  Factory
-                </a>
+                <a href="#" className="group inline-flex"></a>
               </th>
               <th
                 scope="col"
