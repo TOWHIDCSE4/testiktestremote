@@ -160,7 +160,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     if (alertPrompt) {
       const timeoutId = setTimeout(() => {
         setAlertPrompt(false)
-      }, 2000) // 2000 milliseconds = 2 seconds
+      }, 4000) // 2000 milliseconds = 2 seconds
 
       // Clear the timeout in case the component unmounts or alertPrompt becomes false before the timeout completes.
       return () => clearTimeout(timeoutId)
@@ -225,12 +225,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setIsOpen(!isOpen)
   }
 
-  useEffect(() => {
-    if (paginated?.items.length === 0) {
-      setSelectedStatus("Approved")
-      setStatus("Approved")
-    }
-  }, [paginated])
+  // useEffect(() => {
+  //   if (!isPaginatedLoading && paginated && paginated?.items.length === 0) {
+  //     setSelectedStatus("Approved")
+  //     setStatus("Approved")
+  //   }
+  // }, [])
 
   const handleSelectDropdown = (value: T_UserStatus) => {
     setIsOpenRole(undefined)
@@ -3460,9 +3460,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 !alertPrompt
                   ? "transition duration-500 ease-out"
                   : "transition duration-500 ease-linear"
-              } absolute w-[40%] md:-bottom-[15rem] lg:-bottom-0 bottom-0 md:-right-0 lg:-right-[15rem] shadow-md`}
-              message="Error"
-              description={`Please select the ${errorMsg} first`}
+              } absolute w-[40%] md:-bottom-[15rem] lg:-bottom-0 bottom-0 md:-right-0 lg:-right-[4rem] shadow-md`}
+              message="Missing Information"
+              description={`${errorMsg} not selected. Please select a ${errorMsg} to proceed.`}
               type="error"
               showIcon
             />
