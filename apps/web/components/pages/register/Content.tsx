@@ -4,7 +4,6 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 
 import Link from "next/link"
-import GifTick from "../../../assets/images/sliders/icontick.png"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
 import Slider from "../../Slider"
@@ -64,8 +63,8 @@ const Content = () => {
   useEffect(() => {
     if (showWelcome) {
       // Show a welcome toast notification
-      toast.success("Thank You For signing up", {
-        position: "top-center",
+      toast.success("Thank You for Signing Up!", {
+        position: "top-left",
         duration: 5000,
       })
     }
