@@ -32,7 +32,7 @@ export const updateController = async (req: Request, res: Response) => {
           {
             $set: {
               status:
-                currLogCount >= targetCount
+                !job?.isStock && currLogCount >= targetCount
                   ? "Testing"
                   : jobTimers.length === 1
                   ? "Pending"

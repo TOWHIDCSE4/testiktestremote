@@ -1,6 +1,7 @@
 import {
   API_URL_GLOBAL_METRICS,
   REFETCH_ACTIVATED,
+  REFETCH_TIME,
 } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse, T_TimerLog } from "custom-validator"
@@ -111,7 +112,7 @@ function useGetGlobalMetrics(locationIds: string[], processes: boolean) {
     {
       refetchOnWindowFocus: false,
       enabled: !!locationIds.length && !processes,
-      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
+      refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
     }
   )
 
