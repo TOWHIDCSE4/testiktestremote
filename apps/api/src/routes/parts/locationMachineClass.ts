@@ -4,28 +4,37 @@ import {
 } from "../../utils/constants"
 import { Request, Response } from "express"
 import Parts from "../../models/parts"
-import { Types } from "mongoose"
+import mongoose, { Types } from "mongoose"
 import * as Sentry from "@sentry/node"
 import timerLogs from "../../models/timerLogs"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
-  const { locationId, machineClassId } = req.query
+  let { locationId, machineClassId } = req.query
   if (locationId && machineClassId) {
     try {
-      const partsCountByClass = await Parts.find({
-        locationId,
-        machineClassId,
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      }).countDocuments()
-      const getPartByClass = await Parts.find({
-        locationId,
-        machineClassId,
-        $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-      })
+      locationId = locationId as string
+      const locationIds = locationId
+        .split(",")
+        .map((e) => new mongoose.Types.ObjectId(e))
+      machineClassId = machineClassId as string
+      const machineClassIds = machineClassId
+        .split(",")
+        .map((e) => new mongoose.Types.ObjectId(e))
+      const getPartByPartsClass: Array<Record<string, any>> = []
+      for (const locationId of locationIds) {
+        for (const machineClassId of machineClassIds) {
+          const query = {
+            locationId: locationId,
+            machineClassId: machineClassId,
+            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+          }
+          getPartByPartsClass.push(...(await Parts.find(query)))
+        }
+      }
       res.json({
         error: false,
-        items: getPartByClass,
-        count: partsCountByClass,
+        items: getPartByPartsClass,
+        count: getPartByPartsClass.length + 1,
         message: null,
       })
     } catch (err: any) {
@@ -50,7 +59,10 @@ export const locationMachineClass = async (req: Request, res: Response) => {
 
 export const byLocationMachineClass = async (req: Request, res: Response) => {
   const { machineClasses, locations, search, page } = req.query
-
+  console.log(
+    "🚀 ~ file: locationMachineClass.ts:62 ~ byLocationMachineClass ~ req.query:",
+    req.query
+  )
   if (
     !machineClasses ||
     !machineClasses?.length ||
@@ -65,6 +77,7 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
     })
   }
   try {
+    console.log("Here!")
     const machineClassesToSearch = machineClasses
       //@ts-expect-error
       .split(",")
@@ -88,7 +101,6 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
     }
 
     const distinctParts = await Parts.find(filter).exec()
-
     const partsCount = await Parts.find(filter).countDocuments()
 
     // return distinctParts;

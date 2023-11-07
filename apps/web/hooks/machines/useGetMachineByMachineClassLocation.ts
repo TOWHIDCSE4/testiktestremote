@@ -12,12 +12,22 @@ export async function getMachinesByMachineClassLocation({
   locationId,
   machineClassId,
 }: {
-  locationId: string
-  machineClassId: string
+  locationId: string[] | string | undefined
+  machineClassId: string[] | string | undefined
 }) {
   const token = Cookies.get("tfl")
+  //@ts-expect-error
+  const locationIdQueryString = new URLSearchParams({
+    locationId: locationId,
+  }).toString()
+
+  //@ts-expect-error
+  const machineClassIdQueryString = new URLSearchParams({
+    machineClassId: machineClassId,
+  }).toString()
+
   const res = await fetch(
-    `${API_URL_MACHINE}/location-machine-class?locationId=${locationId}&machineClassId=${machineClassId}`,
+    `${API_URL_MACHINE}/location-machine-class?${locationIdQueryString}&${machineClassIdQueryString}`,
     {
       method: "GET",
       headers: {
@@ -26,12 +36,17 @@ export async function getMachinesByMachineClassLocation({
       },
     }
   )
+
   return (await res.json()) as T_DBReturn
 }
 
 function useGetMachinesByMachineClassLocation() {
-  const [selectedMachineClassId, setSelectedMachineClassId] = useState("")
-  const [selectedLocationId, setSelectedLocationId] = useState("")
+  const [selectedMachineClassId, setSelectedMachineClassId] = useState<
+    string[] | string
+  >()
+  const [selectedLocationId, setSelectedLocationId] = useState<
+    string[] | string
+  >()
   const query = useQuery(
     [
       "machines-machine-class-location",
@@ -46,12 +61,15 @@ function useGetMachinesByMachineClassLocation() {
     {
       staleTime: THREE_MINUTES,
       refetchOnWindowFocus: false,
-      enabled: selectedMachineClassId !== "" && selectedLocationId !== "",
+      // enabled: selectedLocationId !== undefined,
     }
   )
 
   useEffect(() => {
-    if (selectedMachineClassId !== "" && selectedLocationId !== "") {
+    if (
+      selectedMachineClassId !== undefined &&
+      selectedLocationId !== undefined
+    ) {
       query.refetch()
     }
   }, [selectedMachineClassId, selectedLocationId])
