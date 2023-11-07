@@ -181,7 +181,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
-    if (storeSession?.role === ("Super" || "Administrator" || "HR_Director")) {
+    if (storeSession?.role === "Super" || "Administrator" || "HR_Director") {
       setLocationId("")
     } else {
       setLocationId(userProfile?.item?.locationId as string)
@@ -2381,7 +2381,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           </React.Fragment>
                         )
                       })}
-                      {paginated?.items.length == 1 && (
+                    {paginated?.items.length == 1 && (
                       <>
                         <tr
                           className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
@@ -2403,7 +2403,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           ></th>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
-                          
+
                           <td className="px-6 py-4">
                             <span className="font-bold text-red-500"></span>
                           </td>
@@ -2429,7 +2429,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2457,7 +2457,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2485,7 +2485,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2513,7 +2513,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2541,7 +2541,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2574,7 +2574,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2602,7 +2602,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2630,7 +2630,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2658,7 +2658,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2686,7 +2686,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2719,7 +2719,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2747,7 +2747,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2775,7 +2775,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2803,7 +2803,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2836,7 +2836,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2864,7 +2864,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2892,7 +2892,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2925,7 +2925,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2953,7 +2953,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">
@@ -2986,7 +2986,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           ></th>
-                          
+
                           <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
                           <td className="px-6 py-4"></td>
                           <td className="px-6 py-4">

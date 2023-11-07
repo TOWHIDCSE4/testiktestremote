@@ -86,7 +86,7 @@ const TabTable = ({
 
   useEffect(() => {
     setPage(1)
-  }, [pageRender, searchInput])
+  }, [pageRender, searchInput, machineClassIds])
 
   useEffect(() => {
     if (tab) {
@@ -162,15 +162,15 @@ const TabTable = ({
                   Name
                 </a>
               </th>
-              
+
               <th
-              scope="col"
-              className="md:w-[20%] lg:w-[10%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem] uppercase"
-            >
-              <a href="#" className="group inline-flex">
-                Part
-              </a>
-            </th>
+                scope="col"
+                className="md:w-[20%] lg:w-[10%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem] uppercase"
+              >
+                <a href="#" className="group inline-flex">
+                  Part
+                </a>
+              </th>
               {/* <th
                 scope="col"
                 className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-20 uppercase"
@@ -187,17 +187,17 @@ const TabTable = ({
                   Count
                 </a>
               </th> */}
-              
+
               <th
-              scope="col"
-              className="py-3.5 m-4 justify-start items-start text-start text-sm font-semibold text-gray-900 uppercase"
-            >
-              <a href="#" className="group inline-flex">
-                Count
-              </a>
-            </th>
-            
-            <th
+                scope="col"
+                className="py-3.5 m-4 justify-start items-start text-start text-sm font-semibold text-gray-900 uppercase"
+              >
+                <a href="#" className="group inline-flex">
+                  Count
+                </a>
+              </th>
+
+              <th
                 scope="col"
                 className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
               >
@@ -205,7 +205,7 @@ const TabTable = ({
                   Priority
                 </a>
               </th>
-              
+
               {/* {jobs.items[0].isStock ? (
                 ""
               ) : ( */}
@@ -218,20 +218,20 @@ const TabTable = ({
                 </a>
               </th>
               {/* )} */}
-              
+
               <th scope="col" className="relative md:pl-20 lg:pl-20  py-3.5">
-              {locked ? (
-                <LockClosedIcon
-                  className="w-[1.5rem] h-[1.5rem]"
-                  onClick={() => toggleLock()}
-                />
-              ) : (
-                <LockOpenIcon
-                  className="w-[1.5rem] h-[1.5rem]"
-                  onClick={() => toggleLock()}
-                />
-              )}
-            </th>
+                {locked ? (
+                  <LockClosedIcon
+                    className="w-[1.5rem] h-[1.5rem]"
+                    onClick={() => toggleLock()}
+                  />
+                ) : (
+                  <LockOpenIcon
+                    className="w-[1.5rem] h-[1.5rem]"
+                    onClick={() => toggleLock()}
+                  />
+                )}
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white ">
@@ -291,7 +291,7 @@ const TabTable = ({
                     {/* <td className="py-3 pl-6 text-sm text-gray-800">
                       {job?.drawingNumber}
                     </td> */}
-                    
+
                     <td className="py-3 text-sm text-gray-800">
                       <div className="flex items-center">
                         {job?.count ? (
@@ -307,7 +307,7 @@ const TabTable = ({
                         <br />
                       </div>
                     </td>
-                    
+
                     <td className="py-3 text-sm pl-4 text-gray-800">
                       {/* <ChartBarIcon
                       className={`h-5 w-5 ${
@@ -351,91 +351,89 @@ const TabTable = ({
                         ></div>
                       </div>
                     </td>
-                    <td className="py-3 pl-8 text-sm text-gray-800">
-                      
-                    </td>
+                    <td className="py-3 pl-8 text-sm text-gray-800"></td>
                     {/* )} */}
-                    
+
                     <td className="py-3 lg:pl-20 md:pl-20 text-left text-sm font-medium">
-                    <Menu as="div">
-                      <Menu.Button onClick={(e) => e.stopPropagation()}>
-                        <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
-                      </Menu.Button>
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items
-                          className="absolute right-9 z-50 -mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                          style={{ overflow: "visible" }}
+                      <Menu as="div">
+                        <Menu.Button onClick={(e) => e.stopPropagation()}>
+                          <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
+                        </Menu.Button>
+                        <Transition
+                          as={Fragment}
+                          enter="transition ease-out duration-100"
+                          enterFrom="transform opacity-0 scale-95"
+                          enterTo="transform opacity-100 scale-100"
+                          leave="transition ease-in duration-75"
+                          leaveFrom="transform opacity-100 scale-100"
+                          leaveTo="transform opacity-0 scale-95"
                         >
-                          <div className="">
-                            <Menu.Item>
-                              {({ active }) => (
-                                <span
-                                  className={combineClasses(
-                                    active
-                                      ? "bg-gray-100 text-gray-900"
-                                      : "text-gray-700",
-                                    "block px-4 py-2 text-sm cursor-pointer text-left"
-                                  )}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setJobId(job._id as string)
-                                  }}
-                                >
-                                  Details
-                                </span>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <span
-                                  className={combineClasses(
-                                    active
-                                      ? "bg-gray-100 text-gray-900"
-                                      : "text-gray-700",
-                                    "block px-4 py-2 text-sm cursor-pointer text-left"
-                                  )}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setEditModal(true)
-                                    setJobId(job._id as string)
-                                  }}
-                                >
-                                  Edit
-                                </span>
-                              )}
-                            </Menu.Item>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <span
-                                  className={combineClasses(
-                                    active
-                                      ? "bg-gray-100 text-gray-900"
-                                      : "text-gray-700",
-                                    "block px-4 py-2 text-sm cursor-pointer text-left"
-                                  )}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setDeleteModal(true)
-                                    setJobId(job._id as string)
-                                  }}
-                                >
-                                  Delete
-                                </span>
-                              )}
-                            </Menu.Item>
-                          </div>
-                        </Menu.Items>
-                      </Transition>
-                    </Menu>
-                  </td>
+                          <Menu.Items
+                            className="absolute right-9 z-50 -mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                            style={{ overflow: "visible" }}
+                          >
+                            <div className="">
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <span
+                                    className={combineClasses(
+                                      active
+                                        ? "bg-gray-100 text-gray-900"
+                                        : "text-gray-700",
+                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                    )}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setJobId(job._id as string)
+                                    }}
+                                  >
+                                    Details
+                                  </span>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <span
+                                    className={combineClasses(
+                                      active
+                                        ? "bg-gray-100 text-gray-900"
+                                        : "text-gray-700",
+                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                    )}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setEditModal(true)
+                                      setJobId(job._id as string)
+                                    }}
+                                  >
+                                    Edit
+                                  </span>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <span
+                                    className={combineClasses(
+                                      active
+                                        ? "bg-gray-100 text-gray-900"
+                                        : "text-gray-700",
+                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                    )}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setDeleteModal(true)
+                                      setJobId(job._id as string)
+                                    }}
+                                  >
+                                    Delete
+                                  </span>
+                                )}
+                              </Menu.Item>
+                            </div>
+                          </Menu.Items>
+                        </Transition>
+                      </Menu>
+                    </td>
                   </tr>
                   <tr>
                     <td colSpan={10}>
@@ -649,16 +647,16 @@ const TabTable = ({
                   Part
                 </a>
               </th>
-              
+
               <th
-              scope="col"
-              className="py-3.5 text-left pr-8 text-sm font-semibold text-gray-900 uppercase"
-            > 
-              <a href="#" className="group inline-flex">
-               Count
-              </a>
-            </th>
-              
+                scope="col"
+                className="py-3.5 text-left pr-8 text-sm font-semibold text-gray-900 uppercase"
+              >
+                <a href="#" className="group inline-flex">
+                  Count
+                </a>
+              </th>
+
               <th
                 scope="col"
                 className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
