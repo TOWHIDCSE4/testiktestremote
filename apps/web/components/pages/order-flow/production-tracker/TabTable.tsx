@@ -148,7 +148,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`md:w-[8%] lg:w-[8%] py-3.5 pl-2 text-left text-sm font-semibold text-gray-900 uppercase`}
+                className={`md:w-[3%] lg:w-[3%] py-3.5 pl-2 text-left text-sm font-semibold text-gray-900 uppercase`}
               >
                 {/* <a href="#" className="group inline-flex">
                   Factory
@@ -292,7 +292,7 @@ const TabTable = ({
                       {job?.drawingNumber}
                     </td> */}
 
-                    <td className="py-3 text-sm text-gray-800">
+                    <td className="py-3 pl-3 text-sm text-gray-800">
                       <div className="flex items-center">
                         {job?.count ? (
                           <>
@@ -302,7 +302,11 @@ const TabTable = ({
                             /{job?.count}
                           </>
                         ) : (
-                          <span className="text-2xl">∞</span>
+                          <span className="text-sm">
+                            {job.timerLogs
+                              ? calculateCountSum(job.timerLogs)
+                              : 0}
+                          </span>
                         )}{" "}
                         <br />
                       </div>
@@ -352,7 +356,9 @@ const TabTable = ({
                       </div>
                     </td>
                     <td className="py-3 pl-8 text-sm text-gray-800 whitespace-nowrap">
-                      {dayjs(job?.dueDate).format("YYYY-MM-DD")}
+                      {job?.dueDate
+                        ? dayjs(job.dueDate).format("YYYY-MM-DD")
+                        : ""}
                     </td>
                     {/* )} */}
 
