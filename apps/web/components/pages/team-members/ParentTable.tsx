@@ -36,7 +36,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       return ["Production", "Corporate", "Personnel"]
     } else if (userRole === "Production") {
       return ["Personnel"]
-    } else if (userRole === "Administrator" || userRole === "HR_Director") {
+    } else if (
+      userRole === "Administrator" ||
+      userRole === "HR_Director" ||
+      userRole === "Super"
+    ) {
       return [
         "Administrator",
         "Production",
@@ -181,7 +185,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
-    if (storeSession?.role === "Super" || "Administrator" || "HR_Director") {
+    if (
+      storeSession?.role === "Super" ||
+      storeSession?.role === "Administrator" ||
+      storeSession?.role === "HR_Director"
+    ) {
       setLocationId("")
     } else {
       setLocationId(userProfile?.item?.locationId as string)
