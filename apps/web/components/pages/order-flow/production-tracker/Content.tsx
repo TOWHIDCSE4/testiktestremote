@@ -68,7 +68,6 @@ const Content = () => {
 
   useEffect(() => {
     if (userProfile?.item.locationId) {
-      // console.log("userProfile?.item", userProfile?.item)
       setSelectedLocationId(userProfile?.item.locationId as string)
       setCurrentLocationTab(userProfile?.item.locationId as string)
     }
@@ -78,16 +77,10 @@ const Content = () => {
     (tab) => tab._id === currentLocationTab
   )?.name
 
-  // const isTimerCityRoles = useMemo(() => {
-  //   return PRODUCTION_TRACKER_ADMIN_ROLES.includes(
-  //     userProfile?.item.role || USER_ROLES.Administrator
-  //   )
-  // }, [userProfile])
-
   useEffect(() => {
     let tempArr: string[] = []
-    locations?.items.map((location) => {
-      tempArr.push(location._id as string)
+    locations?.items.forEach((location) => {
+      tempArr.push(String(location._id))
     })
     setLocationsArray(tempArr)
   }, [setLocationsArray, locations])
