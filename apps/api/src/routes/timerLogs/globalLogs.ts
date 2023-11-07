@@ -328,7 +328,7 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
       ? dayjs(endDate as string).format()
       : dayjs().endOf("week").format()
     // Calculate the total time in hours
-    const totalTime = dayjs(startDate).diff(endDate, "hour")
+    const totalTime = dayjs(endDate).diff(startDate, "hour")
     let query = {}
 
     if (locationId) {
@@ -399,9 +399,9 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     ]
     const totalUnits = await TimerLogs.find(query).countDocuments()
     const [result] = await parts.aggregate(aggregation).exec()
-    const { totalTons } = result
-    const globalUnitsPerHour = totalUnits / totalTime
-    const globalTonsPerHour = totalTons / totalTime
+    const totalTons = result?.totalTons || 0
+    const globalUnitsPerHour = totalUnits > 0 ? totalUnits / totalTime : 0
+    const globalTonsPerHour = totalUnits > 0 ? totalTons / totalTime : 0
     res.json({
       error: false,
       items: {

@@ -160,11 +160,17 @@ export const addJob = async (req: Request, res: Response) => {
 export const updateJob = async (req: Request, res: Response) => {
   if (req.params.id) {
     try {
-      const getJob = await Jobs.find({
+      const getJob = await Jobs.findOne({
         _id: req.params.id,
         $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       })
-      if (getJob.length > 0) {
+      if (getJob) {
+        const updateParams = {
+          ...req.body,
+        }
+        if (getJob.isStock && updateParams.status === "Testing") {
+          updateParams.status = "Active"
+        }
         const updateJob = await Jobs.findByIdAndUpdate(
           req.params.id,
           {

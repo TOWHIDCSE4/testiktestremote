@@ -2,6 +2,7 @@ import {
   API_URL_TIMER_LOGS,
   ONE_DAY,
   REFETCH_ACTIVATED,
+  REFETCH_TIME,
 } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse } from "custom-validator"
@@ -48,7 +49,7 @@ function useGetOverallTotal({
     {
       refetchOnWindowFocus: false,
       enabled: !!locationId && !!machineClassId,
-      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
+      refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
     }
   )
   return query

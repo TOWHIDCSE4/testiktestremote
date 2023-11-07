@@ -1,8 +1,9 @@
-export const REFETCH_ACTIVATED = true
+export const REFETCH_ACTIVATED = false
 
 export const INVALID_AUTH = "Invalid authentication"
 
 export const API_URL = process.env.API_URL
+export const REFETCH_TIME = 2000
 export const SENTRY_WEB_DSN = process.env.SENTRY_WEB_DSN
 
 export const USER_ROLES = {

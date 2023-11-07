@@ -10,7 +10,6 @@ import {
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZLocation } from "custom-validator"
-import machineClasses from "../../models/machineClasses"
 import machines from "../../models/machines"
 import { Types } from "mongoose"
 import timerLogs from "../../models/timerLogs"
@@ -33,7 +32,7 @@ export const getAllLocations = async (req: Request, res: Response) => {
     } else {
       const locationsCount = await Locations.find().countDocuments()
       const getAllLocations = await Locations.find().sort({ createdAt: 1 })
-      redisClient.set(cacheKey, JSON.stringify(getAllLocations), { EX: 9 })
+      redisClient.set(cacheKey, JSON.stringify(getAllLocations), { EX: 86400 })
 
       res.json({
         error: false,
@@ -293,7 +292,7 @@ export const findMachineClassByLocation = async (
         .map((e) => e?.machineClass)
         .filter((i) => Boolean(i))
 
-      redisClient.set(cacheKey, JSON.stringify(data), { EX: 6 })
+      redisClient.set(cacheKey, JSON.stringify(data), { EX: 480 })
 
       res.json({
         error: false,

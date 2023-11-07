@@ -31,20 +31,19 @@ import useEndCycleTimer from "../../../../../hooks/timers/useEndCycleTimer"
 import useAddTimerLog from "../../../../../hooks/timerLogs/useAddTimerLog"
 import useAddControllerTimer from "../../../../../hooks/timers/useAddControllerTimer"
 import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer"
-import { useQueryClient } from "@tanstack/react-query"
 import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTimerByTimerId"
 import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
-import { Socket } from "socket.io-client"
-import { initializeSocket } from "../../../../../helpers/socket"
 import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import useProfile from "../../../../../hooks/users/useProfile"
 import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
 import { useSocket } from "../../../../../store/useSocket"
+import useStoreTimer from "../../../../../store/useStoreTimer"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   let socket = useSocket((store) => store.instance)
+  const { isTimerStop, updateIsTimerStop } = useStoreTimer((store) => store)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
@@ -143,7 +142,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setCycleClockInSeconds(0)
         try {
           const { isSuccess } = await cycleRefetch()
-          if (isSuccess && jobUpdateId !== "") {
+          if (isSuccess && jobUpdateId !== "" && isTimerStop !== true) {
             runIntervalClock()
             setIsCycleClockStarting(false)
           }
@@ -190,6 +189,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           case "STOP":
             stopCounter()
             setJobUpdateId("")
+            updateIsTimerStop(true)
             break
         }
       }
@@ -236,7 +236,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
               (job) => job._id === jobTimer?.item?.jobId
             )
 
-            if (!isTimerControllerEnded && isJobTimer) {
+            if (!isTimerControllerEnded && isJobTimer && isTimerStop !== true) {
               runIntervalClock()
             }
           }
@@ -378,6 +378,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
               `${currentDate} - Starting timer`,
               `${currentDate} - Timer started`,
             ])
+            updateIsTimerStop(false)
             setTimeout(
               function () {
                 if (!isCycleClockRunning && !fromDb) {
@@ -413,6 +414,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }
 
   const stopCycle = () => {
+    updateIsTimerStop(false)
     setIsCycleClockStopping(true)
     setIsCycleClockStarting(true)
     stopInterval()
@@ -447,12 +449,17 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [readingMessages])
 
   useEffect(() => {
-    if (cycleTimer?.items && cycleTimer?.items.length > 0 && jobUpdateId) {
+    if (
+      cycleTimer?.items &&
+      cycleTimer?.items.length > 0 &&
+      jobUpdateId !== "" &&
+      isTimerStop !== true
+    ) {
       const secondsLapse = handleInitializeSeconds(
         cycleTimer?.items[0].createdAt
       )
       setCycleClockInSeconds(secondsLapse)
-      if (!cycleTimer?.items[0].endAt && jobUpdateId !== "") {
+      if (!cycleTimer?.items[0].endAt) {
         if (timerDetailData?.item?.partId.time === 0) {
           setProgress(0)
         } else {
@@ -554,14 +561,25 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }
 
   const stopCounter = () => {
-    stopInterval()
-    setProgress(0)
-    setCycleClockInSeconds(0)
-    setIsCycleClockRunning(false)
-    startingTimerReadings([
-      `${currentDate} - Stopping timer`,
-      `${currentDate} - Timer stopped`,
-    ])
+    endCycleTimer(timerId, {
+      onSuccess: (data: T_BackendResponse) => {
+        if (!data.error) {
+          stopInterval()
+          setProgress(0)
+          setCycleClockInSeconds(0)
+          setIsCycleClockRunning(false)
+          startingTimerReadings([
+            `${currentDate} - Stopping timer`,
+            `${currentDate} - Timer stopped`,
+          ])
+        } else {
+          toast.error(String(data.message))
+        }
+      },
+      onError: (err: any) => {
+        toast.error(String(err))
+      },
+    })
     endCycleTimer(timerId)
   }
 

@@ -27,6 +27,9 @@ export const paginated = async (req: Request, res: Response) => {
       if (status && status !== "null") {
         queryFilters.push({ status })
       }
+      if (excludeUser) {
+        queryFilters.push({ _id: { $ne: excludeUser } })
+      }
 
       const orFilters = []
       if (name) {
@@ -79,7 +82,7 @@ export const paginated = async (req: Request, res: Response) => {
         itemCount: usersCount,
         message: null,
       })
-    } catch (err) {
+    } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       Sentry.captureException(err)
       res.json({

@@ -1,6 +1,7 @@
 import {
   API_URL_JOBS,
   REFETCH_ACTIVATED,
+  REFETCH_TIME,
   THREE_MINUTES,
 } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
@@ -39,7 +40,7 @@ function useCountStatus() {
     {
       refetchOnWindowFocus: false,
       enabled: !!statuses && !!jobLocationId,
-      refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
+      refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
     }
   )
 

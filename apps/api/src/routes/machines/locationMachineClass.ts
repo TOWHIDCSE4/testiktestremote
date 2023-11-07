@@ -34,7 +34,11 @@ export const locationMachineClass = async (req: Request, res: Response) => {
           $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
         }
 
-        if (machineClassId !== null && machineClassId !== "undefined") {
+        if (
+          machineClassId !== null &&
+          machineClassId !== "undefined" &&
+          machineClassId !== ""
+        ) {
           machineClassId = machineClassId as string
           const machineClassIds = machineClassId
             .split(",")
@@ -45,7 +49,9 @@ export const locationMachineClass = async (req: Request, res: Response) => {
 
         const getMachineByClass: Array<Record<string, any>> =
           await Machines.find(query)
-        redisClient.set(cacheKey, JSON.stringify(getMachineByClass), { EX: 3 })
+        redisClient.set(cacheKey, JSON.stringify(getMachineByClass), {
+          EX: 240,
+        })
 
         res.json({
           error: false,

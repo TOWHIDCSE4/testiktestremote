@@ -23,6 +23,7 @@ import { initializeSocket } from "../../../../helpers/socket"
 import { Socket } from "socket.io-client"
 import useGetAllTimerLogsCount from "../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import { useSocket } from "../../../../store/useSocket"
+import useStoreTimer from "../../../../store/useStoreTimer"
 
 type T_Props = {
   timer: T_Timer
@@ -72,6 +73,7 @@ const Timer = ({
     name: timer?.part ? timer?.part?.name : "",
   })
   const socket = useSocket((store) => store.instance)
+  const { isTimerStop } = useStoreTimer((store) => store)
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -175,10 +177,12 @@ const Timer = ({
   }
   const runCycle = () => {
     stopInterval()
-    setIsCycleClockRunning(true)
-    intervalRef.current = setInterval(() => {
-      setCycleClockInSeconds((previousState: number) => previousState + 0.1)
-    }, 100)
+    if (isTimerStop !== true) {
+      setIsCycleClockRunning(true)
+      intervalRef.current = setInterval(() => {
+        setCycleClockInSeconds((previousState: number) => previousState + 0.1)
+      }, 100)
+    }
   }
   useEffect(() => {
     setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))

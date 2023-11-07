@@ -8,8 +8,11 @@ import { T_BackendResponse, T_UserBasic } from "custom-validator"
 import useLocation from "../../../hooks/locations/useLocation"
 import { useEffect, useState } from "react"
 import useGetUser from "../../../hooks/users/useGetUser"
+import type { SelectProps } from "antd"
+import { Select, Typography } from "antd"
 import useFactories from "../../../hooks/factories/useFactories"
 import { USER_ROLES } from "../../../helpers/constants"
+import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 
 const FACTORY_USERS = [USER_ROLES.Personnel, USER_ROLES.Production]
 
@@ -19,7 +22,12 @@ const BasicInformation = () => {
   const [factory, setFactory] = useState("")
   const [isFactoryUser, setIsFactoryUser] = useState(false)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const [machineClassIdProfile, setMachineClassProfile] = useState(
+    userProfile?.item.machineClassId
+  )
   const { data: location, setSelectedLocationId } = useLocation()
+  const { data: machineClass, isLoading: isMachineLoading } =
+    useMachineClasses()
   const { data: factories } = useFactories()
   const { register, handleSubmit } = useForm<T_UserBasic>({
     values: {
@@ -73,6 +81,18 @@ const BasicInformation = () => {
       setFactory(_v[0].name)
     }
   }, [userProfile, factories])
+
+  const handleChange = (value: string[]) => {
+    console.log(`selected ${value}`)
+  }
+
+  const options: SelectProps["options"] = []
+
+  // const machineClassName = machineClass?.items.map((machineName:any)=>machineName._id )
+
+  const selectedMachineName = machineClass?.items.find(
+    (machineName: any) => machineName._id === userProfile?.item.machineClassId
+  )
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
@@ -178,7 +198,9 @@ const BasicInformation = () => {
             >
               <div className="col-span-4 md:col-span-1">
                 <h4 className="text-sm uppercase text-gray-800 font-semibold tracking-wider">
-                  Factory
+                  {userProfile?.item.role == "Personnel"
+                    ? "Machine Class"
+                    : "Factory"}
                 </h4>
               </div>
               <div className="col-span-4 md:col-span-3 mt-2 md:mt-0">
@@ -186,13 +208,27 @@ const BasicInformation = () => {
                   <label htmlFor="factory" className="sr-only">
                     Factory
                   </label>
-                  <input
-                    type="text"
-                    disabled
-                    className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                    placeholder="Your factory name..."
-                    value={factory}
-                  />
+                  {userProfile?.item.role == "Personnel" ? (
+                    <input
+                      type="text"
+                      disabled
+                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                      placeholder="Your factory name..."
+                      value={
+                        selectedMachineName
+                          ? [selectedMachineName.name]
+                          : "Select Machine Class"
+                      }
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      disabled
+                      className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                      placeholder="Your factory name..."
+                      value={factory}
+                    />
+                  )}
                 </div>
               </div>
             </div>
