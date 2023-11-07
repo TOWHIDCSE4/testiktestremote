@@ -125,8 +125,7 @@ export async function getAllParts({
   const machineClassIdQueryString = new URLSearchParams({
     machineClassIds: machineClassId.join(","),
   }).toString()
-  console.log(machineClassId, machineClassIdQueryString)
-  console.log("Macxine", machineClassIdQueryString)
+
   const token = Cookies.get("tfl")
   const res = await fetch(
     `${API_URL_JOBS}/paginated?page=${page}&locationId=${locationId}&status=${status}&search=${search}&selectedjob=${jobType}&${machineClassIdQueryString}`, // Pass machineClassId to the API as a comma-separated string
@@ -168,8 +167,7 @@ function usePaginatedJobs() {
   useEffect(() => {
     // console.log("Macxine", machineClassId)
     console.log(
-      "🚀 ~ file: usePaginatedJobs.ts:167 ~ useEffect ~ machineClassId:",
-      machineClassId
+      "🚀 ~ file: usePaginatedJobs.ts:167 ~ useEffect ~ machineClassId:"
     )
     if ((locationId && page) || search || jobType || machineClassId) {
       query.refetch()

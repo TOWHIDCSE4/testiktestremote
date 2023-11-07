@@ -36,27 +36,11 @@ const ParentTable = ({
   const [openFilter, setOpenFilter] = useState(false)
   const [checkAll, setCheckAll] = useState(false)
   const [machineClassArray, setMachineClassArray] = useState<string[]>([])
-  // const {
-  //   machineClassId,
-  //   setMachineClassId,
-  //   // page: jobPage,
-  //   // setPage: setJobPage,
-  //   setLocationId: setJobLocationId,
-  //   isLoading: paginatedJobsLoading,
-  // } = usePaginatedJobs()
   const [deleteModal, setDeleteModal] = useState(false)
   const [editModal, setEditModal] = useState(false)
-  // const [selectedMachineClassIds, setSelectedMachineClassIds] = useState<string[]>([]);
   const [clickRender, setClickRender] = useState(false)
 
   const { data, isLoading, setJobStatuses, setJobLocation } = useCountStatus()
-
-  // useEffect(() => {
-  //   setMachineClassId(machineClassArray)
-  //   // setJobPage(1)
-  //   // console.log("clickRender", clickRender)
-  //   setJobLocationId(locationId)
-  // }, [setMachineClassId, machineClassArray])
 
   const tabs = [
     { name: "Pending", count: 0, current: currentTab === "Pending" },
@@ -86,6 +70,16 @@ const ParentTable = ({
   }
 
   useEffect(() => {
+    if (machineClasses?.items) {
+      const allMachineClassIds = machineClasses.items.map(
+        (machineClass: T_MachineClass) => machineClass._id || ""
+      )
+      setMachineClassArray(allMachineClassIds)
+      setCheckAll(true)
+    }
+  }, [machineClasses])
+
+  useEffect(() => {
     if (machineClasses?.items.length === machineClassArray.length) {
       setCheckAll(true)
     } else {
@@ -108,10 +102,6 @@ const ParentTable = ({
       setIsAllFilterSelected(!isAllFilterSelected)
     }
   }, [machineClasses])
-
-  // useEffect(() => {
-  //   console.log(machineClass);
-  // }, [machineClass]);
 
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOption = e.currentTarget.value
@@ -224,7 +214,7 @@ const ParentTable = ({
                 <div className="md:flex items-center mt-2 w-[18rem]">
                   <label
                     htmlFor="JobSelector"
-                    className="uppercase font-semibold text-lg text-gray-800 md:w-[70%] text-right mr-3"
+                    className="uppercase font-semibold text-md text-gray-800 md:w-[70%] text-right mr-3"
                   >
                     JOB SELECTOR
                   </label>
@@ -239,8 +229,13 @@ const ParentTable = ({
               ) : (
                 <div></div>
               )}
-              <div></div>
-              <div className={`mt-2 mr-5 flex`}>
+              <div
+                className={`${
+                  currentTab == "Active"
+                    ? "mt-2 ml-3 flex"
+                    : "block mt-2 font-semibold w-full md:w-[60%] rounded-md border-0 pl-3 pr-10 sm:text-sm"
+                }`}
+              >
                 <Menu as="div" className="relative inline-block text-left">
                   <div>
                     <Menu.Button
@@ -250,7 +245,7 @@ const ParentTable = ({
                         // filterCheckHandler();
                       }}
                     >
-                      Show Only Filter
+                      Machine Class
                       <ChevronDownIcon
                         className="-mr-1 h-5 w-5 text-gray-400"
                         aria-hidden="true"
@@ -340,6 +335,8 @@ const ParentTable = ({
                     </Menu.Items>
                   </Transition>
                 </Menu>
+              </div>
+              <div className={`mt-2 mr-5 flex`}>
                 <div className="flex">
                   <button className="px-3 py-1 rounded-md  text-gray-800 font-semibold text-lg">
                     SEARCH
