@@ -139,24 +139,24 @@ const TabTable = ({
         <table className="w-full divide-y divide-gray-300 md:table-fixed">
           <thead className="border-b-4 border-indigo-900">
             <tr className="">
-              <th scope="col" className="w-4"></th>
+              <th scope="col" className="w-8"></th>
               <th
                 scope="col"
-                className={`pl-4 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
+                className={`w-24 py-3.5 pl-4 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 User
               </th>
-              <th
+              {/* <th
                 scope="col"
                 className={`md:w-[12%] lg:w-[12%] py-3.5 pl-2 text-left text-sm font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Factory
                 </a>
-              </th>
+              </th> */}
               <th
                 scope="col"
-                className={`w-[22%] md:w-[18%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
+                className={`w-[15%] md:w-[15%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Name
@@ -165,7 +165,7 @@ const TabTable = ({
 
               <th
                 scope="col"
-                className="md:w-[20%] lg:w-[10%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem] uppercase"
+                className="md:w-[35%] lg:w-[35%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[25rem] whitespace-nowrap uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Part
@@ -190,7 +190,7 @@ const TabTable = ({
 
               <th
                 scope="col"
-                className="py-3.5 m-4 justify-start items-start text-start text-sm font-semibold text-gray-900 uppercase"
+                className="py-3.5 w-24 m-4 justify-start items-start text-start text-sm font-semibold text-gray-900 uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Count
@@ -211,7 +211,7 @@ const TabTable = ({
               ) : ( */}
               <th
                 scope="col"
-                className=" pl-8 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
+                className=" pl-14 w-20 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Due
@@ -279,11 +279,11 @@ const TabTable = ({
                         )}
                       </div>
                     </td>
-                    <td className={`py-3 text-sm text-gray-800 pl-1`}>
+                    {/* <td className={`py-3 text-sm text-gray-800 pl-1`}>
                       {typeof job?.factory === "object"
                         ? job?.factory?.name
                         : ""}
-                    </td>
+                    </td> */}
                     <td className="py-3 text-sm text-gray-800">{job?.name}</td>
                     <td className="py-3 text-sm text-gray-800 w-20">
                       {job?.part?.name}
@@ -625,11 +625,9 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`md:w-[15%] lg:w-[15%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
+                className={`md:w-[8%] lg:w-[8%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
               >
-                <a href="#" className="group inline-flex">
-                  Factory
-                </a>
+                <a href="#" className="group inline-flex"></a>
               </th>
               <th
                 scope="col"
