@@ -142,13 +142,13 @@ const TabTable = ({
               <th scope="col" className="w-4"></th>
               <th
                 scope="col"
-                className="pl-8 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
+                className={`pl-4 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 User
               </th>
               <th
                 scope="col"
-                className={`md:w-[18%] lg:w-[18%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
+                className={`md:w-[12%] lg:w-[12%] py-3.5 pl-2 text-left text-sm font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Factory
@@ -156,20 +156,21 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`w-[25%] md:w-[20%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
+                className={`w-[22%] md:w-[18%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Name
                 </a>
               </th>
+              
               <th
-                scope="col"
-                className="md:w-[20%] lg:w-1/4 py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem]  uppercase"
-              >
-                <a href="#" className="group inline-flex">
-                  Part
-                </a>
-              </th>
+              scope="col"
+              className="md:w-[20%] lg:w-[10%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem] uppercase"
+            >
+              <a href="#" className="group inline-flex">
+                Part
+              </a>
+            </th>
               {/* <th
                 scope="col"
                 className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-20 uppercase"
@@ -186,7 +187,17 @@ const TabTable = ({
                   Count
                 </a>
               </th> */}
+              
               <th
+              scope="col"
+              className="py-3.5 m-4 justify-start items-start text-start text-sm font-semibold text-gray-900 uppercase"
+            >
+              <a href="#" className="group inline-flex">
+                Count
+              </a>
+            </th>
+            
+            <th
                 scope="col"
                 className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
               >
@@ -194,6 +205,7 @@ const TabTable = ({
                   Priority
                 </a>
               </th>
+              
               {/* {jobs.items[0].isStock ? (
                 ""
               ) : ( */}
@@ -206,19 +218,20 @@ const TabTable = ({
                 </a>
               </th>
               {/* )} */}
-              <th scope="col" className="relative md:pl-24 lg:pl-24 py-3.5">
-                {locked ? (
-                  <LockClosedIcon
-                    className="w-[1.5rem] h-[1.5rem]"
-                    onClick={() => toggleLock()}
-                  />
-                ) : (
-                  <LockOpenIcon
-                    className="w-[1.5rem] h-[1.5rem]"
-                    onClick={() => toggleLock()}
-                  />
-                )}
-              </th>
+              
+              <th scope="col" className="relative md:pl-20 lg:pl-20  py-3.5">
+              {locked ? (
+                <LockClosedIcon
+                  className="w-[1.5rem] h-[1.5rem]"
+                  onClick={() => toggleLock()}
+                />
+              ) : (
+                <LockOpenIcon
+                  className="w-[1.5rem] h-[1.5rem]"
+                  onClick={() => toggleLock()}
+                />
+              )}
+            </th>
             </tr>
           </thead>
           <tbody className="bg-white ">
@@ -234,14 +247,14 @@ const TabTable = ({
                       toggleRowExpansion(job, selected)
                     }}
                   >
-                    <td className="m-0 pl-3 w-1/5 mt-4 pt-12">
+                    <td className={`m-0 pl-3 mt-4 pt-12`}>
                       {selected ? (
                         <ChevronDownIcon className="w-4 h-4 stroke-2 stroke-blue-950" />
                       ) : (
                         <ChevronRightIcon className="w-4 h-4 stroke-2 stroke-blue-950" />
                       )}
                     </td>
-                    <td className="py-3 pl-3 text-sm sm:pl-6 lg:pl-8">
+                    <td className={`py-3 pl-3 text-sm sm:pl-2 lg:pl-4`}>
                       <div className="relative h-11 w-11 bg-slate-200 rounded-full flex items-center justify-center">
                         {typeof job?.user === "object" &&
                         job?.user?.profile?.photo ? (
@@ -266,19 +279,20 @@ const TabTable = ({
                         )}
                       </div>
                     </td>
-                    <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4">
+                    <td className={`py-3 text-sm text-gray-800 pl-1`}>
                       {typeof job?.factory === "object"
                         ? job?.factory?.name
                         : ""}
                     </td>
                     <td className="py-3 text-sm text-gray-800">{job?.name}</td>
-                    <td className="py-3 text-sm text-gray-800">
+                    <td className="py-3 text-sm text-gray-800 w-20">
                       {job?.part?.name}
                     </td>
                     {/* <td className="py-3 pl-6 text-sm text-gray-800">
                       {job?.drawingNumber}
                     </td> */}
-                    {/* <td className="py-3 pl-6 text-sm text-gray-800">
+                    
+                    <td className="py-3 text-sm text-gray-800">
                       <div className="flex items-center">
                         {job?.count ? (
                           <>
@@ -292,7 +306,8 @@ const TabTable = ({
                         )}{" "}
                         <br />
                       </div>
-                    </td> */}
+                    </td>
+                    
                     <td className="py-3 text-sm pl-4 text-gray-800">
                       {/* <ChartBarIcon
                       className={`h-5 w-5 ${
@@ -336,101 +351,91 @@ const TabTable = ({
                         ></div>
                       </div>
                     </td>
-                    {/* {job?.isStock ? (
-                      ""
-                    ) : ( */}
                     <td className="py-3 pl-8 text-sm text-gray-800">
-                      {job.isStock ? (
-                        ""
-                      ) : job.dueDate ? (
-                        dayjs(job.dueDate).format("DD/MM/YYYY")
-                      ) : (
-                        <span className="text-2xl">∞</span>
-                      )}
-                      <br />
-                      <span className="text-red-500 hidden">Overdue</span>
+                      
                     </td>
                     {/* )} */}
-                    <td className="py-3 lg:pl-24 md:pl-24 text-left text-sm font-medium">
-                      <Menu as="div">
-                        <Menu.Button onClick={(e) => e.stopPropagation()}>
-                          <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
-                        </Menu.Button>
-                        <Transition
-                          as={Fragment}
-                          enter="transition ease-out duration-100"
-                          enterFrom="transform opacity-0 scale-95"
-                          enterTo="transform opacity-100 scale-100"
-                          leave="transition ease-in duration-75"
-                          leaveFrom="transform opacity-100 scale-100"
-                          leaveTo="transform opacity-0 scale-95"
+                    
+                    <td className="py-3 lg:pl-20 md:pl-20 text-left text-sm font-medium">
+                    <Menu as="div">
+                      <Menu.Button onClick={(e) => e.stopPropagation()}>
+                        <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
+                      </Menu.Button>
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items
+                          className="absolute right-9 z-50 -mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                          style={{ overflow: "visible" }}
                         >
-                          <Menu.Items
-                            className="absolute right-9 z-50 -mt-1 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                            style={{ overflow: "visible" }}
-                          >
-                            <div className="">
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <span
-                                    className={combineClasses(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm cursor-pointer text-left"
-                                    )}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setJobId(job._id as string)
-                                    }}
-                                  >
-                                    Details
-                                  </span>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <span
-                                    className={combineClasses(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm cursor-pointer text-left"
-                                    )}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setEditModal(true)
-                                      setJobId(job._id as string)
-                                    }}
-                                  >
-                                    Edit
-                                  </span>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <span
-                                    className={combineClasses(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm cursor-pointer text-left"
-                                    )}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setDeleteModal(true)
-                                      setJobId(job._id as string)
-                                    }}
-                                  >
-                                    Delete
-                                  </span>
-                                )}
-                              </Menu.Item>
-                            </div>
-                          </Menu.Items>
-                        </Transition>
-                      </Menu>
-                    </td>
+                          <div className="">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <span
+                                  className={combineClasses(
+                                    active
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-700",
+                                    "block px-4 py-2 text-sm cursor-pointer text-left"
+                                  )}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setJobId(job._id as string)
+                                  }}
+                                >
+                                  Details
+                                </span>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <span
+                                  className={combineClasses(
+                                    active
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-700",
+                                    "block px-4 py-2 text-sm cursor-pointer text-left"
+                                  )}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setEditModal(true)
+                                    setJobId(job._id as string)
+                                  }}
+                                >
+                                  Edit
+                                </span>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <span
+                                  className={combineClasses(
+                                    active
+                                      ? "bg-gray-100 text-gray-900"
+                                      : "text-gray-700",
+                                    "block px-4 py-2 text-sm cursor-pointer text-left"
+                                  )}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setDeleteModal(true)
+                                    setJobId(job._id as string)
+                                  }}
+                                >
+                                  Delete
+                                </span>
+                              )}
+                            </Menu.Item>
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
+                  </td>
                   </tr>
                   <tr>
                     <td colSpan={10}>
@@ -613,7 +618,7 @@ const TabTable = ({
         <table className="w-full divide-y divide-gray-300 md:table-fixed">
           <thead className="border-b-4 border-indigo-900">
             <tr className="">
-              <th scope="col" className="w-4"></th>
+              <th scope="col" className="w-1"></th>
               <th
                 scope="col"
                 className="pl-8 py-3.5 text-left text-sm font-semibold text-gray-900  uppercase"
@@ -622,7 +627,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`md:w-[18%] lg:w-[18%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
+                className={`md:w-[15%] lg:w-[15%] pl-10 py-3.5 md:pl-12 text-left text-sm font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Factory
@@ -630,7 +635,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`w-[25%] md:w-[20%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
+                className={`w-[20%] md:w-[15%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Name
@@ -638,12 +643,22 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className="md:w-[20%] lg:w-1/4 py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem]  uppercase"
+                className="md:w-[10%] lg:w-[12%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem]  uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Part
                 </a>
               </th>
+              
+              <th
+              scope="col"
+              className="py-3.5 text-left pr-8 text-sm font-semibold text-gray-900 uppercase"
+            > 
+              <a href="#" className="group inline-flex">
+               Count
+              </a>
+            </th>
+              
               <th
                 scope="col"
                 className="py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
@@ -660,7 +675,7 @@ const TabTable = ({
                   Due
                 </a>
               </th>
-              <th scope="col" className="relative md:pl-24 lg:pl-24 py-3.5">
+              <th scope="col" className="relative md:pl-24 lg:pl-24 py-3">
                 {locked ? (
                   <LockClosedIcon
                     className="w-[1.5rem] h-[1.5rem]"
@@ -682,6 +697,7 @@ const TabTable = ({
                 <div className="relative h-11 w-11  flex items-center justify-center"></div>
               </td>
               <td className="py-3 lg:pl-12 md:pl-12 text-sm text-gray-800 pl-4"></td>
+              <td className="py-3 text-sm text-gray-800"></td>
               <td className="py-3 text-sm text-gray-800"></td>
               <td className="py-3 text-sm text-gray-800"></td>
               <td className="py-3 text-sm pl-4 text-gray-800"></td>
