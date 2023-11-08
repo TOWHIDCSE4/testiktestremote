@@ -356,7 +356,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               <div className="mt-4 flex ml-0">
                 <span
-                  className={`text-[28px] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${selectedColor}`}
+                  className={` text-[28px] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${selectedColor}`}
                   onClick={toggleDropdown}
                 >
                   <svg
@@ -376,7 +376,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   {selectedStatus}
                 </span>
                 {isOpen && (
-                  <div className="sm:top-[6rem] absolute overflow mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
+                  <div
+                    className={`${
+                      isOpenTeam == true ? "hidden" : ""
+                    } sm:top-[6rem] absolute overflow mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50`}
+                  >
                     <ul>
                       {statusArray.map((status, index) => (
                         <li

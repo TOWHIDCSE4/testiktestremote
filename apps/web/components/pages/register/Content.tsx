@@ -4,7 +4,6 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 
 import Link from "next/link"
-import GifTick from "../../../assets/images/sliders/icontick.png"
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
 import Slider from "../../Slider"
