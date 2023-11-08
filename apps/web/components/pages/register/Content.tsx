@@ -67,8 +67,6 @@ const Content = () => {
 
   const toaster = useToaster()
 
-  useEffect(() => {}, [showWelcome])
-
   const handleCreateButtonClick = () => {
     setShowWelcome(true)
 
