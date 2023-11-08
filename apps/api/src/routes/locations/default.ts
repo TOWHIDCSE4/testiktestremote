@@ -10,22 +10,37 @@ import {
 } from "../../utils/constants"
 import isEmpty from "lodash/isEmpty"
 import { ZLocation } from "custom-validator"
-import machineClasses from "../../models/machineClasses"
 import machines from "../../models/machines"
 import { Types } from "mongoose"
 import timerLogs from "../../models/timerLogs"
 import * as Sentry from "@sentry/node"
+import redisClient from "../../utils/redisClient"
 
 export const getAllLocations = async (req: Request, res: Response) => {
   try {
-    const locationsCount = await Locations.find().countDocuments()
-    const getAllLocations = await Locations.find().sort({ createdAt: 1 })
-    res.json({
-      error: false,
-      items: getAllLocations,
-      itemCount: locationsCount,
-      message: null,
-    })
+    const cacheKey = "locations"
+    const cachedData = await redisClient.get(cacheKey)
+
+    if (cachedData) {
+      // Return data from cache
+      res.json({
+        error: false,
+        items: JSON.parse(cachedData),
+        count: JSON.parse(cachedData).length,
+        message: "Data from cache",
+      })
+    } else {
+      const locationsCount = await Locations.find().countDocuments()
+      const getAllLocations = await Locations.find().sort({ createdAt: 1 })
+      redisClient.set(cacheKey, JSON.stringify(getAllLocations), { EX: 86400 })
+
+      res.json({
+        error: false,
+        items: getAllLocations,
+        itemCount: locationsCount,
+        message: null,
+      })
+    }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
     res.json({
@@ -220,63 +235,72 @@ export const findMachineClassByLocation = async (
       itemCount: 0,
     })
   }
+
   const distinctMachineClassesIds = await timerLogs.distinct("machineClassId")
   try {
-    const locationToBeFound = locations
-      //@ts-expect-error
-      .split(",")
-      .map((e: string) => new Types.ObjectId(e))
-    const distinctMachineClasses = await machines.aggregate([
-      {
-        $match: {
-          // locationId:  new Types.ObjectId(locationId as string),
-          locationId: { $in: locationToBeFound },
-          // _id: { $in: distinctMachineClassesIds },
-        },
-      },
-      {
-        $group: {
-          _id: "$machineClassId",
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $lookup: {
-          from: "machineclasses", // Replace with the actual name of your MachineClass collection
-          localField: "_id",
-          foreignField: "_id",
-          as: "machineClass",
-        },
-      },
-      {
-        $unwind: {
-          path: "$machineClass",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          machineClass: 1,
-        },
-      },
-      { $sort: { createdAt: -1 } },
-      // {
-      //   $replaceRoot: {
-      //     newRoot: "$machineClass",
-      //   },
-      // },
-    ])
-    const data = distinctMachineClasses
-      .map((e) => e?.machineClass)
-      .filter((i) => Boolean(i))
+    const cacheKey = `locationMachineClasses:${locations}`
+    const cachedData = await redisClient.get(cacheKey)
+    if (cachedData) {
+      res.json({
+        error: false,
+        items: JSON.parse(cachedData),
+        count: JSON.parse(cachedData).length,
+        message: "Data from cache",
+      })
+    } else {
+      const locationToBeFound = locations
+        //@ts-expect-error
+        .split(",")
+        .map((e: string) => new Types.ObjectId(e))
 
-    res.json({
-      error: false,
-      items: data,
-      itemCount: data.length,
-      message: "Successfully Get",
-    })
+      const distinctMachineClasses = await machines.aggregate([
+        {
+          $match: {
+            locationId: { $in: locationToBeFound },
+          },
+        },
+        {
+          $group: {
+            _id: "$machineClassId",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $lookup: {
+            from: "machineclasses", // Replace with the actual name of your MachineClass collection
+            localField: "_id",
+            foreignField: "_id",
+            as: "machineClass",
+          },
+        },
+        {
+          $unwind: {
+            path: "$machineClass",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            machineClass: 1,
+          },
+        },
+        { $sort: { createdAt: -1 } },
+      ])
+
+      const data = distinctMachineClasses
+        .map((e) => e?.machineClass)
+        .filter((i) => Boolean(i))
+
+      redisClient.set(cacheKey, JSON.stringify(data), { EX: 480 })
+
+      res.json({
+        error: false,
+        items: data,
+        itemCount: data.length,
+        message: "Successfully Get",
+      })
+    }
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
     Sentry.captureException(err)

@@ -22,6 +22,7 @@ import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
 import React from "react"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
+import { Alert, Space } from "antd"
 interface ContentProps {
   userLog: string
 }
@@ -110,14 +111,16 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [deleteModal, setDeleteModal] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState("Pending")
   const [confirmationModal, setConfirmationModal] = useState(false)
-  const [selectedColor, setSelectedColor] = useState("text-yellow-900")
+  const [selectedColor, setSelectedColor] = useState("text-green-900")
   const [selectedRole, setSelectedRole] = useState(
     storeSession?.role === "Production" ? "Personnel" : storeSession?.role
   )
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
+  const [errorMsg, setErrorMsg] = useState("")
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
   const [action, setAction] = useState<T_UserStatus | null>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [alertPrompt, setAlertPrompt] = useState(false)
   const [isOpenRole, setIsOpenRole] = useState()
   const [isOpenFactory, setIsOpenFactory] = useState()
   const [directorStates, setDirectorStates] = useState([])
@@ -152,6 +155,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       setOpenAccordion(id)
     }
   }
+
+  useEffect(() => {
+    if (alertPrompt) {
+      const timeoutId = setTimeout(() => {
+        setAlertPrompt(false)
+      }, 4000) // 2000 milliseconds = 2 seconds
+
+      // Clear the timeout in case the component unmounts or alertPrompt becomes false before the timeout completes.
+      return () => clearTimeout(timeoutId)
+    }
+  }, [alertPrompt])
 
   const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
   const ARR_USER_ROLES = [
@@ -210,6 +224,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
   }
+
+  // useEffect(() => {
+  //   if (!isPaginatedLoading && paginated && paginated?.items.length === 0) {
+  //     setSelectedStatus("Approved")
+  //     setStatus("Approved")
+  //   }
+  // }, [])
 
   const handleSelectDropdown = (value: T_UserStatus) => {
     setIsOpenRole(undefined)
@@ -373,7 +394,19 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                     />
                   </svg>
-                  {selectedStatus}
+                  <span
+                    className={`${
+                      selectedStatus === "Pending"
+                        ? "text-yellow-700"
+                        : selectedStatus === "Approved"
+                        ? "text-green-800"
+                        : selectedStatus === "Rejected"
+                        ? "text-red-800"
+                        : "text-yellow-500"
+                    }`}
+                  >
+                    {selectedStatus}
+                  </span>
                 </span>
                 {isOpen && (
                   <div
@@ -2237,12 +2270,38 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                 )}
                                                 onClick={() => {
                                                   setSelectedRow(item)
-                                                  approveChecking(
-                                                    item?.locationId,
-                                                    userProfile?.item
-                                                      ?.locationId as string
-                                                  )
-                                                  setConfirmationModal(true)
+                                                  if (
+                                                    item.role === "Personnel"
+                                                  ) {
+                                                    if (
+                                                      !item?.machineClassId &&
+                                                      !item?.factoryId
+                                                    ) {
+                                                      setErrorMsg(
+                                                        "Machine Class and Factory"
+                                                      )
+                                                      setAlertPrompt(true)
+                                                    } else {
+                                                      approveChecking(
+                                                        item?.locationId,
+                                                        userProfile?.item
+                                                          ?.locationId as string
+                                                      )
+                                                      setConfirmationModal(true)
+                                                    }
+                                                  } else {
+                                                    if (!item?.factoryId) {
+                                                      setErrorMsg("Factory")
+                                                      setAlertPrompt(true)
+                                                    } else {
+                                                      approveChecking(
+                                                        item?.locationId,
+                                                        userProfile?.item
+                                                          ?.locationId as string
+                                                      )
+                                                      setConfirmationModal(true)
+                                                    }
+                                                  }
                                                   setAction(
                                                     USER_STATUSES.Approved as T_UserStatus
                                                   )
@@ -3407,6 +3466,23 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
             </div>
           </div>
+        </div>
+        <div>
+          {alertPrompt ? (
+            <Alert
+              className={`${
+                !alertPrompt
+                  ? "transition duration-500 ease-out"
+                  : "transition duration-500 ease-linear"
+              } absolute w-[40%] md:-bottom-[15rem] lg:-bottom-0 bottom-0 md:-right-0 lg:-right-[4rem] shadow-md`}
+              message="Missing Information"
+              description={`${errorMsg} not selected. Please select a ${errorMsg} to proceed.`}
+              type="error"
+              showIcon
+            />
+          ) : (
+            ""
+          )}
         </div>
         <ConfirmationModal
           isOpen={confirmationModal}

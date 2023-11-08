@@ -5,21 +5,16 @@ import {
   ChevronRightIcon,
   ChevronDownIcon,
   EllipsisVerticalIcon,
-  ChartBarIcon,
   LockClosedIcon,
   LockOpenIcon,
 } from "@heroicons/react/24/solid"
 import { T_Job, T_JobStatus } from "custom-validator"
 import usePaginatedJobs from "../../../../hooks/jobs/usePaginatedJobs"
-import FilterCheckbox from "../../production/timer/FilterCheckbox"
 import dayjs from "dayjs"
 import EditModal from "./modals/EditModal"
 import DeleteModal from "./modals/DeleteModal"
-import useProfile from "../../../../hooks/users/useProfile"
 import Image from "next/image"
 import combineClasses from "../../../../helpers/combineClasses"
-import JobDetails from "./modals/JobDetails"
-import { useCollapse } from "react-collapsed"
 import TabTableDetail from "./TabTable-detail"
 
 const TabTable = ({
@@ -51,8 +46,6 @@ const TabTable = ({
     setMachineClassId,
   } = usePaginatedJobs()
 
-  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
-
   const [editModal, setEditModal] = useState(false)
   const [selectedJob, setSelectedJob] = useState<T_Job[]>([])
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
@@ -69,7 +62,6 @@ const TabTable = ({
     } else {
       if (selected)
         return setSelectedJob((prev) => prev.filter((i) => i._id !== job._id))
-      // return setSelectedJob([job])
       return setSelectedJob((prev) => [...prev, job])
     }
   }
@@ -171,23 +163,6 @@ const TabTable = ({
                   Part
                 </a>
               </th>
-              {/* <th
-                scope="col"
-                className="pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 w-20 uppercase"
-              >
-                <a href="#" className="group inline-flex">
-                  Drawing
-                </a>
-              </th> */}
-              {/* <th
-                scope="col"
-                className=" pl-6 py-3.5 text-left text-sm font-semibold text-gray-900 uppercase"
-              >
-                <a href="#" className="group inline-flex">
-                  Count
-                </a>
-              </th> */}
-
               <th
                 scope="col"
                 className="py-3.5 m-4 justify-start items-start text-start text-sm font-semibold text-gray-900 uppercase"
@@ -217,8 +192,6 @@ const TabTable = ({
                   Due
                 </a>
               </th>
-              {/* )} */}
-
               <th scope="col" className="relative md:pl-20 lg:pl-20  py-3.5">
                 {locked ? (
                   <LockClosedIcon
@@ -313,18 +286,6 @@ const TabTable = ({
                     </td>
 
                     <td className="py-3 text-sm pl-4 text-gray-800">
-                      {/* <ChartBarIcon
-                      className={`h-5 w-5 ${
-                        job?.priorityStatus === "High"
-                          ? "text-red-500"
-                          : job?.priorityStatus === "Medium"
-                          ? "text-orange-500"
-                          : job?.priorityStatus === "Low"
-                          ? "text-yellow-500"
-                          : "text-gray-400"
-                      }`}
-                    /> */}
-
                       <div className="flex bars mt-2">
                         <div
                           className={`h-3 rounded-t-full rounded-b-full w-1 first-bar ${
@@ -360,7 +321,6 @@ const TabTable = ({
                         ? dayjs(job.dueDate).format("YYYY-MM-DD")
                         : ""}
                     </td>
-                    {/* )} */}
 
                     <td className="py-3 lg:pl-20 md:pl-20 text-left text-sm font-medium">
                       <Menu as="div">

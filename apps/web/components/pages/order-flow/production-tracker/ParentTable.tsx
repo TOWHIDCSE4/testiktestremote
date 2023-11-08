@@ -1,32 +1,16 @@
-import {
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  EllipsisVerticalIcon,
-} from "@heroicons/react/24/solid"
-import { useEffect, useState, Dispatch } from "react"
+import { ChevronDownIcon } from "@heroicons/react/24/solid"
+import { useEffect, useState } from "react"
 import { Fragment } from "react"
 import { Menu, Transition } from "@headlessui/react"
-import Image from "next/image"
-import DeleteModal from "./modals/DeleteModal"
-import FilterCheckbox from "../../production/timer/FilterCheckbox"
 import { T_MachineClass } from "custom-validator"
 import useMachineClasses from "../../../../hooks/machineClasses/useMachineClasses"
-import EditModal from "./modals/EditModal"
 import combineClasses from "../../../../helpers/combineClasses"
 import TabTable from "./TabTable"
 import { T_JobStatus } from "custom-validator"
 import useCountStatus from "../../../../hooks/jobs/useCountStatus"
-import usePaginatedJobs from "../../../../hooks/jobs/usePaginatedJobs"
-import usePartLocationCount from "../../../../hooks/parts/useGetPartLocationCount"
+import useStoreSession from "../../../../store/useStoreSession"
 
-const ParentTable = ({
-  locationId,
-}: // selectedMachineClasses,
-{
-  locationId: string
-  // selectedMachineClasses: (T_MachineClass & { isSelected: boolean })[]
-}) => {
+const ParentTable = ({ locationId }: { locationId: string }) => {
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [selectedValue, setSelectedValue] = useState<string>("client")
   const [inputValue, setInputValue] = useState<string>("")
