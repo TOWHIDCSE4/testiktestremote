@@ -309,7 +309,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         />
                       </svg>
                     </button>
-
                     {isOpenTeam && (
                       <div className="absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                         {roleFilter().map((item: any, index: any) => (
@@ -348,7 +347,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     Team Listing
                   </label>
                 </div>
-
                 <span className="text-md font-bold flex pl-1 mt-[1px]">
                   -
                   <p className="pl-0.5 text-[#172554] uppercase">
@@ -412,7 +410,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </span>
                   </div>
                 ) : (
-                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-[13.5rem] uppercase space-x-1 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-1 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     {locations && locations.items
                       ? storeSession?.role === "Administrator" ||
@@ -448,7 +446,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   Factory
                 </span>
-                <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D]">:</span>
                   {userProfile?.item.role == "Production" ? (
                     <span>{checkFactory ? [checkFactory.name] : ""}</span>
@@ -462,7 +460,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   <span className="text-[#7F1D1D] text-[12px] uppercase whitespace-nowrap font-semibold">
                     Machine Class
                   </span>
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     <span>All</span>
                   </div>
@@ -472,7 +470,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                     Department
                   </span>
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     <span>All</span>
                   </div>
