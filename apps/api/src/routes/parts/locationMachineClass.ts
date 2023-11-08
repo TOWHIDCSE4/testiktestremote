@@ -59,10 +59,6 @@ export const locationMachineClass = async (req: Request, res: Response) => {
 
 export const byLocationMachineClass = async (req: Request, res: Response) => {
   const { machineClasses, locations, search, page } = req.query
-  console.log(
-    "🚀 ~ file: locationMachineClass.ts:62 ~ byLocationMachineClass ~ req.query:",
-    req.query
-  )
   if (
     !machineClasses ||
     !machineClasses?.length ||
@@ -77,7 +73,6 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
     })
   }
   try {
-    console.log("Here!")
     const machineClassesToSearch = machineClasses
       //@ts-expect-error
       .split(",")

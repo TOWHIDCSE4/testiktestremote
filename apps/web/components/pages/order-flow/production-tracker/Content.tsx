@@ -130,6 +130,49 @@ const Content = () => {
           <div className="w-full h-0.5 bg-gray-200 mt-5"></div>
           {/* Location */}
           <div className="grid grid-cols-3 gap-x-6 md:gap-x-8 2xl:gap-x-24 mt-5">
+            {/* {locationTabs.map((tab) => {
+              const isPersonnelAndLocationMatch =
+                userProfile?.item.role === "Personnel" &&
+                userProfile?.item.locationId === tab._id
+
+              if (isPersonnelAndLocationMatch) {
+                return (
+                  <div key={tab.name}>
+                    <button
+                      type="button"
+                      className={combineClasses(
+                        "bg-blue-950 text-white",
+                        "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
+                      )}
+                      onClick={() => setCurrentLocationTab(tab._id as string)}
+                    >
+                      {tab.name} {tab?.count ? `(${tab.count})` : null}
+                    </button>
+                  </div>
+                )
+              } else if (userProfile?.item.role !== "Personnel") {
+                return (
+                  <div key={tab.name}>
+                    <button
+                      type="button"
+                      className={combineClasses(
+                        tab._id === currentLocationTab
+                          ? "bg-blue-950 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-50",
+                        "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
+                      )}
+                      onClick={() => setCurrentLocationTab(tab._id as string)}
+                    >
+                      {tab.name} {tab?.count ? `(${tab.count})` : null}
+                    </button>
+                  </div>
+                )
+              } else {
+                // Return null for tabs that shouldn't be displayed
+                return null
+              }
+            })} */}
+
             {locationTabs.map((tab) => (
               <div key={tab.name}>
                 <button
@@ -137,18 +180,20 @@ const Content = () => {
                   className={combineClasses(
                     tab._id === currentLocationTab
                       ? "bg-blue-950 text-white"
-                      : // : isTimerCityRoles
-                        // ? "bg-white text-gray-400"
-                        "bg-white text-gray-700 hover:bg-gray-50",
+                      : "bg-white text-gray-700 hover:bg-gray-50 disabled:text-gray-400",
                     "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                   )}
                   onClick={() => setCurrentLocationTab(tab._id as string)}
-                  // disabled={isTimerCityRoles && tab.name !== location?.item.name}
+                  disabled={
+                    userProfile?.item.role === "Personnel" &&
+                    tab._id !== userProfile?.item.locationId
+                  }
                 >
                   {tab.name} {tab?.count ? `(${tab.count})` : null}
                 </button>
               </div>
             ))}
+
             {isLocationsLoading && (
               <>
                 <div className="animate-pulse flex space-x-4">
