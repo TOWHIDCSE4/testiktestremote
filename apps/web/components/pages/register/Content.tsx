@@ -47,6 +47,12 @@ const Content = () => {
           } else {
             toast.error(String(data.message))
           }
+          if (showWelcome) {
+            toast.success("Thank You For signing up", {
+              position: "top-center",
+              duration: 5000,
+            })
+          }
         },
         onError: (err: any) => {
           toast.error(String(err))
@@ -61,15 +67,7 @@ const Content = () => {
 
   const toaster = useToaster()
 
-  useEffect(() => {
-    if (showWelcome) {
-      // Show a welcome toast notification
-      toast.success("Thank You For signing up", {
-        position: "top-center",
-        duration: 5000,
-      })
-    }
-  }, [showWelcome])
+  useEffect(() => {}, [showWelcome])
 
   const handleCreateButtonClick = () => {
     setShowWelcome(true)
