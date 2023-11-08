@@ -556,7 +556,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </div>
                   </th>
                   <th className="">
-                    <div className="flex items-start justify-start ml-7">
+                    <div
+                      className={`${
+                        selectedRole == "Personnel"
+                          ? "hidden"
+                          : "flex items-start justify-start ml-7"
+                      }`}
+                    >
                       <span className="flex">
                         Factory<p className="text-red-600 ml-1">*</p>
                       </span>
@@ -942,34 +948,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     {paginated?.items.length == 1 && (
                       <>
                         <tr
-                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
-                          data-accordion-target="#accordion-arrow-icon-body-0"
-                          aria-expanded="false"
-                          aria-controls="accordion-arrow-icon-body-0"
-                        >
-                          <td className="pr-6 py-5 h-14">
-                            <div className="flex items-center">
-                              <label
-                                htmlFor="checkbox-table-search-0"
-                                className="sr-only"
-                              ></label>
-                            </div>
-                          </td>
-                          <th
-                            scope="row"
-                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                          ></th>
-                          <td className="px-6 py-4"></td>
-                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
-                          <td className="px-6 py-4"></td>
-                          <td className="px-6 py-4">
-                            <span className="font-bold text-red-500"></span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="font-bold text-red-500"></span>
-                          </td>
-                        </tr>
-                        <tr
                           className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
                           data-accordion-target="#accordion-arrow-icon-body-0"
                           aria-expanded="false"
@@ -1082,7 +1060,35 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           </td>
                         </tr>
                         <tr
-                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100  "
                           data-accordion-target="#accordion-arrow-icon-body-1"
                           aria-expanded="false"
                           aria-controls="accordion-arrow-icon-body-1"
@@ -1618,7 +1624,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </span>
                   </a>
                 </th> */}
-                    <th className="">
+                    <th
+                      className={`${
+                        selectedRole == "Personnel" ? "hidden" : ""
+                      }`}
+                    >
                       <div className="flex items-start justify-start ml-7">
                         <span className="flex">
                           Factory<p className="text-red-600 ml-1">*</p>
@@ -1728,7 +1738,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               className={`bg-gray text-slate-900 font-medium border-b ${rowClass}  ${
                                 !item._id ? "bg-red-50" : ""
                               }`}
-                              aria-colspan={6}
+                              aria-colspan={selectedRole == "Personnel" ? 5 : 6}
                             >
                               <td className="">
                                 <div
@@ -1894,7 +1904,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </div>
                               </td>
                               <td
-                                className={`text-sm text-gray-500 items-start justify-center`}
+                                className={`${
+                                  selectedRole == "Personnel"
+                                    ? "hidden"
+                                    : "text-sm text-gray-500 items-start justify-center"
+                                }`}
                               >
                                 <button
                                   id="dropdownFactoryButton"
@@ -1980,6 +1994,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               {selectedRole === "Personnel" ? (
                                 <td
                                   className={`text-sm text-gray-500 items-center justify-center`}
+                                  colSpan={
+                                    selectedStatus == "Pending" &&
+                                    selectedRole == "Personnel"
+                                      ? 2
+                                      : 1
+                                  }
                                 >
                                   <button
                                     id="dropdownFactoryButton"
