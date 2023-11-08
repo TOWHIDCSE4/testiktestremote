@@ -90,9 +90,17 @@ const Content = () => {
           isSelected: true,
         })
       )
-      setSelectedMachineClasses(updatedMachineClasses)
+      if (storeSession?.role === "Personnel") {
+        const personnelMachineClass = updatedMachineClasses.filter(
+          (machineClass: any) =>
+            machineClass._id === userProfile?.item?.machineClassId
+        )
+        setSelectedMachineClasses(personnelMachineClass)
+      } else {
+        setSelectedMachineClasses(updatedMachineClasses)
+      }
     }
-  }, [machineClasses])
+  }, [machineClasses, userProfile])
 
   useEffect(() => {
     if (userProfile?.item.locationId) {
@@ -202,7 +210,14 @@ const Content = () => {
         <Clocks
           locationId={currentLocationTab}
           currentLocationTabName={currentLocationTabName as string}
-          machineClasses={machineClasses?.items}
+          machineClasses={
+            storeSession?.role === "Personnel"
+              ? machineClasses?.items?.filter(
+                  (machineClass: any) =>
+                    machineClass._id === userProfile?.item?.machineClassId
+                )
+              : machineClasses?.items
+          }
           setSelectedMachineClasses={setSelectedMachineClasses}
           selectedMachineClasses={selectedMachineClasses}
         />

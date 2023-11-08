@@ -1,17 +1,8 @@
-import {
-  T_BackendResponse,
-  T_Machine,
-  T_MachineClass,
-  T_Part,
-  T_Timer,
-  T_User,
-} from "custom-validator"
+import { T_Machine, T_Timer, T_User } from "custom-validator"
 import React, { useState, useEffect } from "react"
 import DetailsModal from "./modals/DetailsModal"
 import DeleteModal from "./modals/DeleteModal"
-import useFactories from "../../../../hooks/factories/useFactories"
 import TimerTracker from "./TimerTracker"
-import useTimersByLocation from "../../../../hooks/timers/useTimersByLocation"
 import Timer from "./Timer"
 
 type T_TimerByMachineClass = {
@@ -140,7 +131,7 @@ function TimerCards({
           </>
         ) : (
           <p className="text-gray-500 mt-4">
-            No timer for{" "}
+            No timers available{" "}
             <span className="font-semibold">{timerByMachineClass.name}</span>
           </p>
         )}
