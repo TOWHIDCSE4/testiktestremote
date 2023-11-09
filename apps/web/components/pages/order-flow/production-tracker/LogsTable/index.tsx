@@ -130,7 +130,19 @@ const LogsTable = ({
   }
 
   const handleProcess = () => {
-    setProcess(process ? false : true)
+    if (process === true) {
+      setDateRange([]),
+        setStartDateRange(""),
+        datePick([]),
+        setEndDateRange(""),
+        setStartDateRanges(""),
+        setEndDateRanges("")
+    } else {
+      const currentDate = dayjs().toDate()
+      const oneWeekBefore = dayjs().subtract(1, "week").toDate()
+      datePick([oneWeekBefore, currentDate])
+    }
+    setProcess((prevProcess) => !prevProcess)
   }
 
   dayjs.extend(utc.default)
@@ -332,7 +344,7 @@ const LogsTable = ({
 
   const datePick = (inputValue: any) => {
     setPage(1)
-    setDateRange(inputValue)
+    // setDateRange(inputValue)
     if (isCheckboxChecked) {
       setStartDateRange(
         dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
@@ -378,7 +390,6 @@ const LogsTable = ({
 
   useEffect(() => {
     setCityCounter(city.length)
-    // console.log("cityCounter", city)
   })
 
   const handleMachineClassChange = (event: SelectChangeEvent) => {
@@ -391,6 +402,8 @@ const LogsTable = ({
       setSelectedMachineValues([])
       setMachine([])
     }
+    //@ts-expect-error
+    setMachineClass(selectedMachineClasses)
   }
 
   useEffect(() => {
@@ -479,7 +492,6 @@ const LogsTable = ({
       .filter(([_, parts]) => parts.length > 0)
       .map(([machineId]) => machineId)
     if (machineClass.length !== machinesWithParts.length) {
-      console.log("called")
       setSelectedMachineClassId(machinesWithParts)
       setMachineClass(machinesWithParts)
       setMachine([])

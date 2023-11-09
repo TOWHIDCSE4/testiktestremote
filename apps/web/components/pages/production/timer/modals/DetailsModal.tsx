@@ -13,6 +13,7 @@ import { Combobox } from "@headlessui/react"
 import PartDetailsModal from "../../product-list/modals/PartDetailsModal"
 import { USER_ROLES } from "../../../../../helpers/constants"
 import useStoreSession from "../../../../../store/useStoreSession"
+import { useSocket } from "../../../../../store/useSocket"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -23,6 +24,7 @@ const NOT_PART_EDITABLE_USERS = [USER_ROLES.Personnel]
 
 const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
   const storeSession = useStoreSession((state) => state)
+  let socket = useSocket((store) => store.instance)
   const queryClient = useQueryClient()
   const closeButtonRef = useRef(null)
   const searchRef = useRef(null)
@@ -115,6 +117,11 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
         id: timerDetailData?.item?.operator?._id as string,
         name: `${timerDetailData?.item?.operator?.firstName} ${timerDetailData?.item?.operator?.lastName}`,
       })
+    } else if (timerDetailData?.item?.operator?.firstName) {
+      setSelectedOperator({
+        id: "",
+        name: `${timerDetailData?.item?.operator?.firstName}`,
+      })
     }
   }, [timerDetailData, isOpen])
 
@@ -139,6 +146,51 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
       })
     }
   }, [openDetailsModal])
+
+  const callBackReq: any = {
+    onSuccess: (data: T_BackendResponse) => {
+      if (!data.error) {
+        queryClient.invalidateQueries({
+          queryKey: ["timer", timerDetailData?.item?._id],
+        })
+        queryClient.invalidateQueries({
+          queryKey: ["job-timer-timer"],
+        })
+        socket?.emit("change-job", {
+          action: "change-job",
+          timerId: timerDetailData?.item._id,
+          jobInfo: data?.item,
+        })
+      } else {
+        toast.error(String(data.message))
+      }
+    },
+    onError: (err: any) => {
+      toast.error(String(err))
+    },
+  }
+
+  const handleInputOperator = () => {
+    const leadingTrailingSpaceRegex = /^\s|\s$/
+    if (leadingTrailingSpaceRegex.test(operatorQuery)) {
+      toast.error("Please remove trailing spaces")
+    } else {
+      const timer = timerDetailData?.item
+      if (timer) {
+        mutate(
+          {
+            ...timer,
+            operator: "",
+            operatorName: operatorQuery,
+          },
+          callBackReq
+        )
+        queryClient.invalidateQueries({
+          queryKey: ["timer", timer._id],
+        })
+      }
+    }
+  }
 
   return (
     <>
@@ -279,7 +331,33 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                                         aria-hidden="true"
                                       />
                                     </Combobox.Button>
-
+                                    {operatorQuery && (
+                                      <Combobox.Button
+                                        className="absolute inset-y-0 right-5 flex items-center rounded-r-md px-2 focus:outline-none"
+                                        onClick={() => handleInputOperator()}
+                                      >
+                                        <span className="flex justify-start items-center">
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.7"
+                                            stroke="currentColor"
+                                            className={`h-5 w-6 ${
+                                              isUpdateTimerLoading
+                                                ? "text-gray-400"
+                                                : "text-gray-600"
+                                            } mx-2`}
+                                          >
+                                            <path
+                                              stroke-linecap="round"
+                                              stroke-linejoin="round"
+                                              d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                                            />
+                                          </svg>
+                                        </span>
+                                      </Combobox.Button>
+                                    )}
                                     {filteredOperator &&
                                     filteredOperator.length > 0 ? (
                                       <Combobox.Options className="absolute z-[10000] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
