@@ -141,14 +141,9 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     sort,
     key,
     limit,
+    startDate,
+    endDate,
   } = req.query
-  let { startDate, endDate } = req.query
-  startDate = !startDate
-    ? dayjs().startOf("week").format()
-    : dayjs(startDate as string).format()
-  endDate = !endDate
-    ? dayjs().endOf("week").format()
-    : dayjs(endDate as string).format()
   const sortObj = {}
   if (sort && key) {
     //@ts-expect-error
