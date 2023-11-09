@@ -149,15 +149,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
 
   const callBackReq: any = {
     onSuccess: (data: T_BackendResponse) => {
-      console.log(
-        "🚀 ~ file: DetailsModal.tsx:154 ~ DetailsModal ~ data:",
-        data
-      )
       if (!data.error) {
-        console.log(
-          "🚀 ~ file: DetailsModal.tsx:156 ~ DetailsModal ~ timerDetailData:",
-          timerDetailData
-        )
         queryClient.invalidateQueries({
           queryKey: ["timer", timerDetailData?.item?._id],
         })
@@ -183,7 +175,6 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
     if (leadingTrailingSpaceRegex.test(operatorQuery)) {
       toast.error("Please remove trailing spaces")
     } else {
-      // console.log("🚀 ~ file: DetailsModal.tsx:176 ~ handleInputOperator ~ 'yahan chutyapa kra h':", timerDetailData)
       const timer = timerDetailData?.item
       if (timer) {
         mutate(
