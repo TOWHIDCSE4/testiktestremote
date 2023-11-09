@@ -1661,11 +1661,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </span>
                   </a>
                 </th> */}
-                    <th
-                      className={`${
-                        selectedRole == "Personnel" ? "hidden" : ""
-                      }`}
-                    >
+                    <th className="">
                       <div className="flex items-start justify-start ml-7">
                         <span className="flex">
                           Factory<p className="text-red-600 ml-1">*</p>
@@ -1775,7 +1771,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               className={`bg-gray text-slate-900 font-medium border-b ${rowClass}  ${
                                 !item._id ? "bg-red-50" : ""
                               }`}
-                              aria-colspan={selectedRole == "Personnel" ? 5 : 6}
+                              aria-colspan={6}
                             >
                               <td className="">
                                 <div
@@ -1940,13 +1936,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   </ul>
                                 </div>
                               </td>
-                              <td
-                                className={`${
-                                  selectedRole == "Personnel"
-                                    ? "hidden"
-                                    : "text-sm text-gray-500 items-start justify-center"
-                                }`}
-                              >
+                              <td className="text-sm text-gray-500 items-start justify-center">
                                 <button
                                   id="dropdownFactoryButton"
                                   data-dropdown-toggle="dropdown"
