@@ -7,7 +7,16 @@ import Users from "../../models/users"
 import * as Sentry from "@sentry/node"
 
 export const paginated = async (req: Request, res: Response) => {
-  const { page, role, locationId, status, name, excludeUser } = req.query
+  const {
+    page,
+    role,
+    locationId,
+    status,
+    name,
+    excludeUser,
+    factories,
+    machineClass,
+  } = req.query
   if (page) {
     try {
       const queryFilters = []
@@ -27,8 +36,45 @@ export const paginated = async (req: Request, res: Response) => {
       if (status && status !== "null") {
         queryFilters.push({ status })
       }
-      if (excludeUser) {
-        queryFilters.push({ _id: { $ne: excludeUser } })
+      // if (excludeUser) {
+      //   queryFilters.push({ _id: { $ne: excludeUser } })
+      // }
+
+      const factoryMachineFilter = []
+      if (
+        factories &&
+        factories !== "" &&
+        machineClass &&
+        machineClass !== ""
+      ) {
+        factoryMachineFilter.push({
+          $and: [
+            //@ts-expect-error
+            { factoryId: factories?.split(",").map((id: string) => id.trim()) },
+            //@ts-expect-error
+            {
+              machineClassId: machineClass
+                ?.split(",")
+                .map((id: string) => id.trim()),
+            },
+          ],
+        })
+      } else {
+        if (factories && factories !== "") {
+          //@ts-expect-error
+          const factoryIds = factories
+            ?.split(",")
+            .map((id: string) => id.trim())
+          queryFilters.push({ factoryId: { $in: factoryIds } })
+        }
+
+        if (machineClass && machineClass !== "") {
+          //@ts-expect-error
+          const machineClassIds = machineClass
+            ?.split(",")
+            .map((id: string) => id.trim())
+          queryFilters.push({ machineClassId: { $in: machineClassIds } })
+        }
       }
 
       const orFilters = []
@@ -60,6 +106,9 @@ export const paginated = async (req: Request, res: Response) => {
         $and: [
           { $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] },
           ...(orFilters.length ? [{ $or: orFilters }] : []),
+          ...(factoryMachineFilter.length
+            ? [{ $or: factoryMachineFilter }]
+            : []),
         ],
       })
 
