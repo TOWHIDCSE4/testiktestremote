@@ -9,10 +9,7 @@ import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import { T_MachineClass } from "custom-validator"
 import FilterCheckbox from "./FilterCheckbox"
-import { hourMinuteSecond } from "../../../../helpers/timeConverter"
 import LocalTime from "./LocalTime"
-import useGetLocationLastUpdate from "../../../../hooks/timers/useGetLocationLastUpdate"
-import LastUpdated from "./LastUpdated"
 import InProduction from "./InProduction"
 import useStoreSession from "../../../../store/useStoreSession"
 
@@ -124,31 +121,33 @@ const Clocks = ({
               className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
             >
               <div className="py-1">
-                <Menu.Item>
-                  {({ active }) => (
-                    <div className="relative px-4 py-0.5 flex items-start">
-                      <div className="flex h-6 items-center">
-                        <input
-                          id="all"
-                          aria-describedby="all-description"
-                          name="all"
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                          defaultChecked={checkAll}
-                          onChange={(e) => {
-                            handleOnChange(e)
-                            setFilterCheck({})
-                          }}
-                        />
+                {userRole !== "Personnel" && (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div className="relative px-4 py-0.5 flex items-start">
+                        <div className="flex h-6 items-center">
+                          <input
+                            id="all"
+                            aria-describedby="all-description"
+                            name="all"
+                            type="checkbox"
+                            className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                            defaultChecked={checkAll}
+                            onChange={(e) => {
+                              handleOnChange(e)
+                              setFilterCheck({})
+                            }}
+                          />
+                        </div>
+                        <div className="ml-3 text-sm leading-6">
+                          <label htmlFor="all" className="text-gray-700">
+                            All
+                          </label>
+                        </div>
                       </div>
-                      <div className="ml-3 text-sm leading-6">
-                        <label htmlFor="all" className="text-gray-700">
-                          All
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </Menu.Item>
+                    )}
+                  </Menu.Item>
+                )}
                 {machineClasses?.map((machineClass, index) => {
                   return (
                     <Menu.Item key={index}>

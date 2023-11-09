@@ -10,7 +10,13 @@ import redisClient from "../../utils/redisClient"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
   let { locationId, machineClassId } = req.query
-  if (locationId !== null && locationId !== "undefined") {
+  if (
+    locationId !== null &&
+    locationId !== "undefined" &&
+    machineClassId !== null &&
+    machineClassId !== "undefined" &&
+    machineClassId !== ""
+  ) {
     try {
       const cacheKey = `locationMachineClass:${locationId}:${machineClassId}`
       const cachedData = await redisClient.get(cacheKey)
@@ -34,18 +40,12 @@ export const locationMachineClass = async (req: Request, res: Response) => {
           $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
         }
 
-        if (
-          machineClassId !== null &&
-          machineClassId !== "undefined" &&
-          machineClassId !== ""
-        ) {
-          machineClassId = machineClassId as string
-          const machineClassIds = machineClassId
-            .split(",")
-            .map((e) => new mongoose.Types.ObjectId(e))
+        machineClassId = machineClassId as string
+        const machineClassIds = machineClassId
+          .split(",")
+          .map((e) => new mongoose.Types.ObjectId(e))
 
-          query.machineClassId = { $in: machineClassIds }
-        }
+        query.machineClassId = { $in: machineClassIds }
 
         const getMachineByClass: Array<Record<string, any>> =
           await Machines.find(query)

@@ -396,6 +396,8 @@ const LogsTable = ({
     const selectedMachineClasses: string = event.target.value
     setSelectedMachineClassId(selectedMachineClasses)
     setSelectedLocationId(city)
+    //@ts-expect-error
+    setMachineClass(selectedMachineClasses)
     if (selectedMachineClasses.length === 0) {
       setSelectedMachineValues([])
       setMachine([])
@@ -406,7 +408,8 @@ const LogsTable = ({
 
   useEffect(() => {
     setMachineClassCounter(machineClass.length)
-    setSelectedMachineValues(machineClass)
+    setSelectedMachineClassId(machineClass)
+    // setSelectedMachineValues(machineClass)
   }, [machineClass])
 
   const handleMachineChange = (event: any) => {

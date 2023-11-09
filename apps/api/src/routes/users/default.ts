@@ -1,4 +1,3 @@
-import express from "express"
 import { Request, Response } from "express"
 import Users from "../../models/users"
 import {
@@ -9,7 +8,6 @@ import {
   UPDATE_SUCCESS_MESSAGE,
   DELETE_SUCCESS_MESSAGE,
   VALID_EMAIL,
-  INVALID_EMAIL,
 } from "../../utils/constants"
 import CryptoJS from "crypto-js"
 import { keys } from "../../config/keys"

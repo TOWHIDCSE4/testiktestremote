@@ -14,24 +14,24 @@ import { Menu, Transition } from "@headlessui/react"
 import combineClasses from "../../../helpers/combineClasses"
 import useFactories from "../../../hooks/factories/useFactories"
 import useUpdateUser from "../../../hooks/users/useUpdateUser"
-import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import ConfirmationModal from "./modals/ConfirmationModal"
 import DeleteModal from "./modals/DeleteModal"
 import useProfile from "../../../hooks/users/useProfile"
 import useStoreSession from "../../../store/useStoreSession"
-import React from "react"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
-import { Alert, Space } from "antd"
+import React from "react"
+import { Alert } from "antd"
+import toast from "react-hot-toast"
+import { FormControl, MenuItem } from "@mui/material"
+import Select from "@mui/material/Select"
 interface ContentProps {
   userLog: string
 }
 
 const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [userRole, setUserRole] = useState<string | undefined>(userLog)
-
   const [checkedProved, setCheckedProved] = useState<boolean>(true)
-
   const roleFilter = (): string[] => {
     if (userRole === "HR") {
       return ["Production", "Corporate", "Personnel"]
@@ -120,13 +120,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
   const [action, setAction] = useState<T_UserStatus | null>(null)
   const [isOpen, setIsOpen] = useState(false)
-  const [alertPrompt, setAlertPrompt] = useState(false)
   const [isOpenRole, setIsOpenRole] = useState()
   const [isOpenFactory, setIsOpenFactory] = useState()
+  const [departments, setDepartment] = useState(["All"])
+  const [alertPrompt, setAlertPrompt] = useState(false)
   const [directorStates, setDirectorStates] = useState([])
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
+  const [selectedFactoryIds, setSelectedFactoryIds] = useState([""])
+  const [selectedFactories, setSelectedFactories] = useState(["All"])
+  const [factoryMachineClasses, setFactoryMachineClasses] = useState([""])
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+  const [selectedMachineClasses, setSelectedMachineClasses] = useState(["All"])
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
@@ -136,7 +141,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     page,
     setPage,
     setRole,
+    setMachineClass,
     setLocationId,
+    setFactories,
     setStatus,
     setName,
   } = usePaginatedUsers(
@@ -210,6 +217,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }, [userProfile, selectedRole, selectedStatus])
 
+  useEffect(() => {
+    const factoryMachineClasses: string[] = machineClass?.items?.filter(
+      (item: any) => selectedFactoryIds.includes(item.factoryId)
+    )
+    setFactoryMachineClasses(factoryMachineClasses)
+  }, [selectedFactoryIds])
+
   const handleTeamListing = (item: any) => {
     setIsOpenRole(undefined)
     setOpenAccordion(null)
@@ -267,6 +281,25 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setName(e.target.value)
   }
 
+  const ITEM_HEIGHT = 30
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5,
+        padding: 0,
+      },
+      anchorOrigin: {
+        vertical: "bottom",
+        horizontal: "left",
+      },
+      transformOrigin: {
+        vertical: "top",
+        horizontal: "left",
+      },
+      getContentAnchorEl: null,
+    },
+  }
+
   const handleDirectorCheck = (idx: any, item: any) => {
     const updatedstates: any = [...directorStates]
     updatedstates[idx] = !directorStates[idx]
@@ -293,6 +326,45 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const checkFactory = factories?.items.find(
     (factoryName: any) => factoryName._id === userProfile?.item.factoryId
   )
+
+  useEffect(() => {
+    setSelectedFactoryIds(checkFactory?._id)
+  }, [checkFactory])
+
+  const handleFactorySelection = (event: any) => {
+    const selectedFactories = event.target.value
+    const updatedSelection = selectedFactories.filter(
+      (val: string) => val !== "All"
+    )
+    setSelectedFactories(updatedSelection)
+
+    const selectedFactoryIds = factories?.items
+      ?.filter((item: any) => selectedFactories.includes(item.name))
+      .map((item: any) => item._id)
+    setSelectedFactoryIds(selectedFactoryIds)
+    setFactories(selectedFactoryIds)
+  }
+
+  const handleMachineClassSelection = (event: any) => {
+    const selectedMachineClasses = event.target.value
+    const updatedSelection = selectedMachineClasses.filter(
+      (val: string) => val !== "All"
+    )
+    setSelectedMachineClasses(updatedSelection)
+
+    const selectedMachineClassIds = machineClass?.items
+      ?.filter((item: any) => selectedMachineClasses.includes(item.name))
+      .map((item: any) => item._id)
+    setMachineClass(selectedMachineClassIds)
+  }
+
+  const handleDepartmentSelection = (event: any) => {
+    const selectedDepts = event.target.value
+    const updatedSelection = selectedDepts.filter(
+      (val: string) => val !== "All"
+    )
+    setDepartment(updatedSelection)
+  }
 
   return (
     <>
@@ -348,20 +420,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </div>
                     )}
                   </div>
-
-                  {/* <select
-                    id="role"
-                    className="w-5 py-0 pl-0 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 "
-                    onChange={handleTeamListing}
-                    value={selectedStatus}
-                  >
-                    <option className="hidden">Select Role</option>
-                    {roleFilter().map((item, index) => (
-                      <option className="space-y-3 py-2" key={index} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select> */}
                   <label
                     className="text-[#7F1D1D] uppercase font-semibold pl-1"
                     style={{ whiteSpace: "nowrap", fontSize: "1rem" }}
@@ -490,13 +548,57 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   Factory
                 </span>
                 <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                  <span className="text-start text-[#7F1D1D">:</span>
+                  {userProfile?.item.role !== "Production" ? (
+                    <FormControl sx={{ m: 1, width: 200 }}>
+                      <Select
+                        sx={{
+                          boxShadow: "none",
+                          ".MuiOutlinedInput-notchedOutline": { border: 0 },
+                          variant: "standard",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "&:focus .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "& .MuiSelect-select": {
+                            paddingLeft: "0px", // Adjust the value as needed
+                            fontWeight: "bold",
+                          },
+                        }}
+                        labelId="demo-multiple-name-label"
+                        id="demo-multiple-name"
+                        multiple
+                        style={{
+                          width: "100%",
+                          fontSize: "12px",
+                          height: "4px",
+                        }}
+                        value={selectedFactories}
+                        onChange={(event) => handleFactorySelection(event)}
+                        MenuProps={MenuProps}
+                      >
+                        <MenuItem value="All">All</MenuItem>
+                        {factories?.items?.map((item: any, index: number) => (
+                          <MenuItem key={index} value={item.name as string}>
+                            {item.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  ) : (
+                    <span>{checkFactory ? [checkFactory.name] : ""}</span>
+                  )}
+                </div>
+                {/* <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D]">:</span>
                   {userProfile?.item.role == "Production" ? (
                     <span>{checkFactory ? [checkFactory.name] : ""}</span>
                   ) : (
                     <span>All</span>
                   )}
-                </div>
+                </div> */}
               </div>
               {selectedRole === "Personnel" ? (
                 <div className="flex justify-end text-gray-900 space-x-1">
@@ -504,18 +606,98 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     Machine Class
                   </span>
                   <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                    <span className="text-start text-[#7F1D1D">:</span>
+                    <FormControl sx={{ m: 1, width: 200 }}>
+                      <Select
+                        sx={{
+                          boxShadow: "none",
+                          ".MuiOutlinedInput-notchedOutline": { border: 0 },
+                          variant: "standard",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "&:focus .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "& .MuiSelect-select": {
+                            paddingLeft: "0px", // Adjust the value as needed
+                            fontWeight: "bold",
+                          },
+                        }}
+                        labelId="demo-multiple-name-label"
+                        id="demo-multiple-name"
+                        multiple
+                        style={{
+                          width: "100%",
+                          fontSize: "12px",
+                          height: "4px",
+                        }}
+                        value={selectedMachineClasses}
+                        onChange={(event) => handleMachineClassSelection(event)}
+                        MenuProps={MenuProps}
+                      >
+                        <MenuItem value="All">All</MenuItem>
+                        {factoryMachineClasses?.map(
+                          (item: any, index: number) => (
+                            <MenuItem key={index} value={item.name as string}>
+                              {item.name}
+                            </MenuItem>
+                          )
+                        )}
+                      </Select>
+                    </FormControl>
+                  </div>
+                  {/* <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     <span>All</span>
-                  </div>
+                  </div> */}
                 </div>
               ) : selectedRole === "HR" || selectedRole === "Corporate" ? (
                 <div className="flex justify-end text-gray-900 space-x-1">
                   <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                     Department
                   </span>
+
                   <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
-                    <span>All</span>
+                    <FormControl sx={{ m: 1, width: 200 }}>
+                      <Select
+                        sx={{
+                          boxShadow: "none",
+                          ".MuiOutlinedInput-notchedOutline": { border: 0 },
+                          variant: "standard",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "&:focus .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "& .MuiSelect-select": {
+                            paddingLeft: "0px", // Adjust the value as needed
+                            fontWeight: "bold",
+                          },
+                        }}
+                        labelId="demo-multiple-name-label"
+                        id="demo-multiple-name"
+                        multiple
+                        style={{
+                          width: "100%",
+                          fontSize: "12px",
+                          height: "4px",
+                        }}
+                        value={departments}
+                        onChange={(event) => handleDepartmentSelection(event)}
+                        MenuProps={MenuProps}
+                      >
+                        <MenuItem value="All">All</MenuItem>
+                        {roleFilter()?.map((item: any, index: number) => (
+                          <MenuItem key={index} value={item as string}>
+                            {item}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    {/* <span>All</span> */}
                   </div>
                 </div>
               ) : (
@@ -701,13 +883,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           </svg>
                         </button>
                       </div>
-                      {/* <span className="ml-2 flex-none rounded text-gray-400">
-                      <ChevronUpDownIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </span>
-                                      </a> */}
                     </th>
                   </tr>
                 </thead>
