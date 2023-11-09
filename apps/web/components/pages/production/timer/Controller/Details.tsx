@@ -91,6 +91,10 @@ const Details = ({
     if (leadingTrailingSpaceRegex.test(operatorQuery)) {
       toast.error("Please remove trailing spaces")
     } else {
+      console.log(
+        "🚀 ~ file: Details.tsx:95 ~ handleInputOperator ~ timerDetails:",
+        timerDetails
+      )
       mutate(
         { ...timerDetails, operator: "", operatorName: operatorQuery },
         callBackReq
@@ -118,7 +122,13 @@ const Details = ({
         id: defaultOperator._id,
         name: defaultOperator.firstName + " " + defaultOperator.lastName,
       })
-      mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
+      console.log(
+        "🚀 ~ file: Details.tsx:122 ~ useEffect ~ timerDetails:",
+        timerDetails
+      )
+      if (timerDetails) {
+        mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
+      }
     }
   }, [defaultOperator])
 
@@ -187,7 +197,9 @@ const Details = ({
         typeof timerDetails?.operator === "object" &&
         selectedOperator.id !== timerDetails?.operator._id)
     ) {
-      mutate({ ...timerDetails, operator: selectedOperator.id }, callBackReq)
+      if (timerDetails) {
+        mutate({ ...timerDetails, operator: selectedOperator.id }, callBackReq)
+      }
     }
   }, [selectedOperator])
 

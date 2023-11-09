@@ -188,7 +188,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
       if (timer) {
         mutate(
           {
-            ...timerDetailData?.item,
+            ...timer,
             operator: "",
             operatorName: operatorQuery,
           },
