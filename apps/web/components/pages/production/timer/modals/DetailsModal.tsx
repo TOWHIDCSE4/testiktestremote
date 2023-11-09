@@ -120,7 +120,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
     } else if (timerDetailData?.item?.operator?.firstName) {
       setSelectedOperator({
         id: "",
-        name: `${timerDetailData?.item?.operator?.firstName} ${timerDetailData?.item?.operator?.lastName}`,
+        name: `${timerDetailData?.item?.operator?.firstName}`,
       })
     }
   }, [timerDetailData, isOpen])
