@@ -130,10 +130,6 @@ const LogsTable = ({
   }
 
   const handleProcess = () => {
-    console.log(
-      "🚀 ~ file: index.tsx:135 ~ handleProcess ~ prevProcess:",
-      process
-    )
     if (process === true) {
       setDateRange([]),
         setStartDateRange(""),
@@ -394,7 +390,6 @@ const LogsTable = ({
 
   useEffect(() => {
     setCityCounter(city.length)
-    // console.log("cityCounter", city)
   })
 
   const handleMachineClassChange = (event: SelectChangeEvent) => {
@@ -405,7 +400,6 @@ const LogsTable = ({
       setSelectedMachineValues([])
       setMachine([])
     }
-    console.log(selectedMachineClasses)
     //@ts-expect-error
     setMachineClass(selectedMachineClasses)
   }
@@ -495,7 +489,6 @@ const LogsTable = ({
       .filter(([_, parts]) => parts.length > 0)
       .map(([machineId]) => machineId)
     if (machineClass.length !== machinesWithParts.length) {
-      console.log("called")
       setSelectedMachineClassId(machinesWithParts)
       setMachineClass(machinesWithParts)
       setMachine([])
