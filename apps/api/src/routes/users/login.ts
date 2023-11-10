@@ -52,7 +52,7 @@ export const auth = async (req: Request, res: Response) => {
             },
             keys.signKey as string,
             {
-              expiresIn: "168h",
+              expiresIn: "48h",
             }
           )
           if (res.locals.user) {
@@ -70,7 +70,7 @@ export const auth = async (req: Request, res: Response) => {
           if (zodParsedSession.success) {
             const now = new Date(Date.now())
             await redisClient.hSet(`${token}`, {
-              expireIn: `${dayjs(addHours(now, 168)).format()}`,
+              expireIn: `${dayjs(addHours(now, 48)).format()}`,
             })
             res.json({
               error: false,
