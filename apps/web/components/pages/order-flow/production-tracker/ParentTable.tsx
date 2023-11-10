@@ -7,6 +7,7 @@ import useMachineClasses from "../../../../hooks/machineClasses/useMachineClasse
 import combineClasses from "../../../../helpers/combineClasses"
 import TabTable from "./TabTable"
 import { T_JobStatus } from "custom-validator"
+import useProfile from "../../../../hooks/users/useProfile"
 import useCountStatus from "../../../../hooks/jobs/useCountStatus"
 import useStoreSession from "../../../../store/useStoreSession"
 
@@ -17,6 +18,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
   const [isAllFilterSelected, setIsAllFilterSelected] = useState(true)
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses()
+  const { data: userProfile } = useProfile()
   const [openFilter, setOpenFilter] = useState(false)
   const [checkAll, setCheckAll] = useState(false)
   const [machineClassArray, setMachineClassArray] = useState<string[]>([])
@@ -115,6 +117,10 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
         }
       })
     : []
+
+  const personnelMachineClass = machineClasses?.items.find(
+    (MachineName: any) => MachineName._id === userProfile?.item.machineClassId
+  )
 
   return (
     <>
@@ -226,6 +232,137 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                       className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                       onClick={() => {
                         setOpenFilter((openFilter) => !openFilter)
+                      }}
+                    >
+                      Machine Class
+                      <ChevronDownIcon
+                        className="-mr-1 h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </Menu.Button>
+                  </div>
+
+                  <Transition
+                    show={openFilter}
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items
+                      static
+                      className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    >
+                      <div className="py-1">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div className="relative px-4 py-0.5 flex items-start">
+                              <div className="flex h-6 items-center">
+                                <input
+                                  id="all"
+                                  aria-describedby="all-description"
+                                  name="all"
+                                  type="checkbox"
+                                  className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                  checked={checkAll}
+                                  onChange={(e) => {
+                                    handleSelectMachineClass(e, "all")
+                                  }}
+                                />
+                              </div>
+                              <div className="ml-3 text-sm leading-6 flex flex-col">
+                                <label htmlFor="all" className="text-gray-700">
+                                  All
+                                </label>
+                              </div>
+                            </div>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          <div className="relative px-4 py-0.5">
+                            {userProfile?.item.role === "Personnel" ? (
+                              personnelMachineClass ? (
+                                <div className="flex items-start">
+                                  <div className="flex h-6 items-center">
+                                    <input
+                                      id={personnelMachineClass._id}
+                                      aria-describedby={`${personnelMachineClass._id}-description`}
+                                      name={personnelMachineClass._id}
+                                      type="checkbox"
+                                      className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                      checked={machineClassArray.includes(
+                                        personnelMachineClass._id
+                                      )}
+                                      onChange={(e) => {
+                                        handleSelectMachineClass(
+                                          e,
+                                          personnelMachineClass._id
+                                        )
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="ml-3 text-sm leading-6">
+                                    <label
+                                      htmlFor={personnelMachineClass._id}
+                                      className="text-gray-700"
+                                    >
+                                      {personnelMachineClass.name}
+                                    </label>
+                                  </div>
+                                </div>
+                              ) : null
+                            ) : (
+                              machineClasses?.items.map(
+                                (machineClassId: T_MachineClass) => (
+                                  <div
+                                    key={machineClassId._id}
+                                    className="flex items-start"
+                                  >
+                                    <div className="flex h-6 items-center">
+                                      <input
+                                        id={machineClassId._id || ""}
+                                        aria-describedby={`${machineClassId._id}-description`}
+                                        name={machineClassId._id || ""}
+                                        type="checkbox"
+                                        className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                        checked={machineClassArray.includes(
+                                          machineClassId._id || ""
+                                        )}
+                                        onChange={(e) => {
+                                          handleSelectMachineClass(
+                                            e,
+                                            machineClassId._id
+                                          )
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="ml-3 text-sm leading-6">
+                                      <label
+                                        htmlFor={machineClassId._id}
+                                        className="text-gray-700"
+                                      >
+                                        {machineClassId.name}
+                                      </label>
+                                    </div>
+                                  </div>
+                                )
+                              )
+                            )}
+                          </div>
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+                {/* <Menu as="div" className="relative inline-block text-left">
+                  <div>
+                    <Menu.Button
+                      className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                      onClick={() => {
+                        setOpenFilter((openFilter) => !openFilter)
                         // filterCheckHandler();
                       }}
                     >
@@ -318,7 +455,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                       </div>
                     </Menu.Items>
                   </Transition>
-                </Menu>
+                </Menu> */}
               </div>
               <div className={`mt-2 mr-5 flex`}>
                 <div className="flex">

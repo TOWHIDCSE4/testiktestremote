@@ -118,7 +118,9 @@ const Details = ({
         id: defaultOperator._id,
         name: defaultOperator.firstName + " " + defaultOperator.lastName,
       })
-      mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
+      if (timerDetails) {
+        mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
+      }
     }
   }, [defaultOperator])
 
@@ -187,7 +189,9 @@ const Details = ({
         typeof timerDetails?.operator === "object" &&
         selectedOperator.id !== timerDetails?.operator._id)
     ) {
-      mutate({ ...timerDetails, operator: selectedOperator.id }, callBackReq)
+      if (timerDetails) {
+        mutate({ ...timerDetails, operator: selectedOperator.id }, callBackReq)
+      }
     }
   }, [selectedOperator])
 

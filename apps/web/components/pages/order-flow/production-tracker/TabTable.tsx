@@ -148,7 +148,7 @@ const TabTable = ({
               </th>
               <th
                 scope="col"
-                className={`w-[17%] md:w-[13%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
+                className={`w-[28%] md:w-[20%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Name
@@ -258,7 +258,7 @@ const TabTable = ({
                         : ""} */}
                     </td>
                     <td className="py-3 text-sm text-gray-800">{job?.name}</td>
-                    <td className="py-3 text-sm text-gray-800 w-20">
+                    <td className="py-3 text-sm text-gray-800 w-26">
                       {job?.part?.name}
                     </td>
                     {/* <td className="py-3 pl-6 text-sm text-gray-800">

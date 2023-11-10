@@ -31,6 +31,7 @@ import MenuItem from "@mui/material/MenuItem"
 import FormControl from "@mui/material/FormControl"
 import ListItemText from "@mui/material/ListItemText"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
+import useProfile from "../../../../../hooks/users/useProfile"
 import Checkbox from "@mui/material/Checkbox"
 import useGetGlobalMetrics from "../../../../../hooks/timerLogs/useGetGlobalMetrics"
 import GlobalTableReport from "../GlobalReport"
@@ -81,6 +82,7 @@ const LogsTable = ({
   const [partsSelected, setPartsSelected] = useState<string[]>([])
   const [partSelector, setPartSelector] = useState<string[]>([])
   const [machine, setMachine] = useState<string[]>([])
+  const { data: userProfile } = useProfile()
   const [search, setSearch] = useState<string>("")
   const [loadOptionsCount, setLoadOptionsCount] = useState(0)
   const [cityCounter, setCityCounter] = useState<number>(city.length)
@@ -128,7 +130,19 @@ const LogsTable = ({
   }
 
   const handleProcess = () => {
-    setProcess(process ? false : true)
+    if (process === true) {
+      setDateRange([]),
+        setStartDateRange(""),
+        datePick([]),
+        setEndDateRange(""),
+        setStartDateRanges(""),
+        setEndDateRanges("")
+    } else {
+      const currentDate = dayjs().toDate()
+      const oneWeekBefore = dayjs().subtract(1, "week").toDate()
+      datePick([oneWeekBefore, currentDate])
+    }
+    setProcess((prevProcess) => !prevProcess)
   }
 
   dayjs.extend(utc.default)
@@ -330,7 +344,7 @@ const LogsTable = ({
 
   const datePick = (inputValue: any) => {
     setPage(1)
-    setDateRange(inputValue)
+    // setDateRange(inputValue)
     if (isCheckboxChecked) {
       setStartDateRange(
         dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
@@ -376,7 +390,6 @@ const LogsTable = ({
 
   useEffect(() => {
     setCityCounter(city.length)
-    // console.log("cityCounter", city)
   })
 
   const handleMachineClassChange = (event: SelectChangeEvent) => {
@@ -385,11 +398,18 @@ const LogsTable = ({
     setSelectedLocationId(city)
     //@ts-expect-error
     setMachineClass(selectedMachineClasses)
+    if (selectedMachineClasses.length === 0) {
+      setSelectedMachineValues([])
+      setMachine([])
+    }
+    //@ts-expect-error
+    setMachineClass(selectedMachineClasses)
   }
 
   useEffect(() => {
     setMachineClassCounter(machineClass.length)
-    setSelectedMachineValues(machineClass)
+    setSelectedMachineClassId(machineClass)
+    // setSelectedMachineValues(machineClass)
   }, [machineClass])
 
   const handleMachineChange = (event: any) => {
@@ -472,7 +492,6 @@ const LogsTable = ({
       .filter(([_, parts]) => parts.length > 0)
       .map(([machineId]) => machineId)
     if (machineClass.length !== machinesWithParts.length) {
-      console.log("called")
       setSelectedMachineClassId(machinesWithParts)
       setMachineClass(machinesWithParts)
       setMachine([])
@@ -706,31 +725,23 @@ const LogsTable = ({
                       renderValue={() => `${cityCounter} selected`}
                       MenuProps={MenuProps}
                     >
-                      {userRole === "Personnel"
-                        ? locations?.items?.map(
-                            (item: T_Locations, index: number) => (
-                              <MenuItem
-                                key={index}
-                                value={item._id as string}
-                                disabled={!city.includes(item._id as string)}
-                              >
-                                <ListItemText primary={item.name} />
-                                <Checkbox
-                                  checked={city.includes(item._id as string)}
-                                />
-                              </MenuItem>
-                            )
-                          )
-                        : locations?.items?.map(
-                            (item: T_Locations, index: number) => (
-                              <MenuItem key={index} value={item._id as string}>
-                                <ListItemText primary={item.name} />
-                                <Checkbox
-                                  checked={city.includes(item._id as string)}
-                                />
-                              </MenuItem>
-                            )
-                          )}
+                      {locations?.items?.map(
+                        (item: T_Locations, index: number) => (
+                          <MenuItem
+                            disabled={
+                              userProfile?.item.role === "Personnel" &&
+                              userProfile?.item.locationId !== item._id
+                            }
+                            key={index}
+                            value={item._id as string}
+                          >
+                            <ListItemText primary={item.name} />
+                            <Checkbox
+                              checked={city.includes(item._id as string)}
+                            />
+                          </MenuItem>
+                        )
+                      )}
                     </Select>
                   </FormControl>
                   {/* </Space> */}
