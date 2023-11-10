@@ -402,7 +402,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         />
                       </svg>
                     </button>
-
                     {isOpenTeam && (
                       <div className="absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                         {roleFilter().map((item: any, index: any) => (
@@ -427,7 +426,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     Team Listing
                   </label>
                 </div>
-
                 <span className="text-md font-bold flex pl-1 mt-[1px]">
                   -
                   <p className="pl-0.5 text-[#172554] uppercase">
@@ -437,15 +435,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               <div className="mt-4 flex ml-0">
                 <span
-                  className={`text-[28px] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${
-                    selectedStatus === "Pending"
-                      ? "text-yellow-700"
-                      : selectedStatus === "Approved"
-                      ? "text-green-800"
-                      : selectedStatus === "Rejected"
-                      ? "text-red-800"
-                      : "text-yellow-500"
-                  }`}
+                  className={` text-[28px] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${selectedColor}`}
                   onClick={toggleDropdown}
                 >
                   <svg
@@ -477,7 +467,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   </span>
                 </span>
                 {isOpen && (
-                  <div className="sm:top-[6rem] absolute overflow mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
+                  <div
+                    className={`${
+                      isOpenTeam == true ? "hidden" : ""
+                    } sm:top-[6rem] absolute overflow mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50`}
+                  >
                     <ul>
                       {statusArray.map((status, index) => (
                         <li
@@ -511,7 +505,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </span>
                   </div>
                 ) : (
-                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-[13.5rem] uppercase space-x-1 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-1 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     {locations && locations.items
                       ? storeSession?.role === "Administrator" ||
@@ -547,7 +541,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   Factory
                 </span>
-                <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D">:</span>
                   {userProfile?.item.role !== "Production" ? (
                     <FormControl sx={{ m: 1, width: 200 }}>
@@ -605,7 +599,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   <span className="text-[#7F1D1D] text-[12px] uppercase whitespace-nowrap font-semibold">
                     Machine Class
                   </span>
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D">:</span>
                     <FormControl sx={{ m: 1, width: 200 }}>
                       <Select
@@ -657,8 +651,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                     Department
                   </span>
-
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     <FormControl sx={{ m: 1, width: 200 }}>
                       <Select
@@ -781,7 +774,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </div>
                   </th>
                   <th className="">
-                    <div className="flex items-start justify-start ml-7">
+                    <div
+                      className={`${
+                        selectedRole == "Personnel"
+                          ? "hidden"
+                          : "flex items-start justify-start ml-7"
+                      }`}
+                    >
                       <span className="flex">
                         Factory<p className="text-red-600 ml-1">*</p>
                       </span>
@@ -1160,34 +1159,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     {paginated?.items.length == 1 && (
                       <>
                         <tr
-                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
-                          data-accordion-target="#accordion-arrow-icon-body-0"
-                          aria-expanded="false"
-                          aria-controls="accordion-arrow-icon-body-0"
-                        >
-                          <td className="pr-6 py-5 h-14">
-                            <div className="flex items-center">
-                              <label
-                                htmlFor="checkbox-table-search-0"
-                                className="sr-only"
-                              ></label>
-                            </div>
-                          </td>
-                          <th
-                            scope="row"
-                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                          ></th>
-                          <td className="px-6 py-4"></td>
-                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
-                          <td className="px-6 py-4"></td>
-                          <td className="px-6 py-4">
-                            <span className="font-bold text-red-500"></span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="font-bold text-red-500"></span>
-                          </td>
-                        </tr>
-                        <tr
                           className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
                           data-accordion-target="#accordion-arrow-icon-body-0"
                           aria-expanded="false"
@@ -1300,7 +1271,35 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           </td>
                         </tr>
                         <tr
-                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100  "
                           data-accordion-target="#accordion-arrow-icon-body-1"
                           aria-expanded="false"
                           aria-controls="accordion-arrow-icon-body-1"
@@ -1862,7 +1861,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </a> */}
                     </th>
                     {selectedRole === "Personnel" ? (
-                      <th colSpan={1} className="">
+                      <th className="">
                         <div className="flex items-start justify-start px-0 py-3 ml-9">
                           <div className="flex items-center overflow-ellipsis whitespace-nowrap">
                             Machine Class
@@ -2111,9 +2110,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   </ul>
                                 </div>
                               </td>
-                              <td
-                                className={`text-sm text-gray-500 items-start justify-center`}
-                              >
+                              <td className="text-sm text-gray-500 items-start justify-center">
                                 <button
                                   id="dropdownFactoryButton"
                                   data-dropdown-toggle="dropdown"
@@ -2198,6 +2195,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               {selectedRole === "Personnel" ? (
                                 <td
                                   className={`text-sm text-gray-500 items-center justify-center`}
+                                  // colSpan={
+                                  //   selectedStatus == "Pending" &&
+                                  //   selectedRole == "Personnel"
+                                  //     ? 2
+                                  //     : 1
+                                  // }
                                 >
                                   <button
                                     id="dropdownFactoryButton"
