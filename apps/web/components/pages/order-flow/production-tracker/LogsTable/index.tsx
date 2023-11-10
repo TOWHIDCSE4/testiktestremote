@@ -129,22 +129,6 @@ const LogsTable = ({
     setSortType(sortType === "asc" ? "desc" : "asc")
   }
 
-  const handleProcess = () => {
-    if (process === true) {
-      setDateRange([]),
-        setStartDateRange(""),
-        datePick([]),
-        setEndDateRange(""),
-        setStartDateRanges(""),
-        setEndDateRanges("")
-    } else {
-      const currentDate = dayjs().toDate()
-      const oneWeekBefore = dayjs().subtract(1, "week").toDate()
-      datePick([oneWeekBefore, currentDate])
-    }
-    setProcess((prevProcess) => !prevProcess)
-  }
-
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
 
@@ -322,7 +306,6 @@ const LogsTable = ({
       }
       result += `${remainingSeconds} sec`
     }
-
     return result
   }
 
@@ -342,9 +325,25 @@ const LogsTable = ({
     }
   }
 
+  const handleProcess = () => {
+    if (process === false) {
+      const currentDate = dayjs().format("YYYY-MM-DD")
+      const oneWeekBefore = dayjs().subtract(1, "week").format("YYYY-MM-DD")
+      datePick([oneWeekBefore, currentDate])
+    } else {
+      setStartDateRange("")
+      setEndDateRange("")
+      setStartDateRanges("")
+      setEndDateRanges("")
+    }
+    setProcess((prevProcess) => !prevProcess)
+  }
+
   const datePick = (inputValue: any) => {
     setPage(1)
-    // setDateRange(inputValue)
+    if (typeof inputValue[0] === "object") {
+      setDateRange(inputValue)
+    }
     if (isCheckboxChecked) {
       setStartDateRange(
         dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")

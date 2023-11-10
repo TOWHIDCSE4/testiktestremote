@@ -3,7 +3,7 @@ import {
   REFETCH_ACTIVATED,
   REFETCH_TIME,
 } from "../../helpers/constants"
-import { useQuery } from "@tanstack/react-query"
+import { useQueryClient, useQuery } from "@tanstack/react-query"
 import { T_BackendResponse, T_TimerLog } from "custom-validator"
 import Cookies from "js-cookie"
 import { useEffect, useState } from "react"
@@ -85,7 +85,7 @@ function useGetGlobalMetrics(locationIds: string[], processes: boolean) {
   const [partIds, setPartIds] = useState<string[]>([])
   const [startDateRanges, setStartDateRanges] = useState("")
   const [endDateRanges, setEndDateRanges] = useState("")
-
+  const queryClient = useQueryClient()
   const query = useQuery(
     [
       "global-Metrics",
@@ -111,15 +111,13 @@ function useGetGlobalMetrics(locationIds: string[], processes: boolean) {
       }),
     {
       refetchOnWindowFocus: false,
-      enabled: !!locationIds.length && !processes,
+      enabled: !!locationIds.length,
       refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
     }
   )
 
   useEffect(() => {
-    if (!processes) {
-      query.refetch()
-    }
+    queryClient.invalidateQueries({ queryKey: ["global-Metrics"] })
   }, [
     locationIds,
     factoryIds,

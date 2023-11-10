@@ -6,14 +6,13 @@ import {
 import TimerLogs from "../../models/timerLogs"
 import mongoose from "mongoose"
 import parts from "../../models/parts"
-import dayjs, { Dayjs } from "dayjs"
+import dayjs from "dayjs"
 import timerLogs from "../../models/timerLogs"
 import * as Sentry from "@sentry/node"
 import machines from "../../models/machines"
-import { start } from "repl"
-import { machine } from "os"
 import location from "../../models/location"
 import factories from "../../models/factories"
+
 export const globalLogs = async (req: Request, res: Response) => {
   const {
     locationId,
@@ -316,14 +315,12 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
   const { locationId, factoryId, machineId, machineClassId, partId } = req.query
   let { startDate, endDate } = req.query
   try {
-    startDate = startDate
-      ? dayjs(startDate as string).format()
-      : dayjs().startOf("week").format()
-    endDate = endDate
-      ? dayjs(endDate as string).format()
-      : dayjs().endOf("week").format()
     // Calculate the total time in hours
-    const totalTime = dayjs(endDate).diff(startDate, "hour")
+    const firstRecord = await timerLogs.find().sort({ createdAt: 1 }).limit(1)
+    const totalTime =
+      startDate && endDate
+        ? dayjs(String(endDate)).diff(String(startDate), "hour")
+        : dayjs(Date.now()).diff(dayjs(firstRecord[0].createdAt), "hour")
     let query = {}
 
     if (locationId) {
