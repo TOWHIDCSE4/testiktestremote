@@ -48,7 +48,7 @@ const Content = () => {
           }
           if (showWelcome) {
             toast.success("Thank You For signing up", {
-              position: "top-center",
+              position: "top-left",
               duration: 5000,
             })
           }
