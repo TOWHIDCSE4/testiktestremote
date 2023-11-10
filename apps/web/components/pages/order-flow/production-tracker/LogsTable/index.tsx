@@ -341,7 +341,9 @@ const LogsTable = ({
 
   const datePick = (inputValue: any) => {
     setPage(1)
-    // setDateRange(inputValue)
+    if (typeof inputValue[0] === "object") {
+      setDateRange(inputValue)
+    }
     if (isCheckboxChecked) {
       setStartDateRange(
         dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")

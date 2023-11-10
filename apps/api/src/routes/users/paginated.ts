@@ -51,9 +51,9 @@ export const paginated = async (req: Request, res: Response) => {
           $and: [
             //@ts-expect-error
             { factoryId: factories?.split(",").map((id: string) => id.trim()) },
-            //@ts-expect-error
             {
               machineClassId: machineClass
+                //@ts-expect-error
                 ?.split(",")
                 .map((id: string) => id.trim()),
             },
@@ -61,16 +61,16 @@ export const paginated = async (req: Request, res: Response) => {
         })
       } else {
         if (factories && factories !== "") {
-          //@ts-expect-error
           const factoryIds = factories
+            //@ts-expect-error
             ?.split(",")
             .map((id: string) => id.trim())
           queryFilters.push({ factoryId: { $in: factoryIds } })
         }
 
         if (machineClass && machineClass !== "") {
-          //@ts-expect-error
           const machineClassIds = machineClass
+            //@ts-expect-error
             ?.split(",")
             .map((id: string) => id.trim())
           queryFilters.push({ machineClassId: { $in: machineClassIds } })

@@ -6,14 +6,13 @@ import {
 import TimerLogs from "../../models/timerLogs"
 import mongoose from "mongoose"
 import parts from "../../models/parts"
-import dayjs, { Dayjs } from "dayjs"
+import dayjs from "dayjs"
 import timerLogs from "../../models/timerLogs"
 import * as Sentry from "@sentry/node"
 import machines from "../../models/machines"
-import { start } from "repl"
-import { machine } from "os"
 import location from "../../models/location"
 import factories from "../../models/factories"
+
 export const globalLogs = async (req: Request, res: Response) => {
   const {
     locationId,
@@ -322,7 +321,6 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
       startDate && endDate
         ? dayjs(String(endDate)).diff(String(startDate), "hour")
         : dayjs(Date.now()).diff(dayjs(firstRecord[0].createdAt), "hour")
-    console.log(dayjs(Date.now()).diff(dayjs(firstRecord[0].createdAt), "hour"))
     let query = {}
 
     if (locationId) {
