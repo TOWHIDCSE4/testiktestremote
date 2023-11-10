@@ -1687,7 +1687,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </a> */}
                     </th>
                     {selectedRole === "Personnel" ? (
-                      <th colSpan={1} className="">
+                      <th className="">
                         <div className="flex items-start justify-start px-0 py-3 ml-9">
                           <div className="flex items-center overflow-ellipsis whitespace-nowrap">
                             Machine Class
@@ -2021,12 +2021,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               {selectedRole === "Personnel" ? (
                                 <td
                                   className={`text-sm text-gray-500 items-center justify-center`}
-                                  colSpan={
-                                    selectedStatus == "Pending" &&
-                                    selectedRole == "Personnel"
-                                      ? 2
-                                      : 1
-                                  }
+                                  // colSpan={
+                                  //   selectedStatus == "Pending" &&
+                                  //   selectedRole == "Personnel"
+                                  //     ? 2
+                                  //     : 1
+                                  // }
                                 >
                                   <button
                                     id="dropdownFactoryButton"
