@@ -343,6 +343,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       .map((item: any) => item._id)
     setSelectedFactoryIds(selectedFactoryIds)
     setFactories(selectedFactoryIds)
+    if (selectedFactoryIds.length == 0) {
+      setSelectedFactories(["All"])
+    }
   }
 
   const handleMachineClassSelection = (event: any) => {
@@ -356,6 +359,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       ?.filter((item: any) => selectedMachineClasses.includes(item.name))
       .map((item: any) => item._id)
     setMachineClass(selectedMachineClassIds)
+    if (selectedMachineClasses.length === 0) {
+      setSelectedMachineClasses(["All"])
+    }
   }
 
   const handleDepartmentSelection = (event: any) => {
@@ -364,6 +370,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       (val: string) => val !== "All"
     )
     setDepartment(updatedSelection)
+
+    if (selectedDepts.length === 0) {
+      setDepartment(["All"])
+    }
   }
 
   return (
@@ -403,7 +413,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </svg>
                     </button>
                     {isOpenTeam && (
-                      <div className="absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                      <div className=" absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                         {roleFilter().map((item: any, index: any) => (
                           <div
                             key={index}
@@ -571,9 +581,20 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         }}
                         value={selectedFactories}
                         onChange={(event) => handleFactorySelection(event)}
-                        MenuProps={MenuProps}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                          style: { top: "9px" },
+                        }}
                       >
                         <MenuItem value="All">All</MenuItem>
+
                         {factories?.items?.map((item: any, index: number) => (
                           <MenuItem key={index} value={item.name as string}>
                             {item.name}
@@ -628,7 +649,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         }}
                         value={selectedMachineClasses}
                         onChange={(event) => handleMachineClassSelection(event)}
-                        MenuProps={MenuProps}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                          style: { top: "9px" },
+                        }}
                       >
                         <MenuItem value="All">All</MenuItem>
                         {factoryMachineClasses?.map(
@@ -680,7 +711,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         }}
                         value={departments}
                         onChange={(event) => handleDepartmentSelection(event)}
-                        MenuProps={MenuProps}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                          style: { top: "9px" },
+                        }}
                       >
                         <MenuItem value="All">All</MenuItem>
                         {roleFilter()?.map((item: any, index: number) => (
