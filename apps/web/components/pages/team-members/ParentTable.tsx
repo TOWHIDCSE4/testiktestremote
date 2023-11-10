@@ -593,9 +593,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           style: { top: "9px" },
                         }}
                       >
-                        {selectedFactoryIds.length === 0 ? (
-                          <MenuItem value="All">All</MenuItem>
-                        ) : null}
+                        <MenuItem value="All">All</MenuItem>
+
                         {factories?.items?.map((item: any, index: number) => (
                           <MenuItem key={index} value={item.name as string}>
                             {item.name}
