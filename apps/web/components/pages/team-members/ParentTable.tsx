@@ -219,8 +219,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   useEffect(() => {
     const factoryMachineClasses: string[] = machineClass?.items?.filter(
-      (item: any) => selectedFactoryIds.includes(item.factoryId)
+      (item: any) => selectedFactoryIds?.includes(item.factoryId)
     )
+    console.log("HERE!")
     setFactoryMachineClasses(factoryMachineClasses)
   }, [selectedFactoryIds])
 
@@ -554,7 +555,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D">:</span>
                   {userProfile?.item.role !== "Production" ? (
-                    <FormControl sx={{ m: 1, width: 200 }}>
+                    <FormControl sx={{ m: 1, width: 220 }}>
                       <Select
                         sx={{
                           boxShadow: "none",
@@ -569,6 +570,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           "& .MuiSelect-select": {
                             paddingLeft: "0px", // Adjust the value as needed
                             fontWeight: "bold",
+                            paddingRight: "0px",
                           },
                         }}
                         labelId="demo-multiple-name-label"
@@ -622,7 +624,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   </span>
                   <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D">:</span>
-                    <FormControl sx={{ m: 1, width: 200 }}>
+                    <FormControl sx={{ m: 1, width: 220 }}>
                       <Select
                         sx={{
                           boxShadow: "none",
@@ -684,7 +686,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   </span>
                   <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
-                    <FormControl sx={{ m: 1, width: 200 }}>
+                    <FormControl sx={{ m: 1, width: 220 }}>
                       <Select
                         sx={{
                           boxShadow: "none",
