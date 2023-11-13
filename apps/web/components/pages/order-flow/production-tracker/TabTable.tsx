@@ -56,6 +56,9 @@ const TabTable = ({
   const [locked, setLocked] = useState<boolean>(false)
   const [newPage, setNewPage] = useState<number>(page)
 
+  //state to handle hover on job name
+  const [isHoveredJobName, setIsHoveredJobName] = useState(false)
+
   const toggleRowExpansion = (job: T_Job, selected: boolean) => {
     if (locked) {
       if (selected) return setSelectedJob([])
