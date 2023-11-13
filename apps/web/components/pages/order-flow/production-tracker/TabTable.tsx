@@ -266,7 +266,6 @@ const TabTable = ({
                           </span>
                         }
                         trigger="hover"
-                        defaultOpen
                       >
                         {job?.name}
                       </Tooltip>
