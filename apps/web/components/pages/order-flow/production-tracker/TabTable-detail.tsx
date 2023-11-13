@@ -58,15 +58,13 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
                   {/* <td>1.</td> */}
                   <td>
                     {/* 12/12/2014 */}
-                    {log.items[0].createdAt
+                    {log.date
                       ? `${dayjs
-                          .tz(log?.createdAt, "America/Chicago")
+                          .tz(log.date, "America/Chicago")
                           .format("MM/DD/YYYY")}`
                       : ""}{" "}
                     <span className="font-bold">
-                      {log?.createdAt
-                        ? `${dayjs(log?.createdAt).format("HH:mm")}`
-                        : ""}
+                      {log.date ? `${dayjs(log.date).format("HHmm")}` : ""}
                     </span>
                   </td>
                   {/* <td>

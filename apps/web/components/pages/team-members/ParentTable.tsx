@@ -780,117 +780,139 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           <div className="flex"></div>
           {isPaginatedLoading ? (
             <>
-              <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
-                <tr className="">
-                  <th scope="col" className="w-[6%] text-slate-900"></th>
-                  <th scope="col" className="">
-                    <div className="flex items-start justify-start">
-                      {/* <a href="#" className="group inline-flex items-center"> */}
-                      User
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th className="">
-                    <div className="flex items-center justify-center ml-8">
-                      <span> City</span>
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th className="">
-                    <div
-                      className={`${
-                        selectedRole == "Personnel"
-                          ? "hidden"
-                          : "flex items-start justify-start ml-7"
-                      }`}
-                    >
-                      <span className="flex">
-                        Factory<p className="text-red-600 ml-1">*</p>
-                      </span>
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                    {/* <span className="ml-2 flex-none rounded text-gray-400">
+              <div className="relative overflow-x-auto sm:rounded-lg mt-3">
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
+                  <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
+                    <tr>
+                      <th scope="col" className="w-[6%] text-slate-900"></th>
+                      <th scope="col" className="">
+                        <div className="flex items-start justify-start">
+                          {/* <a href="#" className="group inline-flex items-center"> */}
+                          User
+                          <button onClick={(e) => {}}>
+                            <svg
+                              className="w-3 h-3 ml-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                            </svg>
+                          </button>
+                        </div>
+                        {/* <span className="ml-2 flex-none rounded text-gray-400">
                       <ChevronUpDownIcon
-                      className="h-5 w-5"
-                      aria-hidden="true"
+                        className="h-5 w-5"
+                        aria-hidden="true"
                       />
                     </span>
-                    </a> */}
-                  </th>
-                  {selectedRole === "Personnel" ? (
-                    <th colSpan={1} className="">
-                      <div className="flex items-start justify-start px-0 py-3 ml-9">
-                        <div className="flex items-center overflow-ellipsis whitespace-nowrap">
-                          Machine Class
-                          <p className="text-red-600 ml-1">*</p>
-                          <button onClick={(e) => {}}>
-                            <svg
-                              className="w-3 h-3 ml-1"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    </th>
-                  ) : (
-                    <th colSpan={1} className="">
-                      <div className="flex items-start justify-start px-0 py-3 ml-11">
-                        <div className="flex items-center ml-12">
-                          Department
-                          <p className="text-red-600 ml-1">*</p>
-                          <button onClick={(e) => {}}>
-                            <svg
-                              className="w-3 h-3 ml-1"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    </th>
-                  )}
-                </tr>
-              </thead>
-              <div className="flex items-center justify-center mb-4 mt-1 w-full h-96 border-t-4 border-indigo-900">
+                                      </a> */}
+                      </th>
+
+                      {selectedRole === "Administrator" ? (
+                        " "
+                      ) : (
+                        <>
+                          <th className="">
+                            <div className="flex items-center justify-center ml-8">
+                              <span> City</span>
+                              <button onClick={(e) => {}}>
+                                <svg
+                                  className="w-3 h-3 ml-1.5"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                </svg>
+                              </button>
+                            </div>
+                          </th>
+                          <th className="">
+                            <div className="flex items-start justify-start ml-7">
+                              <span className="flex">
+                                Factory<p className="text-red-600 ml-1">*</p>
+                              </span>
+                              <button onClick={(e) => {}}>
+                                <svg
+                                  className="w-3 h-3 ml-1"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                </svg>
+                              </button>
+                            </div>
+                            {/* <span className="ml-2 flex-none rounded text-gray-400">
+                    <ChevronUpDownIcon
+                    className="h-5 w-5"
+                    aria-hidden="true"
+                    />
+                  </span>
+                  </a> */}
+                          </th>
+                          {selectedRole === "Personnel" ? (
+                            <th colSpan={2}>
+                              <div className="flex items-start justify-start px-0 py-3 ml-9">
+                                <div className="flex items-center overflow-ellipsis whitespace-nowrap">
+                                  Machine Class
+                                  <p className="text-red-600 ml-1">*</p>
+                                  <button onClick={(e) => {}}>
+                                    <svg
+                                      className="w-3 h-3 ml-1"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* <span className="ml-2 flex-none rounded text-gray-400">
+                    <ChevronUpDownIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
+                  </span>
+                  </a> */}
+                            </th>
+                          ) : (
+                            <th colSpan={2} className="">
+                              <div className="flex items-start justify-start px-0 py-3 ml-11">
+                                <div className="flex items-center ml-12">
+                                  Department
+                                  <p className="text-red-600 ml-1">*</p>
+                                  <button onClick={(e) => {}}>
+                                    <svg
+                                      className="w-3 h-3 ml-1"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            </th>
+                          )}
+                        </>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div className="flex items-center justify-center mb-8 mt-0 w-full h-96 border-t-4 border-indigo-900">
                 <div
                   className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
                   role="status"
@@ -3308,11 +3330,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                   <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                     <tr>
-                      <th scope="col" className=" py-3 text-slate-900"></th>
-                      <th scope="col" className=" py-3 text-slate-900">
-                        <div className="flex items-center">
+                      <th scope="col" className="w-[6%] text-slate-900"></th>
+                      <th scope="col" className="">
+                        <div className="flex items-start justify-start">
+                          {/* <a href="#" className="group inline-flex items-center"> */}
                           User
-                          <button>
+                          <button onClick={(e) => {}}>
                             <svg
                               className="w-3 h-3 ml-1.5"
                               aria-hidden="true"
@@ -3320,77 +3343,107 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               fill="currentColor"
                               viewBox="0 0 24 24"
                             >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                             </svg>
                           </button>
                         </div>
                       </th>
-                      <th scope="col" className="px-6 py-3 text-slate-900">
-                        <div className="flex items-center">
-                          City
-                          <button>
-                            <svg
-                              className="w-3 h-3 ml-1.5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                            </svg>
-                          </button>
-                        </div>
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-slate-900">
-                        <div className="flex items-center">
-                          Factory
-                          <button>
-                            <svg
-                              className="w-3 h-3 ml-1.5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                            </svg>
-                          </button>
-                        </div>
-                      </th>
-                      {selectedRole == "Personnel" ? (
-                        <th scope="col" className="px-6 py-3 text-slate-900">
-                          <div className="flex text-xs whitespace-nowrap items-center ">
-                            Machine Class
-                            <button>
-                              <svg
-                                className="w-3 h-3 ml-1.5"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                              </svg>
-                            </button>
-                          </div>
-                        </th>
+                      {selectedRole === "Administrator" ? (
+                        " "
                       ) : (
-                        <th scope="col" className="px-6 py-3 text-slate-900">
-                          <div className="flex items-center ">
-                            Department
-                            <button>
-                              <svg
-                                className="w-3 h-3 ml-1.5"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                              </svg>
-                            </button>
-                          </div>
-                        </th>
+                        <>
+                          <th className="">
+                            <div className="flex items-center justify-center ml-8">
+                              <span> City</span>
+                              <button onClick={(e) => {}}>
+                                <svg
+                                  className="w-3 h-3 ml-1.5"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                </svg>
+                              </button>
+                            </div>
+                          </th>
+
+                          <th className="">
+                            <div className="flex items-start justify-start ml-7">
+                              <span className="flex">
+                                Factory<p className="text-red-600 ml-1">*</p>
+                              </span>
+                              <button onClick={(e) => {}}>
+                                <svg
+                                  className="w-3 h-3 ml-1"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                </svg>
+                              </button>
+                            </div>
+                            {/* <span className="ml-2 flex-none rounded text-gray-400">
+                    <ChevronUpDownIcon
+                    className="h-5 w-5"
+                    aria-hidden="true"
+                    />
+                  </span>
+                  </a> */}
+                          </th>
+                          {selectedRole === "Personnel" ? (
+                            <th className="">
+                              <div className="flex items-start justify-start px-0 py-3 ml-9">
+                                <div className="flex items-center overflow-ellipsis whitespace-nowrap">
+                                  Machine Class
+                                  <p className="text-red-600 ml-1">*</p>
+                                  <button onClick={(e) => {}}>
+                                    <svg
+                                      className="w-3 h-3 ml-1"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* <span className="ml-2 flex-none rounded text-gray-400">
+                    <ChevronUpDownIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
+                  </span>
+                  </a> */}
+                            </th>
+                          ) : (
+                            <th colSpan={1} className="">
+                              <div className="flex items-start justify-start px-0 py-3 ml-11">
+                                <div className="flex items-center ml-12">
+                                  Department
+                                  <p className="text-red-600 ml-1">*</p>
+                                  <button onClick={(e) => {}}>
+                                    <svg
+                                      className="w-3 h-3 ml-1"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            </th>
+                          )}
+                        </>
                       )}
                     </tr>
                   </thead>
