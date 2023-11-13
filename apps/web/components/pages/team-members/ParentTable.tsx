@@ -377,6 +377,36 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }
 
+  useEffect(() => {
+    function handleGlobalClick(event: any) {
+      if (!event.target.closest(".your-dropdown-container")) {
+        setIsOpenTeam(false)
+      }
+    }
+
+    // Attach the event listener when the component mounts
+    document.addEventListener("click", handleGlobalClick)
+
+    // Remove the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("click", handleGlobalClick)
+    }
+  }, [isOpenTeam])
+
+  useEffect(() => {
+    function handleGlobalClickTwo(event: any) {
+      if (!event.target.closest(".your-dropdown-container")) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener("click", handleGlobalClickTwo)
+
+    return () => {
+      document.removeEventListener("click", handleGlobalClickTwo)
+    }
+  }, [isOpen])
+
   return (
     <>
       <div
