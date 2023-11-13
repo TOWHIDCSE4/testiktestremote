@@ -1292,7 +1292,6 @@ const LogsTable = ({
                                     </span>
                                   }
                                   trigger="hover"
-                                  defaultOpen
                                 >
                                   {typeof item.partId === "object"
                                     ? item.partId.name
