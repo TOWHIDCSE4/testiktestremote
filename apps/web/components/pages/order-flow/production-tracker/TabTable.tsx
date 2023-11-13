@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react"
 import { Menu, Transition } from "@headlessui/react"
+import { Button, Tooltip } from "antd"
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -257,7 +258,19 @@ const TabTable = ({
                         ? job?.factory?.name
                         : ""} */}
                     </td>
-                    <td className="py-3 text-sm text-gray-800">{job?.name}</td>
+                    <td className="py-3 text-sm text-gray-800">
+                      <Tooltip
+                        title={
+                          <span style={{ padding: "0px 0.3em" }}>
+                            {job?.name}
+                          </span>
+                        }
+                        trigger="hover"
+                        defaultOpen
+                      >
+                        {job?.name}
+                      </Tooltip>
+                    </td>
                     <td className="py-3 text-sm text-gray-800 w-26">
                       {job?.part?.name}
                     </td>
