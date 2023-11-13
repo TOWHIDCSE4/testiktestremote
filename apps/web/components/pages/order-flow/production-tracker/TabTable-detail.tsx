@@ -10,7 +10,6 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
   const { getCollapseProps } = useCollapse({
     isExpanded: selected,
   })
-
   return (
     <div
       {...getCollapseProps({})}
