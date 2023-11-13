@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react"
 import { Menu, Transition } from "@headlessui/react"
+import { Button, Tooltip } from "antd"
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -54,6 +55,9 @@ const TabTable = ({
   const [deleteModal, setDeleteModal] = useState(false)
   const [locked, setLocked] = useState<boolean>(false)
   const [newPage, setNewPage] = useState<number>(page)
+
+  //state to handle hover on job name
+  const [isHoveredJobName, setIsHoveredJobName] = useState(false)
 
   const toggleRowExpansion = (job: T_Job, selected: boolean) => {
     if (locked) {
@@ -257,7 +261,18 @@ const TabTable = ({
                         ? job?.factory?.name
                         : ""} */}
                     </td>
-                    <td className="py-3 text-sm text-gray-800">{job?.name}</td>
+                    <td className="py-3 text-sm text-gray-800">
+                      <Tooltip
+                        title={
+                          <span style={{ padding: "0px 0.3em" }}>
+                            {job?.name}
+                          </span>
+                        }
+                        trigger="hover"
+                      >
+                        {job?.name}
+                      </Tooltip>
+                    </td>
                     <td className="py-3 text-sm text-gray-800 w-26">
                       {job?.part?.name}
                     </td>
