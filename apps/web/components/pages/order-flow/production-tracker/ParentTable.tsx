@@ -122,6 +122,25 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
     (MachineName: any) => MachineName._id === userProfile?.item.machineClassId
   )
 
+  const handleMachineClassClick = (e: any) => {
+    if (openFilter) {
+      if (
+        !e.target.closest(".your-menu-class") &&
+        !e.target.classList.contains("h-4")
+      ) {
+        setOpenFilter(false)
+      }
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("click", handleMachineClassClick)
+
+    return () => {
+      document.removeEventListener("click", handleMachineClassClick)
+    }
+  }, [openFilter])
+
   return (
     <>
       <div

@@ -1,4 +1,5 @@
 import { T_Job } from "custom-validator"
+import dayjs from "dayjs"
 import React, { FC, useState } from "react"
 import { useCollapse } from "react-collapsed"
 
@@ -9,7 +10,6 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
   const { getCollapseProps } = useCollapse({
     isExpanded: selected,
   })
-
   return (
     <div
       {...getCollapseProps({})}
@@ -57,7 +57,14 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
                   {/* <td>1.</td> */}
                   <td>
                     {/* 12/12/2014 */}
-                    {log.date}
+                    {log.date
+                      ? `${dayjs
+                          .tz(log.date, "America/Chicago")
+                          .format("MM/DD/YYYY")}`
+                      : ""}{" "}
+                    <span className="font-bold">
+                      {log.date ? `${dayjs(log.date).format("HHmm")}` : ""}
+                    </span>
                   </td>
                   {/* <td>
                     

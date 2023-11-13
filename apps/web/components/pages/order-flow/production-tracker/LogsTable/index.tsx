@@ -37,6 +37,10 @@ import useGetGlobalMetrics from "../../../../../hooks/timerLogs/useGetGlobalMetr
 import GlobalTableReport from "../GlobalReport"
 import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/useGetMachineByMachineClassLocation"
 import { CircularProgress } from "@mui/material"
+import Image from "next/image"
+import Live from "../../../../../assets/logo/i7PC3.gif"
+import { Button, Tooltip } from "antd"
+import Pause from "../../../../../assets/logo/icons8-pause-100.png"
 
 export type OptionType = {
   value: number
@@ -127,22 +131,6 @@ const LogsTable = ({
     const newValue = e.currentTarget.value
     setKeyword(key)
     setSortType(sortType === "asc" ? "desc" : "asc")
-  }
-
-  const handleProcess = () => {
-    if (process === true) {
-      setDateRange([]),
-        setStartDateRange(""),
-        datePick([]),
-        setEndDateRange(""),
-        setStartDateRanges(""),
-        setEndDateRanges("")
-    } else {
-      const currentDate = dayjs().toDate()
-      const oneWeekBefore = dayjs().subtract(1, "week").toDate()
-      datePick([oneWeekBefore, currentDate])
-    }
-    setProcess((prevProcess) => !prevProcess)
   }
 
   dayjs.extend(utc.default)
@@ -322,7 +310,6 @@ const LogsTable = ({
       }
       result += `${remainingSeconds} sec`
     }
-
     return result
   }
 
@@ -342,36 +329,67 @@ const LogsTable = ({
     }
   }
 
+  const handleProcess = () => {
+    if (process === false) {
+      const currentDate = dayjs().format("YYYY-MM-DD")
+      const oneWeekBefore = dayjs().subtract(1, "week").format("YYYY-MM-DD")
+      datePick([oneWeekBefore, currentDate])
+      setDateRange([])
+      setIsCheckboxChecked(false)
+    } else {
+      setIsCheckboxChecked(false)
+      setDateRange([])
+      setStartDateRange("")
+      setEndDateRange("")
+      setStartDateRanges("")
+      setEndDateRanges("")
+    }
+    setProcess((prevProcess) => !prevProcess)
+  }
+
   const datePick = (inputValue: any) => {
     setPage(1)
-    // setDateRange(inputValue)
-    if (isCheckboxChecked) {
-      setStartDateRange(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRange(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setStartDateRanges(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRanges(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-    } else if (inputValue && inputValue[0] && inputValue[1]) {
-      setStartDateRange(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRange(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setStartDateRanges(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRanges(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
+    if (Array.isArray(inputValue)) {
+      if (typeof inputValue[0] === "object") {
+        setDateRange(inputValue)
+      }
+      if (isCheckboxChecked) {
+        setStartDateRange(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRange(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRanges(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRanges(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+      } else if (inputValue && inputValue[0] && inputValue[1]) {
+        setStartDateRange(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRange(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRanges(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRanges(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+      }
     } else {
+      setDateRange([])
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -824,6 +842,12 @@ const LogsTable = ({
                     </Select>
                   </FormControl>
                 </div>
+                <Image
+                  src={!process ? Live : Pause}
+                  width={40}
+                  height={15}
+                  alt="Live Icon Gif"
+                />
               </div>
               <div className="flex w-full">
                 {/* machine */}
@@ -919,6 +943,7 @@ const LogsTable = ({
                     </Select>
                   </FormControl>
                 </div>
+                <span className="w-[40px] h-[20px]"></span>
               </div>
               <div className="flex w-full">
                 {/* date range */}
@@ -939,7 +964,7 @@ const LogsTable = ({
                   </div>
                 </div>
                 {/* Generate report */}
-                <div className="flex w-1/2 text-[11px] items-center justify-end px-14">
+                <div className="flex w-1/2 text-[11px] items-center justify-end px-14 mr-3">
                   <button
                     className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-red-900 text-slate-50"
                     onClick={handleClick}
@@ -1039,7 +1064,7 @@ const LogsTable = ({
                         onChange={handleSelectAllProduction}
                       />
                     </th>
-                    <th scope="col" className="w-[10%] text-slate-900">
+                    <th scope="col" className="w-[17%] text-slate-900">
                       <div className="flex items-center">
                         DATE
                         <button
@@ -1059,7 +1084,7 @@ const LogsTable = ({
                     </th>
                     <th
                       scope="col"
-                      className="w-[10%] md:w-[12%] md:px-2 text-slate-900"
+                      className="w-[12%] md:w-[14%] md:px-2 text-slate-900"
                     >
                       <div className="flex items-center">
                         MACHINE
@@ -1080,7 +1105,7 @@ const LogsTable = ({
                     </th>
                     <th
                       scope="col"
-                      className="w-[45%] md:w-[30%] py-3 text-slate-900"
+                      className="w-[20%] md:w-[25%] py-3 text-slate-900"
                     >
                       <div className="flex items-center">
                         PART
@@ -1229,22 +1254,50 @@ const LogsTable = ({
                               scope="row"
                               className=" py-4 font-medium text-gray-900 whitespace-nowrap"
                             >
-                              {dayjs
+                              {item.createdAt
+                                ? `${dayjs
+                                    .tz(item?.createdAt, "America/Chicago")
+                                    .format("MM/DD/YYYY")}`
+                                : ""}{" "}
+                              <span className="font-bold">
+                                {item.createdAt
+                                  ? `${dayjs(item?.createdAt).format("HHmm")}`
+                                  : ""}
+                              </span>
+                              {/* {dayjs
                                 .tz(item.createdAt, "America/Chicago")
                                 .format("MM/DD/YYYY")}
+                              <span className="font-bold">
+                                {item.createdAt
+                                  ? `${dayjs().format("HHmm")}`
+                                  : ""}
+                              </span> */}
                             </th>
                             <td className=" md:px-3 py-4">
                               {/* @ts-ignore */}
                               {item?.machineId?.name as string}
                             </td>
                             <td
-                              className={`py-4 text-sm text-gray-500 flex flex-col ${
+                              className={`py-4 text-sm  text-gray-500 flex flex-col ${
                                 item.jobId ? "text-gray-900" : "text-red-500"
                               }`}
                             >
-                              {typeof item.partId === "object"
-                                ? item.partId.name
-                                : ""}
+                              <span className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                                <Tooltip
+                                  title={
+                                    <span style={{ padding: "0px 0.3em" }}>
+                                      {typeof item.partId === "object"
+                                        ? item.partId.name
+                                        : ""}
+                                    </span>
+                                  }
+                                  trigger="hover"
+                                >
+                                  {typeof item.partId === "object"
+                                    ? item.partId.name
+                                    : ""}
+                                </Tooltip>
+                              </span>
                             </td>
                             <td className="px-5 py-4">
                               {item.globalCycle ? item.globalCycle : ""}
@@ -2497,9 +2550,369 @@ const LogsTable = ({
             ) : null}
           </div>
         </div>
-        {isPaginatedLoading ||
-        (paginated?.items && paginated?.items.length === 0) ||
-        !renderData ? (
+        {isPaginatedLoading ? (
+          <div className="flex mb-4 w-full">
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
+              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
+                <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
+                  <tr>
+                    {/* <th scope="col" className="px-6 py-3 text-slate-900">
+                      <input
+                        id={`checkbox-table-search`}
+                        type="checkbox"
+                        checked={checkedProduction.length == 5}
+                        className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
+                        onClick={(e) => handleSelectAllProduction(e)}
+                      />
+                    </th> */}
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center">
+                        DATE
+                        <button>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center">
+                        MACHINE
+                        <button>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center">
+                        PART
+                        <button>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center">
+                        ID
+                        <button>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center">
+                        STATUS
+                        <button>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-slate-900">
+                      <div className="flex items-center ">
+                        TIME
+                        <button>
+                          <svg
+                            className="w-3 h-3 ml-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  data-accordion="open"
+                  className="border-t-4 border-indigo-900"
+                >
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                    data-accordion-target="#accordion-arrow-icon-body-0"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-0"
+                  >
+                    <td className="pr-6 py-5"></td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                    data-accordion-target="#accordion-arrow-icon-body-0"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-0"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="h-3"></div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                    data-accordion-target="#accordion-arrow-icon-body-0"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-0"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="h-3"></div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                    data-accordion-target="#accordion-arrow-icon-body-0"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-0"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="h-3"></div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                    data-accordion-target="#accordion-arrow-icon-body-0"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-0"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="h-3"></div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900">
+                      <div className="h-3">
+                        <div className="flex items-center justify-center mb-4 mt-9 w-full">
+                          <div
+                            className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
+                            role="status"
+                            aria-label="loading"
+                          >
+                            <span className="sr-only">loading...</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                    data-accordion-target="#accordion-arrow-icon-body-1"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-1"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="h-3"></div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100  "
+                    data-accordion-target="#accordion-arrow-icon-body-2"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-2"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="h-3"></div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                    data-accordion-target="#accordion-arrow-icon-body-3"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-3"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="h-3"></div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-5"></td>
+                    <td className="px-6 text-sm flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                    data-accordion-target="#accordion-arrow-icon-body-4"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-4"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="h-3"></div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                  <tr
+                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                    data-accordion-target="#accordion-arrow-icon-body-4"
+                    aria-expanded="false"
+                    aria-controls="accordion-arrow-icon-body-4"
+                  >
+                    <td className="pr-6 py-5">
+                      <div className="h-3"></div>
+                    </td>
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    ></th>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                    <td className="px-6 py-4"></td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-red-500"></span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ) : null}
+        {(paginated?.items && paginated?.items.length === 0) || !renderData ? (
           <div className="flex mb-4 w-full">
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
@@ -2623,7 +3036,17 @@ const LogsTable = ({
                     aria-controls="accordion-arrow-icon-body-0"
                   >
                     <td className="pr-6 py-5">
-                      <div className="h-3"></div>
+                      <div className="h-3">
+                        <div className="flex items-center justify-center mb-4 mt-9 w-full">
+                          <div
+                            className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
+                            role="status"
+                            aria-label="loading"
+                          >
+                            <span className="sr-only">loading...</span>
+                          </div>
+                        </div>
+                      </div>
                     </td>
                     <th
                       scope="row"

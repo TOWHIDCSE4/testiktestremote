@@ -219,8 +219,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   useEffect(() => {
     const factoryMachineClasses: string[] = machineClass?.items?.filter(
-      (item: any) => selectedFactoryIds.includes(item.factoryId)
+      (item: any) => selectedFactoryIds?.includes(item.factoryId)
     )
+    console.log("HERE!")
     setFactoryMachineClasses(factoryMachineClasses)
   }, [selectedFactoryIds])
 
@@ -343,6 +344,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       .map((item: any) => item._id)
     setSelectedFactoryIds(selectedFactoryIds)
     setFactories(selectedFactoryIds)
+    if (selectedFactoryIds.length == 0) {
+      setSelectedFactories(["All"])
+    }
   }
 
   const handleMachineClassSelection = (event: any) => {
@@ -356,6 +360,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       ?.filter((item: any) => selectedMachineClasses.includes(item.name))
       .map((item: any) => item._id)
     setMachineClass(selectedMachineClassIds)
+    if (selectedMachineClasses.length === 0) {
+      setSelectedMachineClasses(["All"])
+    }
   }
 
   const handleDepartmentSelection = (event: any) => {
@@ -364,6 +371,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       (val: string) => val !== "All"
     )
     setDepartment(updatedSelection)
+
+    if (selectedDepts.length === 0) {
+      setDepartment(["All"])
+    }
   }
 
   return (
@@ -402,9 +413,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         />
                       </svg>
                     </button>
-
                     {isOpenTeam && (
-                      <div className="absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                      <div className=" absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                         {roleFilter().map((item: any, index: any) => (
                           <div
                             key={index}
@@ -427,7 +437,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     Team Listing
                   </label>
                 </div>
-
                 <span className="text-md font-bold flex pl-1 mt-[1px]">
                   -
                   <p className="pl-0.5 text-[#172554] uppercase">
@@ -437,15 +446,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               <div className="mt-4 flex ml-0">
                 <span
-                  className={`text-[28px] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${
-                    selectedStatus === "Pending"
-                      ? "text-yellow-700"
-                      : selectedStatus === "Approved"
-                      ? "text-green-800"
-                      : selectedStatus === "Rejected"
-                      ? "text-red-800"
-                      : "text-yellow-500"
-                  }`}
+                  className={` text-[28px] flex uppercase mt-3 font-semibold text-2xl cursor-pointer ${selectedColor}`}
                   onClick={toggleDropdown}
                 >
                   <svg
@@ -477,7 +478,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   </span>
                 </span>
                 {isOpen && (
-                  <div className="sm:top-[6rem] absolute overflow mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50">
+                  <div
+                    className={`${
+                      isOpenTeam == true ? "hidden" : ""
+                    } sm:top-[6rem] absolute overflow mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50`}
+                  >
                     <ul>
                       {statusArray.map((status, index) => (
                         <li
@@ -511,7 +516,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </span>
                   </div>
                 ) : (
-                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-[13.5rem] uppercase space-x-1 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-1 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     {locations && locations.items
                       ? storeSession?.role === "Administrator" ||
@@ -547,10 +552,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   Factory
                 </span>
-                <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D">:</span>
                   {userProfile?.item.role !== "Production" ? (
-                    <FormControl sx={{ m: 1, width: 200 }}>
+                    <FormControl sx={{ m: 1, width: 220 }}>
                       <Select
                         sx={{
                           boxShadow: "none",
@@ -565,6 +570,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           "& .MuiSelect-select": {
                             paddingLeft: "0px", // Adjust the value as needed
                             fontWeight: "bold",
+                            paddingRight: "0px",
                           },
                         }}
                         labelId="demo-multiple-name-label"
@@ -577,9 +583,20 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         }}
                         value={selectedFactories}
                         onChange={(event) => handleFactorySelection(event)}
-                        MenuProps={MenuProps}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                          style: { top: "9px" },
+                        }}
                       >
                         <MenuItem value="All">All</MenuItem>
+
                         {factories?.items?.map((item: any, index: number) => (
                           <MenuItem key={index} value={item.name as string}>
                             {item.name}
@@ -605,9 +622,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   <span className="text-[#7F1D1D] text-[12px] uppercase whitespace-nowrap font-semibold">
                     Machine Class
                   </span>
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D">:</span>
-                    <FormControl sx={{ m: 1, width: 200 }}>
+                    <FormControl sx={{ m: 1, width: 220 }}>
                       <Select
                         sx={{
                           boxShadow: "none",
@@ -634,7 +651,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         }}
                         value={selectedMachineClasses}
                         onChange={(event) => handleMachineClassSelection(event)}
-                        MenuProps={MenuProps}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                          style: { top: "9px" },
+                        }}
                       >
                         <MenuItem value="All">All</MenuItem>
                         {factoryMachineClasses?.map(
@@ -657,10 +684,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                     Department
                   </span>
-
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
-                    <FormControl sx={{ m: 1, width: 200 }}>
+                    <FormControl sx={{ m: 1, width: 220 }}>
                       <Select
                         sx={{
                           boxShadow: "none",
@@ -687,7 +713,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         }}
                         value={departments}
                         onChange={(event) => handleDepartmentSelection(event)}
-                        MenuProps={MenuProps}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                          style: { top: "9px" },
+                        }}
                       >
                         <MenuItem value="All">All</MenuItem>
                         {roleFilter()?.map((item: any, index: number) => (
@@ -744,111 +780,139 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           <div className="flex"></div>
           {isPaginatedLoading ? (
             <>
-              <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
-                <tr className="">
-                  <th scope="col" className="w-[6%] text-slate-900"></th>
-                  <th scope="col" className="">
-                    <div className="flex items-start justify-start">
-                      {/* <a href="#" className="group inline-flex items-center"> */}
-                      User
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th className="">
-                    <div className="flex items-center justify-center ml-8">
-                      <span> City</span>
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1.5"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </th>
-                  <th className="">
-                    <div className="flex items-start justify-start ml-7">
-                      <span className="flex">
-                        Factory<p className="text-red-600 ml-1">*</p>
-                      </span>
-                      <button onClick={(e) => {}}>
-                        <svg
-                          className="w-3 h-3 ml-1"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                        </svg>
-                      </button>
-                    </div>
-                    {/* <span className="ml-2 flex-none rounded text-gray-400">
+              <div className="relative overflow-x-auto sm:rounded-lg mt-3">
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
+                  <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
+                    <tr>
+                      <th scope="col" className="w-[6%] text-slate-900"></th>
+                      <th scope="col" className="">
+                        <div className="flex items-start justify-start">
+                          {/* <a href="#" className="group inline-flex items-center"> */}
+                          User
+                          <button onClick={(e) => {}}>
+                            <svg
+                              className="w-3 h-3 ml-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                            </svg>
+                          </button>
+                        </div>
+                        {/* <span className="ml-2 flex-none rounded text-gray-400">
                       <ChevronUpDownIcon
-                      className="h-5 w-5"
-                      aria-hidden="true"
+                        className="h-5 w-5"
+                        aria-hidden="true"
                       />
                     </span>
-                    </a> */}
-                  </th>
-                  {selectedRole === "Personnel" ? (
-                    <th colSpan={1} className="">
-                      <div className="flex items-start justify-start px-0 py-3 ml-9">
-                        <div className="flex items-center overflow-ellipsis whitespace-nowrap">
-                          Machine Class
-                          <p className="text-red-600 ml-1">*</p>
-                          <button onClick={(e) => {}}>
-                            <svg
-                              className="w-3 h-3 ml-1"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    </th>
-                  ) : (
-                    <th colSpan={1} className="">
-                      <div className="flex items-start justify-start px-0 py-3 ml-11">
-                        <div className="flex items-center ml-12">
-                          Department
-                          <p className="text-red-600 ml-1">*</p>
-                          <button onClick={(e) => {}}>
-                            <svg
-                              className="w-3 h-3 ml-1"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    </th>
-                  )}
-                </tr>
-              </thead>
-              <div className="flex items-center justify-center mb-4 mt-1 w-full h-96 border-t-4 border-indigo-900">
+                                      </a> */}
+                      </th>
+
+                      {selectedRole === "Administrator" ? (
+                        " "
+                      ) : (
+                        <>
+                          <th className="">
+                            <div className="flex items-center justify-center ml-8">
+                              <span> City</span>
+                              <button onClick={(e) => {}}>
+                                <svg
+                                  className="w-3 h-3 ml-1.5"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                </svg>
+                              </button>
+                            </div>
+                          </th>
+                          <th className="">
+                            <div className="flex items-start justify-start ml-7">
+                              <span className="flex">
+                                Factory<p className="text-red-600 ml-1">*</p>
+                              </span>
+                              <button onClick={(e) => {}}>
+                                <svg
+                                  className="w-3 h-3 ml-1"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                </svg>
+                              </button>
+                            </div>
+                            {/* <span className="ml-2 flex-none rounded text-gray-400">
+                    <ChevronUpDownIcon
+                    className="h-5 w-5"
+                    aria-hidden="true"
+                    />
+                  </span>
+                  </a> */}
+                          </th>
+                          {selectedRole === "Personnel" ? (
+                            <th colSpan={2}>
+                              <div className="flex items-start justify-start px-0 py-3 ml-9">
+                                <div className="flex items-center overflow-ellipsis whitespace-nowrap">
+                                  Machine Class
+                                  <p className="text-red-600 ml-1">*</p>
+                                  <button onClick={(e) => {}}>
+                                    <svg
+                                      className="w-3 h-3 ml-1"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* <span className="ml-2 flex-none rounded text-gray-400">
+                    <ChevronUpDownIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
+                  </span>
+                  </a> */}
+                            </th>
+                          ) : (
+                            <th colSpan={2} className="">
+                              <div className="flex items-start justify-start px-0 py-3 ml-11">
+                                <div className="flex items-center ml-12">
+                                  Department
+                                  <p className="text-red-600 ml-1">*</p>
+                                  <button onClick={(e) => {}}>
+                                    <svg
+                                      className="w-3 h-3 ml-1"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            </th>
+                          )}
+                        </>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div className="flex items-center justify-center mb-8 mt-0 w-full h-96 border-t-4 border-indigo-900">
                 <div
                   className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
                   role="status"
@@ -1160,34 +1224,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     {paginated?.items.length == 1 && (
                       <>
                         <tr
-                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
-                          data-accordion-target="#accordion-arrow-icon-body-0"
-                          aria-expanded="false"
-                          aria-controls="accordion-arrow-icon-body-0"
-                        >
-                          <td className="pr-6 py-5 h-14">
-                            <div className="flex items-center">
-                              <label
-                                htmlFor="checkbox-table-search-0"
-                                className="sr-only"
-                              ></label>
-                            </div>
-                          </td>
-                          <th
-                            scope="row"
-                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                          ></th>
-                          <td className="px-6 py-4"></td>
-                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
-                          <td className="px-6 py-4"></td>
-                          <td className="px-6 py-4">
-                            <span className="font-bold text-red-500"></span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="font-bold text-red-500"></span>
-                          </td>
-                        </tr>
-                        <tr
                           className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
                           data-accordion-target="#accordion-arrow-icon-body-0"
                           aria-expanded="false"
@@ -1300,7 +1336,35 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           </td>
                         </tr>
                         <tr
-                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                          data-accordion-target="#accordion-arrow-icon-body-0"
+                          aria-expanded="false"
+                          aria-controls="accordion-arrow-icon-body-0"
+                        >
+                          <td className="pr-6 py-5 h-14">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="checkbox-table-search-0"
+                                className="sr-only"
+                              ></label>
+                            </div>
+                          </td>
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                          ></th>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                          <td className="px-6 py-4"></td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-500"></span>
+                          </td>
+                        </tr>
+                        <tr
+                          className="bg-gray text-slate-900 font-medium border-b bg-gray-100  "
                           data-accordion-target="#accordion-arrow-icon-body-1"
                           aria-expanded="false"
                           aria-controls="accordion-arrow-icon-body-1"
@@ -1862,7 +1926,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </a> */}
                     </th>
                     {selectedRole === "Personnel" ? (
-                      <th colSpan={1} className="">
+                      <th className="">
                         <div className="flex items-start justify-start px-0 py-3 ml-9">
                           <div className="flex items-center overflow-ellipsis whitespace-nowrap">
                             Machine Class
@@ -2111,9 +2175,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   </ul>
                                 </div>
                               </td>
-                              <td
-                                className={`text-sm text-gray-500 items-start justify-center`}
-                              >
+                              <td className="text-sm text-gray-500 items-start justify-center">
                                 <button
                                   id="dropdownFactoryButton"
                                   data-dropdown-toggle="dropdown"
@@ -2198,6 +2260,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               {selectedRole === "Personnel" ? (
                                 <td
                                   className={`text-sm text-gray-500 items-center justify-center`}
+                                  // colSpan={
+                                  //   selectedStatus == "Pending" &&
+                                  //   selectedRole == "Personnel"
+                                  //     ? 2
+                                  //     : 1
+                                  // }
                                 >
                                   <button
                                     id="dropdownFactoryButton"
@@ -3262,11 +3330,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                   <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                     <tr>
-                      <th scope="col" className=" py-3 text-slate-900"></th>
-                      <th scope="col" className=" py-3 text-slate-900">
-                        <div className="flex items-center">
+                      <th scope="col" className="w-[6%] text-slate-900"></th>
+                      <th scope="col" className="">
+                        <div className="flex items-start justify-start">
+                          {/* <a href="#" className="group inline-flex items-center"> */}
                           User
-                          <button>
+                          <button onClick={(e) => {}}>
                             <svg
                               className="w-3 h-3 ml-1.5"
                               aria-hidden="true"
@@ -3274,77 +3343,107 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               fill="currentColor"
                               viewBox="0 0 24 24"
                             >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                             </svg>
                           </button>
                         </div>
                       </th>
-                      <th scope="col" className="px-6 py-3 text-slate-900">
-                        <div className="flex items-center">
-                          City
-                          <button>
-                            <svg
-                              className="w-3 h-3 ml-1.5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                            </svg>
-                          </button>
-                        </div>
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-slate-900">
-                        <div className="flex items-center">
-                          Factory
-                          <button>
-                            <svg
-                              className="w-3 h-3 ml-1.5"
-                              aria-hidden="true"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                            </svg>
-                          </button>
-                        </div>
-                      </th>
-                      {selectedRole == "Personnel" ? (
-                        <th scope="col" className="px-6 py-3 text-slate-900">
-                          <div className="flex text-xs whitespace-nowrap items-center ">
-                            Machine Class
-                            <button>
-                              <svg
-                                className="w-3 h-3 ml-1.5"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                              </svg>
-                            </button>
-                          </div>
-                        </th>
+                      {selectedRole === "Administrator" ? (
+                        " "
                       ) : (
-                        <th scope="col" className="px-6 py-3 text-slate-900">
-                          <div className="flex items-center ">
-                            Department
-                            <button>
-                              <svg
-                                className="w-3 h-3 ml-1.5"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                              </svg>
-                            </button>
-                          </div>
-                        </th>
+                        <>
+                          <th className="">
+                            <div className="flex items-center justify-center ml-8">
+                              <span> City</span>
+                              <button onClick={(e) => {}}>
+                                <svg
+                                  className="w-3 h-3 ml-1.5"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                </svg>
+                              </button>
+                            </div>
+                          </th>
+
+                          <th className="">
+                            <div className="flex items-start justify-start ml-7">
+                              <span className="flex">
+                                Factory<p className="text-red-600 ml-1">*</p>
+                              </span>
+                              <button onClick={(e) => {}}>
+                                <svg
+                                  className="w-3 h-3 ml-1"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                </svg>
+                              </button>
+                            </div>
+                            {/* <span className="ml-2 flex-none rounded text-gray-400">
+                    <ChevronUpDownIcon
+                    className="h-5 w-5"
+                    aria-hidden="true"
+                    />
+                  </span>
+                  </a> */}
+                          </th>
+                          {selectedRole === "Personnel" ? (
+                            <th className="">
+                              <div className="flex items-start justify-start px-0 py-3 ml-9">
+                                <div className="flex items-center overflow-ellipsis whitespace-nowrap">
+                                  Machine Class
+                                  <p className="text-red-600 ml-1">*</p>
+                                  <button onClick={(e) => {}}>
+                                    <svg
+                                      className="w-3 h-3 ml-1"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* <span className="ml-2 flex-none rounded text-gray-400">
+                    <ChevronUpDownIcon
+                      className="h-5 w-5"
+                      aria-hidden="true"
+                    />
+                  </span>
+                  </a> */}
+                            </th>
+                          ) : (
+                            <th colSpan={1} className="">
+                              <div className="flex items-start justify-start px-0 py-3 ml-11">
+                                <div className="flex items-center ml-12">
+                                  Department
+                                  <p className="text-red-600 ml-1">*</p>
+                                  <button onClick={(e) => {}}>
+                                    <svg
+                                      className="w-3 h-3 ml-1"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            </th>
+                          )}
+                        </>
                       )}
                     </tr>
                   </thead>
