@@ -330,7 +330,11 @@ const LogsTable = ({
       const currentDate = dayjs().format("YYYY-MM-DD")
       const oneWeekBefore = dayjs().subtract(1, "week").format("YYYY-MM-DD")
       datePick([oneWeekBefore, currentDate])
+      setDateRange([])
+      setIsCheckboxChecked(false)
     } else {
+      setIsCheckboxChecked(false)
+      setDateRange([])
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -341,36 +345,47 @@ const LogsTable = ({
 
   const datePick = (inputValue: any) => {
     setPage(1)
-    if (typeof inputValue[0] === "object") {
-      setDateRange(inputValue)
-    }
-    if (isCheckboxChecked) {
-      setStartDateRange(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRange(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setStartDateRanges(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRanges(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-    } else if (inputValue && inputValue[0] && inputValue[1]) {
-      setStartDateRange(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRange(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setStartDateRanges(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRanges(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
+    if (Array.isArray(inputValue)) {
+      if (typeof inputValue[0] === "object") {
+        setDateRange(inputValue)
+      }
+      if (isCheckboxChecked) {
+        setStartDateRange(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRange(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRanges(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRanges(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+      } else if (inputValue && inputValue[0] && inputValue[1]) {
+        setStartDateRange(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRange(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRanges(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRanges(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+      }
     } else {
+      setDateRange([])
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -1038,7 +1053,7 @@ const LogsTable = ({
                         onChange={handleSelectAllProduction}
                       />
                     </th>
-                    <th scope="col" className="w-[10%] text-slate-900">
+                    <th scope="col" className="w-[12%] text-slate-900">
                       <div className="flex items-center">
                         DATE
                         <button
@@ -1228,9 +1243,24 @@ const LogsTable = ({
                               scope="row"
                               className=" py-4 font-medium text-gray-900 whitespace-nowrap"
                             >
-                              {dayjs
+                              {item.createdAt
+                                ? `${dayjs
+                                    .tz(item?.createdAt, "America/Chicago")
+                                    .format("MM/DD/YYYY")}`
+                                : ""}{" "}
+                              <span className="font-bold">
+                                {item.createdAt
+                                  ? `${dayjs(item?.createdAt).format("HHmm")}`
+                                  : ""}
+                              </span>
+                              {/* {dayjs
                                 .tz(item.createdAt, "America/Chicago")
                                 .format("MM/DD/YYYY")}
+                              <span className="font-bold">
+                                {item.createdAt
+                                  ? `${dayjs().format("HHmm")}`
+                                  : ""}
+                              </span> */}
                             </th>
                             <td className=" md:px-3 py-4">
                               {/* @ts-ignore */}
