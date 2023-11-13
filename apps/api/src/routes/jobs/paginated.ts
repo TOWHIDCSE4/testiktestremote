@@ -7,6 +7,7 @@ import {
 import mongoose from "mongoose"
 import { groupBy, map } from "lodash"
 import * as Sentry from "@sentry/node"
+import dayjs from "dayjs"
 
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, status, selectedjob, search } = req.query
@@ -198,9 +199,9 @@ export const paginated = async (req: Request, res: Response) => {
       const groupedData = map(getAllJobs, (item) => {
         // Group timerLogs by the date part of createdAt
         const groupedTimerLogs = groupBy(item.timerLogs, (timerLog) => {
-          const createdAtDate = new Date(
-            timerLog.createdAt
-          ).toLocaleDateString()
+          const createdAtDate = dayjs(new Date(timerLog.createdAt)).format(
+            "YYYY-MM-DD:HH:mm"
+          )
           return createdAtDate
         })
 
