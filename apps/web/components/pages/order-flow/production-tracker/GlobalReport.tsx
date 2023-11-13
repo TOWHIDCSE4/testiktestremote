@@ -225,7 +225,7 @@ const GlobalTableReport = ({
                     ? paginated?.item?.locationId.timeZone
                     : ""
                 )
-                .format("DD/MM/YYYY")}
+                .format("MM/DD/YYYY")}
             </div>
           </div>
         </div>
@@ -360,7 +360,7 @@ const GlobalTableReport = ({
                         <span className="font-bold">
                           {log?.createdAt
                             ? `${dayjs(log?.createdAt as string).format(
-                                "HH:mm"
+                                "HHmm"
                               )}`
                             : ""}
                         </span>
