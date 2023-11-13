@@ -55,6 +55,9 @@ const TabTable = ({
   const [locked, setLocked] = useState<boolean>(false)
   const [newPage, setNewPage] = useState<number>(page)
 
+  //state to handle hover on job name
+  const [isHoveredJobName, setIsHoveredJobName] = useState(false)
+
   const toggleRowExpansion = (job: T_Job, selected: boolean) => {
     if (locked) {
       if (selected) return setSelectedJob([])
@@ -257,7 +260,14 @@ const TabTable = ({
                         ? job?.factory?.name
                         : ""} */}
                     </td>
-                    <td className="py-3 text-sm text-gray-800">{job?.name}</td>
+                    {/* job name here */}
+                    <td
+                      title={job?.name}
+                      className="py-3 text-sm text-gray-800 truncate"
+                    >
+                      {job?.name}
+                    </td>
+                    {/* job name here */}
                     <td className="py-3 text-sm text-gray-800 w-26">
                       {job?.part?.name}
                     </td>
