@@ -39,6 +39,7 @@ import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/
 import { CircularProgress } from "@mui/material"
 import Image from "next/image"
 import Live from "../../../../../assets/logo/i7PC3.gif"
+import { Button, Tooltip } from "antd"
 import Pause from "../../../../../assets/logo/icons8-pause-100.png"
 
 export type OptionType = {
@@ -1063,7 +1064,7 @@ const LogsTable = ({
                         onChange={handleSelectAllProduction}
                       />
                     </th>
-                    <th scope="col" className="w-[12%] text-slate-900">
+                    <th scope="col" className="w-[17%] text-slate-900">
                       <div className="flex items-center">
                         DATE
                         <button
@@ -1083,7 +1084,7 @@ const LogsTable = ({
                     </th>
                     <th
                       scope="col"
-                      className="w-[10%] md:w-[12%] md:px-2 text-slate-900"
+                      className="w-[12%] md:w-[14%] md:px-2 text-slate-900"
                     >
                       <div className="flex items-center">
                         MACHINE
@@ -1104,7 +1105,7 @@ const LogsTable = ({
                     </th>
                     <th
                       scope="col"
-                      className="w-[45%] md:w-[30%] py-3 text-slate-900"
+                      className="w-[20%] md:w-[25%] py-3 text-slate-900"
                     >
                       <div className="flex items-center">
                         PART
@@ -1277,13 +1278,27 @@ const LogsTable = ({
                               {item?.machineId?.name as string}
                             </td>
                             <td
-                              className={`py-4 text-sm text-gray-500 flex flex-col ${
+                              className={`py-4 text-sm  text-gray-500 flex flex-col ${
                                 item.jobId ? "text-gray-900" : "text-red-500"
                               }`}
                             >
-                              {typeof item.partId === "object"
-                                ? item.partId.name
-                                : ""}
+                              <span className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                                <Tooltip
+                                  title={
+                                    <span style={{ padding: "0px 0.3em" }}>
+                                      {typeof item.partId === "object"
+                                        ? item.partId.name
+                                        : ""}
+                                    </span>
+                                  }
+                                  trigger="hover"
+                                  defaultOpen
+                                >
+                                  {typeof item.partId === "object"
+                                    ? item.partId.name
+                                    : ""}
+                                </Tooltip>
+                              </span>
                             </td>
                             <td className="px-5 py-4">
                               {item.globalCycle ? item.globalCycle : ""}
