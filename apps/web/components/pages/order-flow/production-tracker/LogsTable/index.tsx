@@ -330,7 +330,11 @@ const LogsTable = ({
       const currentDate = dayjs().format("YYYY-MM-DD")
       const oneWeekBefore = dayjs().subtract(1, "week").format("YYYY-MM-DD")
       datePick([oneWeekBefore, currentDate])
+      setDateRange([])
+      setIsCheckboxChecked(false)
     } else {
+      setIsCheckboxChecked(false)
+      setDateRange([])
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -341,36 +345,47 @@ const LogsTable = ({
 
   const datePick = (inputValue: any) => {
     setPage(1)
-    if (typeof inputValue[0] === "object") {
-      setDateRange(inputValue)
-    }
-    if (isCheckboxChecked) {
-      setStartDateRange(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRange(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setStartDateRanges(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRanges(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-    } else if (inputValue && inputValue[0] && inputValue[1]) {
-      setStartDateRange(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRange(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setStartDateRanges(
-        dayjs(inputValue[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
-      setEndDateRanges(
-        dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      )
+    if (Array.isArray(inputValue)) {
+      if (typeof inputValue[0] === "object") {
+        setDateRange(inputValue)
+      }
+      if (isCheckboxChecked) {
+        setStartDateRange(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRange(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRanges(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRanges(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+      } else if (inputValue && inputValue[0] && inputValue[1]) {
+        setStartDateRange(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRange(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRanges(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRanges(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+      }
     } else {
+      setDateRange([])
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
