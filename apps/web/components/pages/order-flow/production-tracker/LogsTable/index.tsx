@@ -963,7 +963,7 @@ const LogsTable = ({
                   </div>
                 </div>
                 {/* Generate report */}
-                <div className="flex w-1/2 text-[11px] items-center justify-end px-14">
+                <div className="flex w-1/2 text-[11px] items-center justify-end px-14 mr-3">
                   <button
                     className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-red-900 text-slate-50"
                     onClick={handleClick}
