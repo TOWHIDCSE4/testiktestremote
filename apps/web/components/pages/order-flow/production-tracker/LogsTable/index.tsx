@@ -37,6 +37,9 @@ import useGetGlobalMetrics from "../../../../../hooks/timerLogs/useGetGlobalMetr
 import GlobalTableReport from "../GlobalReport"
 import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/useGetMachineByMachineClassLocation"
 import { CircularProgress } from "@mui/material"
+import Image from "next/image"
+import Live from "../../../../../assets/logo/i7PC3.gif"
+import Pause from "../../../../../assets/logo/icons8-pause-100.png"
 
 export type OptionType = {
   value: number
@@ -823,6 +826,12 @@ const LogsTable = ({
                     </Select>
                   </FormControl>
                 </div>
+                <Image
+                  src={!process ? Live : Pause}
+                  width={40}
+                  height={15}
+                  alt="Live Icon Gif"
+                />
               </div>
               <div className="flex w-full">
                 {/* machine */}
@@ -918,6 +927,7 @@ const LogsTable = ({
                     </Select>
                   </FormControl>
                 </div>
+                <span className="w-[40px] h-[20px]"></span>
               </div>
               <div className="flex w-full">
                 {/* date range */}
