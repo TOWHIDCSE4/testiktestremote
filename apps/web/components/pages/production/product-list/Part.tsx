@@ -13,6 +13,7 @@ import useFactoryMachineClasses from "../../../../hooks/factories/useFactoryMach
 import DeletePartModal from "./modals/DeletePartModal"
 import DropDownMenu from "./DropDownMenu"
 import useGetPartLocationCount from "../../../../hooks/parts/useGetPartLocationCount"
+import useProfile from "../../../../hooks/users/useProfile"
 
 type T_LocationTabs = {
   _id?: string
@@ -57,6 +58,7 @@ const Part = ({
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [selectedPartId, setSelectedPartId] = useState<string | undefined>("")
   const [factoryIdFilter, setFactoryIdFilter] = useState("all")
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const [machineClassIdFilter, setMachineClassIdFilter] = useState("all")
   const [nameFilter, setNameFilter] = useState("")
 
@@ -123,10 +125,14 @@ const Part = ({
                 className={combineClasses(
                   tab._id === currentLocationTab
                     ? "bg-blue-950 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50",
+                    : "bg-white text-gray-700 disabled:text-gray-400 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
                 onClick={() => setCurrentLocationTab(tab?._id as string)}
+                disabled={
+                  userProfile?.item.role === "Personnel" &&
+                  tab._id !== userProfile?.item.locationId
+                }
               >
                 {tab.name}{" "}
                 {locationsCount[index] ? `(${locationsCount[index]})` : null}
