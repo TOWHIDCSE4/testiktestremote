@@ -2562,8 +2562,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     leaveFrom="transform opacity-100 scale-100"
                                     leaveTo="transform opacity-0 scale-95"
                                   >
-                                    <Menu.Items className="absolute right-9 text-end w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                      <div className=" sm:top-[7rem]  absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                                    <Menu.Items className="absolute right-24 text-end w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                      <div className="absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                                         {item.status !== "Approved" && (
                                           <Menu.Item>
                                             {({ active }) => (
