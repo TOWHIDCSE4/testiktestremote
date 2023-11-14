@@ -135,6 +135,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
+  const [firstLoad, setFirstLoad] = useState(true)
   const {
     data: paginated,
     isLoading: isPaginatedLoading,
@@ -150,6 +151,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     "Pending",
     storeSession?.role === "Production" ? "Personnel" : storeSession?.role
   )
+
+  useEffect(() => {
+    if (paginated?.itemCount === 0 && firstLoad) {
+      handleSelectDropdown("Approved")
+      setFirstLoad(false)
+    }
+  }, [paginated])
 
   const { data: machineClass, isLoading: isMachineLoading } =
     useMachineClasses()
@@ -314,7 +322,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setIsOpenRole(undefined)
     setSelectedStatus(value)
     setOpenAccordion(null)
-    setIsOpen(!isOpen)
+    setIsOpen(false)
     setStatus(value)
 
     const colorMapping: { [key: string]: string } = {
