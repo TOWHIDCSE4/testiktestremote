@@ -2036,7 +2036,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   </a>
                 </th> */}
                     <th className="">
-                      <div className="flex items-start justify-center ml-2">
+                      <div className="flex items-start justify-start ml-2">
                         <span className="flex">
                           Factory<p className="text-red-600 ml-1">*</p>
                         </span>
@@ -2314,12 +2314,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 <button
                                   id="dropdownFactoryButton"
                                   data-dropdown-toggle="dropdown"
-                                  className="w-30 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                  className="w-30 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-normal"
                                   type="button"
                                   disabled={
                                     isLocationsLoading ||
                                     isUpdateUserLoading ||
-                                    isPaginatedLoading
+                                    isPaginatedLoading ||
+                                    selectedRole === "Personnel"
                                   }
                                   onClick={() => handleHideFactory(idx)}
                                 >
@@ -2328,6 +2329,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     viewBox="0 0 48 48"
                                     width="25"
                                     xmlns="http://www.w3.org/2000/svg"
+                                    className={`${
+                                      selectedRole === "Personnel"
+                                        ? "hidden"
+                                        : ""
+                                    }`}
                                   >
                                     <path d="M14 20l10 10 10-10z" />
                                     <path d="M0 0h48v48h-48z" fill="none" />
