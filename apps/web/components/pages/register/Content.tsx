@@ -105,6 +105,16 @@ const Content = () => {
               </p>
             </div>
             {/* Registration form */}
+
+            <p className="text-sm text-center mt-2">
+                  Already have an account?{" "}
+                  <Link
+                    href="/"
+                    className="cursor-pointer text-blue-700 font-semibold hover:underline"
+                  >
+                    Sign in
+                  </Link>
+                </p>
             <div className="mt-8">
               <div>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -150,6 +160,10 @@ const Content = () => {
                       </div>
                     </div>
                   </div>
+                  <div>
+                    
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-3"> 
                   <div className="mt-4">
                     <label
                       htmlFor="role"
@@ -205,6 +219,7 @@ const Content = () => {
                         </option>
                       ))}
                     </select>
+                  </div>
                   </div>
                   <div className="mt-4">
                     <label
@@ -327,15 +342,7 @@ const Content = () => {
                   </Link>
                   .
                 </p>
-                <p className="text-sm text-center mt-2">
-                  Already have an account?{" "}
-                  <Link
-                    href="/"
-                    className="cursor-pointer text-blue-700 font-semibold hover:underline"
-                  >
-                    Sign in
-                  </Link>
-                </p>
+               
                 <p className="text-sm md:flex items-center justify-center mt-2 text-center">
                   &copy; 2023 AmeriTex Pipe & Products with
                   <span className="inline-flex">
