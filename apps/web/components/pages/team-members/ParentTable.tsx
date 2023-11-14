@@ -433,6 +433,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           .map((item: any) => item._id)
       : []
     setSelectedCityIds(selectedCityIds)
+    //@ts-expect-error
     setLocationId(selectedCityIds)
 
     if (selectedCityIds.length === 0) {
@@ -2311,43 +2312,48 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </div>
                               </td>
                               <td className="text-sm text-gray-500 items-start justify-center">
-                                <button
-                                  id="dropdownFactoryButton"
-                                  data-dropdown-toggle="dropdown"
-                                  className="w-30 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-normal"
-                                  type="button"
-                                  disabled={
-                                    isLocationsLoading ||
-                                    isUpdateUserLoading ||
-                                    isPaginatedLoading ||
-                                    selectedRole === "Personnel"
-                                  }
-                                  onClick={() => handleHideFactory(idx)}
-                                >
-                                  <svg
-                                    height="25"
-                                    viewBox="0 0 48 48"
-                                    width="25"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className={`${
+                                {item?.role !== "HR_Director" ? (
+                                  <button
+                                    id="dropdownFactoryButton"
+                                    data-dropdown-toggle="dropdown"
+                                    className="w-30 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-normal"
+                                    type="button"
+                                    disabled={
+                                      isLocationsLoading ||
+                                      isUpdateUserLoading ||
+                                      isPaginatedLoading ||
                                       selectedRole === "Personnel"
-                                        ? "hidden"
-                                        : ""
-                                    }`}
+                                    }
+                                    onClick={() => handleHideFactory(idx)}
                                   >
-                                    <path d="M14 20l10 10 10-10z" />
-                                    <path d="M0 0h48v48h-48z" fill="none" />
-                                  </svg>
-                                  <span className="truncate">
-                                    {item.isGlobalFactory ?? false
-                                      ? "Global"
-                                      : item?.factoryId
-                                      ? typeof item.factoryId === "string"
-                                        ? item.factoryId
-                                        : item.factoryId.name
-                                      : "Select Factory"}
-                                  </span>
-                                </button>
+                                    <svg
+                                      height="25"
+                                      viewBox="0 0 48 48"
+                                      width="25"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className={`${
+                                        selectedRole === "Personnel"
+                                          ? "hidden"
+                                          : ""
+                                      }`}
+                                    >
+                                      <path d="M14 20l10 10 10-10z" />
+                                      <path d="M0 0h48v48h-48z" fill="none" />
+                                    </svg>
+                                    <span className="truncate">
+                                      {item.isGlobalFactory ?? false
+                                        ? "Global"
+                                        : item?.factoryId
+                                        ? typeof item.factoryId === "string"
+                                          ? item.factoryId
+                                          : item.factoryId.name
+                                        : "Select Factory"}
+                                    </span>
+                                  </button>
+                                ) : (
+                                  <div></div>
+                                )}
+
                                 <div
                                   id="dropdownFactory"
                                   className={`z-50 fixed ${
