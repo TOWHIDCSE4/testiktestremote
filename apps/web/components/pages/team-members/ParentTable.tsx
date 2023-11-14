@@ -129,6 +129,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [selectedFactoryIds, setSelectedFactoryIds] = useState([""])
   const [selectedFactories, setSelectedFactories] = useState(["All"])
   const [factoryMachineClasses, setFactoryMachineClasses] = useState([""])
+  const [selectedCity, setSelectedCity] = useState(["All"])
+  const [selectedCityIds, setSelectedCityIds] = useState([""])
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const [selectedMachineClasses, setSelectedMachineClasses] = useState(["All"])
@@ -349,6 +351,24 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }
 
+  const handleCitySelection = (event: any) => {
+    const selectedCity = event.target.value
+    const updatedSelection = selectedCity.filter((val: string) => val !== "All")
+    setSelectedCity(updatedSelection)
+
+    const selectedCityIds = locations?.items
+      ? locations.items
+          .filter((item: any) => selectedCity.includes(item.name))
+          .map((item: any) => item._id)
+      : []
+    setSelectedCityIds(selectedCityIds)
+    setLocationId(selectedCityIds)
+
+    if (selectedCityIds.length === 0) {
+      setSelectedCity(["All"])
+    }
+  }
+
   const handleMachineClassSelection = (event: any) => {
     const selectedMachineClasses = event.target.value
     const updatedSelection = selectedMachineClasses.filter(
@@ -516,35 +536,61 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </span>
                   </div>
                 ) : (
-                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-1 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
-                    {locations && locations.items
-                      ? storeSession?.role === "Administrator" ||
-                        "Super" ||
-                        "HR_Director"
-                        ? locations.items.map(
-                            (location: any, index: number) => (
-                              <span key={index}>
-                                {index > 0 ? ", " : ""}
-                                {location.name.toUpperCase()}
-                              </span>
-                            )
-                          )
-                        : locations.items.map(
-                            (location: any, index: number) => {
-                              if (
-                                location._id === userProfile?.item?.locationId
-                              ) {
-                                return (
-                                  <span key={index}>
-                                    {location.name.toUpperCase()}
-                                  </span>
-                                )
-                              }
-                              return ""
-                            }
-                          )
-                      : ""}
+                    <FormControl sx={{ m: 1, width: 220 }}>
+                      <Select
+                        sx={{
+                          boxShadow: "none",
+                          ".MuiOutlinedInput-notchedOutline": { border: 0 },
+                          variant: "standard",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "&:focus .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "& .MuiSelect-select": {
+                            paddingLeft: "0px",
+                            fontWeight: "bold",
+                            paddingRight: "0px",
+                          },
+                        }}
+                        labelId="demo-multiple-checkbox-label"
+                        id="demo-multiple-checkbox"
+                        multiple
+                        style={{
+                          width: "100%",
+                          fontSize: "12px",
+                          height: "4px",
+                        }}
+                        value={selectedCity}
+                        input={<OutlinedInput label="All" />}
+                        onChange={handleCitySelection}
+                        renderValue={(selected) => selected.join(", ")}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                          style: { top: "9px" },
+                        }}
+                      >
+                        {locations?.items?.map((item: any, index: any) => (
+                          <MenuItem key={index} value={item.name as string}>
+                            <Checkbox
+                              checked={selectedCity.includes(item.name)}
+                              color="primary"
+                            />
+                            {item.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </div>
                 )}
               </div>
