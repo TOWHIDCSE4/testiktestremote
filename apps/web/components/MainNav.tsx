@@ -38,22 +38,22 @@ const MainNav = () => {
   const queryClient = useQueryClient()
   const [enabled, setEnabled] = useState(true)
   const [showSideNav, setShowSideNav] = useState(false)
- 
+
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
-  const { mutate } = useLogout();
-  
+  const { mutate } = useLogout()
+
   const logoutUser = () => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         console.log("HEllo,======", data)
         if (!data.error) {
-          Cookies.set("tfl","");
+          Cookies.set("tfl", "")
           queryClient.invalidateQueries({
             queryKey: ["session"],
           })
           router.push(`/`)
         } else {
-          toast.error(String(data.message));
+          toast.error(String(data.message))
         }
       },
       onError: (err: any) => {
@@ -143,9 +143,7 @@ const MainNav = () => {
                         />
                       </Switch>
                       <Switch.Label as="span" className="ml-3 text-sm">
-                        <span className="font-medium text-gray-900">
-                          
-                        </span>
+                        <span className="font-medium text-gray-900"></span>
                       </Switch.Label>
                     </Switch.Group>
                   </div>
@@ -244,8 +242,7 @@ const MainNav = () => {
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <Link
-                              href="/"
+                            <span
                               onClick={() => logoutUser()}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
@@ -253,7 +250,7 @@ const MainNav = () => {
                               )}
                             >
                               Logout
-                            </Link>
+                            </span>
                           )}
                         </Menu.Item>
                       </Menu.Items>
