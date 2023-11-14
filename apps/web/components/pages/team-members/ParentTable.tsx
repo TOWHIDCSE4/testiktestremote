@@ -164,6 +164,69 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
+    const handleDocumentClick = (event: any) => {
+      const dropdownButton = document.getElementById("dropdownFactoryButton")
+      const dropdown = document.getElementById("dropdownFactory")
+
+      if (
+        dropdown &&
+        !dropdown.contains(event.target) &&
+        event.target !== dropdownButton
+      ) {
+        setIsOpenLocation(undefined)
+      }
+    }
+
+    document.addEventListener("click", handleDocumentClick)
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick)
+    }
+  }, [isOpenLocation])
+
+  useEffect(() => {
+    const handleDocumentClick = (event: any) => {
+      const dropdownButton = document.getElementById("dropdownFactoryButton")
+      const dropdown = document.getElementById("dropdownFactory")
+
+      if (
+        dropdown &&
+        !dropdown.contains(event.target) &&
+        event.target !== dropdownButton
+      ) {
+        setIsOpenFactory(undefined)
+      }
+    }
+
+    document.addEventListener("click", handleDocumentClick)
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick)
+    }
+  }, [isOpenFactory])
+
+  useEffect(() => {
+    const handleDocumentClick = (event: any) => {
+      const dropdownButton = document.getElementById("dropdownFactoryButton")
+      const dropdown = document.getElementById("dropdownFactory")
+
+      if (
+        dropdown &&
+        !dropdown.contains(event.target) &&
+        event.target !== dropdownButton
+      ) {
+        setIsOpenRole(undefined)
+      }
+    }
+
+    document.addEventListener("click", handleDocumentClick)
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick)
+    }
+  }, [isOpenRole])
+
+  useEffect(() => {
     if (alertPrompt) {
       const timeoutId = setTimeout(() => {
         setAlertPrompt(false)
@@ -552,7 +615,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   Factory
                 </span>
-                <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                <div className="border-b-[4px] text-[14px] border-[#172554] whitespace-nowrap w-60 uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D">:</span>
                   {userProfile?.item.role !== "Production" ? (
                     <FormControl sx={{ m: 1, width: 220 }}>
@@ -619,10 +682,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
               </div>
               {selectedRole === "Personnel" ? (
                 <div className="flex justify-end text-gray-900 space-x-1">
-                  <span className="text-[#7F1D1D] text-[12px] uppercase whitespace-nowrap font-semibold">
+                  <span className="text-[#7F1D1D] text-[14px] uppercase whitespace-nowrap font-semibold">
                     Machine Class
                   </span>
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 whitespace-nowrap uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D">:</span>
                     <FormControl sx={{ m: 1, width: 220 }}>
                       <Select
@@ -1095,27 +1158,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                           ) : (
                                             ""
                                           ))}
-                                        <Menu.Item>
-                                          {({ active }) => (
-                                            <span
-                                              className={combineClasses(
-                                                active
-                                                  ? "bg-gray-100 text-gray-900"
-                                                  : "text-gray-700",
-                                                "block px-4 py-2 text-sm cursor-pointer text-left"
-                                              )}
-                                              onClick={() => {
-                                                setSelectedRow(item)
-                                                setDeleteModal(true)
-                                                setAction(
-                                                  USER_STATUSES.Blocked as T_UserStatus
-                                                )
-                                              }}
-                                            >
-                                              Block
-                                            </span>
-                                          )}
-                                        </Menu.Item>
                                         <Menu.Item>
                                           {({ active }) => (
                                             <span
@@ -2176,37 +2218,42 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </div>
                               </td>
                               <td className="text-sm text-gray-500 items-start justify-center">
-                                <button
-                                  id="dropdownFactoryButton"
-                                  data-dropdown-toggle="dropdown"
-                                  className="w-full rounded-md whitespace-nowrap overflow-ellipsis text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                                  type="button"
-                                  disabled={
-                                    isLocationsLoading ||
-                                    isUpdateUserLoading ||
-                                    isPaginatedLoading
-                                  }
-                                  onClick={() => handleHideFactory(idx)}
-                                >
-                                  <svg
-                                    height="25"
-                                    viewBox="0 0 48 48"
-                                    width="25"
-                                    xmlns="http://www.w3.org/2000/svg"
+                                {item.role !== "HR_Director" ? (
+                                  <button
+                                    id="dropdownFactoryButton"
+                                    data-dropdown-toggle="dropdown"
+                                    className="w-full rounded-md whitespace-nowrap disabled:cursor-pointer overflow-ellipsis text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                                    type="button"
+                                    disabled={
+                                      isLocationsLoading ||
+                                      isUpdateUserLoading ||
+                                      isPaginatedLoading ||
+                                      selectedRole === "Personnel"
+                                    }
+                                    onClick={() => handleHideFactory(idx)}
                                   >
-                                    <path d="M14 20l10 10 10-10z" />
-                                    <path d="M0 0h48v48h-48z" fill="none" />
-                                  </svg>
-                                  <span className="truncate">
-                                    {item.isGlobalFactory ?? false
-                                      ? "Global"
-                                      : item?.factoryId
-                                      ? typeof item.factoryId === "string"
-                                        ? item.factoryId
-                                        : item.factoryId.name
-                                      : "Select Factory"}
-                                  </span>
-                                </button>
+                                    <svg
+                                      height="25"
+                                      viewBox="0 0 48 48"
+                                      width="25"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path d="M14 20l10 10 10-10z" />
+                                      <path d="M0 0h48v48h-48z" fill="none" />
+                                    </svg>
+                                    <span className="truncate">
+                                      {item.isGlobalFactory ?? false
+                                        ? "Global"
+                                        : item?.factoryId
+                                        ? typeof item.factoryId === "string"
+                                          ? item.factoryId
+                                          : item.factoryId.name
+                                        : "Select Factory"}
+                                    </span>
+                                  </button>
+                                ) : (
+                                  <div></div>
+                                )}
 
                                 <div
                                   id="dropdownFactory"
@@ -2567,32 +2614,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             </button>
                                           )}
                                         </Menu.Item>
-                                        <Menu.Item>
-                                          {({ active }) => (
-                                            <button
-                                              disabled={!checkedProved}
-                                              className={combineClasses(
-                                                active
-                                                  ? "bg-gray-100 text-gray-900"
-                                                  : "text-gray-700",
-                                                `block px-4 py-2 text-sm disabled:text-gray-400 text-left ${`${
-                                                  checkedProved
-                                                    ? "cursor-pointer"
-                                                    : "cursor-not-allowed"
-                                                }`}`
-                                              )}
-                                              onClick={() => {
-                                                setSelectedRow(item)
-                                                setDeleteModal(true)
-                                                setAction(
-                                                  USER_STATUSES.Blocked as T_UserStatus
-                                                )
-                                              }}
-                                            >
-                                              Block
-                                            </button>
-                                          )}
-                                        </Menu.Item>
+
                                         <Menu.Item>
                                           {({ active }) => (
                                             <button
