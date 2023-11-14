@@ -9,7 +9,7 @@ const Content = () => {
   const [showText, setShowText] = useState(true)
 
   useEffect(() => {
-    if (data?.item.locationId)
+    if (data?.item?.locationId)
       setSelectedLocationId(data?.item.locationId as string)
   }, [data])
 
