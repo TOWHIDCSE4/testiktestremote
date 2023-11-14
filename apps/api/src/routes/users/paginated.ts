@@ -24,6 +24,10 @@ export const paginated = async (req: Request, res: Response) => {
       if (role && role !== "null") {
         if (role === "HR") {
           queryFilters.push({ role: { $in: ["HR", "HR_Director"] } })
+        } else if (role === "Corporate") {
+          queryFilters.push({
+            role: { $in: ["Accounting", "Sales", "Corporate"] },
+          })
         } else {
           queryFilters.push({ role })
         }

@@ -497,7 +497,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       // onChange={handleTeamListing}
                       onClick={() => setIsOpenTeam(!isOpenTeam)}
                       value={selectedStatus}
-                      className="w-5 py-0 pl-1 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0"
+                      className="w-5 py-0 pl-1 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 overflow-y-auto"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -515,11 +515,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </svg>
                     </button>
                     {isOpenTeam && (
-                      <div className=" absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                      <div className="absolute mt-1 w-40 h-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10 overflow-y-auto">
                         {roleFilter().map((item: any, index: any) => (
                           <div
+                            style={{ fontSize: 14, fontWeight: 500 }}
                             key={index}
-                            className="p-2 hover:bg-gray-100 cursor-pointer"
+                            className="p-2 hover:bg-gray-100 cursor-pointer overflow-y-auto"
                             onClick={() => {
                               handleTeamListing(item)
                               setIsOpenTeam(false)
@@ -580,9 +581,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 </span>
                 {isOpen && (
                   <div
+                    style={{ width: 160 }}
                     className={`${
                       isOpenTeam == true ? "hidden" : ""
-                    } sm:top-[6rem] absolute overflow mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50`}
+                    }  sm:top-[6rem] absolute mt-1  h-30 bg-white border border-gray-300 rounded-lg shadow-lg z-10 overflow-y-auto`}
                   >
                     <ul>
                       {statusArray.map((status, index) => (
@@ -1951,7 +1953,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       </a> */}
                     </th>
                     <th className="">
-                      <div className="flex items-center justify-center ml-8">
+                      <div className="flex items-center justify-start ml-6">
                         <span> City</span>
                         <button onClick={(e) => {}}>
                           <svg
@@ -1981,7 +1983,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   </a>
                 </th> */}
                     <th className="">
-                      <div className="flex items-start justify-start ml-7">
+                      <div className="flex items-start justify-center ml-2">
                         <span className="flex">
                           Factory<p className="text-red-600 ml-1">*</p>
                         </span>
@@ -2183,7 +2185,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 <button
                                   id="dropdownFactoryButton"
                                   data-dropdown-toggle="dropdown"
-                                  className="w-full rounded-md justify-center text-center whitespace-nowrap overflow-ellipsis space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                  className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                   type="button"
                                   disabled={
                                     isLocationsLoading ||
@@ -2213,10 +2215,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   id="dropdownFactory"
                                   className={`z-50 fixed ${
                                     isOpenLocation == idx ? "block" : "hidden"
-                                  } bg-white divide-y overflow-visible divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                                  }  bg-white divide-y overflow-visible divide-gray-100 rounded-lg shadow w-40 dark:bg-gray-700`}
                                 >
                                   <ul
-                                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                    className="py-2 text-sm text-gray-700 dark:text-gray-200 overflow-auto h-30"
                                     aria-labelledby="dropdownFactoryButton"
                                   >
                                     {locations?.items?.map(
@@ -2256,51 +2258,46 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </div>
                               </td>
                               <td className="text-sm text-gray-500 items-start justify-center">
-                                {item.role !== "HR_Director" ? (
-                                  <button
-                                    id="dropdownFactoryButton"
-                                    data-dropdown-toggle="dropdown"
-                                    className="w-full rounded-md whitespace-nowrap disabled:cursor-pointer overflow-ellipsis text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                                    type="button"
-                                    disabled={
-                                      isLocationsLoading ||
-                                      isUpdateUserLoading ||
-                                      isPaginatedLoading ||
-                                      selectedRole === "Personnel"
-                                    }
-                                    onClick={() => handleHideFactory(idx)}
+                                <button
+                                  id="dropdownFactoryButton"
+                                  data-dropdown-toggle="dropdown"
+                                  className="w-30 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                  type="button"
+                                  disabled={
+                                    isLocationsLoading ||
+                                    isUpdateUserLoading ||
+                                    isPaginatedLoading
+                                  }
+                                  onClick={() => handleHideFactory(idx)}
+                                >
+                                  <svg
+                                    height="25"
+                                    viewBox="0 0 48 48"
+                                    width="25"
+                                    xmlns="http://www.w3.org/2000/svg"
                                   >
-                                    <svg
-                                      height="25"
-                                      viewBox="0 0 48 48"
-                                      width="25"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path d="M14 20l10 10 10-10z" />
-                                      <path d="M0 0h48v48h-48z" fill="none" />
-                                    </svg>
-                                    <span className="truncate">
-                                      {item.isGlobalFactory ?? false
-                                        ? "Global"
-                                        : item?.factoryId
-                                        ? typeof item.factoryId === "string"
-                                          ? item.factoryId
-                                          : item.factoryId.name
-                                        : "Select Factory"}
-                                    </span>
-                                  </button>
-                                ) : (
-                                  <div></div>
-                                )}
-
+                                    <path d="M14 20l10 10 10-10z" />
+                                    <path d="M0 0h48v48h-48z" fill="none" />
+                                  </svg>
+                                  <span className="truncate">
+                                    {item.isGlobalFactory ?? false
+                                      ? "Global"
+                                      : item?.factoryId
+                                      ? typeof item.factoryId === "string"
+                                        ? item.factoryId
+                                        : item.factoryId.name
+                                      : "Select Factory"}
+                                  </span>
+                                </button>
                                 <div
                                   id="dropdownFactory"
                                   className={`z-50 fixed ${
                                     isOpenFactory == idx ? "block" : "hidden"
-                                  } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 `}
+                                  }  sm:top-[13.8rem] absolute  overflow-y-auto mt-2  w-85 rounded-lg bg-white border border-gray-300 z-50`}
                                 >
                                   <ul
-                                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                    style={{ height: 145 }}
+                                    className="py-2 overflow-auto text-sm text-gray-700 dark:text-gray-200 w-40"
                                     aria-labelledby="dropdownFactoryButton"
                                   >
                                     {factories?.items?.map(
@@ -2308,7 +2305,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                         <li key={index}>
                                           <a
                                             href="#"
-                                            className="block px-2 py-0 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white overflow-hidden overflow-ellipsis whitespace-nowrap"
+                                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
                                               const value = factory._id
                                               if (value !== "Global") {
@@ -2355,7 +2352,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <button
                                     id="dropdownFactoryButton"
                                     data-dropdown-toggle="dropdown"
-                                    className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-56 rounded-md whitespace-nowrap  text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                     type="button"
                                     disabled={
                                       isLocationsLoading ||
@@ -2394,7 +2391,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     id="dropdownFactory"
                                     className={`z-50 fixed ${
                                       isOpenRole == idx ? "block" : "hidden"
-                                    } bg-white divide-y overflow-y-auto h-36 divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                                    } bg-white divide-y overflow-y-auto h-40 divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
                                   >
                                     <ul
                                       className="py-2 text-sm text-gray-700 dark:text-gray-200"
@@ -2452,7 +2449,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <button
                                     id="dropdownFactoryButton"
                                     data-dropdown-toggle="dropdown"
-                                    className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
+                                    className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
                                     type="button"
                                     disabled={
                                       isLocationsLoading ||
@@ -2566,7 +2563,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     leaveTo="transform opacity-0 scale-95"
                                   >
                                     <Menu.Items className="absolute right-9 text-end w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                      <div className="">
+                                      <div className=" sm:top-[7rem]  absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                                         {item.status !== "Approved" && (
                                           <Menu.Item>
                                             {({ active }) => (
@@ -3680,7 +3677,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </td>
                     </tr>
                     <tr
-                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100  "
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100  flex"
                       data-accordion-target="#accordion-arrow-icon-body-1"
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-1"
