@@ -1,5 +1,5 @@
 "use client"
-import { Fragment } from "react"
+import { Fragment, useEffect } from "react"
 import { Disclosure, Menu, Transition } from "@headlessui/react"
 import {
   MagnifyingGlassIcon,
@@ -38,8 +38,10 @@ const MainNav = () => {
   const queryClient = useQueryClient()
   const [enabled, setEnabled] = useState(true)
   const [showSideNav, setShowSideNav] = useState(false)
+
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const { mutate } = useLogout()
+
   const logoutUser = () => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
@@ -140,9 +142,7 @@ const MainNav = () => {
                         />
                       </Switch>
                       <Switch.Label as="span" className="ml-3 text-sm">
-                        <span className="font-medium text-gray-900">
-                          Online
-                        </span>
+                        <span className="font-medium text-gray-900"></span>
                       </Switch.Label>
                     </Switch.Group>
                   </div>
@@ -160,15 +160,15 @@ const MainNav = () => {
                         <div className="flex items-center">
                           <div className="relative h-9 w-9">
                             {!isUserProfileLoading &&
-                            userProfile?.item.profile?.photo ? (
+                            userProfile?.item?.profile?.photo ? (
                               <Image
                                 className="rounded-full"
-                                src={`/files/${userProfile?.item.profile?.photo}`}
+                                src={`/files/${userProfile?.item?.profile?.photo}`}
                                 alt="Profile image"
                                 fill
                               />
                             ) : !isUserProfileLoading &&
-                              !userProfile?.item.profile?.photo ? (
+                              !userProfile?.item?.profile?.photo ? (
                               <Image
                                 className="rounded-full"
                                 src={`https://ui-avatars.com/api/?name=${userProfile?.item?.firstName}+${userProfile?.item?.lastName}`}
@@ -241,8 +241,7 @@ const MainNav = () => {
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <Link
-                              href="/"
+                            <span
                               onClick={() => logoutUser()}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
@@ -250,7 +249,7 @@ const MainNav = () => {
                               )}
                             >
                               Logout
-                            </Link>
+                            </span>
                           )}
                         </Menu.Item>
                       </Menu.Items>
