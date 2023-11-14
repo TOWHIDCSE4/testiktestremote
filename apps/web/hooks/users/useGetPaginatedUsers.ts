@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query"
 import {
   T_BackendResponse,
   T_Factory,
+  T_Location,
+  T_Locations,
   T_MachineClass,
   T_User,
   T_UserRole,
@@ -27,7 +29,7 @@ export async function getAllUsers({
   excludeUser,
 }: {
   page: number
-  locationId: string
+  locationId: string[] | null
   role: T_UserRole | null
   factories: string | null
   status: T_UserStatus | null
@@ -52,11 +54,12 @@ export async function getAllUsers({
 function usePaginatedUsers(
   queryStatus: T_UserStatus | null,
   queryRole: T_UserRole
+  // queryLocation:T_Locations | null
 ) {
   const [page, setPage] = useState(1)
   const [name, setName] = useState("")
   const { data: userProfile } = useProfile()
-  const [locationId, setLocationId] = useState("")
+  const [locationId, setLocationId] = useState<string[] | null>([])
   const [role, setRole] = useState<T_UserRole | null>(queryRole)
   const [factories, setFactories] = useState<string | null>("")
   const [status, setStatus] = useState<T_UserStatus | null>(queryStatus)
