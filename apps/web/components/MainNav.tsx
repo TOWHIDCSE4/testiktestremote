@@ -45,9 +45,8 @@ const MainNav = () => {
   const logoutUser = () => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
-        console.log("HEllo,======", data)
         if (!data.error) {
-          Cookies.set("tfl", "")
+          Cookies.remove("tfl")
           queryClient.invalidateQueries({
             queryKey: ["session"],
           })
