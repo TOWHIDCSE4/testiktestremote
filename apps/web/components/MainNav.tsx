@@ -48,6 +48,10 @@ const MainNav = () => {
         console.log("HEllo,======", data)
         if (!data.error) {
           Cookies.set("tfl","");
+          queryClient.invalidateQueries({
+            queryKey: ["session"],
+          })
+          router.push(`/`)
         } else {
           toast.error(String(data.message));
         }
