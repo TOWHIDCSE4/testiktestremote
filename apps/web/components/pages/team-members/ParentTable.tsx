@@ -422,19 +422,53 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }
 
+  // const handleCitySelection = (event: any) => {
+  //   const selectedCity = event.target.value
+  //   const updatedSelection = selectedCity.filter((val: string) => val !== "All")
+  //   setSelectedCity(updatedSelection)
+
+  //   const selectedCityIds = locations?.items
+  //     ? locations.items
+  //         .filter((item: any) => selectedCity.includes(item.name))
+  //         .map((item: any) => item._id)
+  //     : []
+  //   setSelectedCityIds(selectedCityIds)
+  //   //@ts-expect-error
+  //   setLocationId(selectedCityIds)
+
+  //   if (selectedCityIds.length === 0) {
+  //     setSelectedCity(["All"])
+  //   }
+  // }
+
   const handleCitySelection = (event: any) => {
     const selectedCity = event.target.value
-    const updatedSelection = selectedCity.filter((val: string) => val !== "All")
-    setSelectedCity(updatedSelection)
+    console.log(
+      "🚀 ~ file: ParentTable.tsx:446 ~ handleCitySelection ~ selectedCity:",
+      selectedCity
+    )
+    const isAllSelected = selectedCity.includes("All")
 
-    const selectedCityIds = locations?.items
-      ? locations.items
-          .filter((item: any) => selectedCity.includes(item.name))
-          .map((item: any) => item._id)
-      : []
+    const updatedSelection = selectedCity.filter((val: string) => val !== "All")
+    setSelectedCity([])
+    setSelectedCity(selectedCity)
+    console.log("updateSelection", updatedSelection)
+
+    const selectedCityIds = isAllSelected
+      ? locations?.items?.map((item: any) => item._id) || []
+      : locations?.items
+          ?.filter((item: any) => updatedSelection.includes(item.name))
+          .map((item: any) => item._id) || []
+
     setSelectedCityIds(selectedCityIds)
     //@ts-expect-error
     setLocationId(selectedCityIds)
+
+    if (isAllSelected) {
+      // If "All" is selected, set all city names in a new array
+      const allCityNames = locations?.items?.map((item: any) => item.name) || []
+      setSelectedCity(allCityNames)
+    }
 
     if (selectedCityIds.length === 0) {
       setSelectedCity(["All"])
@@ -633,11 +667,64 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   City{" "}
                 </span>
                 {userProfile?.item.role == "Production" ? (
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-1 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
-                    <span className="pl-0">
-                      {checkCity ? [checkCity.name] : "Please Select City"}
-                    </span>
+                    <FormControl sx={{ m: 1, width: 220 }}>
+                      <Select
+                        sx={{
+                          boxShadow: "none",
+                          ".MuiOutlinedInput-notchedOutline": { border: 0 },
+                          variant: "standard",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "&:focus .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "& .MuiSelect-select": {
+                            paddingLeft: "0px",
+                            fontWeight: "bold",
+                            paddingRight: "0px",
+                          },
+                        }}
+                        labelId="demo-multiple-checkbox-label"
+                        id="demo-multiple-checkbox"
+                        multiple
+                        style={{
+                          width: "100%",
+                          fontSize: "12px",
+                          height: "4px",
+                        }}
+                        value={selectedCity}
+                        input={<OutlinedInput label="All" />}
+                        onChange={handleCitySelection}
+                        renderValue={(selected) => selected.join(", ")}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                          style: { top: "9px" },
+                        }}
+                      >
+                        {locations?.items?.map((item: any, index: any) => (
+                          <MenuItem key={index} value={item.name as string}>
+                            <Checkbox
+                              checked={
+                                selectedCity.includes(item.name) ||
+                                selectedCity.includes("All")
+                              }
+                              color="primary"
+                            />
+                            {item.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </div>
                 ) : (
                   <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
@@ -1092,7 +1179,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     <th scope="col" className="w-[6%] text-slate-900"></th>
                     <th scope="col" className="w-[12%]">
                       <div className="flex items-start justify-start ml-6">
-                        {/* <a href="#" className="group inline-flex items-center"> */}
                         User
                         <button onClick={(e) => {}}>
                           <svg
