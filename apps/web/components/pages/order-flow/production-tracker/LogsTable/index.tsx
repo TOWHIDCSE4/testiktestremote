@@ -1343,23 +1343,23 @@ const LogsTable = ({
                             <tr
                               id={`accordion-arrow-icon-body-${idx}`}
                               aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
-                              className={`${isAccordionOpen ? "open" : ""}  #ff0000`}
+                              className={`${isAccordionOpen ? "open" : ""}`}
                             >
-                              <td colSpan={7} >
-                                <div className="border border-b-0 border-gray-100  h-13 bg-[#c7cebe]">
+                              <td colSpan={7}>
+                                <div className="border border-b-0 border-gray-100 bg-gray-100 h-13">
                                   <div className="flex">
                                     <span className="flex w-1/4 text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
                                       <p className="px-4 pt-1 text-right">
                                         ADDITIONAL INFO
                                       </p>
                                     </span>
-                                    <div className="w-full justify-between">
-                                      <div className="flex justify-between">
+                                    <div className="w-full">
+                                      <div className="flex">
                                         {" "}
                                         {/* Use flex-wrap to wrap the elements */}
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap">
+                                        <span className="w-1/3 flex px-4 text-[13px] ">
                                           <p
-                                            className={`justify-center sm:w-3/5 md:w-[45%] text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`pl-3 sm:w-3/5 md:w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1368,7 +1368,7 @@ const LogsTable = ({
                                             CITY :
                                           </p>
                                           <p
-                                            className={`pl-1 pt-2 pb-1 text-sm text-gray-500 ${
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1379,9 +1379,9 @@ const LogsTable = ({
                                               : ""}{" "}
                                           </p>
                                         </span>
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                        <span className="w-2/3 flex px-4 text-[13px] ">
                                           <p
-                                            className={`justify-around pt-2 pb-1  w-[45%] text-right text-sm text-gray-500 font-semibold ${
+                                            className={`pt-2 pb-1 w-2/5 text-right text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1402,24 +1402,12 @@ const LogsTable = ({
                                               : ""}{" "}
                                           </p>
                                         </span>
-                                        <span className="justify-center  flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap">
-                                          <p
-                                            className={`pl-3 w-[50%] text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
-                                          >
-                                           Average Time:
-                                          </p>
-                                          <p
-                                            className={`pl-2 pt-2 pb-1 text-sm text-gray-500`}
-                                          >
-                                            {item.time ? Math.round(item.time) : 0}
-                                          </p>
-                                        </span>
                                       </div>
-                                      <div className="flex justify-between">
+                                      <div className="flex">
                                         {" "}
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                        <span className="flex w-1/3 sm:px-0 sm:pl-1 px-4 text-[13px] ">
                                           <p
-                                            className={`justify-center pt-2 sm:w-3/5 md:w-[45%] text-right pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`pt-2 sm:w-3/5 md:w-2/5 text-right pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1428,7 +1416,7 @@ const LogsTable = ({
                                             OPERATOR :
                                           </p>
                                           <p
-                                            className={`justify-around pl-1 pt-2 pb-1 text-sm text-gray-500 ${
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1442,9 +1430,9 @@ const LogsTable = ({
                                               : ""}
                                           </p>
                                         </span>
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                        <span className="w-2/3 flex text-[13px] px-4 text-slate-900 ">
                                           <p
-                                            className={`justify-center w-[45%] text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`pl-3 w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1459,7 +1447,6 @@ const LogsTable = ({
                                                 : "text-red-500"
                                             }`}
                                           >
-                                            
                                             <span
                                               className={`${
                                                 item.stopReason.join(", ") ===
@@ -1476,24 +1463,7 @@ const LogsTable = ({
                                             </span>
                                           </p>
                                         </span>
-                                        <span className="justify-center flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap">
-                                          <p
-                                            className={`pl-4 w-[50%] text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
-                                          >
-                                           Average Weight:
-                                          </p>
-                                          <p
-                                            className={`pl-5 pt-2 pb-1 text-sm text-gray-500`}
-                                          >
-                                            {item?.partId?.cageWeightActual ? Math.round(item?.partId?.cageWeightActual) : 0}
-                                          </p>
-                                        </span>
                                       </div>
-                                      {/* <div className="flex justify-between">
-                                        {" "}
-                                        
-                                        
-                                      </div> */}
                                     </div>
                                   </div>
                                 </div>
@@ -3365,6 +3335,35 @@ const LogsTable = ({
                     }
                   </p>
 
+                  <p className="text-sm text-gray-700">
+                    Global Units Per Hour :
+                    {
+                      //@ts-expect-error
+                      globalMetrics?.items?.globalUnitsPerHour !==
+                        undefined && (
+                        <span>
+                          {
+                            //@ts-expect-error
+                            globalMetrics?.items?.globalUnitsPerHour.toFixed(4)
+                          }
+                        </span>
+                      )
+                    }
+                  </p>
+                  <p className="text-sm text-gray-700">
+                    Global Tons Per Hour :
+                    {
+                      //@ts-expect-error
+                      globalMetrics?.items?.globalTonsPerHour !== undefined && (
+                        <span>
+                          {
+                            //@ts-expect-error
+                            globalMetrics?.items?.globalTonsPerHour.toFixed(4)
+                          }
+                        </span>
+                      )
+                    }
+                  </p>
                 </div>
               </div>
 
