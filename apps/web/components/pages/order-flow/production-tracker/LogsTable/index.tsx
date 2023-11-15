@@ -233,7 +233,17 @@ const LogsTable = ({
   }, [city, machineClass])
 
   const disabledDate = (current: any) => {
-    return current && current >= today
+    const today = moment()
+    const fourteenDaysAgo = today.subtract(-1, "days")
+    const daysDifferenceFromFourteenDaysAgo = fourteenDaysAgo.diff(
+      current.valueOf(),
+      "days"
+    )
+    const daysDifferenceFromToday = today.diff(current.valueOf(), "days")
+    return (
+      current &&
+      (daysDifferenceFromFourteenDaysAgo <= 0 || daysDifferenceFromToday > 14)
+    )
   }
 
   const [filterBy, setFilterBy] = useState("All")
@@ -731,6 +741,7 @@ const LogsTable = ({
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -799,6 +810,7 @@ const LogsTable = ({
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -858,6 +870,7 @@ const LogsTable = ({
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -909,6 +922,7 @@ const LogsTable = ({
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -954,7 +968,7 @@ const LogsTable = ({
                   <div className="w-2/3">
                     <Space direction="vertical" className="w-full" size={12}>
                       <RangePicker
-                        disabled={isCheckboxChecked}
+                        disabled={isCheckboxChecked || process ? true : false}
                         //@ts-expect-error
                         value={isCheckboxChecked ? [null] : dateRange}
                         disabledDate={disabledDate}
