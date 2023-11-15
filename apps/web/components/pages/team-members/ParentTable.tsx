@@ -152,6 +152,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   } = usePaginatedUsers(
     "Pending",
     storeSession?.role === "Production" ? "Personnel" : storeSession?.role
+    // userProfile?.item.locationId ?? ""
   )
 
   useEffect(() => {
@@ -284,9 +285,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       storeSession?.role === "Administrator" ||
       storeSession?.role === "HR_Director"
     ) {
+      //@ts-expect-error
       setLocationId("")
     } else {
-      setLocationId(userProfile?.item?.locationId as string)
+      //@ts-expect-error
+      setLocationId(userProfile?.item?.locationId)
     }
   }, [userProfile, selectedRole, selectedStatus])
 
@@ -797,7 +800,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           height: "4px",
                         }}
                         value={selectedMachineClasses}
-                        disabled={factoryMachineClasses.length === 0}
+                        disabled={factoryMachineClasses?.length === 0}
                         input={<OutlinedInput label="All" />}
                         onChange={handleMachineClassSelection}
                         renderValue={(selected) => selected.join(", ")}
