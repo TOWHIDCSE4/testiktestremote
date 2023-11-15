@@ -154,6 +154,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     storeSession?.role === "Production" ? "Personnel" : storeSession?.role
   )
 
+  console.log("🚀 ~ file: ParentTable.tsx:133 ~ selectedCity:", selectedCity)
   useEffect(() => {
     if (paginated?.itemCount === 0 && firstLoad) {
       handleSelectDropdown("Approved")
@@ -294,7 +295,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     const factoryMachineClasses: string[] = machineClass?.items?.filter(
       (item: any) => selectedFactoryIds?.includes(item.factoryId)
     )
-    console.log("HERE!")
     setFactoryMachineClasses(factoryMachineClasses)
   }, [selectedFactoryIds])
 
@@ -442,18 +442,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   // }
 
   const handleCitySelection = (event: any) => {
-    const selectedCity = event.target.value
+    const selectedCities = event.target.value
     console.log(
-      "🚀 ~ file: ParentTable.tsx:446 ~ handleCitySelection ~ selectedCity:",
-      selectedCity
+      "🚀 ~ file: ParentTable.tsx:447 ~ handleCitySelection ~ selectedCities:",
+      selectedCities
     )
-    const isAllSelected = selectedCity.includes("All")
+    const isAllSelected = selectedCities.includes("All")
 
-    const updatedSelection = selectedCity.filter((val: string) => val !== "All")
-    setSelectedCity([])
-    setSelectedCity(selectedCity)
-    console.log("updateSelection", updatedSelection)
-
+    const updatedSelection = selectedCities.filter(
+      (val: string) => val.toLowerCase() !== "all"
+    )
+    setSelectedCity(updatedSelection)
     const selectedCityIds = isAllSelected
       ? locations?.items?.map((item: any) => item._id) || []
       : locations?.items
@@ -464,16 +463,45 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     //@ts-expect-error
     setLocationId(selectedCityIds)
 
-    if (isAllSelected) {
-      // If "All" is selected, set all city names in a new array
-      const allCityNames = locations?.items?.map((item: any) => item.name) || []
-      setSelectedCity(allCityNames)
-    }
+    // if (isAllSelected) {
+    //   // If "All" is selected, set all city names in a new array
+    //   const allCityNames = locations?.items?.map((item: any) => item.name) || []
+    //   setSelectedCity(allCityNames)
+    // }
 
     if (selectedCityIds.length === 0) {
       setSelectedCity(["All"])
     }
   }
+  // const handleCitySelection = (event: any) => {
+  //   const selectedCities = event.target.value;
+  //   console.log("Selected Cities:", selectedCities);
+  //   const isAllSelected = selectedCities.includes("All");
+
+  //   // Check if "All" is included in selectedCities
+  //   if (isAllSelected) {
+  //     // If "All" is selected, set all city names in a new array
+  //     const allCityNames = locations?.items?.map((item: any) => item.name) || [];
+  //     setSelectedCity(allCityNames);
+  //   } else {
+  //     // If individual cities are selected, update the selection
+  //     const updatedSelection = selectedCities.filter((val: string) => val.toLowerCase() !== "all");
+  //     setSelectedCity(updatedSelection);
+
+  //     const selectedCityIds = locations?.items
+  //       ?.filter((item: any) => updatedSelection.includes(item.name))
+  //       .map((item: any) => item._id) || [];
+
+  //     setSelectedCityIds(selectedCityIds);
+  //     //@ts-expect-error
+  //     setLocationId(selectedCityIds);
+
+  //     // If no city is selected, set "All" in the state
+  //     if (updatedSelection.length === 0) {
+  //       setSelectedCity(["All"]);
+  //     }
+  //   }
+  // };
 
   const handleMachineClassSelection = (event: any) => {
     const selectedMachineClasses = event.target.value
