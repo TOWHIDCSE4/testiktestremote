@@ -207,8 +207,7 @@ const SideBarNav = () => {
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <Link
-                    href="/"
+                  <span
                     onClick={() => logoutUser()}
                     className={combineClasses(
                       active ? "bg-gray-100" : "",
@@ -216,7 +215,7 @@ const SideBarNav = () => {
                     )}
                   >
                     Logout
-                  </Link>
+                  </span>
                 )}
               </Menu.Item>
             </Menu.Items>
