@@ -158,12 +158,12 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         </span>
                       </label>
                       <input
+                        disabled={true} 
                         type="text"
                         id="average-cycle"
                         {...register("name", { required: true })}
-                        className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
+                        className={` block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         required
-                        disabled={jobIsLoading}
                       />
                     </div>
                     <div className="md:flex items-center mt-3">
@@ -181,11 +181,8 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         id="machineClass"
                         required
                         className={`block mt-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                        disabled={
-                          isMachineClassesLoading ||
-                          isMutateLoading ||
-                          jobIsLoading
-                        }
+                          disabled={true}
+     
                         {...register("machineClassId", { required: true })}
                         onChange={(e) => {
                           {
@@ -229,10 +226,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                           value={selectedPart}
                           onChange={setSelectedPart}
                           disabled={
-                            isPartsLoading ||
-                            jobIsLoading ||
-                            isMutateLoading ||
-                            parts?.items?.length === 0
+                         true
                           }
                         >
                           <div className="relative w-full">
@@ -328,11 +322,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         defaultValue="No"
                         required
                         disabled={
-                          jobData
-                            ? jobData.item.isStock
-                              ? true
-                              : false
-                            : jobIsLoading
+                         true
                         }
                       >
                         <option value="false">No</option>
@@ -359,7 +349,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                             id="drawingNumber"
                             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             required
-                            disabled={jobIsLoading}
+                            disabled={true}
                           />
                         </div>
                         <div className="md:flex items-center mt-3">

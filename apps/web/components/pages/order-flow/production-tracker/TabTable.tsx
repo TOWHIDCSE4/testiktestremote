@@ -356,65 +356,93 @@ const TabTable = ({
                             style={{ overflow: "visible" }}
                           >
                             <div className="">
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <span
-                                    className={combineClasses(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm cursor-pointer text-left"
-                                    )}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setJobId(job._id as string)
-                                    }}
-                                  >
-                                    Details
-                                  </span>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <span
-                                    className={combineClasses(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm cursor-pointer text-left"
-                                    )}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setEditModal(true)
-                                      setJobId(job._id as string)
-                                    }}
-                                  >
-                                    Edit
-                                  </span>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <span
-                                    className={combineClasses(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm cursor-pointer text-left"
-                                    )}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setDeleteModal(true)
-                                      setJobId(job._id as string)
-                                    }}
-                                  >
-                                    Delete
-                                  </span>
-                                )}
-                              </Menu.Item>
+                              
+                            {
+  tab === 'Deleted' ? (
+    <Menu.Item>
+      {({ active }) => (
+        <span
+          className={combineClasses(
+            active
+              ? 'bg-gray-100 text-gray-900'
+              : 'text-gray-700',
+            'block px-4 py-2 text-sm cursor-pointer text-left'
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            setJobId(job._id as string);
+          }}
+        >
+          Restore
+        </span>
+      )}
+    </Menu.Item>
+  ) : (
+    <>
+      <Menu.Item>
+        {({ active }) => (
+          <span
+            className={combineClasses(
+              active
+                ? 'bg-gray-100 text-gray-900'
+                : 'text-gray-700',
+              'block px-4 py-2 text-sm cursor-pointer text-left'
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              setJobId(job._id as string);
+            }}
+          >
+            Details
+          </span>
+        )}
+      </Menu.Item>
+      <Menu.Item>
+        {({ active }) => (
+          <span
+            className={combineClasses(
+              active
+                ? 'bg-gray-100 text-gray-900'
+                : 'text-gray-700',
+              'block px-4 py-2 text-sm cursor-pointer text-left'
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditModal(true);
+              setJobId(job._id as string);
+            }}
+          >
+            Edit
+          </span>
+        )}
+      </Menu.Item>
+      <Menu.Item>
+        {({ active }) => (
+          <span
+            className={combineClasses(
+              active
+                ? 'bg-gray-100 text-gray-900'
+                : 'text-gray-700',
+              'block px-4 py-2 text-sm cursor-pointer text-left'
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
+              setDeleteModal(true);
+              setJobId(job._id as string);
+            }}
+          >
+            Delete
+          </span>
+        )}
+      </Menu.Item>
+    </>
+  )
+}
+
                             </div>
                           </Menu.Items>
                         </Transition>
+
                       </Menu>
                     </td>
                   </tr>
