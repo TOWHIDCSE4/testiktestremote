@@ -704,63 +704,65 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 </span>
                 <div className="border-b-[4px] text-[14px] border-[#172554] whitespace-nowrap w-60 uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D">:</span>
-                  {userProfile?.item.role !== "Production" ? (
-                    <FormControl sx={{ m: 1, width: 220 }}>
-                      <Select
-                        sx={{
-                          boxShadow: "none",
-                          ".MuiOutlinedInput-notchedOutline": { border: 0 },
-                          variant: "standard",
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            border: "none",
-                          },
-                          "&:focus .MuiOutlinedInput-notchedOutline": {
-                            border: "none",
-                          },
-                          "& .MuiSelect-select": {
-                            paddingLeft: "0px", // Adjust the value as needed
-                            fontWeight: "bold",
-                            paddingRight: "0px",
-                          },
-                        }}
-                        labelId="demo-multiple-checkbox-label"
-                        id="demo-multiple-checkbox"
-                        multiple
-                        style={{
-                          width: "100%",
-                          fontSize: "12px",
-                          height: "4px",
-                        }}
-                        value={selectedFactories}
-                        input={<OutlinedInput label="All" />}
-                        onChange={handleFactorySelection}
-                        renderValue={(selected) => selected.join(", ")}
-                        MenuProps={{
-                          anchorOrigin: {
-                            vertical: "bottom",
-                            horizontal: "left",
-                          },
-                          transformOrigin: {
-                            vertical: "top",
-                            horizontal: "left",
-                          },
-                          style: { top: "9px" },
-                        }}
-                      >
-                        {factories?.items?.map((item: any, index: any) => (
-                          <MenuItem key={index} value={item.name as string}>
-                            <Checkbox
-                              checked={selectedFactories.includes(item.name)}
-                              color="primary"
-                            />
-                            {item.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  ) : (
-                    <span>{checkFactory ? [checkFactory.name] : ""}</span>
-                  )}
+                  {/* {userProfile?.item.role !== "Production" ? ( */}
+                  <FormControl sx={{ m: 1, width: 220 }}>
+                    <Select
+                      sx={{
+                        boxShadow: "none",
+                        ".MuiOutlinedInput-notchedOutline": { border: 0 },
+                        variant: "standard",
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none",
+                        },
+                        "&:focus .MuiOutlinedInput-notchedOutline": {
+                          border: "none",
+                        },
+                        "& .MuiSelect-select": {
+                          paddingLeft: "0px", // Adjust the value as needed
+                          fontWeight: "bold",
+                          paddingRight: "0px",
+                        },
+                      }}
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      style={{
+                        width: "100%",
+                        fontSize: "12px",
+                        height: "4px",
+                      }}
+                      value={selectedFactories}
+                      input={<OutlinedInput label="All" />}
+                      onChange={handleFactorySelection}
+                      renderValue={(selected) => selected.join(", ")}
+                      MenuProps={{
+                        anchorOrigin: {
+                          vertical: "bottom",
+                          horizontal: "left",
+                        },
+                        transformOrigin: {
+                          vertical: "top",
+                          horizontal: "left",
+                        },
+                        style: { top: "9px" },
+                      }}
+                    >
+                      {factories?.items?.map((item: any, index: any) => (
+                        <MenuItem key={index} value={item.name as string}>
+                          <Checkbox
+                            checked={selectedFactories.includes(item.name)}
+                            color="primary"
+                          />
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  {/* )  
+                   : (
+                     <span>{checkFactory ? [checkFactory.name] : ""}</span>
+                 )
+                } */}
                 </div>
               </div>
               {selectedRole === "Personnel" ? (
@@ -797,7 +799,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           height: "4px",
                         }}
                         value={selectedMachineClasses}
-                        disabled={factoryMachineClasses.length === 0}
+                        disabled={factoryMachineClasses?.length === 0}
                         input={<OutlinedInput label="All" />}
                         onChange={handleMachineClassSelection}
                         renderValue={(selected) => selected.join(", ")}
@@ -2633,7 +2635,16 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                           <Menu.Item>
                                             {({ active }) => (
                                               <button
-                                                disabled={!checkedProved}
+                                                disabled={
+                                                  !checkedProved ||
+                                                  !(
+                                                    userProfile?.item.role ===
+                                                      "Production" &&
+                                                    userProfile?.item
+                                                      .factoryId ===
+                                                      item.factoryId?._id
+                                                  )
+                                                }
                                                 className={combineClasses(
                                                   active
                                                     ? "bg-gray-100  text-gray-900"
@@ -2691,7 +2702,16 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                         <Menu.Item>
                                           {({ active }) => (
                                             <button
-                                              disabled={!checkedProved}
+                                              disabled={
+                                                !checkedProved ||
+                                                !(
+                                                  userProfile?.item.role ===
+                                                    "Production" &&
+                                                  userProfile?.item
+                                                    .factoryId ===
+                                                    item.factoryId?._id
+                                                )
+                                              }
                                               className={combineClasses(
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
@@ -2718,7 +2738,16 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                         <Menu.Item>
                                           {({ active }) => (
                                             <button
-                                              disabled={!checkedProved}
+                                              disabled={
+                                                !checkedProved ||
+                                                !(
+                                                  userProfile?.item.role ===
+                                                    "Production" &&
+                                                  userProfile?.item
+                                                    .factoryId ===
+                                                    item.factoryId?._id
+                                                )
+                                              }
                                               className={combineClasses(
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
