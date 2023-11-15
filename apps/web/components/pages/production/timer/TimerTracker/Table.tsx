@@ -53,7 +53,7 @@ const Table = ({
     <>
       <div className="w-full overflow-y-hidden">
         <table className="w-full divide-y divide-gray-300">
-          <thead className="">
+          <thead className="border-b-4 border-indigo-900">
             <tr>
               <th
                 scope="col"
@@ -183,6 +183,7 @@ const Table = ({
               </th>
             </tr>
           </thead>
+
           <tbody className="divide-y divide-gray-200 bg-white">
             {paginated?.items &&
               paginated?.items.map((item, idx, array) => (

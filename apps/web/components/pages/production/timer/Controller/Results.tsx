@@ -49,7 +49,7 @@ const Results = ({
         <div className="flex ipadair:mt-5 absolute left-[1%] md:space-x-8 items-end md:right-0 top-0 mt-10">
           <div className="-translate-y-1.5 md:-translate-y-2 lg:-translate-y-3.5 md:w-[200px] lg:w-[30rem] xl:-translate-y-6">
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-medium text-gray-800 mt-2 justify-items-stretch">
-              <label className="justify-self-end col-span-3 dark:text-white">
+              <label className="justify-self-end col-span-3 dark:text-white whitespace-nowrap">
                 Units Per Hour&nbsp;:
               </label>
               <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-semibold text-gray-500 justify-self-start ml-1  dark:bg-dark-blue dark:text-white">
@@ -57,7 +57,7 @@ const Results = ({
               </span>
             </h5>
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-medium text-gray-800 mt-2 justify-items-stretch">
-              <label className="justify-self-end col-span-3 dark:text-white">
+              <label className="justify-self-end col-span-3 dark:text-white whitespace-nowrap ">
                 Tons Per Hour&nbsp;:
               </label>
               <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-semibold text-gray-500 justify-self-start  ml-1  dark:bg-dark-blue dark:text-white">
@@ -65,7 +65,7 @@ const Results = ({
               </span>
             </h5>
             <h5 className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-medium text-gray-800 mt-2 justify-items-stretch dark:text-white">
-              <label className="justify-self-end col-span-3">
+              <label className="justify-self-end col-span-3 whitespace-nowrap">
                 Total Tons&nbsp;:
               </label>
               <span className="uppercase text-sm md:text-lg xl:text-[1.5vw] ipadair:text-[1rem] 2xl:text-2xl font-semibold text-gray-500 justify-self-start  ml-1  dark:bg-dark-blue dark:text-white">
