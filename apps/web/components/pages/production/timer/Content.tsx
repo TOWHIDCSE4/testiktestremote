@@ -137,15 +137,15 @@ const Content = () => {
             </h4>
           </div>
           <div>
-            {userProfile?.item.role !== USER_ROLES.Personnel && (
-              <button
-                type="button"
-                className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
-                onClick={() => setOpenNewModal(true)}
-              >
-                New Timer
-              </button>
-            )}
+            {/* {userProfile?.item.role !== USER_ROLES.Personnel && ( */}
+            <button
+              type="button"
+              className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+              onClick={() => setOpenNewModal(true)}
+            >
+              New Timer
+            </button>
+            {/* )} */}
           </div>
         </div>
         <div className="w-full h-0.5 bg-gray-200 mt-5"></div>
@@ -159,12 +159,16 @@ const Content = () => {
                   tab._id === currentLocationTab
                     ? "bg-blue-950 text-white"
                     : isTimerCityRoles
-                    ? "bg-white text-gray-400"
+                    ? "bg-white disabled:text-gray-400"
                     : "bg-white text-gray-700 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
                 onClick={() => setCurrentLocationTab(tab._id as string)}
-                disabled={isTimerCityRoles && tab.name !== location?.item.name}
+                disabled={
+                  isTimerCityRoles &&
+                  userProfile?.item.role === "Personnel" &&
+                  tab._id !== userProfile?.item.locationId
+                }
               >
                 {tab.name} {tab?.count ? `(${tab.count})` : null}
               </button>
