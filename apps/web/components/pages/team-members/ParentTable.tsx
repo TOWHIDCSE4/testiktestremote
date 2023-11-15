@@ -2637,13 +2637,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               <button
                                                 disabled={
                                                   !checkedProved ||
-                                                  !(
-                                                    userProfile?.item.role ===
-                                                      "Production" &&
-                                                    userProfile?.item
-                                                      .factoryId ===
-                                                      item.factoryId?._id
-                                                  )
+                                                  userProfile?.item.role ===
+                                                    "Production"
+                                                  //   &&
+                                                  // userProfile?.item
+                                                  //   .factoryId ===
+                                                  //   //@ts-expect-error
+                                                  //   item.factoryId?._id
                                                 }
                                                 className={combineClasses(
                                                   active
@@ -2704,13 +2704,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             <button
                                               disabled={
                                                 !checkedProved ||
-                                                !(
-                                                  userProfile?.item.role ===
-                                                    "Production" &&
-                                                  userProfile?.item
-                                                    .factoryId ===
-                                                    item.factoryId?._id
-                                                )
+                                                userProfile?.item.role ===
+                                                  "Production"
+                                                //   &&
+                                                // userProfile?.item
+                                                //   .factoryId ===
+                                                //   //@ts-expect-error
+                                                //   item.factoryId?._id
                                               }
                                               className={combineClasses(
                                                 active
@@ -2740,13 +2740,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             <button
                                               disabled={
                                                 !checkedProved ||
-                                                !(
-                                                  userProfile?.item.role ===
-                                                    "Production" &&
-                                                  userProfile?.item
-                                                    .factoryId ===
-                                                    item.factoryId?._id
-                                                )
+                                                userProfile?.item.role ===
+                                                  "Production"
+                                                //   &&
+                                                // userProfile?.item
+                                                //   .factoryId ===
+                                                //   //@ts-expect-error
+                                                //   item.factoryId?._id
                                               }
                                               className={combineClasses(
                                                 active
