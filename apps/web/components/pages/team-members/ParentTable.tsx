@@ -446,10 +446,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const handleCitySelection = (event: any) => {
     const selectedCities = event.target.value
-    console.log(
-      "🚀 ~ file: ParentTable.tsx:447 ~ handleCitySelection ~ selectedCities:",
-      selectedCities
-    )
     const isAllSelected = selectedCities.includes("All")
 
     const updatedSelection = selectedCities.filter(
@@ -463,7 +459,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           .map((item: any) => item._id) || []
 
     setSelectedCityIds(selectedCityIds)
-    //@ts-expect-error
     setLocationId(selectedCityIds)
 
     // if (isAllSelected) {
