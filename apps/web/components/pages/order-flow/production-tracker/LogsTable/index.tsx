@@ -741,7 +741,7 @@ const LogsTable = ({
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
-                      disabled={process ? true : false}
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -810,7 +810,7 @@ const LogsTable = ({
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
-                      disabled={process ? true : false}
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -870,7 +870,7 @@ const LogsTable = ({
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
-                      disabled={process ? true : false}
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -922,7 +922,7 @@ const LogsTable = ({
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
-                      disabled={process ? true : false}
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
