@@ -23,7 +23,7 @@ import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 import React from "react"
 import { Alert } from "antd"
 import toast from "react-hot-toast"
-import { FormControl, MenuItem } from "@mui/material"
+import { FormControl, MenuItem, Checkbox, OutlinedInput } from "@mui/material"
 import Select from "@mui/material/Select"
 interface ContentProps {
   userLog: string
@@ -129,12 +129,15 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [selectedFactoryIds, setSelectedFactoryIds] = useState([""])
   const [selectedFactories, setSelectedFactories] = useState(["All"])
   const [factoryMachineClasses, setFactoryMachineClasses] = useState([""])
+  const [selectedCity, setSelectedCity] = useState(["All"])
+  const [selectedCityIds, setSelectedCityIds] = useState([""])
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const [selectedMachineClasses, setSelectedMachineClasses] = useState(["All"])
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
+  const [firstLoad, setFirstLoad] = useState(true)
   const {
     data: paginated,
     isLoading: isPaginatedLoading,
@@ -151,6 +154,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     storeSession?.role === "Production" ? "Personnel" : storeSession?.role
   )
 
+  useEffect(() => {
+    if (paginated?.itemCount === 0 && firstLoad) {
+      handleSelectDropdown("Approved")
+      setFirstLoad(false)
+    }
+  }, [paginated])
+
   const { data: machineClass, isLoading: isMachineLoading } =
     useMachineClasses()
 
@@ -162,6 +172,69 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       setOpenAccordion(id)
     }
   }
+
+  useEffect(() => {
+    const handleDocumentClick = (event: any) => {
+      const dropdownButton = document.getElementById("dropdownFactoryButton")
+      const dropdown = document.getElementById("dropdownFactory")
+
+      if (
+        dropdown &&
+        !dropdown.contains(event.target) &&
+        event.target !== dropdownButton
+      ) {
+        setIsOpenLocation(undefined)
+      }
+    }
+
+    document.addEventListener("click", handleDocumentClick)
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick)
+    }
+  }, [isOpenLocation])
+
+  useEffect(() => {
+    const handleDocumentClick = (event: any) => {
+      const dropdownButton = document.getElementById("dropdownFactoryButton")
+      const dropdown = document.getElementById("dropdownFactory")
+
+      if (
+        dropdown &&
+        !dropdown.contains(event.target) &&
+        event.target !== dropdownButton
+      ) {
+        setIsOpenFactory(undefined)
+      }
+    }
+
+    document.addEventListener("click", handleDocumentClick)
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick)
+    }
+  }, [isOpenFactory])
+
+  useEffect(() => {
+    const handleDocumentClick = (event: any) => {
+      const dropdownButton = document.getElementById("dropdownFactoryButton")
+      const dropdown = document.getElementById("dropdownFactory")
+
+      if (
+        dropdown &&
+        !dropdown.contains(event.target) &&
+        event.target !== dropdownButton
+      ) {
+        setIsOpenRole(undefined)
+      }
+    }
+
+    document.addEventListener("click", handleDocumentClick)
+
+    return () => {
+      document.removeEventListener("click", handleDocumentClick)
+    }
+  }, [isOpenRole])
 
   useEffect(() => {
     if (alertPrompt) {
@@ -251,7 +324,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setIsOpenRole(undefined)
     setSelectedStatus(value)
     setOpenAccordion(null)
-    setIsOpen(!isOpen)
+    setIsOpen(false)
     setStatus(value)
 
     const colorMapping: { [key: string]: string } = {
@@ -349,6 +422,25 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }
 
+  const handleCitySelection = (event: any) => {
+    const selectedCity = event.target.value
+    const updatedSelection = selectedCity.filter((val: string) => val !== "All")
+    setSelectedCity(updatedSelection)
+
+    const selectedCityIds = locations?.items
+      ? locations.items
+          .filter((item: any) => selectedCity.includes(item.name))
+          .map((item: any) => item._id)
+      : []
+    setSelectedCityIds(selectedCityIds)
+    //@ts-expect-error
+    setLocationId(selectedCityIds)
+
+    if (selectedCityIds.length === 0) {
+      setSelectedCity(["All"])
+    }
+  }
+
   const handleMachineClassSelection = (event: any) => {
     const selectedMachineClasses = event.target.value
     const updatedSelection = selectedMachineClasses.filter(
@@ -426,7 +518,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       // onChange={handleTeamListing}
                       onClick={() => setIsOpenTeam(!isOpenTeam)}
                       value={selectedStatus}
-                      className="w-5 py-0 pl-1 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0"
+                      className="w-5 py-0 pl-1 bg-gray-100 ring-opacity-0 text-gray-600 border-none border-gray-300 rounded bg-opacity-0 focus:ring-gray-500 focus:ring-opacity-0 overflow-y-auto"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -444,11 +536,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </svg>
                     </button>
                     {isOpenTeam && (
-                      <div className=" absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                      <div className="absolute mt-1 w-40 h-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10 overflow-y-auto">
                         {roleFilter().map((item: any, index: any) => (
                           <div
+                            style={{ fontSize: 14, fontWeight: 500 }}
                             key={index}
-                            className="p-2 hover:bg-gray-100 cursor-pointer"
+                            className="p-2 hover:bg-gray-100 cursor-pointer overflow-y-auto"
                             onClick={() => {
                               handleTeamListing(item)
                               setIsOpenTeam(false)
@@ -509,9 +602,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 </span>
                 {isOpen && (
                   <div
+                    style={{ width: 160 }}
                     className={`${
                       isOpenTeam == true ? "hidden" : ""
-                    } sm:top-[6rem] absolute overflow mt-2 py-2 w-32 rounded-lg bg-white border border-gray-300 z-50`}
+                    }  sm:top-[6rem] absolute mt-1  h-30 bg-white border border-gray-300 rounded-lg shadow-lg z-10 overflow-y-auto`}
                   >
                     <ul>
                       {statusArray.map((status, index) => (
@@ -546,35 +640,61 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </span>
                   </div>
                 ) : (
-                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-1 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
-                    {locations && locations.items
-                      ? storeSession?.role === "Administrator" ||
-                        "Super" ||
-                        "HR_Director"
-                        ? locations.items.map(
-                            (location: any, index: number) => (
-                              <span key={index}>
-                                {index > 0 ? ", " : ""}
-                                {location.name.toUpperCase()}
-                              </span>
-                            )
-                          )
-                        : locations.items.map(
-                            (location: any, index: number) => {
-                              if (
-                                location._id === userProfile?.item?.locationId
-                              ) {
-                                return (
-                                  <span key={index}>
-                                    {location.name.toUpperCase()}
-                                  </span>
-                                )
-                              }
-                              return ""
-                            }
-                          )
-                      : ""}
+                    <FormControl sx={{ m: 1, width: 220 }}>
+                      <Select
+                        sx={{
+                          boxShadow: "none",
+                          ".MuiOutlinedInput-notchedOutline": { border: 0 },
+                          variant: "standard",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "&:focus .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          "& .MuiSelect-select": {
+                            paddingLeft: "0px",
+                            fontWeight: "bold",
+                            paddingRight: "0px",
+                          },
+                        }}
+                        labelId="demo-multiple-checkbox-label"
+                        id="demo-multiple-checkbox"
+                        multiple
+                        style={{
+                          width: "100%",
+                          fontSize: "12px",
+                          height: "4px",
+                        }}
+                        value={selectedCity}
+                        input={<OutlinedInput label="All" />}
+                        onChange={handleCitySelection}
+                        renderValue={(selected) => selected.join(", ")}
+                        MenuProps={{
+                          anchorOrigin: {
+                            vertical: "bottom",
+                            horizontal: "left",
+                          },
+                          transformOrigin: {
+                            vertical: "top",
+                            horizontal: "left",
+                          },
+                          style: { top: "9px" },
+                        }}
+                      >
+                        {locations?.items?.map((item: any, index: any) => (
+                          <MenuItem key={index} value={item.name as string}>
+                            <Checkbox
+                              checked={selectedCity.includes(item.name)}
+                              color="primary"
+                            />
+                            {item.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </div>
                 )}
               </div>
@@ -582,7 +702,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                   Factory
                 </span>
-                <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                <div className="border-b-[4px] text-[14px] border-[#172554] whitespace-nowrap w-60 uppercase space-x-2 font-semibold">
                   <span className="text-start text-[#7F1D1D">:</span>
                   {userProfile?.item.role !== "Production" ? (
                     <FormControl sx={{ m: 1, width: 220 }}>
@@ -603,8 +723,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             paddingRight: "0px",
                           },
                         }}
-                        labelId="demo-multiple-name-label"
-                        id="demo-multiple-name"
+                        labelId="demo-multiple-checkbox-label"
+                        id="demo-multiple-checkbox"
                         multiple
                         style={{
                           width: "100%",
@@ -612,7 +732,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           height: "4px",
                         }}
                         value={selectedFactories}
-                        onChange={(event) => handleFactorySelection(event)}
+                        input={<OutlinedInput label="All" />}
+                        onChange={handleFactorySelection}
+                        renderValue={(selected) => selected.join(", ")}
                         MenuProps={{
                           anchorOrigin: {
                             vertical: "bottom",
@@ -625,10 +747,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           style: { top: "9px" },
                         }}
                       >
-                        <MenuItem value="All">All</MenuItem>
-
-                        {factories?.items?.map((item: any, index: number) => (
+                        {factories?.items?.map((item: any, index: any) => (
                           <MenuItem key={index} value={item.name as string}>
+                            <Checkbox
+                              checked={selectedFactories.includes(item.name)}
+                              color="primary"
+                            />
                             {item.name}
                           </MenuItem>
                         ))}
@@ -638,21 +762,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     <span>{checkFactory ? [checkFactory.name] : ""}</span>
                   )}
                 </div>
-                {/* <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
-                  <span className="text-start text-[#7F1D1D]">:</span>
-                  {userProfile?.item.role == "Production" ? (
-                    <span>{checkFactory ? [checkFactory.name] : ""}</span>
-                  ) : (
-                    <span>All</span>
-                  )}
-                </div> */}
               </div>
               {selectedRole === "Personnel" ? (
                 <div className="flex justify-end text-gray-900 space-x-1">
-                  <span className="text-[#7F1D1D] text-[12px] uppercase whitespace-nowrap font-semibold">
+                  <span className="text-[#7F1D1D] text-[14px] uppercase whitespace-nowrap font-semibold">
                     Machine Class
                   </span>
-                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
+                  <div className="border-b-[4px] text-[14px] border-[#172554] w-60 whitespace-nowrap uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D">:</span>
                     <FormControl sx={{ m: 1, width: 220 }}>
                       <Select
@@ -669,10 +785,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           "& .MuiSelect-select": {
                             paddingLeft: "0px", // Adjust the value as needed
                             fontWeight: "bold",
+                            paddingRight: "0px",
                           },
                         }}
-                        labelId="demo-multiple-name-label"
-                        id="demo-multiple-name"
+                        labelId="demo-multiple-checkbox-label"
+                        id="demo-multiple-checkbox"
                         multiple
                         style={{
                           width: "100%",
@@ -680,7 +797,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           height: "4px",
                         }}
                         value={selectedMachineClasses}
-                        onChange={(event) => handleMachineClassSelection(event)}
+                        disabled={factoryMachineClasses.length === 0}
+                        input={<OutlinedInput label="All" />}
+                        onChange={handleMachineClassSelection}
+                        renderValue={(selected) => selected.join(", ")}
                         MenuProps={{
                           anchorOrigin: {
                             vertical: "bottom",
@@ -693,10 +813,15 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           style: { top: "9px" },
                         }}
                       >
-                        <MenuItem value="All">All</MenuItem>
                         {factoryMachineClasses?.map(
                           (item: any, index: number) => (
                             <MenuItem key={index} value={item.name as string}>
+                              <Checkbox
+                                checked={selectedMachineClasses.includes(
+                                  item.name
+                                )}
+                                color="primary"
+                              />
                               {item.name}
                             </MenuItem>
                           )
@@ -704,10 +829,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </Select>
                     </FormControl>
                   </div>
-                  {/* <div className="border-b-[4px] text-[14px] border-[#172554] w-[13.5rem] uppercase space-x-2 font-semibold">
-                    <span className="text-start text-[#7F1D1D]">:</span>
-                    <span>All</span>
-                  </div> */}
                 </div>
               ) : selectedRole === "HR" || selectedRole === "Corporate" ? (
                 <div className="flex justify-end text-gray-900 space-x-1">
@@ -716,6 +837,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   </span>
                   <div className="border-b-[4px] text-[14px] border-[#172554] w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
+
                     <FormControl sx={{ m: 1, width: 220 }}>
                       <Select
                         sx={{
@@ -731,10 +853,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           "& .MuiSelect-select": {
                             paddingLeft: "0px", // Adjust the value as needed
                             fontWeight: "bold",
+                            paddingRight: "0px",
                           },
                         }}
-                        labelId="demo-multiple-name-label"
-                        id="demo-multiple-name"
+                        labelId="demo-multiple-checkbox-label"
+                        id="demo-multiple-checkbox"
                         multiple
                         style={{
                           width: "100%",
@@ -742,7 +865,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           height: "4px",
                         }}
                         value={departments}
-                        onChange={(event) => handleDepartmentSelection(event)}
+                        input={<OutlinedInput label="All" />}
+                        onChange={handleDepartmentSelection}
+                        renderValue={(selected) => selected.join(", ")}
                         MenuProps={{
                           anchorOrigin: {
                             vertical: "bottom",
@@ -755,15 +880,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           style: { top: "9px" },
                         }}
                       >
-                        <MenuItem value="All">All</MenuItem>
                         {roleFilter()?.map((item: any, index: number) => (
                           <MenuItem key={index} value={item as string}>
+                            <Checkbox
+                              checked={departments.includes(item)}
+                              color="primary"
+                            />
                             {item}
                           </MenuItem>
                         ))}
                       </Select>
                     </FormControl>
-                    {/* <span>All</span> */}
                   </div>
                 </div>
               ) : (
@@ -1125,27 +1252,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                           ) : (
                                             ""
                                           ))}
-                                        <Menu.Item>
-                                          {({ active }) => (
-                                            <span
-                                              className={combineClasses(
-                                                active
-                                                  ? "bg-gray-100 text-gray-900"
-                                                  : "text-gray-700",
-                                                "block px-4 py-2 text-sm cursor-pointer text-left"
-                                              )}
-                                              onClick={() => {
-                                                setSelectedRow(item)
-                                                setDeleteModal(true)
-                                                setAction(
-                                                  USER_STATUSES.Blocked as T_UserStatus
-                                                )
-                                              }}
-                                            >
-                                              Block
-                                            </span>
-                                          )}
-                                        </Menu.Item>
                                         <Menu.Item>
                                           {({ active }) => (
                                             <span
@@ -1901,7 +2007,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       </a> */}
                     </th>
                     <th className="">
-                      <div className="flex items-center justify-center ml-8">
+                      <div className="flex items-center justify-start ml-6">
                         <span> City</span>
                         <button onClick={(e) => {}}>
                           <svg
@@ -1931,7 +2037,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   </a>
                 </th> */}
                     <th className="">
-                      <div className="flex items-start justify-start ml-7">
+                      <div className="flex items-start justify-start ml-2">
                         <span className="flex">
                           Factory<p className="text-red-600 ml-1">*</p>
                         </span>
@@ -2133,7 +2239,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 <button
                                   id="dropdownFactoryButton"
                                   data-dropdown-toggle="dropdown"
-                                  className="w-full rounded-md justify-center text-center whitespace-nowrap overflow-ellipsis space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                  className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                   type="button"
                                   disabled={
                                     isLocationsLoading ||
@@ -2163,10 +2269,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   id="dropdownFactory"
                                   className={`z-50 fixed ${
                                     isOpenLocation == idx ? "block" : "hidden"
-                                  } bg-white divide-y overflow-visible divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                                  }  bg-white divide-y overflow-visible divide-gray-100 rounded-lg shadow w-40 dark:bg-gray-700`}
                                 >
                                   <ul
-                                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                    className="py-2 text-sm text-gray-700 dark:text-gray-200 overflow-auto h-30"
                                     aria-labelledby="dropdownFactoryButton"
                                   >
                                     {locations?.items?.map(
@@ -2206,46 +2312,57 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </div>
                               </td>
                               <td className="text-sm text-gray-500 items-start justify-center">
-                                <button
-                                  id="dropdownFactoryButton"
-                                  data-dropdown-toggle="dropdown"
-                                  className="w-full rounded-md whitespace-nowrap overflow-ellipsis text-center space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                                  type="button"
-                                  disabled={
-                                    isLocationsLoading ||
-                                    isUpdateUserLoading ||
-                                    isPaginatedLoading
-                                  }
-                                  onClick={() => handleHideFactory(idx)}
-                                >
-                                  <svg
-                                    height="25"
-                                    viewBox="0 0 48 48"
-                                    width="25"
-                                    xmlns="http://www.w3.org/2000/svg"
+                                {item?.role !== "HR_Director" ? (
+                                  <button
+                                    id="dropdownFactoryButton"
+                                    data-dropdown-toggle="dropdown"
+                                    className="w-30 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-normal"
+                                    type="button"
+                                    disabled={
+                                      isLocationsLoading ||
+                                      isUpdateUserLoading ||
+                                      isPaginatedLoading ||
+                                      selectedRole === "Personnel"
+                                    }
+                                    onClick={() => handleHideFactory(idx)}
                                   >
-                                    <path d="M14 20l10 10 10-10z" />
-                                    <path d="M0 0h48v48h-48z" fill="none" />
-                                  </svg>
-                                  <span className="truncate">
-                                    {item.isGlobalFactory ?? false
-                                      ? "Global"
-                                      : item?.factoryId
-                                      ? typeof item.factoryId === "string"
-                                        ? item.factoryId
-                                        : item.factoryId.name
-                                      : "Select Factory"}
-                                  </span>
-                                </button>
+                                    <svg
+                                      height="25"
+                                      viewBox="0 0 48 48"
+                                      width="25"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className={`${
+                                        selectedRole === "Personnel"
+                                          ? "hidden"
+                                          : ""
+                                      }`}
+                                    >
+                                      <path d="M14 20l10 10 10-10z" />
+                                      <path d="M0 0h48v48h-48z" fill="none" />
+                                    </svg>
+                                    <span className="truncate">
+                                      {item.isGlobalFactory ?? false
+                                        ? "Global"
+                                        : item?.factoryId
+                                        ? typeof item.factoryId === "string"
+                                          ? item.factoryId
+                                          : item.factoryId.name
+                                        : "Select Factory"}
+                                    </span>
+                                  </button>
+                                ) : (
+                                  <div></div>
+                                )}
 
                                 <div
                                   id="dropdownFactory"
                                   className={`z-50 fixed ${
                                     isOpenFactory == idx ? "block" : "hidden"
-                                  } bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 `}
+                                  }  sm:top-[13.8rem] absolute  overflow-y-auto mt-2  w-85 rounded-lg bg-white border border-gray-300 z-50`}
                                 >
                                   <ul
-                                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                    style={{ height: 145 }}
+                                    className="py-2 overflow-auto text-sm text-gray-700 dark:text-gray-200 w-40"
                                     aria-labelledby="dropdownFactoryButton"
                                   >
                                     {factories?.items?.map(
@@ -2253,7 +2370,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                         <li key={index}>
                                           <a
                                             href="#"
-                                            className="block px-2 py-0 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white overflow-hidden overflow-ellipsis whitespace-nowrap"
+                                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
                                               const value = factory._id
                                               if (value !== "Global") {
@@ -2300,7 +2417,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <button
                                     id="dropdownFactoryButton"
                                     data-dropdown-toggle="dropdown"
-                                    className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-56 rounded-md whitespace-nowrap  text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                     type="button"
                                     disabled={
                                       isLocationsLoading ||
@@ -2339,7 +2456,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     id="dropdownFactory"
                                     className={`z-50 fixed ${
                                       isOpenRole == idx ? "block" : "hidden"
-                                    } bg-white divide-y overflow-y-auto h-36 divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                                    } bg-white divide-y overflow-y-auto h-40 divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
                                   >
                                     <ul
                                       className="py-2 text-sm text-gray-700 dark:text-gray-200"
@@ -2397,7 +2514,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <button
                                     id="dropdownFactoryButton"
                                     data-dropdown-toggle="dropdown"
-                                    className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
+                                    className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
                                     type="button"
                                     disabled={
                                       isLocationsLoading ||
@@ -2510,8 +2627,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     leaveFrom="transform opacity-100 scale-100"
                                     leaveTo="transform opacity-0 scale-95"
                                   >
-                                    <Menu.Items className="absolute right-9 text-end w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                      <div className="">
+                                    <Menu.Items className="absolute right-24 text-end w-24 z-10 origin-top-right -top-0 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                      <div className="absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                                         {item.status !== "Approved" && (
                                           <Menu.Item>
                                             {({ active }) => (
@@ -2597,32 +2714,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             </button>
                                           )}
                                         </Menu.Item>
-                                        <Menu.Item>
-                                          {({ active }) => (
-                                            <button
-                                              disabled={!checkedProved}
-                                              className={combineClasses(
-                                                active
-                                                  ? "bg-gray-100 text-gray-900"
-                                                  : "text-gray-700",
-                                                `block px-4 py-2 text-sm disabled:text-gray-400 text-left ${`${
-                                                  checkedProved
-                                                    ? "cursor-pointer"
-                                                    : "cursor-not-allowed"
-                                                }`}`
-                                              )}
-                                              onClick={() => {
-                                                setSelectedRow(item)
-                                                setDeleteModal(true)
-                                                setAction(
-                                                  USER_STATUSES.Blocked as T_UserStatus
-                                                )
-                                              }}
-                                            >
-                                              Block
-                                            </button>
-                                          )}
-                                        </Menu.Item>
+
                                         <Menu.Item>
                                           {({ active }) => (
                                             <button
@@ -3650,7 +3742,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </td>
                     </tr>
                     <tr
-                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100  "
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100  flex"
                       data-accordion-target="#accordion-arrow-icon-body-1"
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-1"

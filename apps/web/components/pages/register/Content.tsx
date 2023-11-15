@@ -105,6 +105,16 @@ const Content = () => {
               </p>
             </div>
             {/* Registration form */}
+
+            <p className="text-sm text-center mt-2">
+              Already have an account?{" "}
+              <Link
+                href="/"
+                className="cursor-pointer text-blue-700 font-semibold hover:underline"
+              >
+                Sign in
+              </Link>
+            </p>
             <div className="mt-8">
               <div>
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -150,61 +160,64 @@ const Content = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-4">
-                    <label
-                      htmlFor="role"
-                      className="block text-sm font-medium text-gray-900"
-                    >
-                      Department
-                      <span className="text-red-500 text-lg">{" *"}</span>
-                    </label>
-                    <select
-                      id="role"
-                      disabled={isLoading}
-                      required
-                      className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                      {...register("role", { required: true })}
-                      defaultValue=""
-                    >
-                      <option className="uppercase" value="">
-                        Select Department
-                      </option>
-                      {ARR_USER_ROLES.map((key: string) => (
-                        <option className="uppercase" key={key} value={key}>
-                          {key}
+                  <div></div>
+                  <div className="grid grid-cols-2 gap-x-3">
+                    <div className="mt-4">
+                      <label
+                        htmlFor="role"
+                        className="block text-sm font-medium text-gray-900"
+                      >
+                        Department
+                        <span className="text-red-500 text-lg">{" *"}</span>
+                      </label>
+                      <select
+                        id="role"
+                        disabled={isLoading}
+                        required
+                        className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                        {...register("role", { required: true })}
+                        defaultValue=""
+                      >
+                        <option className="uppercase" value="">
+                          Select Department
                         </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="mt-4">
-                    <label
-                      htmlFor="location"
-                      className="block text-sm font-medium text-gray-900"
-                    >
-                      Location
-                      <span className="text-red-500 text-lg">{" *"}</span>
-                    </label>
-                    <select
-                      id="location"
-                      required
-                      disabled={isLocationsLoading || isLoading}
-                      className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
-                      {...register("locationId", { required: true })}
-                      defaultValue=""
-                    >
-                      <option className="uppercase" value="">
-                        Select Location
-                      </option>
-                      {locations?.items.map((key, index) => (
-                        <option
-                          className="uppercase"
-                          key={index}
-                          value={key._id}
-                        >
-                          {key.name}
+                        {ARR_USER_ROLES.map((key: string) => (
+                          <option className="uppercase" key={key} value={key}>
+                            {key}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="mt-4">
+                      <label
+                        htmlFor="location"
+                        className="block text-sm font-medium text-gray-900"
+                      >
+                        Location
+                        <span className="text-red-500 text-lg">{" *"}</span>
+                      </label>
+                      <select
+                        id="location"
+                        required
+                        disabled={isLocationsLoading || isLoading}
+                        className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
+                        {...register("locationId", { required: true })}
+                        defaultValue=""
+                      >
+                        <option className="uppercase" value="">
+                          Select Location
                         </option>
-                      ))}
-                    </select>
+                        {locations?.items.map((key, index) => (
+                          <option
+                            className="uppercase"
+                            key={index}
+                            value={key._id}
+                          >
+                            {key.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                   <div className="mt-4">
                     <label
@@ -327,15 +340,7 @@ const Content = () => {
                   </Link>
                   .
                 </p>
-                <p className="text-sm text-center mt-2">
-                  Already have an account?{" "}
-                  <Link
-                    href="/"
-                    className="cursor-pointer text-blue-700 font-semibold hover:underline"
-                  >
-                    Sign in
-                  </Link>
-                </p>
+
                 <p className="text-sm md:flex items-center justify-center mt-2 text-center">
                   &copy; 2023 AmeriTex Pipe & Products with
                   <span className="inline-flex">
