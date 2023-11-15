@@ -5,6 +5,7 @@ import {
 } from "../../utils/constants"
 import Users from "../../models/users"
 import * as Sentry from "@sentry/node"
+import mongoose from "mongoose"
 
 export const paginated = async (req: Request, res: Response) => {
   const {
@@ -34,7 +35,13 @@ export const paginated = async (req: Request, res: Response) => {
       }
 
       if (locationId) {
-        queryFilters.push({ locationId })
+        queryFilters.push({
+          locationId: {
+            $in: String(locationId)
+              .split(",")
+              .map((id: string) => new mongoose.Types.ObjectId(id)),
+          },
+        })
       }
 
       if (status && status !== "null") {
