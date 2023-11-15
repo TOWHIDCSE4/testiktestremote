@@ -94,7 +94,8 @@ const TimerTracker = ({
                 <label htmlFor="tabs" className="sr-only">
                   Select a tab
                 </label>
-                {/* Use an "onChange" listener to redirect the user to the selected tab URL. */}
+                /* Use an "onChange" listener to redirect the user to the
+                selected tab URL.
                 <select
                   id="tabs"
                   name="tabs"
@@ -108,6 +109,7 @@ const TimerTracker = ({
                   ))}
                 </select>
               </div>
+              <div></div>
               <div className="hidden sm:block">
                 <nav
                   className="isolate flex divide-x divide-gray-200"
@@ -115,17 +117,17 @@ const TimerTracker = ({
                 >
                   {timers.map((tab, tabIdx) => (
                     <button
-                      key={tabIdx}
-                      className={classNames(
+                    key={tabIdx}
+                    className={classNames(
                         selectedTimerId === tab._id
-                          ? "text-gray-900"
-                          : "text-gray-500 hover:text-gray-700",
+                        ? "bg-blue-950 text-slate-50 hover:bg-blue-950"
+                        : "text-gray-900 hover:text-gray-700",
                         tabIdx === 0 ? "" : "",
                         tabIdx === tabs.length - 1 ? "" : "",
-                        "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center text-sm font-bold hover:bg-gray-50 focus:z-10"
-                      )}
-                      onClick={() => setSelectedTimerId(tab._id as string)}
-                    >
+                        "group relative min-w-0 flex-1 overflow-hidden py-4 px-4 text-center text-sm font-bold focus:z-10"
+                        )}
+                        onClick={() => setSelectedTimerId(tab._id as string)}
+                        >
                       <span>{tab.machine?.name}</span>
                       <span
                         aria-hidden="true"
@@ -135,8 +137,9 @@ const TimerTracker = ({
                             : "bg-transparent",
                           "inset-x-0"
                         )}
-                      />
+                        />
                     </button>
+              
                   ))}
                 </nav>
               </div>
@@ -173,7 +176,6 @@ const TimerTracker = ({
               </button>
             </div>
           </div>
-          {/* Table */}
           <Table
             timerId={selectedTimerId}
             locationId={selectedLocationId}
