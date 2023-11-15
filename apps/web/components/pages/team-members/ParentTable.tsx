@@ -3742,7 +3742,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </td>
                     </tr>
                     <tr
-                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100  flex"
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
                       data-accordion-target="#accordion-arrow-icon-body-1"
                       aria-expanded="false"
                       aria-controls="accordion-arrow-icon-body-1"
