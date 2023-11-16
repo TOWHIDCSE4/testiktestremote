@@ -127,13 +127,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [directorStates, setDirectorStates] = useState([])
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
   const [selectedFactoryIds, setSelectedFactoryIds] = useState([""])
-  const [selectedFactories, setSelectedFactories] = useState(["All"])
+  const [selectedFactories, setSelectedFactories] = useState<string[]>([])
   const [factoryMachineClasses, setFactoryMachineClasses] = useState([""])
-  const [selectedCity, setSelectedCity] = useState(["All"])
+  const [selectedCity, setSelectedCity] = useState<string[]>([])
+  const [printAll, setPrintAll] = useState("")
   const [selectedCityIds, setSelectedCityIds] = useState([""])
+  const [selectedDepartmentIds, setSelectedDepartmentIds] = useState([""])
+  const [selectedMachineClassIds, setSelectedMachineClassIds] = useState([""])
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const [selectedMachineClasses, setSelectedMachineClasses] = useState(["All"])
+  const [selectedMachineClasses, setSelectedMachineClasses] = useState<
+    string[]
+  >([])
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
@@ -155,7 +160,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     // userProfile?.item.locationId ?? ""
   )
 
-  console.log("🚀 ~ file: ParentTable.tsx:133 ~ selectedCity:", selectedCity)
   useEffect(() => {
     if (paginated?.itemCount === 0 && firstLoad) {
       handleSelectDropdown("Approved")
@@ -408,118 +412,120 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setSelectedFactoryIds(checkFactory?._id)
   }, [checkFactory])
 
+  // Factories Multi Select Function
+
   const handleFactorySelection = (event: any) => {
     const selectedFactories = event.target.value
-    const updatedSelection = selectedFactories.filter(
-      (val: string) => val !== "All"
-    )
-    setSelectedFactories(updatedSelection)
+    setSelectedFactories(selectedFactories)
 
-    const selectedFactoryIds = factories?.items
-      ?.filter((item: any) => selectedFactories.includes(item.name))
-      .map((item: any) => item._id)
-    setSelectedFactoryIds(selectedFactoryIds)
-    setFactories(selectedFactoryIds)
-    if (selectedFactoryIds.length == 0) {
-      setSelectedFactories(["All"])
-    }
+    const updatedFactoryIds: any = []
+
+    selectedFactories.forEach((selectedFactoryName: string) => {
+      const factory: any = factories?.items.find(
+        (item: any) => item.name === selectedFactoryName
+      )
+      if (factory) {
+        updatedFactoryIds.push(factory._id)
+      }
+    })
+    setSelectedFactoryIds(updatedFactoryIds)
+    setFactories(updatedFactoryIds)
   }
 
-  // const handleCitySelection = (event: any) => {
-  //   const selectedCity = event.target.value
-  //   const updatedSelection = selectedCity.filter((val: string) => val !== "All")
-  //   setSelectedCity(updatedSelection)
+  useEffect(() => {
+    if (factories?.items) {
+      const factoryNames: string[] = []
+      const factoryIds: string[] = []
 
-  //   const selectedCityIds = locations?.items
-  //     ? locations.items
-  //         .filter((item: any) => selectedCity.includes(item.name))
-  //         .map((item: any) => item._id)
-  //     : []
-  //   setSelectedCityIds(selectedCityIds)
-  //   //@ts-expect-error
-  //   setLocationId(selectedCityIds)
+      factories.items.forEach((item: any) => {
+        factoryNames.push(item.name)
+        factoryIds.push(item._id)
+      })
+      setSelectedFactories(factoryNames)
+      setSelectedFactoryIds(factoryIds)
+    }
+  }, [factories])
 
-  //   if (selectedCityIds.length === 0) {
-  //     setSelectedCity(["All"])
-  //   }
-  // }
+  const renderSelectValueFactory = (selected: any) => {
+    return selectedFactories.length === factories?.items.length
+      ? "All"
+      : selected.join(", ")
+  }
 
   const handleCitySelection = (event: any) => {
     const selectedCities = event.target.value
-    console.log(
-      "🚀 ~ file: ParentTable.tsx:447 ~ handleCitySelection ~ selectedCities:",
-      selectedCities
-    )
-    const isAllSelected = selectedCities.includes("All")
+    setSelectedCity(selectedCities)
 
-    const updatedSelection = selectedCities.filter(
-      (val: string) => val.toLowerCase() !== "all"
-    )
-    setSelectedCity(updatedSelection)
-    const selectedCityIds = isAllSelected
-      ? locations?.items?.map((item: any) => item._id) || []
-      : locations?.items
-          ?.filter((item: any) => updatedSelection.includes(item.name))
-          .map((item: any) => item._id) || []
+    const updatedCityIds: string[] = []
 
-    setSelectedCityIds(selectedCityIds)
-    //@ts-expect-error
-    setLocationId(selectedCityIds)
+    selectedCities.forEach((selectedCityName: string) => {
+      const city: any = locations?.items.find(
+        (item: any) => item.name === selectedCityName
+      )
+      if (city) {
+        updatedCityIds.push(city._id)
+      }
+    })
 
-    // if (isAllSelected) {
-    //   // If "All" is selected, set all city names in a new array
-    //   const allCityNames = locations?.items?.map((item: any) => item.name) || []
-    //   setSelectedCity(allCityNames)
-    // }
-
-    if (selectedCityIds.length === 0) {
-      setSelectedCity(["All"])
-    }
+    setSelectedCityIds(updatedCityIds)
+    setLocationId(updatedCityIds)
   }
-  // const handleCitySelection = (event: any) => {
-  //   const selectedCities = event.target.value;
-  //   console.log("Selected Cities:", selectedCities);
-  //   const isAllSelected = selectedCities.includes("All");
 
-  //   // Check if "All" is included in selectedCities
-  //   if (isAllSelected) {
-  //     // If "All" is selected, set all city names in a new array
-  //     const allCityNames = locations?.items?.map((item: any) => item.name) || [];
-  //     setSelectedCity(allCityNames);
-  //   } else {
-  //     // If individual cities are selected, update the selection
-  //     const updatedSelection = selectedCities.filter((val: string) => val.toLowerCase() !== "all");
-  //     setSelectedCity(updatedSelection);
+  useEffect(() => {
+    if (locations?.items) {
+      const locationNames: string[] = []
+      const locationIds: string[] = []
 
-  //     const selectedCityIds = locations?.items
-  //       ?.filter((item: any) => updatedSelection.includes(item.name))
-  //       .map((item: any) => item._id) || [];
+      locations.items.forEach((item: any) => {
+        locationNames.push(item.name)
+        locationIds.push(item._id)
+      })
 
-  //     setSelectedCityIds(selectedCityIds);
-  //     //@ts-expect-error
-  //     setLocationId(selectedCityIds);
+      setSelectedCity(locationNames)
+      setSelectedCityIds(locationIds)
+    }
+  }, [locations])
 
-  //     // If no city is selected, set "All" in the state
-  //     if (updatedSelection.length === 0) {
-  //       setSelectedCity(["All"]);
-  //     }
-  //   }
-  // };
+  const renderSelectValue = (selected: any) => {
+    return selectedCity.length === locations?.items.length
+      ? "All"
+      : selected.join(", ")
+  }
 
   const handleMachineClassSelection = (event: any) => {
-    const selectedMachineClasses = event.target.value
-    const updatedSelection = selectedMachineClasses.filter(
-      (val: string) => val !== "All"
-    )
-    setSelectedMachineClasses(updatedSelection)
+    const selectedMachineClass = event.target.value
+    setSelectedMachineClasses(selectedMachineClass)
+    const updatedMachineClassIds: any = []
 
-    const selectedMachineClassIds = machineClass?.items
-      ?.filter((item: any) => selectedMachineClasses.includes(item.name))
-      .map((item: any) => item._id)
-    setMachineClass(selectedMachineClassIds)
-    if (selectedMachineClasses.length === 0) {
-      setSelectedMachineClasses(["All"])
+    selectedMachineClass.forEach((selectedMachineClassName: string) => {
+      const machineClasses: any = machineClass?.items.find(
+        (item: any) => item.name === selectedMachineClassName
+      )
+      if (machineClasses) {
+        updatedMachineClassIds.push(machineClasses._id)
+      }
+    })
+    setSelectedMachineClassIds(updatedMachineClassIds)
+    setMachineClass(updatedMachineClassIds)
+  }
+
+  useEffect(() => {
+    if (machineClass?.items) {
+      const machineClassName: string[] = []
+      const machineClassIds: string[] = []
+      machineClass?.items.forEach((item: any) => {
+        machineClassName.push(item.name)
+        machineClassIds.push(item._id)
+      })
+      setSelectedMachineClasses(machineClassName)
+      setSelectedMachineClassIds(machineClassIds)
     }
+  }, [machineClass])
+
+  const renderSelectValueMachineClass = (selected: any) => {
+    return selectedMachineClasses.length === machineClass?.items.length
+      ? "All"
+      : selected.join(", ")
   }
 
   const handleDepartmentSelection = (event: any) => {
@@ -533,6 +539,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       setDepartment(["All"])
     }
   }
+
+  useEffect(() => {
+    if (roleFilter()) {
+      const deptName: string[] = []
+      const deptIds: string[] = []
+
+      roleFilter().forEach((item: any) => {
+        deptName.push(item)
+      })
+      setDepartment(deptName)
+    }
+  }, [roleFilter()])
 
   useEffect(() => {
     function handleGlobalClick(event: any) {
@@ -697,7 +715,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                   {" "}
                   City{" "}
                 </span>
-                {userProfile?.item.role == "Production" ? (
+                {userProfile?.item.role === "Production" ? (
                   <div className="border-b-[4px] text-[14px] border-[#172554] h w-60 uppercase space-x-2 font-semibold">
                     <span className="text-start text-[#7F1D1D]">:</span>
                     <FormControl sx={{ m: 1, width: 220 }}>
@@ -729,7 +747,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         value={selectedCity}
                         input={<OutlinedInput label="All" />}
                         onChange={handleCitySelection}
-                        renderValue={(selected) => selected.join(", ")}
+                        renderValue={renderSelectValue}
                         MenuProps={{
                           anchorOrigin: {
                             vertical: "bottom",
@@ -745,10 +763,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         {locations?.items?.map((item: any, index: any) => (
                           <MenuItem key={index} value={item.name as string}>
                             <Checkbox
-                              checked={
-                                selectedCity.includes(item.name) ||
-                                selectedCity.includes("All")
-                              }
+                              // checked={
+                              //   selectedCity.includes(item.name) ||
+                              //   selectedCity.includes("All")
+                              // }
                               color="primary"
                             />
                             {item.name}
@@ -789,7 +807,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         value={selectedCity}
                         input={<OutlinedInput label="All" />}
                         onChange={handleCitySelection}
-                        renderValue={(selected) => selected.join(", ")}
+                        renderValue={renderSelectValue}
                         MenuProps={{
                           anchorOrigin: {
                             vertical: "bottom",
@@ -852,7 +870,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       value={selectedFactories}
                       input={<OutlinedInput label="All" />}
                       onChange={handleFactorySelection}
-                      renderValue={(selected) => selected.join(", ")}
+                      renderValue={renderSelectValueFactory}
                       MenuProps={{
                         anchorOrigin: {
                           vertical: "bottom",
@@ -920,7 +938,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         disabled={factoryMachineClasses?.length === 0}
                         input={<OutlinedInput label="All" />}
                         onChange={handleMachineClassSelection}
-                        renderValue={(selected) => selected.join(", ")}
+                        renderValue={renderSelectValueMachineClass}
                         MenuProps={{
                           anchorOrigin: {
                             vertical: "bottom",
@@ -987,7 +1005,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         value={departments}
                         input={<OutlinedInput label="All" />}
                         onChange={handleDepartmentSelection}
-                        renderValue={(selected) => selected.join(", ")}
+                        renderValue={renderSelectValue}
                         MenuProps={{
                           anchorOrigin: {
                             vertical: "bottom",
@@ -1185,18 +1203,218 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       )}
                     </tr>
                   </thead>
-                  <tbody></tbody>
+                  <tbody
+                    data-accordion="open"
+                    className="border-t-4 border-indigo-900"
+                  >
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5 h-14">
+                        <div className="flex items-center">
+                          <label
+                            htmlFor="checkbox-table-search-0"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5 h-14">
+                        <div className="flex items-center">
+                          <label
+                            htmlFor="checkbox-table-search-0"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5 h-14">
+                        <div className="flex items-center">
+                          <label
+                            htmlFor="checkbox-table-search-0"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5 h-14">
+                        <div className="flex items-center">
+                          <label
+                            htmlFor="checkbox-table-search-0"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900">
+                        <div className="flex items-center justify-center mt-0 w-full ml-6">
+                          <div
+                            className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full mx-2"
+                            role="status"
+                            aria-label="loading"
+                          >
+                            <span className="sr-only">Loading...</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5 h-14">
+                        <div className="flex items-center">
+                          <label
+                            htmlFor="checkbox-table-search-0"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                      data-accordion-target="#accordion-arrow-icon-body-1"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-1"
+                    >
+                      <td className="pr-6 py-5 h-14">
+                        <div className="flex items-center">
+                          <label
+                            htmlFor="checkbox-table-search-1"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-1"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-1"
+                    >
+                      <td className="pr-6 py-5 h-14">
+                        <div className="flex items-center">
+                          <label
+                            htmlFor="checkbox-table-search-1"
+                            className="sr-only"
+                          ></label>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
-              </div>
-
-              <div className="flex items-center justify-center mb-8 mt-0 w-full h-96 border-t-4 border-indigo-900">
-                <div
-                  className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
-                  role="status"
-                  aria-label="loading"
-                >
-                  <span className="sr-only">Loading...</span>
-                </div>
               </div>
             </>
           ) : null}
