@@ -1343,9 +1343,11 @@ const LogsTable = ({
                             <tr
                               id={`accordion-arrow-icon-body-${idx}`}
                               aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
-                              className={`${isAccordionOpen ? "open" : ""}  #ff0000`}
+                              className={`${
+                                isAccordionOpen ? "open" : ""
+                              }  #ff0000`}
                             >
-                              <td colSpan={7} >
+                              <td colSpan={7}>
                                 <div className="border border-b-0 border-gray-100  h-13 bg-[#c7cebe]">
                                   <div className="flex">
                                     <span className="flex w-1/4 text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
@@ -1381,6 +1383,67 @@ const LogsTable = ({
                                         </span>
                                         <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
                                           <p
+                                            className={`justify-center w-[45%] text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            STOP REASON :
+                                          </p>
+                                          <p
+                                            className={`pl-3 pt-2 pb-1 text-sm  text-gray-500 ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            <span
+                                              className={`${
+                                                item.stopReason.join(", ") ===
+                                                "Unit Created"
+                                                  ? "text-green-500"
+                                                  : item.stopReason.join(
+                                                      ", "
+                                                    ) === "Worker Break"
+                                                  ? "text-yellow-500"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              {item.stopReason.join(", ")}
+                                            </span>
+                                          </p>
+                                        </span>
+                                      </div>
+                                      <div className="flex justify-between">
+                                        {" "}
+                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                          <p
+                                            className={`justify-center pt-2 sm:w-3/5 md:w-[45%] text-right pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            OPERATOR :
+                                          </p>
+                                          <p
+                                            className={`justify-around pl-1 pt-2 pb-1 text-sm text-gray-500 overflow-hidden whitespace-nowrap overflow-ellipsis ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {item.operator === null
+                                              ? (item.operatorName as string)
+                                              : (item.operator as string)
+                                              ? //@ts-expect-error
+                                                `${item.operator.firstName} ${item.operator.lastName}`
+                                              : ""}
+                                          </p>
+                                        </span>
+                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                          <p
                                             className={`justify-around pt-2 pb-1  w-[45%] text-right text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
@@ -1402,98 +1465,40 @@ const LogsTable = ({
                                               : ""}{" "}
                                           </p>
                                         </span>
-                                        <span className="justify-center  flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap">
-                                          <p
-                                            className={`pl-3 w-[50%] text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
-                                          >
-                                           Average Time:
-                                          </p>
-                                          <p
-                                            className={`pl-2 pt-2 pb-1 text-sm text-gray-500`}
-                                          >
-                                            {item.time ? Math.round(item.time) : 0}
-                                          </p>
-                                        </span>
                                       </div>
                                       <div className="flex justify-between">
                                         {" "}
                                         <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
                                           <p
-                                            className={`justify-center pt-2 sm:w-3/5 md:w-[45%] text-right pb-1 text-sm text-gray-500 font-semibold ${
-                                              item.jobId
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
+                                            className={`justify-center pt-2 sm:w-3/5 md:w-[45%] text-right pb-1 text-sm text-gray-900 font-semibold`}
                                           >
-                                            OPERATOR :
+                                            Average Time :
                                           </p>
                                           <p
-                                            className={`justify-around pl-1 pt-2 pb-1 text-sm text-gray-500 ${
-                                              item.jobId
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
+                                            className={`justify-around pl-1 pt-2 pb-1 text-sm text-gray-500`}
                                           >
-                                            {item.operator === null
-                                              ? (item.operatorName as string)
-                                              : (item.operator as string)
-                                              ? //@ts-expect-error
-                                                `${item.operator.firstName} ${item.operator.lastName}`
-                                              : ""}
+                                            {item.time
+                                              ? Math.round(item.time)
+                                              : 0}
                                           </p>
                                         </span>
                                         <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
                                           <p
-                                            className={`justify-center w-[45%] text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
-                                              item.jobId
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
+                                            className={`justify-center w-[45%] text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
                                           >
-                                            STOP REASON :
+                                            Average Weight :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm  text-gray-500 ${
-                                              item.jobId
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
+                                            className={`pl-3 pt-2 pb-1 text-sm  text-gray-500`}
                                           >
-                                            
-                                            <span
-                                              className={`${
-                                                item.stopReason.join(", ") ===
-                                                "Unit Created"
-                                                  ? "text-green-500"
-                                                  : item.stopReason.join(
-                                                      ", "
-                                                    ) === "Worker Break"
-                                                  ? "text-yellow-500"
-                                                  : "text-red-500"
-                                              }`}
-                                            >
-                                              {item.stopReason.join(", ")}
-                                            </span>
-                                          </p>
-                                        </span>
-                                        <span className="justify-center flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap">
-                                          <p
-                                            className={`pl-4 w-[50%] text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
-                                          >
-                                           Average Weight:
-                                          </p>
-                                          <p
-                                            className={`pl-5 pt-2 pb-1 text-sm text-gray-500`}
-                                          >
-                                            {item?.partId?.cageWeightActual ? Math.round(item?.partId?.cageWeightActual) : 0}
+                                            {item?.partId?.cageWeightActual
+                                              ? Math.round(
+                                                  item?.partId?.cageWeightActual
+                                                )
+                                              : 0}
                                           </p>
                                         </span>
                                       </div>
-                                      {/* <div className="flex justify-between">
-                                        {" "}
-                                        
-                                        
-                                      </div> */}
                                     </div>
                                   </div>
                                 </div>
@@ -3364,7 +3369,6 @@ const LogsTable = ({
                       )
                     }
                   </p>
-
                 </div>
               </div>
 
