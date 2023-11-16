@@ -968,7 +968,7 @@ const LogsTable = ({
                   <div className="w-2/3">
                     <Space direction="vertical" className="w-full" size={12}>
                       <RangePicker
-                        disabled={isCheckboxChecked || process ? true : false}
+                        disabled={isCheckboxChecked || !process ? true : false}
                         //@ts-expect-error
                         value={isCheckboxChecked ? [null] : dateRange}
                         disabledDate={disabledDate}

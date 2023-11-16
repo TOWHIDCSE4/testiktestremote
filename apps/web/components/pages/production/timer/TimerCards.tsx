@@ -57,7 +57,7 @@ function TimerCards({
                 className={`${
                   timerByMachineClass.timers.length < 2
                     ? "mt-7 flex flex-nowrap gap-3 justify-center"
-                    : `mt-7 grid grid-cols-1 gap-x-10 ml-2 gap-y-10 me-2 sm:grid-cols-2 md:gap-x-19 xl-grid-cols-xl:gap-x-15 xl:grid-cols-${
+                    : `mt-7 grid grid-cols-1 gap-x-10 ml-3 gap-y-10 me-2 sm:grid-cols-2 md:gap-x-20 xl-grid-cols-xl:gap-x-15 xl:grid-cols-${
                         timerByMachineClass.timers.length < 3 ? 2 : 3
                       }  place-items-center`
                 }`}
