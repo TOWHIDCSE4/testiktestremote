@@ -1491,7 +1491,12 @@ const LogsTable = ({
                                           <p
                                             className={`pl-3 pt-2 pb-1 text-sm  text-gray-500`}
                                           >
-                                            0
+                                            {typeof item?.partId === "object" &&
+                                            item?.partId.cageWeightActual
+                                              ? Math.round(
+                                                  item.partId.cageWeightActual
+                                                )
+                                              : 0}
                                           </p>
                                         </span>
                                       </div>
