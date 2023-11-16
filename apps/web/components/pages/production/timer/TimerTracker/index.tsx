@@ -118,11 +118,15 @@ const TimerTracker = ({
                       key={tabIdx}
                       className={classNames(
                         selectedTimerId === tab._id
-                          ? "text-gray-900"
+                          ? "text-slate-50 bg-blue-950"
                           : "text-gray-500 hover:text-gray-700",
                         tabIdx === 0 ? "" : "",
                         tabIdx === tabs.length - 1 ? "" : "",
-                        "group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-center text-sm font-bold hover:bg-gray-50 focus:z-10"
+                        `group relative min-w-0 flex-1 overflow-hidden py-4 px-4 text-center text-sm ${
+                          selectedTimerId === tab._id
+                            ? "hover:bg-blue-900"
+                            : "hover:bg-gray-200"
+                        } font-bold focus:z-10`
                       )}
                       onClick={() => setSelectedTimerId(tab._id as string)}
                     >

@@ -53,7 +53,7 @@ const Table = ({
     <>
       <div className="w-full overflow-y-hidden">
         <table className="w-full divide-y divide-gray-300">
-          <thead className="">
+          <thead className="border-b-2 border-blue-950">
             <tr>
               <th
                 scope="col"
@@ -186,7 +186,10 @@ const Table = ({
           <tbody className="divide-y divide-gray-200 bg-white">
             {paginated?.items &&
               paginated?.items.map((item, idx, array) => (
-                <tr key={idx} className={`${!item.jobId ? "bg-red-50" : ""}`}>
+                <tr
+                  key={idx}
+                  className={`${!item.jobId ? "bg-red-50" : ""} border`}
+                >
                   <td
                     className={`py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 lg:pl-8 ${
                       item.jobId ? "text-gray-900" : "text-red-500"
@@ -292,12 +295,65 @@ const Table = ({
           </div>
         ) : null}
         {!isPaginatedLoading && paginated?.items.length === 0 ? (
-          <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
-            <div className="text-gray-500 text-lg font-semibold">
-              No logs found
-            </div>
+          // <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
+          <div className="text-gray-500 text-lg font-semibold">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <tr key={index} className="border">
+                <td
+                  className={`py-10 pl-4 pr-3 ${
+                    index === 4 ? "" : "border-b-2"
+                  }  text-sm font-medium sm:pl-6 lg:pl-8 `}
+                ></td>
+                <td
+                  className={`px-8 ${
+                    index === 4 ? "" : "border-b-2"
+                  } py-10 text-sm text-gray-500 flex flex-col `}
+                ></td>
+                <td
+                  className={`px-12 py-10 ${
+                    index === 4 ? "" : "border-b-2"
+                  } text-sm text-gray-500 `}
+                ></td>
+                <td
+                  className={`px-14 py-10 ${
+                    index === 4 ? "" : "border-b-2"
+                  } text-sm text-gray-500 `}
+                ></td>
+                <td
+                  className={`px-16 py-10 ${
+                    index === 4 ? "" : "border-b-2"
+                  } text-sm text-gray-500 `}
+                ></td>
+                <td
+                  className={`px-10 py-10 ${
+                    index === 4 ? "" : "border-b-2"
+                  } text-sm text-gray-500`}
+                ></td>
+                <td
+                  className={`px-14 py-10 ${
+                    index === 4 ? "" : "border-b-2"
+                  } text-sm`}
+                ></td>
+                <td
+                  className={`px-12 py-10 ${
+                    index === 4 ? "" : "border-b-2"
+                  } text-sm text-gray-500 `}
+                ></td>
+                <td
+                  className={`py-10 px-24 ${
+                    index === 4 ? "" : "border-b-2"
+                  } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
+                ></td>
+                <td
+                  className={`py-10 px-8 ${
+                    index === 4 ? "" : "border-b-2"
+                  } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
+                ></td>
+              </tr>
+            ))}
           </div>
-        ) : null}
+        ) : // </div>
+        null}
       </div>
       <Footer
         page={typeof page === "number" ? page : 0}
