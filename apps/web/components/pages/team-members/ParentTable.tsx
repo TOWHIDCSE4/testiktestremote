@@ -124,7 +124,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenRole, setIsOpenRole] = useState()
   const [isOpenFactory, setIsOpenFactory] = useState()
-  const [departments, setDepartment] = useState(["All"])
+  const [departments, setDepartment] = useState([])
   const [alertPrompt, setAlertPrompt] = useState(false)
   const [directorStates, setDirectorStates] = useState([])
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
@@ -525,14 +525,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const handleDepartmentSelection = (event: any) => {
     const selectedDepts = event.target.value
-    const updatedSelection = selectedDepts.filter(
-      (val: string) => val !== "All"
-    )
-    setDepartment(updatedSelection)
+    setDepartment(selectedDepts)
 
-    if (selectedDepts.length === 0) {
-      setDepartment(["All"])
-    }
+    const updatedDepartments: string[] = []
+
+    selectedDepts.forEach((selectDepartment: string) => {
+      const department: any = deptNameHr.find(
+        (item: string) => item === selectDepartment
+      )
+      if (department) {
+        updatedDepartments.push(department)
+      }
+    })
   }
 
   // useEffect(() => {
