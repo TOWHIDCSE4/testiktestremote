@@ -27,7 +27,16 @@ export const paginated = async (req: Request, res: Response) => {
           queryFilters.push({ role: { $in: ["HR", "HR_Director"] } })
         } else if (role === "Corporate") {
           queryFilters.push({
-            role: { $in: ["Accounting", "Sales", "Corporate"] },
+            role: {
+              $in: [
+                "Accounting",
+                "Sales",
+                "Corporate",
+                "Accounting_HR",
+                "Sales_HR",
+                "Corporate_HR",
+              ],
+            },
           })
         } else {
           queryFilters.push({ role })
