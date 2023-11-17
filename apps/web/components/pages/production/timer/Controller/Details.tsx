@@ -15,6 +15,7 @@ import { Combobox } from "@headlessui/react"
 import useUpdateTimerJob from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
 import useProfile from "../../../../../hooks/users/useProfile"
+import { Button, Tooltip } from "antd"
 import { useSocket } from "../../../../../store/useSocket"
 
 type T_Props = {
@@ -234,18 +235,36 @@ const Details = ({
       </h5>
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Product:{" "}
-        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isTimerDetailDataLoading ? (
-            <div className="animate-pulse flex space-x-4">
-              <div className="h-3 w-24 bg-slate-200 rounded"></div>
-            </div>
-          ) : (
-            <>
-              {typeof timerDetails?.partId === "object"
-                ? timerDetails?.partId.name
-                : "---"}
-            </>
-          )}
+        <span className="uppercase w-48 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
+          <Tooltip
+            title={
+              isTimerDetailDataLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                </div>
+              ) : (
+                <>
+                  {typeof timerDetails?.partId === "object"
+                    ? timerDetails?.partId.name
+                    : "---"}
+                </>
+              )
+            }
+            trigger="hover"
+            placement="top"
+          >
+            {isTimerDetailDataLoading ? (
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-3 w-24 bg-slate-200 rounded"></div>
+              </div>
+            ) : (
+              <>
+                {typeof timerDetails?.partId === "object"
+                  ? timerDetails?.partId.name
+                  : "---"}
+              </>
+            )}
+          </Tooltip>
         </span>
       </h5>
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
