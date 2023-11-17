@@ -27,22 +27,37 @@ export const paginated = async (req: Request, res: Response) => {
           queryFilters.push({ role: { $in: ["HR", "HR_Director"] } })
         } else if (role === "Corporate") {
           queryFilters.push({
-            role: { $in: ["Accounting", "Sales", "Corporate"] },
+            role: {
+              $in: [
+                "Accounting",
+                "Sales",
+                "Corporate",
+                "Accounting_HR",
+                "Sales_HR",
+                "Corporate_HR",
+              ],
+            },
           })
         } else {
           queryFilters.push({ role })
         }
       }
-
-      if (locationId) {
-        queryFilters.push({
-          locationId: {
-            $in: String(locationId)
-              .split(",")
-              .map((id: string) => new mongoose.Types.ObjectId(id)),
-          },
+      // if the locationId is not provided then return empty array
+      if (!locationId || locationId === "") {
+        res.json({
+          error: false,
+          items: [],
+          itemCount: 0,
+          message: null,
         })
       }
+      queryFilters.push({
+        locationId: {
+          $in: String(locationId)
+            .split(",")
+            .map((id: string) => new mongoose.Types.ObjectId(id)),
+        },
+      })
 
       if (status && status !== "null") {
         queryFilters.push({ status })
