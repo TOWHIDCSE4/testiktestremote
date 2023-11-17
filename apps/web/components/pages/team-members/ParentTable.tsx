@@ -137,7 +137,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
   const [selectedFactoryIds, setSelectedFactoryIds] = useState([""])
   const [selectedFactories, setSelectedFactories] = useState<string[]>([])
-  const [factoryMachineClasses, setFactoryMachineClasses] = useState([""])
+  const [factoryMachineClasses, setFactoryMachineClasses] = useState([])
   const [selectedCity, setSelectedCity] = useState<string[]>([])
   const [printAll, setPrintAll] = useState("")
   const [selectedCityIds, setSelectedCityIds] = useState([""])
@@ -308,11 +308,28 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }, [userProfile, setLocationId])
 
   useEffect(() => {
-    const factoryMachineClasses: string[] = machineClass?.items?.filter(
-      (item: any) => selectedFactoryIds?.includes(item.factoryId)
-    )
-    setFactoryMachineClasses(factoryMachineClasses)
-  }, [selectedFactoryIds])
+    if (selectedFactoryIds) {
+      const factoryMachineClasses: string[] = machineClass?.items?.filter(
+        (item: any) => selectedFactoryIds?.includes(item.factoryId)
+      )
+      //@ts-expect-error
+      setFactoryMachineClasses(factoryMachineClasses)
+    } else {
+      const machineClassName: string[] = []
+      const machineClassIds: string[] = []
+      machineClass?.items.forEach((item: any) => {
+        machineClassName.push(item.name)
+        machineClassIds.push(item._id)
+      })
+      //@ts-expect-error
+      setFactoryMachineClasses(machineClassName)
+      console.log(
+        "🚀 ~ file: ParentTable.tsx:564 ~ useEffect ~ machineClassName:",
+        machineClassName
+      )
+      // setSelectedMachineClassIds(machineClassIds)
+    }
+  }, [selectedFactoryIds, machineClass])
 
   const handleTeamListing = (item: any) => {
     setIsOpenRole(undefined)
@@ -515,7 +532,20 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
-    if (locations?.items) {
+    if (
+      userProfile?.item.role === "Production" &&
+      userProfile?.item.locationId &&
+      locations?.items
+    ) {
+      const matchingLocation = locations.items.find(
+        (item: Record<string, any>) => item._id === userProfile?.item.locationId
+      )
+
+      if (matchingLocation) {
+        setSelectedCity([matchingLocation.name])
+        setSelectedCityIds([String(matchingLocation?._id)])
+      }
+    } else if (locations?.items) {
       const locationNames: string[] = []
       const locationIds: string[] = []
 
@@ -527,7 +557,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       setSelectedCity(locationNames)
       setSelectedCityIds(locationIds)
     }
-  }, [locations])
+  }, [userProfile, locations])
 
   const renderSelectValue = (selected: any) => {
     return selectedCity.length === locations?.items.length
@@ -566,7 +596,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }, [machineClass])
 
   const renderSelectValueMachineClass = (selected: any) => {
-    return factoryMachineClasses?.length === machineClass?.items.length
+    return selectedMachineClasses.length === machineClass?.items.length
       ? "All"
       : selected.join(", ")
   }
