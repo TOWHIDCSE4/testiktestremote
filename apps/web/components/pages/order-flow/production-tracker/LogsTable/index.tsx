@@ -341,9 +341,9 @@ const LogsTable = ({
 
   const handleProcess = () => {
     if (process === false) {
-      const currentDate = dayjs().format("YYYY-MM-DD")
-      const oneWeekBefore = dayjs().subtract(1, "week").format("YYYY-MM-DD")
-      datePick([oneWeekBefore, currentDate])
+      // const currentDate = dayjs().format("YYYY-MM-DD")
+      // const oneWeekBefore = dayjs().subtract(1, "week").format("YYYY-MM-DD")
+      datePick([])
       setDateRange([])
       setIsCheckboxChecked(false)
     } else {
