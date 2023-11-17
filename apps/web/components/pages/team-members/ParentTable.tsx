@@ -566,7 +566,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }, [machineClass])
 
   const renderSelectValueMachineClass = (selected: any) => {
-    return selectedMachineClasses.length === machineClass?.items.length
+    return factoryMachineClasses?.length === machineClass?.items.length
       ? "All"
       : selected.join(", ")
   }
