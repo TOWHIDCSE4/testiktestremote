@@ -261,7 +261,7 @@ const TabTable = ({
                         ? job?.factory?.name
                         : ""} */}
                     </td>
-                    <td className="py-3 text-sm text-gray-800">
+                    <td className="py-3 text-sm text-gray-800 whitespace-nowrap overflow-hidden overflow-ellipsis">
                       <Tooltip
                         title={
                           <span style={{ padding: "0px 0.3em" }}>

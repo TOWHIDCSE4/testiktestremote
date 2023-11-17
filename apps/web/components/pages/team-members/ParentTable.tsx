@@ -55,6 +55,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }
 
+  const deptNameHr = ["Accounting", "Sales"]
+
   const approveChecking = (item: any, userId: string) => {
     if (
       item._id === userId ||
@@ -82,6 +84,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           | "Accounting"
           | "Sales"
           | "Super"
+          | "Accounting_HR"
+          | "Sales_HR"
+          | "Corporate_HR"
         email: string
         token: string | null
       } & {
@@ -96,6 +101,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
             | "Accounting"
             | "Sales"
             | "Super"
+            | "Accounting_HR"
+            | "Sales_HR"
+            | "Corporate_HR"
           email: string
           token: string | null
         }) => void
@@ -122,13 +130,14 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenRole, setIsOpenRole] = useState()
   const [isOpenFactory, setIsOpenFactory] = useState()
-  const [departments, setDepartment] = useState(["All"])
+  const [departments, setDepartment] = useState<string[]>(deptNameHr)
   const [alertPrompt, setAlertPrompt] = useState(false)
   const [directorStates, setDirectorStates] = useState([])
+  const [accDirectorStates, setAccDirectorStates] = useState([])
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
   const [selectedFactoryIds, setSelectedFactoryIds] = useState([""])
   const [selectedFactories, setSelectedFactories] = useState<string[]>([])
-  const [factoryMachineClasses, setFactoryMachineClasses] = useState([""])
+  const [factoryMachineClasses, setFactoryMachineClasses] = useState([])
   const [selectedCity, setSelectedCity] = useState<string[]>([])
   const [printAll, setPrintAll] = useState("")
   const [selectedCityIds, setSelectedCityIds] = useState([""])
@@ -180,9 +189,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
-    const handleDocumentClick = (event: any) => {
-      const dropdownButton = document.getElementById("dropdownFactoryButton")
-      const dropdown = document.getElementById("dropdownFactory")
+    const handleLocationClick = (event: any) => {
+      const dropdownButton = document.getElementById("dropdownLocationButton")
+      const dropdown = document.getElementById("dropdownLocation")
 
       if (
         dropdown &&
@@ -193,15 +202,15 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       }
     }
 
-    document.addEventListener("click", handleDocumentClick)
+    document.addEventListener("click", handleLocationClick)
 
     return () => {
-      document.removeEventListener("click", handleDocumentClick)
+      document.removeEventListener("click", handleLocationClick)
     }
   }, [isOpenLocation])
 
   useEffect(() => {
-    const handleDocumentClick = (event: any) => {
+    const handleFactoryClick = (event: any) => {
       const dropdownButton = document.getElementById("dropdownFactoryButton")
       const dropdown = document.getElementById("dropdownFactory")
 
@@ -214,17 +223,17 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       }
     }
 
-    document.addEventListener("click", handleDocumentClick)
+    document.addEventListener("click", handleFactoryClick)
 
     return () => {
-      document.removeEventListener("click", handleDocumentClick)
+      document.removeEventListener("click", handleFactoryClick)
     }
   }, [isOpenFactory])
 
   useEffect(() => {
-    const handleDocumentClick = (event: any) => {
-      const dropdownButton = document.getElementById("dropdownFactoryButton")
-      const dropdown = document.getElementById("dropdownFactory")
+    const handleRoleClick = (event: any) => {
+      const dropdownButton = document.getElementById("dropdownRoleButton")
+      const dropdown = document.getElementById("dropdownRole")
 
       if (
         dropdown &&
@@ -235,10 +244,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       }
     }
 
-    document.addEventListener("click", handleDocumentClick)
+    document.addEventListener("click", handleRoleClick)
 
     return () => {
-      document.removeEventListener("click", handleDocumentClick)
+      document.removeEventListener("click", handleRoleClick)
     }
   }, [isOpenRole])
 
@@ -296,14 +305,31 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       //@ts-expect-error
       setLocationId(userProfile?.item?.locationId)
     }
-  }, [userProfile, selectedRole, selectedStatus])
+  }, [userProfile, setLocationId])
 
   useEffect(() => {
-    const factoryMachineClasses: string[] = machineClass?.items?.filter(
-      (item: any) => selectedFactoryIds?.includes(item.factoryId)
-    )
-    setFactoryMachineClasses(factoryMachineClasses)
-  }, [selectedFactoryIds])
+    if (selectedFactoryIds) {
+      const factoryMachineClasses: string[] = machineClass?.items?.filter(
+        (item: any) => selectedFactoryIds?.includes(item.factoryId)
+      )
+      //@ts-expect-error
+      setFactoryMachineClasses(factoryMachineClasses)
+    } else {
+      const machineClassName: string[] = []
+      const machineClassIds: string[] = []
+      machineClass?.items.forEach((item: any) => {
+        machineClassName.push(item.name)
+        machineClassIds.push(item._id)
+      })
+      //@ts-expect-error
+      setFactoryMachineClasses(machineClassName)
+      console.log(
+        "🚀 ~ file: ParentTable.tsx:564 ~ useEffect ~ machineClassName:",
+        machineClassName
+      )
+      // setSelectedMachineClassIds(machineClassIds)
+    }
+  }, [selectedFactoryIds, machineClass])
 
   const handleTeamListing = (item: any) => {
     setIsOpenRole(undefined)
@@ -319,13 +345,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
   }
-
-  // useEffect(() => {
-  //   if (!isPaginatedLoading && paginated && paginated?.items.length === 0) {
-  //     setSelectedStatus("Approved")
-  //     setStatus("Approved")
-  //   }
-  // }, [])
 
   const handleSelectDropdown = (value: T_UserStatus) => {
     setIsOpenRole(undefined)
@@ -395,6 +414,47 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       updatedItem = {
         ...item,
         role: "HR" as T_UserRole,
+      }
+    }
+    mutate(updatedItem, callBackReq)
+  }
+
+  const handleAccDirectorCheck = (idx: any, item: any) => {
+    const updatedstates: any = [...accDirectorStates]
+    updatedstates[idx] = !accDirectorStates[idx]
+    setAccDirectorStates(updatedstates)
+    let updatedItem: any = {}
+    if (item.role === "Accounting") {
+      updatedItem = {
+        ...item,
+        role: "Accounting_HR" as T_UserRole,
+      }
+    } else if (item.role === "Sales") {
+      updatedItem = {
+        ...item,
+        role: "Sales_HR" as T_UserRole,
+      }
+    } else if (item.role === "Corporate") {
+      updatedItem = {
+        ...item,
+        role: "Corporate_HR" as T_UserRole,
+      }
+    } else {
+      if (item.role === "Accounting_HR") {
+        updatedItem = {
+          ...item,
+          role: "Accounting" as T_UserRole,
+        }
+      } else if (item.role === "Sales_HR") {
+        updatedItem = {
+          ...item,
+          role: "Sales" as T_UserRole,
+        }
+      } else if (item.role === "Corporate_HR") {
+        updatedItem = {
+          ...item,
+          role: "Corporate" as T_UserRole,
+        }
       }
     }
     mutate(updatedItem, callBackReq)
@@ -472,7 +532,20 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   useEffect(() => {
-    if (locations?.items) {
+    if (
+      userProfile?.item.role === "Production" &&
+      userProfile?.item.locationId &&
+      locations?.items
+    ) {
+      const matchingLocation = locations.items.find(
+        (item: Record<string, any>) => item._id === userProfile?.item.locationId
+      )
+
+      if (matchingLocation) {
+        setSelectedCity([matchingLocation.name])
+        setSelectedCityIds([String(matchingLocation?._id)])
+      }
+    } else if (locations?.items) {
       const locationNames: string[] = []
       const locationIds: string[] = []
 
@@ -484,7 +557,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       setSelectedCity(locationNames)
       setSelectedCityIds(locationIds)
     }
-  }, [locations])
+  }, [userProfile, locations])
 
   const renderSelectValue = (selected: any) => {
     return selectedCity.length === locations?.items.length
@@ -530,27 +603,27 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const handleDepartmentSelection = (event: any) => {
     const selectedDepts = event.target.value
-    const updatedSelection = selectedDepts.filter(
-      (val: string) => val !== "All"
-    )
-    setDepartment(updatedSelection)
+    const updatedDepartments: string[] = []
 
-    if (selectedDepts.length === 0) {
-      setDepartment(["All"])
-    }
+    selectedDepts.forEach((selectDepartment: string) => {
+      const department: any = deptNameHr.find(
+        (item: string) => item === selectDepartment
+      )
+      if (department && !updatedDepartments.includes(department)) {
+        updatedDepartments.push(department)
+      }
+    })
+
+    // Assuming setDepartment is a state update function
+    setDepartment(updatedDepartments)
   }
 
-  useEffect(() => {
-    if (roleFilter()) {
-      const deptName: string[] = []
-      const deptIds: string[] = []
-
-      roleFilter().forEach((item: any) => {
-        deptName.push(item)
-      })
-      setDepartment(deptName)
-    }
-  }, [roleFilter()])
+  const renderDeptSelectValue = (selected: any) => {
+    console.log(departments)
+    return departments.length === deptNameHr.length
+      ? "All"
+      : selected.join(", ")
+  }
 
   useEffect(() => {
     function handleGlobalClick(event: any) {
@@ -619,7 +692,14 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </svg>
                     </button>
                     {isOpenTeam && (
-                      <div className="absolute mt-1 w-40 h-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10 overflow-y-auto">
+                      <div
+                        className={`${
+                          userProfile?.item.role === "Production" ||
+                          userProfile?.item.role === "HR"
+                            ? "absolute mt-1 w-40 bg-white border border-gray-300 rounded-lg shadow-lg overflow-y-auto"
+                            : "absolute mt-1 w-40 h-40 bg-white border border-gray-300 rounded-lg shadow-lg z-10 overflow-y-auto"
+                        } `}
+                      >
                         {roleFilter().map((item: any, index: any) => (
                           <div
                             style={{ fontSize: 14, fontWeight: 500 }}
@@ -686,9 +766,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 {isOpen && (
                   <div
                     style={{ width: 160 }}
-                    className={`${
-                      isOpenTeam == true ? "hidden" : ""
-                    }  sm:top-[6rem] absolute mt-1  h-30 bg-white border border-gray-300 rounded-lg shadow-lg z-10 overflow-y-auto`}
+                    className={` sm:top-[6rem] absolute mt-1 h-30 bg-white border border-gray-300 rounded-lg shadow-lg z-10 overflow-y-auto `}
                   >
                     <ul>
                       {statusArray.map((status, index) => (
@@ -763,10 +841,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         {locations?.items?.map((item: any, index: any) => (
                           <MenuItem key={index} value={item.name as string}>
                             <Checkbox
-                              // checked={
-                              //   selectedCity.includes(item.name) ||
-                              //   selectedCity.includes("All")
-                              // }
+                              checked={selectedCity.includes(item.name)}
                               color="primary"
                             />
                             {item.name}
@@ -894,11 +969,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       ))}
                     </Select>
                   </FormControl>
-                  {/* )  
-                   : (
-                     <span>{checkFactory ? [checkFactory.name] : ""}</span>
-                 )
-                } */}
                 </div>
               </div>
               {selectedRole === "Personnel" ? (
@@ -1005,7 +1075,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         value={departments}
                         input={<OutlinedInput label="All" />}
                         onChange={handleDepartmentSelection}
-                        renderValue={renderSelectValue}
+                        renderValue={renderDeptSelectValue}
                         MenuProps={{
                           anchorOrigin: {
                             vertical: "bottom",
@@ -1018,7 +1088,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           style: { top: "9px" },
                         }}
                       >
-                        {roleFilter()?.map((item: any, index: number) => (
+                        {deptNameHr.map((item: string, index: number) => (
                           <MenuItem key={index} value={item as string}>
                             <Checkbox
                               checked={departments.includes(item)}
@@ -1571,7 +1641,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                       active
                                                         ? "bg-gray-100 text-gray-900"
                                                         : "text-gray-700",
-                                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                                      "block px-10 py-2  text-sm cursor-pointer text-left"
                                                     )}
                                                     onClick={() => {
                                                       setSelectedRow(item)
@@ -2939,6 +3009,33 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     />
                                   </div>
                                 )}
+                                {selectedRole === "Corporate" && (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      paddingLeft: "30px",
+                                      marginLeft: "30px",
+                                    }}
+                                  >
+                                    <label>Director</label>
+                                    <input
+                                      type="checkbox"
+                                      style={{ marginLeft: "3px" }}
+                                      checked={
+                                        item.role === "Accounting_HR" || false
+                                      }
+                                      disabled={
+                                        isLocationsLoading ||
+                                        isUpdateUserLoading ||
+                                        isPaginatedLoading
+                                      }
+                                      onChange={() =>
+                                        handleAccDirectorCheck(idx, item)
+                                      }
+                                    />
+                                  </div>
+                                )}
                                 <Menu as="div" className="w-full text-end pr-4">
                                   <Menu.Button>
                                     <svg
@@ -2984,7 +3081,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                   active
                                                     ? "bg-gray-100  text-gray-900"
                                                     : "text-gray-700",
-                                                  `block px-4 py-2 disabled:text-gray-400 text-sm ${`${
+                                                  `block px-4 py-2 w-[9.8rem] disabled:text-gray-400 text-sm ${`${
                                                     checkedProved
                                                       ? "cursor-pointer"
                                                       : "cursor-not-allowed"
@@ -3051,7 +3148,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
                                                   : "text-gray-700",
-                                                `block px-4 py-2 text-sm disabled:text-gray-400 text-left ${`${
+                                                `block px-4 py-2 text-sm w-[9.8rem] disabled:text-gray-400 text-left ${`${
                                                   checkedProved
                                                     ? "cursor-pointer"
                                                     : "cursor-not-allowed"
@@ -3087,7 +3184,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
                                                   : "text-gray-700",
-                                                `block px-4 py-2 text-sm disabled:text-gray-400 text-left ${`${
+                                                `block px-4 py-2 text-sm w-[9.8rem] disabled:text-gray-400 text-left ${`${
                                                   checkedProved
                                                     ? "cursor-pointer"
                                                     : "cursor-not-allowed"

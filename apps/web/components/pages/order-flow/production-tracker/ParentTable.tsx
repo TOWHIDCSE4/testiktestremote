@@ -118,7 +118,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
       })
     : []
 
-  const personnelMachineClass = machineClasses?.items.find(
+  const personnelMachineClass = machineClasses?.items?.find(
     (MachineName: any) => MachineName._id === userProfile?.item.machineClassId
   )
 
@@ -334,7 +334,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                                 </div>
                               ) : null
                             ) : (
-                              machineClasses?.items.map(
+                              machineClasses?.items?.map(
                                 (machineClassId: T_MachineClass) => (
                                   <div
                                     key={machineClassId._id}
