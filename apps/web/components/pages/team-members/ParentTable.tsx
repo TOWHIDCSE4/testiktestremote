@@ -124,7 +124,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenRole, setIsOpenRole] = useState()
   const [isOpenFactory, setIsOpenFactory] = useState()
-  const [departments, setDepartment] = useState([])
+  const [departments, setDepartment] = useState<string[]>(deptNameHr)
   const [alertPrompt, setAlertPrompt] = useState(false)
   const [directorStates, setDirectorStates] = useState([])
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
@@ -525,31 +525,27 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const handleDepartmentSelection = (event: any) => {
     const selectedDepts = event.target.value
-    setDepartment(selectedDepts)
-
     const updatedDepartments: string[] = []
 
     selectedDepts.forEach((selectDepartment: string) => {
       const department: any = deptNameHr.find(
         (item: string) => item === selectDepartment
       )
-      if (department) {
+      if (department && !updatedDepartments.includes(department)) {
         updatedDepartments.push(department)
       }
     })
+
+    // Assuming setDepartment is a state update function
+    setDepartment(updatedDepartments)
   }
 
-  // useEffect(() => {
-  //   if (deptNameHr) {
-  //     const deptName: string[] = []
-  //     const deptIds: string[] = []
-
-  //     deptNameHr.forEach((item: any) => {
-  //       deptName.push(item)
-  //     })
-  //     setDepartment(deptName)
-  //   }
-  // }, [deptNameHr])
+  const renderDeptSelectValue = (selected: any) => {
+    console.log(departments)
+    return departments.length === deptNameHr.length
+      ? "All"
+      : selected.join(", ")
+  }
 
   useEffect(() => {
     function handleGlobalClick(event: any) {
@@ -895,11 +891,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       ))}
                     </Select>
                   </FormControl>
-                  {/* )  
-                   : (
-                     <span>{checkFactory ? [checkFactory.name] : ""}</span>
-                 )
-                } */}
                 </div>
               </div>
               {selectedRole === "Personnel" ? (
@@ -1006,7 +997,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         value={departments}
                         input={<OutlinedInput label="All" />}
                         onChange={handleDepartmentSelection}
-                        renderValue={renderSelectValue}
+                        renderValue={renderDeptSelectValue}
                         MenuProps={{
                           anchorOrigin: {
                             vertical: "bottom",
@@ -1019,7 +1010,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           style: { top: "9px" },
                         }}
                       >
-                        {deptNameHr.map((item: any, index: number) => (
+                        {deptNameHr.map((item: string, index: number) => (
                           <MenuItem key={index} value={item as string}>
                             <Checkbox
                               checked={departments.includes(item)}
