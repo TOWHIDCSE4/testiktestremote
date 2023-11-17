@@ -84,6 +84,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           | "Accounting"
           | "Sales"
           | "Super"
+          | "Accounting_HR"
+          | "Sales_HR"
+          | "Corporate_HR"
         email: string
         token: string | null
       } & {
@@ -98,6 +101,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
             | "Accounting"
             | "Sales"
             | "Super"
+            | "Accounting_HR"
+            | "Sales_HR"
+            | "Corporate_HR"
           email: string
           token: string | null
         }) => void
@@ -127,6 +133,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [departments, setDepartment] = useState<string[]>(deptNameHr)
   const [alertPrompt, setAlertPrompt] = useState(false)
   const [directorStates, setDirectorStates] = useState([])
+  const [accDirectorStates, setAccDirectorStates] = useState([])
   const [isOpenLocation, setIsOpenLocation] = useState(undefined)
   const [selectedFactoryIds, setSelectedFactoryIds] = useState([""])
   const [selectedFactories, setSelectedFactories] = useState<string[]>([])
@@ -390,6 +397,47 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       updatedItem = {
         ...item,
         role: "HR" as T_UserRole,
+      }
+    }
+    mutate(updatedItem, callBackReq)
+  }
+
+  const handleAccDirectorCheck = (idx: any, item: any) => {
+    const updatedstates: any = [...accDirectorStates]
+    updatedstates[idx] = !accDirectorStates[idx]
+    setAccDirectorStates(updatedstates)
+    let updatedItem: any = {}
+    if (item.role === "Accounting") {
+      updatedItem = {
+        ...item,
+        role: "Accounting_HR" as T_UserRole,
+      }
+    } else if (item.role === "Sales") {
+      updatedItem = {
+        ...item,
+        role: "Sales_HR" as T_UserRole,
+      }
+    } else if (item.role === "Corporate") {
+      updatedItem = {
+        ...item,
+        role: "Corporate_HR" as T_UserRole,
+      }
+    } else {
+      if (item.role === "Accounting_HR") {
+        updatedItem = {
+          ...item,
+          role: "Accounting" as T_UserRole,
+        }
+      } else if (item.role === "Sales_HR") {
+        updatedItem = {
+          ...item,
+          role: "Sales" as T_UserRole,
+        }
+      } else if (item.role === "Corporate_HR") {
+        updatedItem = {
+          ...item,
+          role: "Corporate" as T_UserRole,
+        }
       }
     }
     mutate(updatedItem, callBackReq)
@@ -2927,6 +2975,33 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       }
                                       onChange={() =>
                                         handleDirectorCheck(idx, item)
+                                      }
+                                    />
+                                  </div>
+                                )}
+                                {selectedRole === "Corporate" && (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      paddingLeft: "30px",
+                                      marginLeft: "30px",
+                                    }}
+                                  >
+                                    <label>Director</label>
+                                    <input
+                                      type="checkbox"
+                                      style={{ marginLeft: "3px" }}
+                                      checked={
+                                        item.role === "Accounting_HR" || false
+                                      }
+                                      disabled={
+                                        isLocationsLoading ||
+                                        isUpdateUserLoading ||
+                                        isPaginatedLoading
+                                      }
+                                      onChange={() =>
+                                        handleAccDirectorCheck(idx, item)
                                       }
                                     />
                                   </div>
