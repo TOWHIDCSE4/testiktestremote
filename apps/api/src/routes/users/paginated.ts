@@ -44,7 +44,7 @@ export const paginated = async (req: Request, res: Response) => {
       }
       // if the locationId is not provided then return empty array
       if (!locationId || locationId === "") {
-        res.json({
+        return res.json({
           error: false,
           items: [],
           itemCount: 0,
@@ -75,13 +75,27 @@ export const paginated = async (req: Request, res: Response) => {
       ) {
         factoryMachineFilter.push({
           $and: [
-            //@ts-expect-error
-            { factoryId: factories?.split(",").map((id: string) => id.trim()) },
             {
-              machineClassId: machineClass
-                //@ts-expect-error
-                ?.split(",")
-                .map((id: string) => id.trim()),
+              $or: [
+                {
+                  factoryId: (factories as string)
+                    ?.split(",")
+                    .map((id: string) => id.trim()),
+                },
+                { factoryId: { $exists: false } },
+              ],
+            },
+            {
+              $or: [
+                {
+                  machineClassId: (machineClass as string)
+                    ?.split(",")
+                    .map((id: string) => id.trim()),
+                },
+                {
+                  machineClassId: { $exists: false },
+                },
+              ],
             },
           ],
         })
@@ -91,7 +105,12 @@ export const paginated = async (req: Request, res: Response) => {
             //@ts-expect-error
             ?.split(",")
             .map((id: string) => id.trim())
-          queryFilters.push({ factoryId: { $in: factoryIds } })
+          queryFilters.push({
+            $or: [
+              { factoryId: { $exists: false } },
+              { factoryId: { $in: factoryIds } },
+            ],
+          })
         }
 
         if (machineClass && machineClass !== "") {
@@ -99,7 +118,12 @@ export const paginated = async (req: Request, res: Response) => {
             //@ts-expect-error
             ?.split(",")
             .map((id: string) => id.trim())
-          queryFilters.push({ machineClassId: { $in: machineClassIds } })
+          queryFilters.push({
+            $or: [
+              { machineClassId: { $exists: false } },
+              { machineClassId: { $in: machineClassIds } },
+            ],
+          })
         }
       }
 
@@ -151,7 +175,7 @@ export const paginated = async (req: Request, res: Response) => {
         $and: queryFilters,
       }).countDocuments()
 
-      res.json({
+      return res.json({
         error: false,
         items: getAllUsers,
         itemCount: usersCount,
@@ -160,7 +184,7 @@ export const paginated = async (req: Request, res: Response) => {
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       Sentry.captureException(err)
-      res.json({
+      return res.json({
         error: true,
         message: message,
         items: null,
@@ -168,7 +192,7 @@ export const paginated = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.json({
+    return res.json({
       error: true,
       message: REQUIRED_VALUES_MISSING,
       items: null,
