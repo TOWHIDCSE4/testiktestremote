@@ -158,14 +158,7 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
   endDate = !endDate
     ? dayjs().endOf("week").format()
     : dayjs(endDate as string).format()
-  console.log(
-    "🚀 ~ file: globalLogs.ts:159 ~ globalLogsMulti ~ endDate:",
-    endDate
-  )
-  console.log(
-    "🚀 ~ file: globalLogs.ts:156 ~ globalLogsMulti ~ startDate:",
-    startDate
-  )
+
   if (locationId && !!locationId?.length) {
     try {
       const timerLogsCount = await TimerLogs.find({
