@@ -14,6 +14,7 @@ import machines from "../../models/machines"
 import { Types } from "mongoose"
 import timerLogs from "../../models/timerLogs"
 import * as Sentry from "@sentry/node"
+import dayjs from "dayjs"
 import redisClient from "../../utils/redisClient"
 
 export const getAllLocations = async (req: Request, res: Response) => {
@@ -235,10 +236,33 @@ export const findMachineClassByLocation = async (
       itemCount: 0,
     })
   }
-
-  const distinctMachineClassesIds = await timerLogs.distinct("machineClassId")
+  let { startDate, endDate } = req.query
   try {
-    const cacheKey = `locationMachineClasses:${locations}`
+    startDate = !startDate
+      ? dayjs().startOf("week").format()
+      : dayjs(startDate as string).format()
+    endDate = !endDate
+      ? dayjs().endOf("week").format()
+      : dayjs(endDate as string).format()
+
+    const locationToBeFound = (locations as string)
+      .split(",")
+      .map((e: string) => new Types.ObjectId(e))
+
+    const distinctMachineClassesIds = (
+      await timerLogs.distinct("machineClassId", {
+        locationId: { $in: locationToBeFound },
+        ...(startDate &&
+          endDate && {
+            createdAt: {
+              $gte: new Date(startDate as string),
+              $lt: new Date(endDate as string),
+            },
+          }),
+      })
+    ).map((e) => new Types.ObjectId(e))
+
+    const cacheKey = `locationMachineClasses:${locations}:${distinctMachineClassesIds}`
     const cachedData = await redisClient.get(cacheKey)
     if (cachedData) {
       res.json({
@@ -248,15 +272,17 @@ export const findMachineClassByLocation = async (
         message: "Data from cache",
       })
     } else {
-      const locationToBeFound = locations
-        //@ts-expect-error
-        .split(",")
-        .map((e: string) => new Types.ObjectId(e))
-
       const distinctMachineClasses = await machines.aggregate([
         {
           $match: {
-            locationId: { $in: locationToBeFound },
+            $and: [
+              {
+                locationId: { $in: locationToBeFound },
+              },
+              {
+                machineClassId: { $in: distinctMachineClassesIds },
+              },
+            ],
           },
         },
         {
@@ -302,6 +328,7 @@ export const findMachineClassByLocation = async (
       })
     }
   } catch (err: any) {
+    console.log("🚀 ~ file: default.ts:336 ~ err:", err)
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
     Sentry.captureException(err)
     res.json({

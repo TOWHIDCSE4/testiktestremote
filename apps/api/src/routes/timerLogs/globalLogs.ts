@@ -140,8 +140,8 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     sort,
     key,
     limit,
-    startDate,
-    endDate,
+    // startDate,
+    // endDate,
   } = req.query
   const sortObj = {}
   if (sort && key) {
@@ -151,7 +151,21 @@ export const globalLogsMulti = async (req: Request, res: Response) => {
     //@ts-expect-error
     sortObj["createdAt"] = "desc"
   }
-
+  let { startDate, endDate } = req.query
+  startDate = !startDate
+    ? dayjs().startOf("week").format()
+    : dayjs(startDate as string).format()
+  endDate = !endDate
+    ? dayjs().endOf("week").format()
+    : dayjs(endDate as string).format()
+  console.log(
+    "🚀 ~ file: globalLogs.ts:159 ~ globalLogsMulti ~ endDate:",
+    endDate
+  )
+  console.log(
+    "🚀 ~ file: globalLogs.ts:156 ~ globalLogsMulti ~ startDate:",
+    startDate
+  )
   if (locationId && !!locationId?.length) {
     try {
       const timerLogsCount = await TimerLogs.find({
@@ -316,11 +330,19 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
   let { startDate, endDate } = req.query
   try {
     // Calculate the total time in hours
+    startDate = startDate
+      ? dayjs(startDate as string).format()
+      : dayjs().startOf("week").format()
+    endDate = endDate
+      ? dayjs(endDate as string).format()
+      : dayjs().endOf("week").format()
+    // Calculate the total time in hours
+    const totalTime = dayjs(endDate).diff(startDate, "hour")
     const firstRecord = await timerLogs.find().sort({ createdAt: 1 }).limit(1)
-    const totalTime =
-      startDate && endDate
-        ? dayjs(String(endDate)).diff(String(startDate), "hour")
-        : dayjs(Date.now()).diff(dayjs(firstRecord[0].createdAt), "hour")
+    // const totalTime =
+    //   startDate && endDate
+    //     ? dayjs(String(endDate)).diff(String(startDate), "hour")
+    //     : dayjs(Date.now()).diff(dayjs(firstRecord[0].createdAt), "hour")
     let query = {}
 
     if (locationId) {
