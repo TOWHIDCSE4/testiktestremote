@@ -75,13 +75,27 @@ export const paginated = async (req: Request, res: Response) => {
       ) {
         factoryMachineFilter.push({
           $and: [
-            //@ts-expect-error
-            { factoryId: factories?.split(",").map((id: string) => id.trim()) },
             {
-              machineClassId: machineClass
-                //@ts-expect-error
-                ?.split(",")
-                .map((id: string) => id.trim()),
+              $or: [
+                {
+                  factoryId: (factories as string)
+                    ?.split(",")
+                    .map((id: string) => id.trim()),
+                },
+                { factoryId: { $exists: false } },
+              ],
+            },
+            {
+              $or: [
+                {
+                  machineClassId: (machineClass as string)
+                    ?.split(",")
+                    .map((id: string) => id.trim()),
+                },
+                {
+                  machineClassId: { $exists: false },
+                },
+              ],
             },
           ],
         })
@@ -91,7 +105,12 @@ export const paginated = async (req: Request, res: Response) => {
             //@ts-expect-error
             ?.split(",")
             .map((id: string) => id.trim())
-          queryFilters.push({ factoryId: { $in: factoryIds } })
+          queryFilters.push({
+            $or: [
+              { factoryId: { $exists: false } },
+              { factoryId: { $in: factoryIds } },
+            ],
+          })
         }
 
         if (machineClass && machineClass !== "") {
@@ -99,7 +118,12 @@ export const paginated = async (req: Request, res: Response) => {
             //@ts-expect-error
             ?.split(",")
             .map((id: string) => id.trim())
-          queryFilters.push({ machineClassId: { $in: machineClassIds } })
+          queryFilters.push({
+            $or: [
+              { machineClassId: { $exists: false } },
+              { machineClassId: { $in: machineClassIds } },
+            ],
+          })
         }
       }
 

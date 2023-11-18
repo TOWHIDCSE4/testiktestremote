@@ -3,7 +3,7 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import { Fragment, useEffect, useState } from "react"
-import { T_BackendResponse, T_UserRole } from "custom-validator"
+import { T_BackendResponse, T_Location, T_UserRole } from "custom-validator"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
 import NewMemberModal from "./modals/NewMemberModal"
@@ -166,7 +166,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   } = usePaginatedUsers(
     "Pending",
     storeSession?.role === "Production" ? "Personnel" : storeSession?.role
-    // userProfile?.item.locationId ?? ""
   )
 
   useEffect(() => {
@@ -300,20 +299,24 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       storeSession?.role === "HR_Director"
     ) {
       //@ts-expect-error
-      setLocationId("")
+      setLocationId(locations?.items.map((item: any) => item._id))
     } else {
       //@ts-expect-error
       setLocationId(userProfile?.item?.locationId)
     }
-  }, [userProfile, setLocationId])
+  }, [userProfile, setLocationId, locations])
 
   useEffect(() => {
     if (selectedFactoryIds) {
       const factoryMachineClasses: string[] = machineClass?.items?.filter(
         (item: any) => selectedFactoryIds?.includes(item.factoryId)
       )
+
       //@ts-expect-error
       setFactoryMachineClasses(factoryMachineClasses)
+      setSelectedMachineClasses(
+        factoryMachineClasses?.map((item: any) => item.name)
+      )
     } else {
       const machineClassName: string[] = []
       const machineClassIds: string[] = []
@@ -323,10 +326,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       })
       //@ts-expect-error
       setFactoryMachineClasses(machineClassName)
-      console.log(
-        "🚀 ~ file: ParentTable.tsx:564 ~ useEffect ~ machineClassName:",
-        machineClassName
-      )
+      setSelectedMachineClasses(machineClassName)
       // setSelectedMachineClassIds(machineClassIds)
     }
   }, [selectedFactoryIds, machineClass])
@@ -489,7 +489,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       }
     })
     setSelectedFactoryIds(updatedFactoryIds)
-    setFactories(updatedFactoryIds)
+    updatedFactoryIds.length === factories?.items?.length
+      ? setFactories("")
+      : setFactories(updatedFactoryIds)
   }
 
   useEffect(() => {
@@ -559,6 +561,24 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }, [userProfile, locations])
 
+  useEffect(() => {
+    if (
+      userProfile?.item.role === "Production" &&
+      userProfile?.item.factoryId &&
+      factories?.items
+    ) {
+      const userFactory = factories.items.find(
+        (item: Record<string, any>) => item._id === userProfile?.item.factoryId
+      )
+
+      if (userFactory) {
+        setFactories(String(userFactory?._id))
+        setSelectedFactories([userFactory.name])
+        setSelectedFactoryIds([String(userFactory?._id)])
+      }
+    }
+  }, [userProfile, factories])
+
   const renderSelectValue = (selected: any) => {
     return selectedCity.length === locations?.items.length
       ? "All"
@@ -567,6 +587,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const handleMachineClassSelection = (event: any) => {
     const selectedMachineClass = event.target.value
+    console.log(
+      "🚀 ~ file: ParentTable.tsx:588 ~ handleMachineClassSelection ~  event.target.value:",
+      event.target.value
+    )
     setSelectedMachineClasses(selectedMachineClass)
     const updatedMachineClassIds: any = []
 
@@ -579,21 +603,23 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       }
     })
     setSelectedMachineClassIds(updatedMachineClassIds)
-    setMachineClass(updatedMachineClassIds)
+    updatedMachineClassIds.length === machineClass?.items?.length
+      ? setMachineClass("")
+      : setMachineClass(updatedMachineClassIds)
   }
 
-  useEffect(() => {
-    if (machineClass?.items) {
-      const machineClassName: string[] = []
-      const machineClassIds: string[] = []
-      machineClass?.items.forEach((item: any) => {
-        machineClassName.push(item.name)
-        machineClassIds.push(item._id)
-      })
-      setSelectedMachineClasses(machineClassName)
-      setSelectedMachineClassIds(machineClassIds)
-    }
-  }, [machineClass])
+  // useEffect(() => {
+  //   if (machineClass?.items) {
+  //     const machineClassName: string[] = []
+  //     const machineClassIds: string[] = []
+  //     machineClass?.items.forEach((item: any) => {
+  //       machineClassName.push(item.name)
+  //       machineClassIds.push(item._id)
+  //     })
+  //     setSelectedMachineClasses(machineClassName)
+  //     setSelectedMachineClassIds(machineClassIds)
+  //   }
+  // }, [machineClass])
 
   const renderSelectValueMachineClass = (selected: any) => {
     return selectedMachineClasses.length === machineClass?.items.length
@@ -619,7 +645,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   }
 
   const renderDeptSelectValue = (selected: any) => {
-    console.log(departments)
     return departments.length === deptNameHr.length
       ? "All"
       : selected.join(", ")
