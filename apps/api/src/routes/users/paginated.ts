@@ -44,7 +44,7 @@ export const paginated = async (req: Request, res: Response) => {
       }
       // if the locationId is not provided then return empty array
       if (!locationId || locationId === "") {
-        res.json({
+        return res.json({
           error: false,
           items: [],
           itemCount: 0,
@@ -151,7 +151,7 @@ export const paginated = async (req: Request, res: Response) => {
         $and: queryFilters,
       }).countDocuments()
 
-      res.json({
+      return res.json({
         error: false,
         items: getAllUsers,
         itemCount: usersCount,
@@ -160,7 +160,7 @@ export const paginated = async (req: Request, res: Response) => {
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       Sentry.captureException(err)
-      res.json({
+      return res.json({
         error: true,
         message: message,
         items: null,
@@ -168,7 +168,7 @@ export const paginated = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.json({
+    return res.json({
       error: true,
       message: REQUIRED_VALUES_MISSING,
       items: null,
