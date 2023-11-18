@@ -4,9 +4,10 @@ import {
 } from "../../utils/constants"
 import { Request, Response } from "express"
 import Parts from "../../models/parts"
-import mongoose, { Types } from "mongoose"
+import mongoose, { FilterQuery, Types, Models, Document } from "mongoose"
 import * as Sentry from "@sentry/node"
 import timerLogs from "../../models/timerLogs"
+import dayjs from "dayjs"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
   let { locationId, machineClassId } = req.query
@@ -59,6 +60,7 @@ export const locationMachineClass = async (req: Request, res: Response) => {
 
 export const byLocationMachineClass = async (req: Request, res: Response) => {
   const { machineClasses, locations, search, page } = req.query
+  let { startDate, endDate } = req.query
   if (
     !machineClasses ||
     !machineClasses?.length ||
@@ -72,26 +74,44 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
       itemCount: null,
     })
   }
+
   try {
-    const machineClassesToSearch = machineClasses
-      //@ts-expect-error
+    startDate = !startDate
+      ? dayjs().startOf("week").format()
+      : dayjs(startDate as string).format()
+    endDate = !endDate
+      ? dayjs().endOf("week").format()
+      : dayjs(endDate as string).format()
+
+    const machineClassesToSearch = (machineClasses as string)
       .split(",")
-      //@ts-expect-error
       .map((e) => new Types.ObjectId(e))
-    const locationsToSearch = locations
-      //@ts-expect-error
+
+    const locationsToSearch = (locations as string)
       .split(",")
-      //@ts-expect-error
       .map((e) => new Types.ObjectId(e))
-    const distinctPartsIds = await timerLogs.distinct("partId")
-    const filter = {
+
+    const distinctPartsIds = (
+      await timerLogs.distinct("partId", {
+        ...(startDate &&
+          endDate && {
+            createdAt: {
+              $gte: new Date(startDate as string),
+              $lt: new Date(endDate as string),
+            },
+          }),
+      })
+    ).map((e) => new mongoose.Types.ObjectId(e))
+
+    // const distinctPartsIds = await timerLogs.distinct("partId")
+
+    const filter: FilterQuery<Document> = {
       machineClassId: { $in: machineClassesToSearch },
       locationId: { $in: locationsToSearch },
       _id: { $in: distinctPartsIds },
     }
 
     if (search) {
-      //@ts-expect-error
       filter.name = { $regex: search, $options: "i" } // Case-insensitive search
     }
 
@@ -105,7 +125,7 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
       count: partsCount,
       message: null,
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
     Sentry.captureException(error)
   }

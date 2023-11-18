@@ -7,6 +7,7 @@ import Machines from "../../models/machines"
 import mongoose from "mongoose"
 import timerLogs from "../../models/timerLogs"
 import redisClient from "../../utils/redisClient"
+import dayjs from "dayjs"
 
 export const locationMachineClass = async (req: Request, res: Response) => {
   let { locationId, machineClassId } = req.query
@@ -17,8 +18,38 @@ export const locationMachineClass = async (req: Request, res: Response) => {
     machineClassId !== "undefined" &&
     machineClassId !== ""
   ) {
+    let { startDate, endDate } = req.query
     try {
-      const cacheKey = `locationMachineClass:${locationId}:${machineClassId}`
+      startDate = !startDate
+        ? dayjs().startOf("week").format()
+        : dayjs(startDate as string).format()
+      endDate = !endDate
+        ? dayjs().endOf("week").format()
+        : dayjs(endDate as string).format()
+
+      locationId = locationId as string
+      const locationIds = locationId
+        .split(",")
+        .map((e) => new mongoose.Types.ObjectId(e))
+
+      machineClassId = machineClassId as string
+      const machineClassIds = machineClassId
+        .split(",")
+        .map((e) => new mongoose.Types.ObjectId(e))
+
+      const distinctMachineIds = (
+        await timerLogs.distinct("machineId", {
+          ...(startDate &&
+            endDate && {
+              createdAt: {
+                $gte: new Date(startDate as string),
+                $lt: new Date(endDate as string),
+              },
+            }),
+        })
+      ).map((e) => new mongoose.Types.ObjectId(e))
+
+      const cacheKey = `locationMachineClass:${locationId}:${machineClassId}:${distinctMachineIds}`
       const cachedData = await redisClient.get(cacheKey)
 
       if (cachedData) {
@@ -30,20 +61,11 @@ export const locationMachineClass = async (req: Request, res: Response) => {
           message: "Data from cache",
         })
       } else {
-        locationId = locationId as string
-        const locationIds = locationId
-          .split(",")
-          .map((e) => new mongoose.Types.ObjectId(e))
-
         let query: any = {
+          _id: { $in: distinctMachineIds },
           locationId: { $in: locationIds },
           $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
         }
-
-        machineClassId = machineClassId as string
-        const machineClassIds = machineClassId
-          .split(",")
-          .map((e) => new mongoose.Types.ObjectId(e))
 
         query.machineClassId = { $in: machineClassIds }
 
@@ -61,6 +83,10 @@ export const locationMachineClass = async (req: Request, res: Response) => {
         })
       }
     } catch (err: any) {
+      console.log(
+        "🚀 ~ file: locationMachineClass.ts:99 ~ locationMachineClass ~ err:",
+        err
+      )
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       res.json({
         error: true,
