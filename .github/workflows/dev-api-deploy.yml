@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: dev
-      - run: npm install --ignore-scripts
+      - run: npm install
       - name: Delete pm2 api
         working-directory: apps/api
         run: pm2 delete api
