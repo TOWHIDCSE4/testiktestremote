@@ -183,6 +183,7 @@ const Table = ({
               </th>
             </tr>
           </thead>
+
           <tbody className="divide-y divide-gray-200 bg-white">
             {paginated?.items &&
               paginated?.items.map((item, idx, array) => (
