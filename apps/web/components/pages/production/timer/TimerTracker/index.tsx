@@ -94,7 +94,8 @@ const TimerTracker = ({
                 <label htmlFor="tabs" className="sr-only">
                   Select a tab
                 </label>
-                {/* Use an "onChange" listener to redirect the user to the selected tab URL. */}
+                /* Use an "onChange" listener to redirect the user to the
+                selected tab URL.
                 <select
                   id="tabs"
                   name="tabs"
@@ -108,6 +109,7 @@ const TimerTracker = ({
                   ))}
                 </select>
               </div>
+              <div></div>
               <div className="hidden sm:block">
                 <nav
                   className="isolate flex divide-x divide-gray-200"
@@ -177,7 +179,6 @@ const TimerTracker = ({
               </button>
             </div>
           </div>
-          {/* Table */}
           <Table
             timerId={selectedTimerId}
             locationId={selectedLocationId}

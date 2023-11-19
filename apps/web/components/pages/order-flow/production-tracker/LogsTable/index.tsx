@@ -1369,13 +1369,13 @@ const LogsTable = ({
                                         ADDITIONAL INFO
                                       </p>
                                     </span>
-                                    <div className="w-full justify-between">
-                                      <div className="flex justify-between">
+                                    <div className="w-full">
+                                      <div className="flex">
                                         {" "}
                                         {/* Use flex-wrap to wrap the elements */}
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap">
+                                        <span className="w-1/3 flex px-4 text-[13px] ">
                                           <p
-                                            className={`justify-center sm:w-3/5 md:w-[45%] text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`pl-3 sm:w-3/5 md:w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1384,7 +1384,7 @@ const LogsTable = ({
                                             CITY :
                                           </p>
                                           <p
-                                            className={`pl-1 pt-2 pb-1 text-sm text-gray-500 ${
+                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1395,7 +1395,7 @@ const LogsTable = ({
                                               : ""}{" "}
                                           </p>
                                         </span>
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                        <span className="w-2/3 flex px-4 text-[13px] ">
                                           <p
                                             className={`justify-center w-[45%] text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
@@ -1480,9 +1480,9 @@ const LogsTable = ({
                                           </p>
                                         </span>
                                       </div>
-                                      <div className="flex justify-between">
+                                      <div className="flex">
                                         {" "}
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                        <span className="flex w-1/3 sm:px-0 sm:pl-1 px-4 text-[13px] ">
                                           <p
                                             className={`justify-center pt-2 sm:w-3/5 md:w-[45%] text-right pb-1 text-sm text-gray-900 font-semibold`}
                                           >
@@ -1496,7 +1496,7 @@ const LogsTable = ({
                                               : 0}
                                           </p>
                                         </span>
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                        <span className="w-2/3 flex text-[13px] px-4 text-slate-900 ">
                                           <p
                                             className={`justify-center w-[45%] text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
                                           >
