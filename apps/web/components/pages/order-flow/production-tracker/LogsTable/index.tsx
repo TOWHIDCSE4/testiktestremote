@@ -1437,7 +1437,7 @@ const LogsTable = ({
                               }  #ff0000`}
                             >
                               <td colSpan={7}>
-                                <div className="border border-b-0 border-gray-100  h-13 bg-[#c7cebe]">
+                                <div className="border border-b-0 border-gray-100 h-13 bg-[#c7cebe]">
                                   <div className="flex">
                                     <span className="flex w-1/4 text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
                                       <p className="px-4 pt-1 text-right">
@@ -1448,9 +1448,9 @@ const LogsTable = ({
                                       <div className="flex">
                                         {" "}
                                         {/* Use flex-wrap to wrap the elements */}
-                                        <span className="w-1/3 flex px-4 text-[13px] ">
+                                        <span className="w-1/2 flex text-[13px]">
                                           <p
-                                            className={`pl-3 sm:w-3/5 md:w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1459,7 +1459,7 @@ const LogsTable = ({
                                             CITY :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                            className={`pl-1 pt-2 lg:w-2/3 md:w-2/3 xl:w-2/3 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1470,9 +1470,9 @@ const LogsTable = ({
                                               : ""}{" "}
                                           </p>
                                         </span>
-                                        <span className="w-2/3 flex px-4 text-[13px] ">
+                                        <span className="w-1/2 flex text-[13px] ">
                                           <p
-                                            className={`justify-center w-[45%] text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`xl:w-1/3 lg:w-2/4 md:w-2/4 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1481,7 +1481,7 @@ const LogsTable = ({
                                             STOP REASON :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm  text-gray-500 ${
+                                            className={`xl:w-2/3 lg:w-2/4 md:w-2/4 pl-1 pt-2 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1504,11 +1504,11 @@ const LogsTable = ({
                                           </p>
                                         </span>
                                       </div>
-                                      <div className="flex justify-between">
+                                      <div className="flex justify-start">
                                         {" "}
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                        <span className="flex w-1/2 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
                                           <p
-                                            className={`justify-center pt-2 sm:w-3/5 md:w-[45%] text-right pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`pt-2 xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1517,7 +1517,7 @@ const LogsTable = ({
                                             OPERATOR :
                                           </p>
                                           <p
-                                            className={`justify-around pl-1 pt-2 pb-1 text-sm text-gray-500 overflow-hidden whitespace-nowrap overflow-ellipsis ${
+                                            className={` pl-1 xl:w-2/3 lg:w-2/3 md:w-2/3 pt-2 pb-1 text-sm text-gray-500 overflow-hidden whitespace-nowrap overflow-ellipsis ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1531,9 +1531,9 @@ const LogsTable = ({
                                               : ""}
                                           </p>
                                         </span>
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                        <span className="flex w-1/2 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
                                           <p
-                                            className={`justify-around pt-2 pb-1  w-[45%] text-right text-sm text-gray-500 font-semibold ${
+                                            className={`pt-2 pb-1 xl:w-1/3 lg:w-2/4 md:w-2/4 text-right text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1542,7 +1542,7 @@ const LogsTable = ({
                                             MACHINE CLASS :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                            className={`pl-1 xl:w-2/3 lg:w-2/4 md:w-2/4 pt-2 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1557,28 +1557,28 @@ const LogsTable = ({
                                       </div>
                                       <div className="flex">
                                         {" "}
-                                        <span className="flex w-1/3 sm:px-0 sm:pl-1 px-4 text-[13px] ">
+                                        <span className="flex w-1/2 text-[13px] ">
                                           <p
-                                            className={`justify-center pt-2 sm:w-3/5 md:w-[45%] text-right pb-1 text-sm text-gray-900 font-semibold`}
+                                            className={` pt-2 xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pb-1 text-sm text-gray-900 font-semibold`}
                                           >
                                             Average Time :
                                           </p>
                                           <p
-                                            className={`justify-around pl-1 pt-2 pb-1 text-sm text-gray-500`}
+                                            className={` pl-1 xl:w-2/3 lg:w-2/3 md:w-2/3 pt-2 pb-1 text-sm text-gray-500`}
                                           >
                                             {item.time
                                               ? Math.round(item.time)
                                               : 0}
                                           </p>
                                         </span>
-                                        <span className="w-2/3 flex text-[13px] px-4 text-slate-900 ">
+                                        <span className="w-1/2 flex text-[13px] text-slate-900 ">
                                           <p
-                                            className={`justify-center w-[45%] text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
+                                            className={`xl:w-1/3 lg:w-2/4 md:w-2/4 text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
                                           >
                                             Average Weight :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm  text-gray-500`}
+                                            className={`pl-1 xl:w-2/3 lg:w-2/4 md:w-2/4 pt-2 pb-1 text-sm  text-gray-500`}
                                           >
                                             {typeof item?.partId === "object" &&
                                             item?.partId.cageWeightActual
