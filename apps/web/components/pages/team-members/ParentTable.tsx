@@ -84,9 +84,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           | "Accounting"
           | "Sales"
           | "Super"
-          | "Accounting_HR"
-          | "Sales_HR"
-          | "Corporate_HR"
+          | "Accounting_Director"
+          | "Sales_Director"
+          | "Corporate_Director"
         email: string
         token: string | null
       } & {
@@ -101,9 +101,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
             | "Accounting"
             | "Sales"
             | "Super"
-            | "Accounting_HR"
-            | "Sales_HR"
-            | "Corporate_HR"
+            | "Accounting_Director"
+            | "Sales_Director"
+            | "Corporate_Director"
           email: string
           token: string | null
         }) => void
@@ -427,30 +427,30 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     if (item.role === "Accounting") {
       updatedItem = {
         ...item,
-        role: "Accounting_HR" as T_UserRole,
+        role: "Accounting_Director" as T_UserRole,
       }
     } else if (item.role === "Sales") {
       updatedItem = {
         ...item,
-        role: "Sales_HR" as T_UserRole,
+        role: "Sales_Director" as T_UserRole,
       }
     } else if (item.role === "Corporate") {
       updatedItem = {
         ...item,
-        role: "Corporate_HR" as T_UserRole,
+        role: "Corporate_Director" as T_UserRole,
       }
     } else {
-      if (item.role === "Accounting_HR") {
+      if (item.role === "Accounting_Director") {
         updatedItem = {
           ...item,
           role: "Accounting" as T_UserRole,
         }
-      } else if (item.role === "Sales_HR") {
+      } else if (item.role === "Sales_Director") {
         updatedItem = {
           ...item,
           role: "Sales" as T_UserRole,
         }
-      } else if (item.role === "Corporate_HR") {
+      } else if (item.role === "Corporate_Director") {
         updatedItem = {
           ...item,
           role: "Corporate" as T_UserRole,
@@ -2416,7 +2416,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     <th scope="col" className="w-[6%] text-slate-900"></th>
                     <th scope="col" className="">
                       <div className="flex items-start justify-start">
-                        {/* <a href="#" className="group inline-flex items-center"> */}
                         User
                         <button onClick={(e) => {}}>
                           <svg
@@ -2430,13 +2429,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           </svg>
                         </button>
                       </div>
-                      {/* <span className="ml-2 flex-none rounded text-gray-400">
-                      <ChevronUpDownIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </span>
-                                      </a> */}
                     </th>
                     <th className="">
                       <div className="flex items-center justify-start ml-6">
@@ -2454,20 +2446,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         </button>
                       </div>
                     </th>
-                    {/* <th
-                  scope="col"
-                  className={`text-sm px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
-                >
-                  <a href="#" className="group inline-flex items-center">
-                    Location
-                    <span className="ml-2 flex-none rounded text-gray-400">
-                      <ChevronUpDownIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </span>
-                  </a>
-                </th> */}
                     <th className="">
                       <div className="flex items-start justify-start ml-2">
                         <span className="flex">
@@ -2485,13 +2463,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           </svg>
                         </button>
                       </div>
-                      {/* <span className="ml-2 flex-none rounded text-gray-400">
-                      <ChevronUpDownIcon
-                      className="h-5 w-5"
-                      aria-hidden="true"
-                      />
-                    </span>
-                    </a> */}
                     </th>
                     {selectedRole === "Personnel" ? (
                       <th className="">
@@ -2512,14 +2483,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             </button>
                           </div>
                         </div>
-
-                        {/* <span className="ml-2 flex-none rounded text-gray-400">
-                      <ChevronUpDownIcon
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </span>
-                    </a> */}
                       </th>
                     ) : (
                       <th colSpan={1} className="">
@@ -2542,21 +2505,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         </div>
                       </th>
                     )}
-                    {/* <th colSpan={1}>
-                    <div className="flex items-center justify-center ">
-                      <div
-                        className="relative mb-3 mr-24"
-                        data-te-input-wrapper-init
-                      >
-                        <input
-                          type="search"
-                          className="peer block text-sm bg-slate-200 focus:placeholder:opacity-30 uppercase ring-1 placeholder:opacity-30 focus:ring-1 focus:border-1 focus:border-gray-400 focus:ring-slate-500 ring-gray-400 min-h-[auto] placeholder:text-gray-500 text-black w-[9.5rem] rounded border-0 bg-transparent px-3 py-[0.23rem] leading-[1.6] outline-none transition-all duration-200 ease-linear peer-focus:text-primary motion-reduce:transition-none dark:peer-focus:text-primary "
-                          id="exampleSearch2"
-                          placeholder="Search Users"
-                        />
-                      </div>
-                    </div>
-                  </th> */}
                   </tr>
                 </thead>
                 {
@@ -2626,47 +2574,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               <td className="py-0 text-sm font-medium overflow-hidden whitespace-nowrap overflow-ellipsis">
                                 {item.firstName + " " + item.lastName}
                               </td>
-
-                              {/* <select
-                                id="locations"
-                                name="locations"
-                                className="block w-28 rounded-md border-0 py-1 pl-3 pr-10 bg-gray-100 ring-opacity-0 bg-opacity-0 text-gray-900 focus:ring-opacity-0 ring-1 ring-inset ring-gray-100 focus:ring-1 focus:ring-gray-100 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                                onChange={(e) => {
-                                  mutate(
-                                    {
-                                      ...item,
-                                      locationId: e.target.value,
-                                    },
-                                    callBackReq
-                                  )
-                                }}
-                                disabled={
-                                  isLocationsLoading ||
-                                  isUpdateUserLoading ||
-                                  isPaginatedLoading
-                                }
-                                value={
-                                  typeof item?.locationId === "object" &&
-                                  item?.locationId?._id
-                                    ? item?.locationId?._id
-                                    : ""
-                                }
-                              >
-                                <option value="">Select Location</option>
-                                {locations?.items?.map(
-                                  (item: T_Locations, index: number) => {
-                                    return (
-                                      <option
-                                        className="float-left"
-                                        key={index}
-                                        value={item._id as string}
-                                      >
-                                        {item.name}
-                                      </option>
-                                    )
-                                  }
-                                )}
-                              </select> */}
                               <td className="text-sm text-gray-500 items-center justify-center">
                                 <button
                                   id="dropdownFactoryButton"
@@ -2744,7 +2651,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </div>
                               </td>
                               <td className="text-sm text-gray-500 items-start justify-center">
-                                {item?.role !== "HR_Director" ? (
+                                {item?.role === "HR_Director" ||
+                                item?.role === "Accounting_Director" ||
+                                item?.role === "Sales_Director" ||
+                                item?.role === "Corporate_Director" ? (
+                                  <div></div>
+                                ) : (
                                   <button
                                     id="dropdownFactoryButton"
                                     data-dropdown-toggle="dropdown"
@@ -2782,8 +2694,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                         : "Select Factory"}
                                     </span>
                                   </button>
-                                ) : (
-                                  <div></div>
                                 )}
 
                                 <div
@@ -2839,12 +2749,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               {selectedRole === "Personnel" ? (
                                 <td
                                   className={`text-sm text-gray-500 items-center justify-center`}
-                                  // colSpan={
-                                  //   selectedStatus == "Pending" &&
-                                  //   selectedRole == "Personnel"
-                                  //     ? 2
-                                  //     : 1
-                                  // }
                                 >
                                   <button
                                     id="dropdownFactoryButton"
@@ -3026,7 +2930,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       disabled={
                                         isLocationsLoading ||
                                         isUpdateUserLoading ||
-                                        isPaginatedLoading
+                                        isPaginatedLoading ||
+                                        selectedStatus === "Pending" ||
+                                        selectedStatus === "Rejected" ||
+                                        selectedStatus === "Archived"
                                       }
                                       onChange={() =>
                                         handleDirectorCheck(idx, item)
@@ -3048,12 +2955,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       type="checkbox"
                                       style={{ marginLeft: "3px" }}
                                       checked={
-                                        item.role === "Accounting_HR" || false
+                                        item.role === "Accounting_Director" ||
+                                        item.role === "Sales_Director" ||
+                                        item.role === "Corporate_Director" ||
+                                        false
                                       }
                                       disabled={
                                         isLocationsLoading ||
                                         isUpdateUserLoading ||
-                                        isPaginatedLoading
+                                        isPaginatedLoading ||
+                                        selectedStatus === "Pending" ||
+                                        selectedStatus === "Rejected" ||
+                                        selectedStatus === "Archived"
                                       }
                                       onChange={() =>
                                         handleAccDirectorCheck(idx, item)
@@ -3248,55 +3161,57 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             ADDITIONAL INFO
                                           </p>
                                         </span>
-                                        <div className="flex py-2">
-                                          <span className="flex w-[15rem] space-x-1 text-[13px] justify-center items-center">
-                                            <p
-                                              className={`px-1 text-sm text-gray-500 font-semibold ${
-                                                item.email
-                                                  ? "text-gray-900"
-                                                  : "text-red-500"
-                                              }`}
-                                            >
-                                              EMAIL:
-                                            </p>
-                                            <p
-                                              className={`text-sm text-gray-500 ${
-                                                item.email
-                                                  ? "text-gray-900"
-                                                  : "text-red-500"
-                                              }`}
-                                            >
-                                              {item.email || "-"}
-                                            </p>
-                                          </span>
-                                          <span className="flex w-[20rem] space-x-1 text-[13px] text-slate-900 justify-center items-center">
-                                            <p
-                                              className={` text-sm text-gray-500 font-semibold ${
-                                                item.createdAt &&
-                                                item.createdAt instanceof Date
-                                                  ? "text-gray-900"
-                                                  : "text-gray-900"
-                                              }`}
-                                            >
-                                              CREATED AT:
-                                            </p>
-                                            <p
-                                              className={`text-sm text-gray-500 ${
-                                                item.createdAt &&
-                                                item.createdAt instanceof Date
-                                                  ? "text-gray-900"
-                                                  : "text-gray-900"
-                                              }`}
-                                            >
-                                              {item.createdAt instanceof Date
-                                                ? item.createdAt.toLocaleString()
-                                                : item.createdAt
-                                                ? new Date(
-                                                    item.createdAt
-                                                  ).toLocaleString()
-                                                : "No valid date provided"}
-                                            </p>
-                                          </span>
+                                        <div className="w-full">
+                                          <div className="flex mt-2">
+                                            <span className="w-1/2 flex px-4 text-[13px] ">
+                                              <p
+                                                className={`pl-3 sm:w-3/5 md:w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                                  item.email
+                                                    ? "text-gray-900"
+                                                    : "text-red-500"
+                                                }`}
+                                              >
+                                                EMAIL:
+                                              </p>
+                                              <p
+                                                className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                                  item.email
+                                                    ? "text-gray-900"
+                                                    : "text-red-500"
+                                                }`}
+                                              >
+                                                {item.email || "-"}
+                                              </p>
+                                            </span>
+                                            <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap  ">
+                                              <p
+                                                className={`pt-2 pb-1 w-[45%] text-right text-sm text-gray-500 font-semibold ${
+                                                  item.createdAt &&
+                                                  item.createdAt instanceof Date
+                                                    ? "text-gray-900"
+                                                    : "text-gray-900"
+                                                }`}
+                                              >
+                                                CREATED AT:
+                                              </p>
+                                              <p
+                                                className={`pl-3 pt-2 pb-1 text-sm  text-gray-500 ${
+                                                  item.createdAt &&
+                                                  item.createdAt instanceof Date
+                                                    ? "text-gray-900"
+                                                    : "text-gray-900"
+                                                }`}
+                                              >
+                                                {item.createdAt instanceof Date
+                                                  ? item.createdAt.toLocaleString()
+                                                  : item.createdAt
+                                                  ? new Date(
+                                                      item.createdAt
+                                                    ).toLocaleString()
+                                                  : "No valid date provided"}
+                                              </p>
+                                            </span>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
@@ -4342,7 +4257,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 !alertPrompt
                   ? "transition duration-500 ease-out"
                   : "transition duration-500 ease-linear"
-              } absolute w-[40%] md:-bottom-[15rem] lg:-bottom-0 bottom-0 md:-right-0 lg:-right-[4rem] shadow-md`}
+              } absolute w-[40%] md:w-[40%] lg:w-[40%] md:-bottom-[15rem] lg:bottom-[25rem] bottom-0 md:-right-0 lg:-right-[0rem] shadow-md`}
               message="Missing Information"
               description={`${errorMsg} not selected. Please select a ${errorMsg} to proceed.`}
               type="error"
