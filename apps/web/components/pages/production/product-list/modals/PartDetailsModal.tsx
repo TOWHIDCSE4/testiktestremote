@@ -192,6 +192,7 @@ const PartDetailsModal = ({
               className="text-gray-800 pl-0 font-bold text-xl uppercase py-1 mt-1 mb-1 rounded-md border-0 focus:ring-1 focus:ring-blue-950 focus:pl-3 cursor-pointer focus:cursor-text disabled:opacity-70 w-full"
               defaultValue={partDetails?.item?.name}
               disabled={
+                !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                 isUpdatePartLoading ||
                 isPartDetailsLoading ||
                 isFactoriesLoading ||
@@ -220,6 +221,7 @@ const PartDetailsModal = ({
                     id="factory"
                     className={`block col-span-2 md:mt-0 w-full text-sm rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:leading-6 disabled:opacity-70`}
                     disabled={
+                      !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isFactoriesLoading ||
@@ -254,6 +256,7 @@ const PartDetailsModal = ({
                     id="machine-class"
                     className={`block col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     disabled={
+                      !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isFactoriesLoading ||
@@ -290,6 +293,7 @@ const PartDetailsModal = ({
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     defaultValue={partDetails?.item?.tons}
                     disabled={
+                      !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isFactoriesLoading ||
@@ -309,6 +313,7 @@ const PartDetailsModal = ({
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     defaultValue={partDetails?.item?.time}
                     disabled={
+                      !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isFactoriesLoading ||
@@ -327,6 +332,7 @@ const PartDetailsModal = ({
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     defaultValue={partDetails?.item?.finishGoodWeight}
                     disabled={
+                      !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isFactoriesLoading ||
@@ -345,6 +351,7 @@ const PartDetailsModal = ({
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     defaultValue={partDetails?.item?.cageWeightActual}
                     disabled={
+                      !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isFactoriesLoading ||
@@ -363,6 +370,7 @@ const PartDetailsModal = ({
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     defaultValue={partDetails?.item?.cageWeightScrap}
                     disabled={
+                      !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdatePartLoading ||
                       isPartDetailsLoading ||
                       isFactoriesLoading ||
@@ -379,6 +387,11 @@ const PartDetailsModal = ({
                     id="inInventory"
                     {...register("inInventory")}
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed`}
+                    disabled={
+                      PRODUCTION_ADMIN_ROLES.includes(storeSession.role)
+                        ? false
+                        : true
+                    }
                     defaultValue={
                       productLogs?.item?.inInverntory
                         ? productLogs?.item?.inInverntory
@@ -401,6 +414,11 @@ const PartDetailsModal = ({
                       {...register("manufactureCost")}
                       className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                       placeholder="0.00"
+                      disabled={
+                        PRODUCTION_ADMIN_ROLES.includes(storeSession.role)
+                          ? false
+                          : true
+                      }
                       defaultValue={
                         productLogs?.item?.manufactureCost
                           ? productLogs?.item?.manufactureCost
@@ -433,6 +451,11 @@ const PartDetailsModal = ({
                       {...register("topSellPrice")}
                       className="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                       placeholder="0.00"
+                      disabled={
+                        PRODUCTION_ADMIN_ROLES.includes(storeSession.role)
+                          ? false
+                          : true
+                      }
                       defaultValue={
                         productLogs?.item?.opSellPrice
                           ? productLogs?.item?.opSellPrice
@@ -461,33 +484,37 @@ const PartDetailsModal = ({
           </div>
           <div className="bg-gray-100 mt-7 px-4 py-3 sm:flex sm:flex-row-reverse items-center sm:px-6 justify-between">
             <div className="flex items-center space-x-3">
-              <button
-                type="submit"
-                className={`uppercase flex items-center rounded-md  mt-3 w-full md:w-auto sm:mt-0 md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-70 ${
-                  !anyChange
-                    ? "bg-green-700 focus-visible:outline-green-900 hover:bg-green-800"
-                    : "bg-gray-400 hover:bg-gray-500"
-                }`}
-                disabled={
-                  isUpdatePartLoading ||
-                  isPartDetailsLoading ||
-                  isFactoriesLoading ||
-                  isUploadMediaFilesLoading ||
-                  anyChange
-                }
-              >
-                {isUpdatePartLoading || isUploadMediaFilesLoading ? (
-                  <div
-                    className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
-                    role="status"
-                    aria-label="loading"
-                  >
-                    <span className="sr-only">Loading...</span>
-                  </div>
-                ) : (
-                  "Save"
-                )}
-              </button>
+              {PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ? (
+                <button
+                  type="submit"
+                  className={`uppercase flex items-center rounded-md  mt-3 w-full md:w-auto sm:mt-0 md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-70 ${
+                    !anyChange
+                      ? "bg-green-700 focus-visible:outline-green-900 hover:bg-green-800"
+                      : "bg-gray-400 hover:bg-gray-500"
+                  }`}
+                  disabled={
+                    isUpdatePartLoading ||
+                    isPartDetailsLoading ||
+                    isFactoriesLoading ||
+                    isUploadMediaFilesLoading ||
+                    anyChange
+                  }
+                >
+                  {isUpdatePartLoading || isUploadMediaFilesLoading ? (
+                    <div
+                      className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
+                      role="status"
+                      aria-label="loading"
+                    >
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  ) : (
+                    "Save"
+                  )}
+                </button>
+              ) : (
+                ""
+              )}
               <button
                 type="button"
                 className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"

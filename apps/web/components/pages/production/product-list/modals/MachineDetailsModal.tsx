@@ -175,6 +175,7 @@ const MachineDetailsModal = ({
               className="text-gray-800 pl-0 font-bold text-xl uppercase py-1 mt-1 mb-1 rounded-md border-0 focus:ring-1 focus:ring-blue-950 focus:pl-3 cursor-pointer focus:cursor-text disabled:opacity-70 w-full"
               defaultValue={machineDetails?.item?.name}
               disabled={
+                !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                 isUpdateMachineLoading ||
                 isMachineDetailsLoading ||
                 isFactoriesLoading ||
@@ -203,6 +204,7 @@ const MachineDetailsModal = ({
                     id="factory"
                     className={`block col-span-2 md:mt-0 w-full text-sm rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:leading-6 disabled:opacity-70`}
                     disabled={
+                      !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdateMachineLoading ||
                       isMachineDetailsLoading ||
                       isFactoriesLoading ||
@@ -238,6 +240,7 @@ const MachineDetailsModal = ({
                     id="machine-class"
                     className={`block col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     disabled={
+                      !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdateMachineLoading ||
                       isMachineDetailsLoading ||
                       isFactoriesLoading ||
@@ -275,6 +278,7 @@ const MachineDetailsModal = ({
                     id="description"
                     className={`block col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
                     disabled={
+                      !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdateMachineLoading ||
                       isMachineDetailsLoading ||
                       isFactoriesLoading ||
@@ -296,28 +300,33 @@ const MachineDetailsModal = ({
           </div>
           <div className="bg-gray-100 mt-7 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 items-center justify-between">
             <div className="flex justify-center space-x-3">
-              <button
-                type="submit"
-                className="uppercase flex items-center rounded-md bg-green-700 mt-3 w-full md:w-auto sm:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
-                disabled={
-                  isUpdateMachineLoading ||
-                  isMachineDetailsLoading ||
-                  isFactoriesLoading ||
-                  isUploadMediaFilesLoading
-                }
-              >
-                {isUpdateMachineLoading ? (
-                  <div
-                    className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
-                    role="status"
-                    aria-label="loading"
-                  >
-                    <span className="sr-only">Loading...</span>
-                  </div>
-                ) : (
-                  "Save"
-                )}
-              </button>
+              {PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ? (
+                <button
+                  type="submit"
+                  className="uppercase flex items-center rounded-md bg-green-700 mt-3 w-full md:w-auto sm:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"
+                  disabled={
+                    !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
+                    isUpdateMachineLoading ||
+                    isMachineDetailsLoading ||
+                    isFactoriesLoading ||
+                    isUploadMediaFilesLoading
+                  }
+                >
+                  {isUpdateMachineLoading ? (
+                    <div
+                      className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full my-1 mx-2"
+                      role="status"
+                      aria-label="loading"
+                    >
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  ) : (
+                    "Save"
+                  )}
+                </button>
+              ) : (
+                ""
+              )}
               <button
                 type="button"
                 className="uppercase mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto disabled:opacity-70"
@@ -328,6 +337,7 @@ const MachineDetailsModal = ({
                 ref={closeButtonRef}
                 tabIndex={-1}
                 disabled={
+                  !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                   isUpdateMachineLoading ||
                   isMachineDetailsLoading ||
                   isFactoriesLoading ||

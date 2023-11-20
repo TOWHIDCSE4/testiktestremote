@@ -76,6 +76,8 @@ const LogsTable = ({
   const [process, setProcess] = useState<boolean>(false)
   const [machineClass, setMachineClass] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<Date[] | string[]>([])
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   // const [city, setCity] = useState<string[]>(locationId)
@@ -138,14 +140,20 @@ const LogsTable = ({
 
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
 
-  const { data: machineClasses, isLoading: isMachineClassesLoading } =
-    useMachineClasses(city)
+  const {
+    data: machineClasses,
+    setStartDateForMachineClass,
+    setEndDateForMachineClass,
+    isLoading: isMachineClassesLoading,
+  } = useMachineClasses(city)
 
   const {
     data: machines,
     isLoading: isMachinesLoading,
     setSelectedMachineClassId,
     setSelectedLocationId,
+    setEndDateRangeForMachine,
+    setStartDateRangeForMachine,
   } = useGetMachinesByMachineClassLocation()
 
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -215,7 +223,7 @@ const LogsTable = ({
 
     const fetchData = async () => {
       const res = await fetch(
-        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&search=${search}`,
+        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&search=${search}&startDate=${startDate}&endDate=${endDate}`,
         {
           method: "GET",
           headers: {
@@ -230,7 +238,7 @@ const LogsTable = ({
     }
 
     fetchData()
-  }, [city, machineClass])
+  }, [city, machineClass, startDate, endDate, isCheckboxChecked])
 
   const disabledDate = (current: any) => {
     const today = moment()
@@ -332,6 +340,12 @@ const LogsTable = ({
       datePick([currentDate, currentDate])
     } else {
       setDateRange([])
+      setStartDate("")
+      setEndDate("")
+      setStartDateRangeForMachine("")
+      setEndDateRangeForMachine("")
+      setStartDateForMachineClass("")
+      setEndDateForMachineClass("")
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -349,6 +363,12 @@ const LogsTable = ({
     } else {
       setIsCheckboxChecked(false)
       setDateRange([])
+      setStartDate("")
+      setEndDate("")
+      setStartDateForMachineClass("")
+      setEndDateForMachineClass("")
+      setStartDateRangeForMachine("")
+      setEndDateRangeForMachine("")
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -364,6 +384,30 @@ const LogsTable = ({
         setDateRange(inputValue)
       }
       if (isCheckboxChecked) {
+        setStartDate(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDate(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateForMachineClass(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateForMachineClass(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRangeForMachine(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRangeForMachine(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
         setStartDateRange(
           dayjs(inputValue[0])
             .startOf("day")
@@ -381,6 +425,30 @@ const LogsTable = ({
           dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
         )
       } else if (inputValue && inputValue[0] && inputValue[1]) {
+        setStartDate(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDate(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateForMachineClass(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateForMachineClass(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRangeForMachine(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRangeForMachine(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
         setStartDateRange(
           dayjs(inputValue[0])
             .startOf("day")
@@ -400,6 +468,10 @@ const LogsTable = ({
       }
     } else {
       setDateRange([])
+      setStartDate("")
+      setEndDate("")
+      setStartDateRangeForMachine("")
+      setEndDateRangeForMachine("")
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -1067,7 +1139,10 @@ const LogsTable = ({
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
-                    <th scope="col" className="w-[10%] pl-12 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[10%] lg:pl-10 xl:pl-12 text-slate-900"
+                    >
                       <input
                         id={`checkbox-table-search`}
                         type="checkbox"
@@ -1174,7 +1249,7 @@ const LogsTable = ({
                       scope="col"
                       className="w-[15%] md:w-[20%] px-6 py-3 text-slate-900"
                     >
-                      <div className="flex items-center ">
+                      <div className="flex items-center ml-4">
                         TIME
                         <button onClick={(e) => handleInputChange(e, "time")}>
                           <svg
@@ -1345,7 +1420,7 @@ const LogsTable = ({
                                   {formatTime(item.time.toFixed(2))}
                                 </span>
                               ) : (
-                                <span className="font-bold text-red-500">
+                                <span className="ml-4 font-bold text-red-500">
                                   {formatTime(item.time.toFixed(2))}
                                 </span>
                               )}
@@ -1362,7 +1437,7 @@ const LogsTable = ({
                               }  #ff0000`}
                             >
                               <td colSpan={7}>
-                                <div className="border border-b-0 border-gray-100  h-13 bg-[#c7cebe]">
+                                <div className="border border-b-0 border-gray-100 h-13 bg-[#c7cebe]">
                                   <div className="flex">
                                     <span className="flex w-1/4 text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
                                       <p className="px-4 pt-1 text-right">
@@ -1373,9 +1448,9 @@ const LogsTable = ({
                                       <div className="flex">
                                         {" "}
                                         {/* Use flex-wrap to wrap the elements */}
-                                        <span className="w-1/3 flex px-4 text-[13px] ">
+                                        <span className="w-1/2 flex text-[13px]">
                                           <p
-                                            className={`pl-3 sm:w-3/5 md:w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1384,7 +1459,7 @@ const LogsTable = ({
                                             CITY :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                            className={`pl-1 pt-2 lg:w-2/3 md:w-2/3 xl:w-2/3 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1395,9 +1470,9 @@ const LogsTable = ({
                                               : ""}{" "}
                                           </p>
                                         </span>
-                                        <span className="w-2/3 flex px-4 text-[13px] ">
+                                        <span className="w-1/2 flex text-[13px] ">
                                           <p
-                                            className={`justify-center w-[45%] text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`xl:w-1/3 lg:w-2/4 md:w-2/4 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1406,7 +1481,7 @@ const LogsTable = ({
                                             STOP REASON :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm  text-gray-500 ${
+                                            className={`xl:w-2/3 lg:w-2/4 md:w-2/4 pl-1 pt-2 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1429,11 +1504,11 @@ const LogsTable = ({
                                           </p>
                                         </span>
                                       </div>
-                                      <div className="flex justify-between">
+                                      <div className="flex justify-start">
                                         {" "}
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                        <span className="flex w-1/2 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
                                           <p
-                                            className={`justify-center pt-2 sm:w-3/5 md:w-[45%] text-right pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`pt-2 xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1442,7 +1517,7 @@ const LogsTable = ({
                                             OPERATOR :
                                           </p>
                                           <p
-                                            className={`justify-around pl-1 pt-2 pb-1 text-sm text-gray-500 overflow-hidden whitespace-nowrap overflow-ellipsis ${
+                                            className={` pl-1 xl:w-2/3 lg:w-2/3 md:w-2/3 pt-2 pb-1 text-sm text-gray-500 overflow-hidden whitespace-nowrap overflow-ellipsis ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1456,9 +1531,9 @@ const LogsTable = ({
                                               : ""}
                                           </p>
                                         </span>
-                                        <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                        <span className="flex w-1/2 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
                                           <p
-                                            className={`justify-around pt-2 pb-1  w-[45%] text-right text-sm text-gray-500 font-semibold ${
+                                            className={`pt-2 pb-1 xl:w-1/3 lg:w-2/4 md:w-2/4 text-right text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1467,7 +1542,7 @@ const LogsTable = ({
                                             MACHINE CLASS :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                            className={`pl-1 xl:w-2/3 lg:w-2/4 md:w-2/4 pt-2 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1482,28 +1557,28 @@ const LogsTable = ({
                                       </div>
                                       <div className="flex">
                                         {" "}
-                                        <span className="flex w-1/3 sm:px-0 sm:pl-1 px-4 text-[13px] ">
+                                        <span className="flex w-1/2 text-[13px] ">
                                           <p
-                                            className={`justify-center pt-2 sm:w-3/5 md:w-[45%] text-right pb-1 text-sm text-gray-900 font-semibold`}
+                                            className={` pt-2 xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pb-1 text-sm text-gray-900 font-semibold`}
                                           >
                                             Average Time :
                                           </p>
                                           <p
-                                            className={`justify-around pl-1 pt-2 pb-1 text-sm text-gray-500`}
+                                            className={` pl-1 xl:w-2/3 lg:w-2/3 md:w-2/3 pt-2 pb-1 text-sm text-gray-500`}
                                           >
                                             {item.time
                                               ? Math.round(item.time)
                                               : 0}
                                           </p>
                                         </span>
-                                        <span className="w-2/3 flex text-[13px] px-4 text-slate-900 ">
+                                        <span className="w-1/2 flex text-[13px] text-slate-900 ">
                                           <p
-                                            className={`justify-center w-[45%] text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
+                                            className={`xl:w-1/3 lg:w-2/4 md:w-2/4 text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
                                           >
                                             Average Weight :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm  text-gray-500`}
+                                            className={`pl-1 xl:w-2/3 lg:w-2/4 md:w-2/4 pt-2 pb-1 text-sm  text-gray-500`}
                                           >
                                             {typeof item?.partId === "object" &&
                                             item?.partId.cageWeightActual

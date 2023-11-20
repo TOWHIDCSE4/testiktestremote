@@ -314,8 +314,12 @@ const Details = ({
           <Combobox.Input
             className={`block mt-2 w-full xl:w-80 2xl:w-[350px] ipadair:w-[250px] rounded-md border-0 py-1.5 pl-3 dark:bg-gray-300 bg-zinc-100 pr-10 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-xl sm:xl:leading-7 disabled:opacity-50 disabled:cursor-not-allowed`}
             onChange={(event) => setOperatorQuery(event.target.value)}
-            displayValue={(selected: { id: string; name: string }) => {
-              return selected ? selected.name : ""
+            displayValue={(
+              selected: { id: string; name: string } | undefined
+            ) => {
+              return selected && selected.id && selected.name
+                ? `${selected.name}`
+                : "Please select operator"
             }}
           />
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
