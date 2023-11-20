@@ -11,9 +11,13 @@ type T_DBReturn = Omit<T_BackendResponse, "items"> & {
 export async function getMachinesByMachineClassLocation({
   locationId,
   machineClassId,
+  startDateRange,
+  endDateRange,
 }: {
   locationId: string[] | string | undefined
   machineClassId: string[] | string | undefined
+  startDateRange: string | undefined
+  endDateRange: string | undefined
 }) {
   const token = Cookies.get("tfl")
   //@ts-expect-error
@@ -27,7 +31,7 @@ export async function getMachinesByMachineClassLocation({
   }).toString()
 
   const res = await fetch(
-    `${API_URL_MACHINE}/location-machine-class?${locationIdQueryString}&${machineClassIdQueryString}`,
+    `${API_URL_MACHINE}/location-machine-class?${locationIdQueryString}&${machineClassIdQueryString}&startDate=${startDateRange}&endDate=${endDateRange}`,
     {
       method: "GET",
       headers: {
@@ -47,16 +51,24 @@ function useGetMachinesByMachineClassLocation() {
   const [selectedLocationId, setSelectedLocationId] = useState<
     string[] | string
   >()
+  const [startDateRangeForMachine, setStartDateRangeForMachine] =
+    useState<string>("")
+  const [endDateRangeForMachine, setEndDateRangeForMachine] =
+    useState<string>("")
   const query = useQuery(
     [
       "machines-machine-class-location",
       selectedLocationId,
       selectedMachineClassId,
+      startDateRangeForMachine,
+      endDateRangeForMachine,
     ],
     () =>
       getMachinesByMachineClassLocation({
         locationId: selectedLocationId,
         machineClassId: selectedMachineClassId,
+        startDateRange: startDateRangeForMachine,
+        endDateRange: endDateRangeForMachine,
       }),
     {
       staleTime: THREE_MINUTES,
@@ -72,8 +84,19 @@ function useGetMachinesByMachineClassLocation() {
     ) {
       query.refetch()
     }
-  }, [selectedMachineClassId, selectedLocationId])
+  }, [
+    selectedMachineClassId,
+    selectedLocationId,
+    startDateRangeForMachine,
+    endDateRangeForMachine,
+  ])
 
-  return { ...query, setSelectedMachineClassId, setSelectedLocationId }
+  return {
+    ...query,
+    setSelectedMachineClassId,
+    setSelectedLocationId,
+    setStartDateRangeForMachine,
+    setEndDateRangeForMachine,
+  }
 }
 export default useGetMachinesByMachineClassLocation

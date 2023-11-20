@@ -76,6 +76,8 @@ const LogsTable = ({
   const [process, setProcess] = useState<boolean>(false)
   const [machineClass, setMachineClass] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<Date[] | string[]>([])
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   // const [city, setCity] = useState<string[]>(locationId)
@@ -138,14 +140,20 @@ const LogsTable = ({
 
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
 
-  const { data: machineClasses, isLoading: isMachineClassesLoading } =
-    useMachineClasses(city)
+  const {
+    data: machineClasses,
+    setStartDateForMachineClass,
+    setEndDateForMachineClass,
+    isLoading: isMachineClassesLoading,
+  } = useMachineClasses(city)
 
   const {
     data: machines,
     isLoading: isMachinesLoading,
     setSelectedMachineClassId,
     setSelectedLocationId,
+    setEndDateRangeForMachine,
+    setStartDateRangeForMachine,
   } = useGetMachinesByMachineClassLocation()
 
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -215,7 +223,7 @@ const LogsTable = ({
 
     const fetchData = async () => {
       const res = await fetch(
-        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&search=${search}`,
+        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&search=${search}&startDate=${startDate}&endDate=${endDate}`,
         {
           method: "GET",
           headers: {
@@ -230,7 +238,7 @@ const LogsTable = ({
     }
 
     fetchData()
-  }, [city, machineClass])
+  }, [city, machineClass, startDate, endDate, isCheckboxChecked])
 
   const disabledDate = (current: any) => {
     const today = moment()
@@ -332,6 +340,12 @@ const LogsTable = ({
       datePick([currentDate, currentDate])
     } else {
       setDateRange([])
+      setStartDate("")
+      setEndDate("")
+      setStartDateRangeForMachine("")
+      setEndDateRangeForMachine("")
+      setStartDateForMachineClass("")
+      setEndDateForMachineClass("")
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -349,6 +363,12 @@ const LogsTable = ({
     } else {
       setIsCheckboxChecked(false)
       setDateRange([])
+      setStartDate("")
+      setEndDate("")
+      setStartDateForMachineClass("")
+      setEndDateForMachineClass("")
+      setStartDateRangeForMachine("")
+      setEndDateRangeForMachine("")
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -364,6 +384,30 @@ const LogsTable = ({
         setDateRange(inputValue)
       }
       if (isCheckboxChecked) {
+        setStartDate(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDate(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateForMachineClass(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateForMachineClass(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRangeForMachine(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRangeForMachine(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
         setStartDateRange(
           dayjs(inputValue[0])
             .startOf("day")
@@ -381,6 +425,30 @@ const LogsTable = ({
           dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
         )
       } else if (inputValue && inputValue[0] && inputValue[1]) {
+        setStartDate(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDate(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateForMachineClass(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateForMachineClass(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRangeForMachine(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRangeForMachine(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
         setStartDateRange(
           dayjs(inputValue[0])
             .startOf("day")
@@ -400,6 +468,10 @@ const LogsTable = ({
       }
     } else {
       setDateRange([])
+      setStartDate("")
+      setEndDate("")
+      setStartDateRangeForMachine("")
+      setEndDateRangeForMachine("")
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -1067,7 +1139,10 @@ const LogsTable = ({
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
-                    <th scope="col" className="w-[10%] pl-12 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[10%] lg:pl-10 xl:pl-12 text-slate-900"
+                    >
                       <input
                         id={`checkbox-table-search`}
                         type="checkbox"
@@ -1174,7 +1249,7 @@ const LogsTable = ({
                       scope="col"
                       className="w-[15%] md:w-[20%] px-6 py-3 text-slate-900"
                     >
-                      <div className="flex items-center ">
+                      <div className="flex items-center ml-4">
                         TIME
                         <button onClick={(e) => handleInputChange(e, "time")}>
                           <svg
@@ -1345,7 +1420,7 @@ const LogsTable = ({
                                   {formatTime(item.time.toFixed(2))}
                                 </span>
                               ) : (
-                                <span className="font-bold text-red-500">
+                                <span className="ml-4 font-bold text-red-500">
                                   {formatTime(item.time.toFixed(2))}
                                 </span>
                               )}
