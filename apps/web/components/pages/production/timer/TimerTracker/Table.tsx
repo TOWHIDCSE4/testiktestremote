@@ -10,6 +10,7 @@ import * as utc from "dayjs/plugin/utc"
 import Footer from "./Footer"
 import { usePathname } from "next/navigation"
 import { Dispatch, useEffect } from "react"
+import moment from "moment"
 
 const Table = ({
   timerId,
@@ -39,6 +40,7 @@ const Table = ({
     countPerPage: 5,
   })
   const { data } = useGetAllTimerLogs({ timerId, locationId })
+  const today = moment()
 
   const pathName = usePathname()
   const path = pathName.substring(0, 25)
@@ -48,6 +50,26 @@ const Table = ({
       setDailyUnits(data?.itemCount || 0)
     }
   }, [data])
+
+  function formatTime(seconds: string) {
+    const duration = moment.duration(seconds, "seconds")
+    const minutes = duration.minutes()
+    const remainingSeconds = duration.seconds()
+
+    let result = ""
+
+    if (minutes > 0) {
+      result += `${minutes} min`
+    }
+
+    if (remainingSeconds > 0) {
+      if (result !== "") {
+        result += ", "
+      }
+      result += `${remainingSeconds} sec`
+    }
+    return result
+  }
 
   return (
     <>
@@ -262,11 +284,11 @@ const Table = ({
                           item.jobId ? "text-green-500" : "text-red-500"
                         }`}
                       >
-                        {item.time.toFixed(2)}s
+                        {formatTime(item.time.toFixed(2))}
                       </span>
                     ) : (
                       <span className="font-bold text-red-500">
-                        {item.time.toFixed(2)}s
+                        {formatTime(item.time.toFixed(2))}
                       </span>
                     )}
                   </td>
