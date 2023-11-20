@@ -94,8 +94,6 @@ const TimerTracker = ({
                 <label htmlFor="tabs" className="sr-only">
                   Select a tab
                 </label>
-                /* Use an "onChange" listener to redirect the user to the
-                selected tab URL.
                 <select
                   id="tabs"
                   name="tabs"

@@ -1,32 +1,25 @@
 import { Fragment, useEffect, useRef, useState, useMemo } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import useFactories from "../../../../../hooks/factories/useFactories"
 import {
   T_BackendResponse,
-  T_Factory,
   T_Machine,
   T_MachineClass,
   T_Part,
   T_Timer,
 } from "custom-validator"
-import useFactoryMachineClasses from "../../../../../hooks/factories/useFactoryMachineClasses"
 import { useForm } from "react-hook-form"
-import useGetMachinesByMachineClassLocation from "../../../../../hooks/machines/useGetMachineByMachineClassLocation"
 import useGetPartByMachineClassLocation from "../../../../../hooks/parts/useGetPartByMachineClassLocation"
 import usePart from "../../../../../hooks/parts/useGetPart"
 import toast from "react-hot-toast"
 import useAddTimer from "../../../../../hooks/timers/useAddTimer"
 import useProfile from "../../../../../hooks/users/useProfile"
 import { useQueryClient } from "@tanstack/react-query"
-import {
-  CheckIcon,
-  ChevronUpDownIcon,
-  FaceSmileIcon,
-} from "@heroicons/react/20/solid"
+import { ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
 import useTimersByLocation from "../../../../../hooks/timers/useTimersByLocation"
 import { Bebas_Neue } from "next/font/google"
+import usePaginatedMachines from "../../../../../hooks/machines/usePaginatedMachines"
 const bebas_neueu = Bebas_Neue({ weight: "400", subsets: ["latin"] })
 
 interface NewModalProps {
@@ -44,22 +37,28 @@ const NewModal = ({
 }: NewModalProps) => {
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
-  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const [machineClassSelected, setMachineClassSelected] = useState<
+    string | null
+  >(null)
   const [selectedMachine, setSelectedMachine] = useState<T_Machine | null>(null)
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
   const [machineQuery, setMachineQuery] = useState("")
   const [partQuery, setPartQuery] = useState("")
   const [selectedPart, setSelectedPart] = useState({
     id: "",
     name: "",
   })
+
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses()
+
   const {
     data: machines,
     isLoading: isMachinesLoading,
-    setSelectedMachineClassId: setSelectedMachineMachineClassId,
-    setSelectedLocationId: setSelectedMachineLocationId,
-  } = useGetMachinesByMachineClassLocation()
+    setLocationId: setSelectedMachineLocationId,
+    setMachineClassId: setSelectedMachineMachineClassId,
+  } = usePaginatedMachines()
+
   const {
     data: parts,
     isLoading: isPartsLoading,
@@ -72,13 +71,14 @@ const NewModal = ({
     selectedPart.id
   )
 
-  const { register, handleSubmit, reset, setValue } = useForm<T_Timer>()
+  const { handleSubmit, reset, setValue } = useForm<T_Timer>()
   const { mutate, isLoading: isMutateLoading } = useAddTimer()
   const {
     data: timersByLocation,
     isLoading: isTimersByLocationLoading,
     setLocationId: setTimersLocationId,
   } = useTimersByLocation()
+
   const setSelectedLocationId = (locationId: string) => {
     setSelectedMachineLocationId(locationId)
     setSelectedPartLocationId(locationId)
@@ -237,6 +237,7 @@ const NewModal = ({
                         defaultValue="Select Machine Class"
                         onChange={(e) => {
                           setSelectedMachineClassId(e.target.value)
+                          setMachineClassSelected(e.target.value)
                           setMachineQuery("")
                           setPartQuery("")
                           setSelectedPart({
@@ -280,7 +281,9 @@ const NewModal = ({
                             setPartQuery("")
                           }}
                           disabled={
-                            isMutateLoading || filteredMachines?.length === 0
+                            isMutateLoading ||
+                            filteredMachines?.length === 0 ||
+                            machineClassSelected === null
                           }
                         >
                           <div className="relative w-full">
