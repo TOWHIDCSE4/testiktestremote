@@ -2,7 +2,7 @@
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useEffect, useMemo, useState } from "react"
 import { T_BackendResponse, T_Location, T_UserRole } from "custom-validator"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
@@ -657,10 +657,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       }
     }
 
-    // Attach the event listener when the component mounts
     document.addEventListener("click", handleGlobalClick)
 
-    // Remove the event listener when the component unmounts
     return () => {
       document.removeEventListener("click", handleGlobalClick)
     }
@@ -679,6 +677,63 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       document.removeEventListener("click", handleGlobalClickTwo)
     }
   }, [isOpen])
+
+  const handleFactoryClose = useMemo(
+    () => (event: Event) => {
+      const dropdown = document.getElementById("dropdownFactory")
+
+      if (dropdown && !dropdown.contains(event.target as Node)) {
+        setIsOpenFactory(undefined)
+      }
+    },
+    [isOpenFactory]
+  )
+
+  useEffect(() => {
+    document.addEventListener("click", handleFactoryClose)
+
+    return () => {
+      document.removeEventListener("click", handleFactoryClose)
+    }
+  }, [handleFactoryClose, isOpenFactory])
+
+  const handleLocationClose = useMemo(
+    () => (event: Event) => {
+      const dropdown = document.getElementById("dropdownFactory")
+
+      if (dropdown && !dropdown.contains(event.target as Node)) {
+        setIsOpenLocation(undefined)
+      }
+    },
+    [isOpenLocation]
+  )
+
+  useEffect(() => {
+    document.addEventListener("click", handleLocationClose)
+
+    return () => {
+      document.removeEventListener("click", handleLocationClose)
+    }
+  }, [handleLocationClose, isOpenLocation])
+
+  const handleRoleClose = useMemo(
+    () => (event: Event) => {
+      const dropdown = document.getElementById("dropdownFactory")
+
+      if (dropdown && !dropdown.contains(event.target as Node)) {
+        setIsOpenRole(undefined)
+      }
+    },
+    [isOpenRole]
+  )
+
+  useEffect(() => {
+    document.addEventListener("click", handleRoleClose)
+
+    return () => {
+      document.removeEventListener("click", handleRoleClose)
+    }
+  }, [handleRoleClose, isOpenRole])
 
   return (
     <>
