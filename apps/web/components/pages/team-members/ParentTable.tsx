@@ -3048,7 +3048,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       type="checkbox"
                                       style={{ marginLeft: "3px" }}
                                       checked={
-                                        item.role === "Accounting_HR" || false
+                                        item.role === "Accounting_HR" ||
+                                        item.role === "Sales_HR" ||
+                                        item.role === "Corporate_HR" ||
+                                        false
                                       }
                                       disabled={
                                         isLocationsLoading ||
@@ -3248,55 +3251,57 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             ADDITIONAL INFO
                                           </p>
                                         </span>
-                                        <div className="flex py-2">
-                                          <span className="flex w-[15rem] space-x-1 text-[13px] justify-center items-center">
-                                            <p
-                                              className={`px-1 text-sm text-gray-500 font-semibold ${
-                                                item.email
-                                                  ? "text-gray-900"
-                                                  : "text-red-500"
-                                              }`}
-                                            >
-                                              EMAIL:
-                                            </p>
-                                            <p
-                                              className={`text-sm text-gray-500 ${
-                                                item.email
-                                                  ? "text-gray-900"
-                                                  : "text-red-500"
-                                              }`}
-                                            >
-                                              {item.email || "-"}
-                                            </p>
-                                          </span>
-                                          <span className="flex w-[20rem] space-x-1 text-[13px] text-slate-900 justify-center items-center">
-                                            <p
-                                              className={` text-sm text-gray-500 font-semibold ${
-                                                item.createdAt &&
-                                                item.createdAt instanceof Date
-                                                  ? "text-gray-900"
-                                                  : "text-gray-900"
-                                              }`}
-                                            >
-                                              CREATED AT:
-                                            </p>
-                                            <p
-                                              className={`text-sm text-gray-500 ${
-                                                item.createdAt &&
-                                                item.createdAt instanceof Date
-                                                  ? "text-gray-900"
-                                                  : "text-gray-900"
-                                              }`}
-                                            >
-                                              {item.createdAt instanceof Date
-                                                ? item.createdAt.toLocaleString()
-                                                : item.createdAt
-                                                ? new Date(
-                                                    item.createdAt
-                                                  ).toLocaleString()
-                                                : "No valid date provided"}
-                                            </p>
-                                          </span>
+                                        <div className="w-full">
+                                          <div className="flex mt-2">
+                                            <span className="w-1/2 flex px-4 text-[13px] ">
+                                              <p
+                                                className={`pl-3 sm:w-3/5 md:w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                                  item.email
+                                                    ? "text-gray-900"
+                                                    : "text-red-500"
+                                                }`}
+                                              >
+                                                EMAIL:
+                                              </p>
+                                              <p
+                                                className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                                  item.email
+                                                    ? "text-gray-900"
+                                                    : "text-red-500"
+                                                }`}
+                                              >
+                                                {item.email || "-"}
+                                              </p>
+                                            </span>
+                                            <span className="flex w-2/4 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap  ">
+                                              <p
+                                                className={`pt-2 pb-1 w-[45%] text-right text-sm text-gray-500 font-semibold ${
+                                                  item.createdAt &&
+                                                  item.createdAt instanceof Date
+                                                    ? "text-gray-900"
+                                                    : "text-gray-900"
+                                                }`}
+                                              >
+                                                CREATED AT:
+                                              </p>
+                                              <p
+                                                className={`pl-3 pt-2 pb-1 text-sm  text-gray-500 ${
+                                                  item.createdAt &&
+                                                  item.createdAt instanceof Date
+                                                    ? "text-gray-900"
+                                                    : "text-gray-900"
+                                                }`}
+                                              >
+                                                {item.createdAt instanceof Date
+                                                  ? item.createdAt.toLocaleString()
+                                                  : item.createdAt
+                                                  ? new Date(
+                                                      item.createdAt
+                                                    ).toLocaleString()
+                                                  : "No valid date provided"}
+                                              </p>
+                                            </span>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
@@ -4342,7 +4347,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                 !alertPrompt
                   ? "transition duration-500 ease-out"
                   : "transition duration-500 ease-linear"
-              } absolute w-[40%] md:-bottom-[15rem] lg:-bottom-0 bottom-0 md:-right-0 lg:-right-[4rem] shadow-md`}
+              } absolute w-[40%] md:w-[40%] lg:w-[40%] md:-bottom-[15rem] lg:bottom-[25rem] bottom-0 md:-right-0 lg:-right-[0rem] shadow-md`}
               message="Missing Information"
               description={`${errorMsg} not selected. Please select a ${errorMsg} to proceed.`}
               type="error"
