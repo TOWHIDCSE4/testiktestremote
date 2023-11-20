@@ -238,6 +238,11 @@ const NewModal = ({
                         onChange={(e) => {
                           setSelectedMachineClassId(e.target.value)
                           setMachineQuery("")
+                          setPartQuery("")
+                          setSelectedPart({
+                            id: "",
+                            name: "",
+                          })
                         }}
                       >
                         <option value="">Select Machine Class</option>
