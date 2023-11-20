@@ -84,9 +84,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
           | "Accounting"
           | "Sales"
           | "Super"
-          | "Accounting_HR"
-          | "Sales_HR"
-          | "Corporate_HR"
+          | "Accounting_Director"
+          | "Sales_Director"
+          | "Corporate_Director"
         email: string
         token: string | null
       } & {
@@ -101,9 +101,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
             | "Accounting"
             | "Sales"
             | "Super"
-            | "Accounting_HR"
-            | "Sales_HR"
-            | "Corporate_HR"
+            | "Accounting_Director"
+            | "Sales_Director"
+            | "Corporate_Director"
           email: string
           token: string | null
         }) => void
@@ -427,30 +427,30 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     if (item.role === "Accounting") {
       updatedItem = {
         ...item,
-        role: "Accounting_HR" as T_UserRole,
+        role: "Accounting_Director" as T_UserRole,
       }
     } else if (item.role === "Sales") {
       updatedItem = {
         ...item,
-        role: "Sales_HR" as T_UserRole,
+        role: "Sales_Director" as T_UserRole,
       }
     } else if (item.role === "Corporate") {
       updatedItem = {
         ...item,
-        role: "Corporate_HR" as T_UserRole,
+        role: "Corporate_Director" as T_UserRole,
       }
     } else {
-      if (item.role === "Accounting_HR") {
+      if (item.role === "Accounting_Director") {
         updatedItem = {
           ...item,
           role: "Accounting" as T_UserRole,
         }
-      } else if (item.role === "Sales_HR") {
+      } else if (item.role === "Sales_Director") {
         updatedItem = {
           ...item,
           role: "Sales" as T_UserRole,
         }
-      } else if (item.role === "Corporate_HR") {
+      } else if (item.role === "Corporate_Director") {
         updatedItem = {
           ...item,
           role: "Corporate" as T_UserRole,
@@ -3026,7 +3026,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       disabled={
                                         isLocationsLoading ||
                                         isUpdateUserLoading ||
-                                        isPaginatedLoading
+                                        isPaginatedLoading ||
+                                        selectedStatus === "Pending" ||
+                                        selectedStatus === "Rejected" ||
+                                        selectedStatus === "Archived"
                                       }
                                       onChange={() =>
                                         handleDirectorCheck(idx, item)
@@ -3048,15 +3051,18 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                       type="checkbox"
                                       style={{ marginLeft: "3px" }}
                                       checked={
-                                        item.role === "Accounting_HR" ||
-                                        item.role === "Sales_HR" ||
-                                        item.role === "Corporate_HR" ||
+                                        item.role === "Accounting_Director" ||
+                                        item.role === "Sales_Director" ||
+                                        item.role === "Corporate_Director" ||
                                         false
                                       }
                                       disabled={
                                         isLocationsLoading ||
                                         isUpdateUserLoading ||
-                                        isPaginatedLoading
+                                        isPaginatedLoading ||
+                                        selectedStatus === "Pending" ||
+                                        selectedStatus === "Rejected" ||
+                                        selectedStatus === "Archived"
                                       }
                                       onChange={() =>
                                         handleAccDirectorCheck(idx, item)

@@ -32,9 +32,9 @@ export const paginated = async (req: Request, res: Response) => {
                 "Accounting",
                 "Sales",
                 "Corporate",
-                "Accounting_HR",
-                "Sales_HR",
-                "Corporate_HR",
+                "Accounting_Director",
+                "Sales_Director",
+                "Corporate_Director",
               ],
             },
           })
