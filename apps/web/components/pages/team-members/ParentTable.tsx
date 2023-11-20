@@ -587,10 +587,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const handleMachineClassSelection = (event: any) => {
     const selectedMachineClass = event.target.value
-    console.log(
-      "🚀 ~ file: ParentTable.tsx:588 ~ handleMachineClassSelection ~  event.target.value:",
-      event.target.value
-    )
     setSelectedMachineClasses(selectedMachineClass)
     const updatedMachineClassIds: any = []
 
