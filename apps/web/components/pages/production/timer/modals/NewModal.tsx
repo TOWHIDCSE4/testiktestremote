@@ -145,6 +145,15 @@ const NewModal = ({
     })
   }, [machines, timersByLocation])
 
+  console.log(
+    "🚀 ~ file: NewModal.tsx:149 ~ filteredMachinesByTimerExist:",
+    filteredMachinesByTimerExist
+  )
+  console.log(
+    "🚀 ~ file: NewModal.tsx:139 ~ returnmachines?.items?.filter ~ timersByLocation:",
+    timersByLocation
+  )
+
   const filteredMachines =
     machineQuery === ""
       ? filteredMachinesByTimerExist?.slice(0, 30) || []
@@ -178,6 +187,12 @@ const NewModal = ({
     }
   }, [selectedMachine])
 
+  console.log("🚀 ~ file: NewModal.tsx:182 ~ machines:", machines)
+
+  console.log(
+    "🚀 ~ file: NewModal.tsx:183 ~ filteredMachines:",
+    filteredMachines
+  )
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog

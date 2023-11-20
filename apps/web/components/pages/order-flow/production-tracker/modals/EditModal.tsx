@@ -163,7 +163,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         {...register("name", { required: true })}
                         className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         required
-                        disabled={jobIsLoading}
+                        disabled
                       />
                     </div>
                     <div className="md:flex items-center mt-3">
@@ -181,11 +181,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         id="machineClass"
                         required
                         className={`block mt-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
-                        disabled={
-                          isMachineClassesLoading ||
-                          isMutateLoading ||
-                          jobIsLoading
-                        }
+                        disabled
                         {...register("machineClassId", { required: true })}
                         onChange={(e) => {
                           {
@@ -228,12 +224,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                           as="div"
                           value={selectedPart}
                           onChange={setSelectedPart}
-                          disabled={
-                            isPartsLoading ||
-                            jobIsLoading ||
-                            isMutateLoading ||
-                            parts?.items?.length === 0
-                          }
+                          disabled
                         >
                           <div className="relative w-full">
                             <Combobox.Input
@@ -274,6 +265,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                                         name: item.name,
                                         factoryId: item.factoryId,
                                       }}
+                                      disabled
                                       className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
                                     >
                                       <span className="block">{item.name}</span>
@@ -327,13 +319,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                         } py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                         defaultValue="No"
                         required
-                        disabled={
-                          jobData
-                            ? jobData.item.isStock
-                              ? true
-                              : false
-                            : jobIsLoading
-                        }
+                        disabled
                       >
                         <option value="false">No</option>
                         <option value="true">Yes</option>
@@ -359,7 +345,7 @@ const EditModal = ({ isOpen, currentTab, onClose, jobId }: EditModalProps) => {
                             id="drawingNumber"
                             className="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70"
                             required
-                            disabled={jobIsLoading}
+                            disabled
                           />
                         </div>
                         <div className="md:flex items-center mt-3">

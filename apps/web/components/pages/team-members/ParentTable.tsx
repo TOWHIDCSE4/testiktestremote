@@ -2,7 +2,7 @@
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
-import { Fragment, useEffect, useMemo, useState } from "react"
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react"
 import { T_BackendResponse, T_Location, T_UserRole } from "custom-validator"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
@@ -678,15 +678,15 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }, [isOpen])
 
-  const handleFactoryClose = useMemo(
-    () => (event: Event) => {
+  const handleFactoryClose = useCallback(
+    (event: Event) => {
       const dropdown = document.getElementById("dropdownFactory")
 
       if (dropdown && !dropdown.contains(event.target as Node)) {
         setIsOpenFactory(undefined)
       }
     },
-    [isOpenFactory]
+    [setIsOpenFactory]
   )
 
   useEffect(() => {
@@ -697,15 +697,15 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }, [handleFactoryClose, isOpenFactory])
 
-  const handleLocationClose = useMemo(
-    () => (event: Event) => {
+  const handleLocationClose = useCallback(
+    (event: Event) => {
       const dropdown = document.getElementById("dropdownFactory")
 
       if (dropdown && !dropdown.contains(event.target as Node)) {
         setIsOpenLocation(undefined)
       }
     },
-    [isOpenLocation]
+    [setIsOpenLocation]
   )
 
   useEffect(() => {
@@ -716,15 +716,15 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }, [handleLocationClose, isOpenLocation])
 
-  const handleRoleClose = useMemo(
-    () => (event: Event) => {
+  const handleRoleClose = useCallback(
+    (event: Event) => {
       const dropdown = document.getElementById("dropdownFactory")
 
       if (dropdown && !dropdown.contains(event.target as Node)) {
         setIsOpenRole(undefined)
       }
     },
-    [isOpenRole]
+    [setIsOpenRole]
   )
 
   useEffect(() => {
