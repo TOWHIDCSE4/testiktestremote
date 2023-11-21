@@ -10,6 +10,7 @@ import * as utc from "dayjs/plugin/utc"
 import Footer from "./Footer"
 import { usePathname } from "next/navigation"
 import { Dispatch, useEffect } from "react"
+import { Button, Tooltip } from "antd"
 import moment from "moment"
 
 const Table = ({
@@ -237,11 +238,22 @@ const Table = ({
                     </span>
                   </td>
                   <td
-                    className={`px-3 py-4 text-sm text-gray-500 ${
+                    className={`px-3 py-4 text-sm text-gray-500 whitespace-nowrap overflow-hidden overflow-ellipsis ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
-                    {typeof item.partId === "object" ? item.partId.name : ""}
+                    <Tooltip
+                      title={
+                        <span style={{ padding: "0px 0.3em" }}>
+                          {typeof item.partId === "object"
+                            ? item.partId.name
+                            : ""}
+                        </span>
+                      }
+                      trigger="hover"
+                    >
+                      {typeof item.partId === "object" ? item.partId.name : ""}
+                    </Tooltip>
                   </td>
                   <td
                     className={`px-3 py-4 text-sm text-gray-500 ${
@@ -299,7 +311,7 @@ const Table = ({
                   >
                     {item.stopReason.join(", ")}
                   </td>
-                  <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
+                  <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8 border-b-[1px]">
                     <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
                   </td>
                 </tr>
@@ -430,6 +442,11 @@ const Table = ({
                     index === 3 ? "" : "border-b-2"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
+                <td
+                  className={`py-10 px-8 ${
+                    index === 3 ? "" : "border-b-2"
+                  } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
+                ></td>
               </tr>
             ))}
           </div>
@@ -487,6 +504,11 @@ const Table = ({
                 <td
                   className={`py-10 px-8 ${
                     index === 2 ? "" : "border-b-2"
+                  } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
+                ></td>
+                <td
+                  className={`py-10 px-8 ${
+                    index === 3 ? "" : "border-b-2"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
               </tr>
@@ -548,6 +570,11 @@ const Table = ({
                     index === 1 ? "" : "border-b-2"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
+                <td
+                  className={`py-10 px-8 ${
+                    index === 3 ? "" : "border-b-2 border-t-2"
+                  } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
+                ></td>
               </tr>
             ))}
           </div>
@@ -605,6 +632,11 @@ const Table = ({
                 <td
                   className={`py-10 px-8 ${
                     index === 0 ? "" : "border-b-2"
+                  } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
+                ></td>
+                <td
+                  className={`py-10 px-8 ${
+                    index === 3 ? "" : "border-b-2 border-t-2"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
               </tr>

@@ -261,7 +261,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     }
   }, [alertPrompt])
 
-  const numberOfPages = Math.ceil((paginated?.itemCount as number) / 5)
+  const numberOfPages = Math.ceil((paginated?.itemCount as number) / 7)
   const ARR_USER_ROLES = [
     ...(storeSession?.role === "Super" ? [USER_ROLES.Administrator] : []),
     USER_ROLES.Production,
