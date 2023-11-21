@@ -89,6 +89,10 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
     }
   }, [machineClasses])
 
+  useEffect(() => {
+    setSelectedValue("client")
+  }, [currentTab])
+
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOption = e.currentTarget.value
     setSelectedValue(selectedOption)
