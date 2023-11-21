@@ -17,6 +17,7 @@ import DeleteModal from "./modals/DeleteModal"
 import Image from "next/image"
 import combineClasses from "../../../../helpers/combineClasses"
 import TabTableDetail from "./TabTable-detail"
+import useProfile from "../../../../hooks/users/useProfile"
 
 const TabTable = ({
   tab,
@@ -48,6 +49,7 @@ const TabTable = ({
   } = usePaginatedJobs()
 
   const [editModal, setEditModal] = useState(false)
+  const { data: userProfile } = useProfile()
   const [selectedJob, setSelectedJob] = useState<T_Job[]>([])
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [jobId, setJobId] = useState("")
@@ -372,7 +374,11 @@ const TabTable = ({
                                       </span>
                                     )}
                                   </Menu.Item>
-                                  <Menu.Item>
+                                  <Menu.Item
+                                    disabled={
+                                      userProfile?.item.role === "Personnel"
+                                    }
+                                  >
                                     {({ active }) => (
                                       <span
                                         className={combineClasses(
@@ -431,27 +437,6 @@ const TabTable = ({
                                   )}
                                 </Menu.Item>
                               )}
-                              {/* 
-                              {currentTab === "Deleted" && (
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <span
-                                      className={combineClasses(
-                                        active
-                                          ? "bg-gray-100 text-gray-900"
-                                          : "text-gray-700",
-                                        "block px-4 py-2 text-sm cursor-pointer text-left"
-                                      )}
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        // Add your logic for Restore here
-                                      }}
-                                    >
-                                      Restore
-                                    </span>
-                                  )}
-                                </Menu.Item>
-                              )} */}
                             </div>
                           </Menu.Items>
                         </Transition>
