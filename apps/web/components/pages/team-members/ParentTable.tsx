@@ -1288,13 +1288,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 </svg>
                               </button>
                             </div>
-                            {/* <span className="ml-2 flex-none rounded text-gray-400">
-                    <ChevronUpDownIcon
-                    className="h-5 w-5"
-                    aria-hidden="true"
-                    />
-                  </span>
-                  </a> */}
                           </th>
                           {selectedRole === "Personnel" ? (
                             <th colSpan={2}>
@@ -1315,14 +1308,6 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   </button>
                                 </div>
                               </div>
-
-                              {/* <span className="ml-2 flex-none rounded text-gray-400">
-                    <ChevronUpDownIcon
-                      className="h-5 w-5"
-                      aria-hidden="true"
-                    />
-                  </span>
-                  </a> */}
                             </th>
                           ) : (
                             <th colSpan={2} className="">
@@ -2537,8 +2522,22 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       </th>
                     ) : (
                       <th colSpan={1} className="">
-                        <div className="flex items-start justify-start px-0 py-3 ml-11">
-                          <div className="flex items-center ml-12">
+                        <div
+                          className={`flex items-start justify-start px-0 py-3  ${
+                            selectedRole === "Corporate" ||
+                            selectedRole === "HR"
+                              ? "ml-3"
+                              : "ml-6"
+                          }`}
+                        >
+                          <div
+                            className={`flex items-center  ${
+                              selectedRole === "Corporate" ||
+                              selectedRole === "HR"
+                                ? "ml-9"
+                                : "ml-12"
+                            }`}
+                          >
                             Department
                             <p className="text-red-600 ml-1">*</p>
                             <button onClick={(e) => {}}>
@@ -2804,7 +2803,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <button
                                     id="dropdownFactoryButton"
                                     data-dropdown-toggle="dropdown"
-                                    className="w-56 rounded-md whitespace-nowrap  text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-56 rounded-md whitespace-nowrap text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
                                     type="button"
                                     disabled={
                                       isLocationsLoading ||
@@ -2901,7 +2900,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <button
                                     id="dropdownFactoryButton"
                                     data-dropdown-toggle="dropdown"
-                                    className="w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14w-56 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed pl-14"
+                                    className={`w-56 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  ${
+                                      selectedRole === "Corporate" ||
+                                      selectedRole === "HR"
+                                        ? "pl-3"
+                                        : "pl-9"
+                                    }`}
                                     type="button"
                                     disabled={
                                       isLocationsLoading ||
