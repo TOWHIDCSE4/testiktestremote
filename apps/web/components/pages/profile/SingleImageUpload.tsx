@@ -12,7 +12,6 @@ const SingleImageUpload = ({
   setFile: Dispatch<(FileWithPath & { preview: string }) | null>
   isLoading: boolean
 }) => {
-  
   const { getRootProps, getInputProps, isFocused } = useDropzone({
     maxFiles: 1,
     accept: {
