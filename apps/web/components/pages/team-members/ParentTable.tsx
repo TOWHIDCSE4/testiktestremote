@@ -180,11 +180,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   const toggleAccordion = (id: string) => {
-    if (openAccordion === id) {
-      setOpenAccordion(null)
-    } else {
-      setOpenAccordion(id)
-    }
+    setOpenAccordion((prev) => (prev === id ? null : id))
   }
 
   useEffect(() => {
@@ -1584,9 +1580,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       paginated?.items.map((item, idx) => {
                         const rowClass =
                           idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
-                        const isAccordionOpen =
-                          openAccordion === `accordion-arrow-icon-body-${idx}`
-                        const checked = isChecked(item._id ?? "")
+                        const isAccordionOpen = openAccordion === item._id
                         return (
                           <React.Fragment key={item._id}>
                             <tr
@@ -1601,9 +1595,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
                                   aria-controls={`accordion-arrow-icon-body-${idx}`}
                                   onClick={() =>
-                                    toggleAccordion(
-                                      `accordion-arrow-icon-body-${idx}`
-                                    )
+                                    toggleAccordion(String(item._id))
                                   }
                                   aria-expanded={isAccordionOpen}
                                   className={`flex items-center ${
@@ -2566,9 +2558,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                       paginated?.items.map((item, idx) => {
                         const rowClass =
                           idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
-                        const isAccordionOpen =
-                          openAccordion === `accordion-arrow-icon-body-${idx}`
-                        const checked = isChecked(item._id ?? "")
+                        const isAccordionOpen = openAccordion === item._id
                         return (
                           <React.Fragment key={item._id}>
                             <tr
@@ -2583,9 +2573,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
                                   aria-controls={`accordion-arrow-icon-body-${idx}`}
                                   onClick={() =>
-                                    toggleAccordion(
-                                      `accordion-arrow-icon-body-${idx}`
-                                    )
+                                    toggleAccordion(String(item._id))
                                   }
                                   aria-expanded={isAccordionOpen}
                                   className={`flex items-center ${

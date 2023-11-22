@@ -101,11 +101,12 @@ const LogsTable = ({
   const myRef = useRef<NewWindow | null>(null)
 
   const toggleAccordion = (id: string) => {
-    if (openAccordion === id) {
-      setOpenAccordion(null)
-    } else {
-      setOpenAccordion(id)
-    }
+    setOpenAccordion((prev) => (prev === id ? null : id))
+    // if (openAccordion === id) {
+    //   setOpenAccordion(null)
+    // } else {
+    //   setOpenAccordion(id)
+    // }
   }
 
   useEffect(() => {
@@ -1275,8 +1276,7 @@ const LogsTable = ({
                     paginated?.items.map((item, idx) => {
                       const rowClass =
                         idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
-                      const isAccordionOpen =
-                        openAccordion === `accordion-arrow-icon-body-${idx}`
+                      const isAccordionOpen = openAccordion === item._id
                       const checked = isChecked(item._id ?? "")
                       return (
                         <React.Fragment key={item._id}>
@@ -1289,11 +1289,7 @@ const LogsTable = ({
                             data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
                             aria-expanded={isAccordionOpen}
                             aria-controls={`accordion-arrow-icon-body-${idx}`}
-                            onClick={() =>
-                              toggleAccordion(
-                                `accordion-arrow-icon-body-${idx}`
-                              )
-                            }
+                            onClick={() => toggleAccordion(String(item._id))}
                           >
                             <td className="pr-6">
                               <div className="flex items-center">
@@ -1564,7 +1560,7 @@ const LogsTable = ({
                                             Average Time :
                                           </p>
                                           <p
-                                            className={` pl-1 xl:w-2/3 lg:w-2/3 md:w-2/3 pt-2 pb-1 text-sm text-gray-500`}
+                                            className={` pl-1 xl:w-2/3 lg:w-2/3 md:w-2/3 pt-2 pb-1 text-sm text-gray-900`}
                                           >
                                             {item.time
                                               ? Math.round(item.time)
@@ -1578,7 +1574,7 @@ const LogsTable = ({
                                             Average Weight :
                                           </p>
                                           <p
-                                            className={`pl-1 xl:w-2/3 lg:w-2/4 md:w-2/4 pt-2 pb-1 text-sm  text-gray-500`}
+                                            className={`pl-1 xl:w-2/3 lg:w-2/4 md:w-2/4 pt-2 pb-1 text-sm  text-gray-900`}
                                           >
                                             {typeof item?.partId === "object" &&
                                             item?.partId.cageWeightActual

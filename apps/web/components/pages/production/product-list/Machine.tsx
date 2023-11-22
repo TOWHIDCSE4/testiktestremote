@@ -350,14 +350,18 @@ const Machine = ({
                             e: React.MouseEvent<HTMLElement>
                           ) => {
                             e.stopPropagation()
-                            setOpenDetailsModal(true)
+                            if (userProfile?.item.role !== "Personnel") {
+                              setOpenDetailsModal(true)
+                            }
                             setSelectedMachineId(product._id as string)
                           }}
                           setOpenDeleteModal={(
                             e: React.MouseEvent<HTMLElement>
                           ) => {
                             e.stopPropagation()
-                            setOpenDeleteModal(true)
+                            if (userProfile?.item.role !== "Personnel") {
+                              setOpenDeleteModal(true)
+                            }
                             setSelectedMachineId(product._id as string)
                           }}
                         />

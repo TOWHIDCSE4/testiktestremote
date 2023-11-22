@@ -349,14 +349,18 @@ const Part = ({
                             e: React.MouseEvent<HTMLElement>
                           ) => {
                             e.stopPropagation()
-                            setOpenDetailsModal(true)
+                            if (userProfile?.item.role !== "Personnel") {
+                              setOpenDetailsModal(true)
+                            }
                             setSelectedPartId(product._id as string)
                           }}
                           setOpenDeleteModal={(
                             e: React.MouseEvent<HTMLElement>
                           ) => {
                             e.stopPropagation()
-                            setOpenDeleteModal(true)
+                            if (userProfile?.item.role !== "Personnel") {
+                              setOpenDeleteModal(true)
+                            }
                             setSelectedPartId(product._id as string)
                           }}
                         />

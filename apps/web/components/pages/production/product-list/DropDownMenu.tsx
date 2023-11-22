@@ -2,6 +2,7 @@ import { Fragment, MouseEventHandler } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid"
 import combineClasses from "../../../../helpers/combineClasses"
+import useProfile from "../../../../hooks/users/useProfile"
 
 export default function DropDownMenu({
   setOpenEditModal,
@@ -10,6 +11,8 @@ export default function DropDownMenu({
   setOpenEditModal: Function
   setOpenDeleteModal: Function
 }) {
+  const { data: userProfile } = useProfile()
+
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
