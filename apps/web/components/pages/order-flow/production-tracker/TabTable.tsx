@@ -121,6 +121,12 @@ const TabTable = ({
     return numberOfPages ? numberOfPages : 1
   }
 
+  useEffect(() => {
+    if (numberOfPages === 1) {
+      setPage(1)
+    }
+  }, [numberOfPages, setPage])
+
   return (
     <>
       {isJobsLoading ? (
