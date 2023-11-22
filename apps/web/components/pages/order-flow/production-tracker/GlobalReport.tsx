@@ -55,8 +55,8 @@ const GlobalTableReport = ({
     totalTons: 0,
     total: 0,
   })
-  const [keyword, setKeyword] = useState<string>("")
-  const [sortType, setSortType] = useState<string>("")
+  const [keyword, setKeyword] = useState<string>("CreatedAt")
+  const [sortType, setSortType] = useState<string>("asc")
   const [paginated, setPaginated] = useState(data)
   const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([])
   const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([])
@@ -98,7 +98,7 @@ const GlobalTableReport = ({
     const fetchpaginated = async () => {
       const token = Cookies.get("tfl")
       const res = await fetch(
-        `${API_URL_TIMER_LOGS}/global/multi/filter?${locationIdQueryString}&${factoryIdQueryString}&${partIdQueryString}&${machineIdQueryString}&${machineClassIdQueryString}&startDate=${startDateRange}&endDate=${endDateRange}&sort=${sortType}&key=${keyword}locationId=${city}&page=${1}&limit=${
+        `${API_URL_TIMER_LOGS}/global/multi/filter?${locationIdQueryString}&${factoryIdQueryString}&${partIdQueryString}&${machineIdQueryString}&${machineClassIdQueryString}&startDate=${startDateRange}&endDate=${endDateRange}&sort=${sortType}&key=${keyword}&page=${1}&limit=${
           paginated?.itemCount
         }`,
         {
