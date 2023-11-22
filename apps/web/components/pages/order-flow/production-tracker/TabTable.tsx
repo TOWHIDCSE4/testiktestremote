@@ -397,7 +397,11 @@ const TabTable = ({
                                       </span>
                                     )}
                                   </Menu.Item>
-                                  <Menu.Item>
+                                  <Menu.Item
+                                    disabled={
+                                      userProfile?.item.role === "Personnel"
+                                    }
+                                  >
                                     {({ active }) => (
                                       <span
                                         className={combineClasses(
