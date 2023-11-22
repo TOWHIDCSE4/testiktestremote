@@ -14,6 +14,7 @@ import PartDetailsModal from "../../product-list/modals/PartDetailsModal"
 import { USER_ROLES } from "../../../../../helpers/constants"
 import useStoreSession from "../../../../../store/useStoreSession"
 import { useSocket } from "../../../../../store/useSocket"
+import useProfile from "../../../../../hooks/users/useProfile"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -29,6 +30,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
   const closeButtonRef = useRef(null)
   const searchRef = useRef(null)
   const { data: users, isLoading: isUsersLoading } = useUsers()
+  const { data: userProfile } = useProfile()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
@@ -303,7 +305,10 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                                   as="div"
                                   value={selectedOperator}
                                   onChange={setSelectedOperator}
-                                  disabled={isTimerDetailDataLoading}
+                                  disabled={
+                                    isTimerDetailDataLoading ||
+                                    userProfile?.item.role === "Personnel"
+                                  }
                                 >
                                   <div className="relative">
                                     <Combobox.Input

@@ -374,11 +374,7 @@ const TabTable = ({
                                       </span>
                                     )}
                                   </Menu.Item>
-                                  <Menu.Item
-                                    disabled={
-                                      userProfile?.item.role === "Personnel"
-                                    }
-                                  >
+                                  <Menu.Item>
                                     {({ active }) => (
                                       <span
                                         className={combineClasses(
@@ -389,7 +385,12 @@ const TabTable = ({
                                         )}
                                         onClick={(e) => {
                                           e.stopPropagation()
-                                          setEditModal(true)
+                                          if (
+                                            userProfile?.item.role !==
+                                            "Personnel"
+                                          ) {
+                                            setEditModal(true)
+                                          }
                                           setJobId(job._id as string)
                                         }}
                                       >
@@ -397,11 +398,7 @@ const TabTable = ({
                                       </span>
                                     )}
                                   </Menu.Item>
-                                  <Menu.Item
-                                    disabled={
-                                      userProfile?.item.role === "Personnel"
-                                    }
-                                  >
+                                  <Menu.Item>
                                     {({ active }) => (
                                       <span
                                         className={combineClasses(
@@ -412,7 +409,12 @@ const TabTable = ({
                                         )}
                                         onClick={(e) => {
                                           e.stopPropagation()
-                                          setDeleteModal(true)
+                                          if (
+                                            userProfile?.item.role !==
+                                            "Personnel"
+                                          ) {
+                                            setDeleteModal(true)
+                                          }
                                           setJobId(job._id as string)
                                         }}
                                       >

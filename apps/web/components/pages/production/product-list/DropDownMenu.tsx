@@ -49,7 +49,7 @@ export default function DropDownMenu({
                 </span>
               )}
             </Menu.Item>
-            <Menu.Item disabled={userProfile?.item.role === "Personnel"}>
+            <Menu.Item>
               {({ active }) => (
                 <span
                   onClick={(e) => setOpenDeleteModal(e)}

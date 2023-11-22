@@ -337,7 +337,7 @@ const MachineDetailsModal = ({
                 ref={closeButtonRef}
                 tabIndex={-1}
                 disabled={
-                  !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
+                  // !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                   isUpdateMachineLoading ||
                   isMachineDetailsLoading ||
                   isFactoriesLoading ||
@@ -402,7 +402,7 @@ const MachineDetailsModal = ({
               >
                 <Dialog.Panel
                   className={`relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 max-w-2xl lg:max-w-4xl sm:w-full sm:max-w-lg
-                    
+
                   }`}
                 >
                   {partSection}
