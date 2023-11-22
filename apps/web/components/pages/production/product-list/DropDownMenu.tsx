@@ -42,7 +42,11 @@ export default function DropDownMenu({
                   onClick={(e) => setOpenEditModal(e)}
                   className={combineClasses(
                     active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                    "block px-4 py-2 text-sm cursor-pointer"
+                    `${
+                      userProfile?.item.role === "Personnel"
+                        ? "block px-4 py-2 text-sm cursor-not-allowed"
+                        : "block px-4 py-2 text-sm cursor-pointer"
+                    } `
                   )}
                 >
                   Edit
@@ -55,7 +59,11 @@ export default function DropDownMenu({
                   onClick={(e) => setOpenDeleteModal(e)}
                   className={combineClasses(
                     active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                    "block px-4 py-2 text-sm cursor-pointer"
+                    `${
+                      userProfile?.item.role === "Personnel"
+                        ? "block px-4 py-2 text-sm cursor-not-allowed"
+                        : "block px-4 py-2 text-sm cursor-pointer"
+                    } `
                   )}
                 >
                   Delete
