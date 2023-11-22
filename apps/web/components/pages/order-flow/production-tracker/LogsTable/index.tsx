@@ -101,11 +101,12 @@ const LogsTable = ({
   const myRef = useRef<NewWindow | null>(null)
 
   const toggleAccordion = (id: string) => {
-    if (openAccordion === id) {
-      setOpenAccordion(null)
-    } else {
-      setOpenAccordion(id)
-    }
+    setOpenAccordion((prev) => (prev === id ? null : id))
+    // if (openAccordion === id) {
+    //   setOpenAccordion(null)
+    // } else {
+    //   setOpenAccordion(id)
+    // }
   }
 
   useEffect(() => {
@@ -1275,8 +1276,7 @@ const LogsTable = ({
                     paginated?.items.map((item, idx) => {
                       const rowClass =
                         idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
-                      const isAccordionOpen =
-                        openAccordion === `accordion-arrow-icon-body-${idx}`
+                      const isAccordionOpen = openAccordion === item._id
                       const checked = isChecked(item._id ?? "")
                       return (
                         <React.Fragment key={item._id}>
@@ -1289,11 +1289,7 @@ const LogsTable = ({
                             data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
                             aria-expanded={isAccordionOpen}
                             aria-controls={`accordion-arrow-icon-body-${idx}`}
-                            onClick={() =>
-                              toggleAccordion(
-                                `accordion-arrow-icon-body-${idx}`
-                              )
-                            }
+                            onClick={() => toggleAccordion(String(item._id))}
                           >
                             <td className="pr-6">
                               <div className="flex items-center">
