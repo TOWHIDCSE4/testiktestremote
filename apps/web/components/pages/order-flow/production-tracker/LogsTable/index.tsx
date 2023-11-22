@@ -1411,7 +1411,7 @@ const LogsTable = ({
                             <td className="px-6 py-4">
                               {item.status === "Gain" ? (
                                 <span
-                                  className={`font-bold ${
+                                  className={`ml-4 font-bold ${
                                     item.jobId
                                       ? "text-green-500"
                                       : "text-red-500"
