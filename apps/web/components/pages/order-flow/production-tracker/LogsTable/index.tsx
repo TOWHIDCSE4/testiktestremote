@@ -1560,7 +1560,7 @@ const LogsTable = ({
                                             Average Time :
                                           </p>
                                           <p
-                                            className={` pl-1 xl:w-2/3 lg:w-2/3 md:w-2/3 pt-2 pb-1 text-sm text-gray-500`}
+                                            className={` pl-1 xl:w-2/3 lg:w-2/3 md:w-2/3 pt-2 pb-1 text-sm text-gray-900`}
                                           >
                                             {item.time
                                               ? Math.round(item.time)
@@ -1574,7 +1574,7 @@ const LogsTable = ({
                                             Average Weight :
                                           </p>
                                           <p
-                                            className={`pl-1 xl:w-2/3 lg:w-2/4 md:w-2/4 pt-2 pb-1 text-sm  text-gray-500`}
+                                            className={`pl-1 xl:w-2/3 lg:w-2/4 md:w-2/4 pt-2 pb-1 text-sm  text-gray-900`}
                                           >
                                             {typeof item?.partId === "object" &&
                                             item?.partId.cageWeightActual
