@@ -3,7 +3,13 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react"
-import { T_BackendResponse, T_Location, T_UserRole } from "custom-validator"
+import {
+  T_BackendResponse,
+  T_Location,
+  T_Locations,
+  T_MachineClass,
+  T_UserRole,
+} from "custom-validator"
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid"
 import usePaginatedUsers from "../../../hooks/users/useGetPaginatedUsers"
 import NewMemberModal from "./modals/NewMemberModal"
@@ -320,9 +326,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     } else {
       const machineClassName: string[] = []
       const machineClassIds: string[] = []
-      machineClass?.items.forEach((item: any) => {
+      machineClass?.items.forEach((item: T_MachineClass) => {
         machineClassName.push(item.name)
-        machineClassIds.push(item._id)
+        machineClassIds.push(item._id as string)
       })
       //@ts-expect-error
       setFactoryMachineClasses(machineClassName)
@@ -337,6 +343,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setIsOpenTeam(false)
     setSelectedRole(item)
     setRole(item)
+    setPage(1)
   }
 
   const statusArray = Object.values(USER_STATUSES).filter(
@@ -352,6 +359,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setOpenAccordion(null)
     setIsOpen(false)
     setStatus(value)
+    setPage(1)
 
     const colorMapping: { [key: string]: string } = {
       Pending: "text-yellow-700",
@@ -551,9 +559,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       const locationNames: string[] = []
       const locationIds: string[] = []
 
-      locations.items.forEach((item: any) => {
+      locations.items.forEach((item: T_Locations) => {
         locationNames.push(item.name)
-        locationIds.push(item._id)
+        locationIds.push(item._id as string)
       })
 
       setSelectedCity(locationNames)
@@ -730,6 +738,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
       document.removeEventListener("click", handleRoleClose)
     }
   }, [handleRoleClose, isOpenRole])
+
+  useEffect(() => {
+    if (numberOfPages === 1) {
+      setPage(1)
+    }
+  }, [numberOfPages, setPage])
 
   return (
     <>
