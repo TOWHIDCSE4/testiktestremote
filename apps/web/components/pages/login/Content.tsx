@@ -172,7 +172,7 @@ const Content = () => {
                   </Link>
                 </p>
                 <p className="text-sm md:flex items-center justify-center mt-2 text-center">
-                  &copy; 2023 AmeriTex Pipe & Products with
+                  &copy; 2023 AmeriTex Pipe & Products, made with
                   <span className="inline-flex">
                     <HeartIcon className="h-4 w-4 text-red-600 mx-1 translate-y-1 md:translate-y-0" />
                   </span>
