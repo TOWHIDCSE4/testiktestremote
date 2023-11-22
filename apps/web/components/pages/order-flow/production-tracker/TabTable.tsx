@@ -381,7 +381,12 @@ const TabTable = ({
                                           active
                                             ? "bg-gray-100 text-gray-900"
                                             : "text-gray-700",
-                                          "block px-4 py-2 text-sm cursor-pointer text-left"
+                                          `${
+                                            userProfile?.item.role ===
+                                            "Personnel"
+                                              ? "block px-4 py-2 text-sm cursor-not-allowed text-left"
+                                              : "block px-4 py-2 text-sm cursor-pointer text-left"
+                                          } `
                                         )}
                                         onClick={(e) => {
                                           e.stopPropagation()
@@ -405,7 +410,12 @@ const TabTable = ({
                                           active
                                             ? "bg-gray-100 text-gray-900"
                                             : "text-gray-700",
-                                          "block px-4 py-2 text-sm cursor-pointer text-left"
+                                          `${
+                                            userProfile?.item.role ===
+                                            "Personnel"
+                                              ? "block px-4 py-2 text-sm cursor-not-allowed text-left"
+                                              : "block px-4 py-2 text-sm cursor-pointer text-left"
+                                          } `
                                         )}
                                         onClick={(e) => {
                                           e.stopPropagation()
@@ -431,7 +441,11 @@ const TabTable = ({
                                         active
                                           ? "bg-gray-100 text-gray-900"
                                           : "text-gray-700",
-                                        "block px-4 py-2 text-sm cursor-pointer text-left"
+                                        `${
+                                          userProfile?.item.role === "Personnel"
+                                            ? "block px-4 py-2 text-sm cursor-not-allowed text-left"
+                                            : "block px-4 py-2 text-sm cursor-pointer text-left"
+                                        } `
                                       )}
                                       onClick={(e) => {
                                         e.stopPropagation()

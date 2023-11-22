@@ -2,6 +2,7 @@ import { ArrowUturnLeftIcon } from "@heroicons/react/20/solid"
 import React, { Dispatch } from "react"
 import { FileWithPath, useDropzone } from "react-dropzone"
 import toast from "react-hot-toast"
+import useProfile from "../../../hooks/users/useProfile"
 
 const SingleImageUpload = ({
   file,
@@ -12,6 +13,7 @@ const SingleImageUpload = ({
   setFile: Dispatch<(FileWithPath & { preview: string }) | null>
   isLoading: boolean
 }) => {
+  const { data: userProfile } = useProfile()
   const { getRootProps, getInputProps, isFocused } = useDropzone({
     maxFiles: 1,
     accept: {
