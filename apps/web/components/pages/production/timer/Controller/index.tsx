@@ -136,13 +136,16 @@ const Controller = ({ timerId }: { timerId: string }) => {
         setIsCycleClockRunning(true)
       }
       if (data.action === "add") {
+        console.log(data.action)
         runIntervalClock()
       }
       if (data.action === "endAndAdd") {
+        console.log(data.action)
         setCycleClockInSeconds(0)
         try {
           const { isSuccess } = await cycleRefetch()
           if (isSuccess && jobUpdateId !== "" && isTimerStop !== true) {
+            console.log("here")
             runIntervalClock()
             setIsCycleClockStarting(false)
           }
