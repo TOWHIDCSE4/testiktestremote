@@ -84,7 +84,7 @@ const Table = ({
                   path === "/production/timer/tracker"
                     ? "text-sm xl:text-xl 2xl:text-2xl"
                     : "text-sm"
-                } py-3.5 pr-3 text-left font-semibold text-gray-900 pl-4 lg:pl-8 uppercase`}
+                } py-3.5 pr-3 text-left font-semibold text-gray-900 pl-4 lg:pl-4 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   Cycle
@@ -99,7 +99,7 @@ const Table = ({
                   path === "/production/timer/tracker"
                     ? "text-sm xl:text-xl 2xl:text-2xl"
                     : "text-sm"
-                } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
+                } py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   Date
@@ -144,7 +144,7 @@ const Table = ({
                   path === "/production/timer/tracker"
                     ? "text-sm xl:text-xl 2xl:text-2xl"
                     : "text-sm"
-                } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
+                } px-0 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   ID
@@ -189,7 +189,7 @@ const Table = ({
                   path === "/production/timer/tracker"
                     ? "text-sm xl:text-xl 2xl:text-2xl"
                     : "text-sm"
-                } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
+                } pl-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
                   Stop Reason
@@ -198,28 +198,31 @@ const Table = ({
                   </span>
                 </a>
               </th>
-              <th
+              {/* <th
                 scope="col"
                 className="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8"
               >
                 <span className="sr-only">Edit</span>
-              </th>
+              </th> */}
             </tr>
           </thead>
 
           <tbody className="divide-y divide-gray-200 bg-white">
             {paginated?.items &&
               paginated?.items.map((item, idx, array) => (
-                <tr key={idx} className={`${!item.jobId ? "bg-red-50" : ""}`}>
+                <tr
+                  key={idx}
+                  className={`${!item.jobId ? "bg-red-50" : ""} border-0`}
+                >
                   <td
-                    className={`py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 lg:pl-8 ${
+                    className={`py-4 pl-4 pr-3 text-sm font-medium sm:pl-6 lg:pl-4 ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
                     {item.cycle}
                   </td>
                   <td
-                    className={`px-3 py-4 text-sm text-gray-500 flex flex-col ${
+                    className={`px-0 py-4 text-sm text-gray-500 flex flex-col ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
@@ -265,7 +268,7 @@ const Table = ({
                       : ""}
                   </td>
                   <td
-                    className={`px-3 py-4 text-sm text-gray-500 ${
+                    className={`px-0 py-4 text-sm text-gray-500 ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
