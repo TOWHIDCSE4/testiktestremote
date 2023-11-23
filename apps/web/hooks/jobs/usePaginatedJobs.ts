@@ -164,11 +164,8 @@ function usePaginatedJobs() {
       refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
     }
   )
+
   useEffect(() => {
-    // console.log("Macxine", machineClassId)
-    console.log(
-      "🚀 ~ file: usePaginatedJobs.ts:167 ~ useEffect ~ machineClassId:"
-    )
     if ((locationId && page) || search || jobType || machineClassId) {
       query.refetch()
     }

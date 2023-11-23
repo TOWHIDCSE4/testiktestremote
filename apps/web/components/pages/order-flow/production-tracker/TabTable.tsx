@@ -79,8 +79,7 @@ const TabTable = ({
     if (machineClassIds.length > 0) {
       setMachineClassId(machineClassIds)
     } else {
-      //@ts-expect-error
-      setMachineClassId(null)
+      setMachineClassId([])
     }
   }, [machineClassIds])
 
