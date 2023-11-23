@@ -1137,7 +1137,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     </FormControl>
                   </div>
                 </div>
-              ) : selectedRole === "HR" || selectedRole === "Corporate" ? (
+              ) : selectedRole === "Corporate" ? (
                 <div className="flex justify-end text-gray-900 space-x-1">
                   <span className="text-[#7F1D1D] text-[14px] uppercase font-semibold">
                     Department
