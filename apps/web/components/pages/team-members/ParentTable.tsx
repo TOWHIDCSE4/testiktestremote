@@ -40,7 +40,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [checkedProved, setCheckedProved] = useState<boolean>(true)
   const roleFilter = (): string[] => {
     if (userRole === "HR") {
-      return ["Production", "Corporate", "Personnel"]
+      return ["Production", "Corporate", "Personnel", "HR"]
     } else if (userRole === "Production") {
       return ["Personnel"]
     } else if (
@@ -127,7 +127,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
   const [confirmationModal, setConfirmationModal] = useState(false)
   const [selectedColor, setSelectedColor] = useState("text-green-900")
   const [selectedRole, setSelectedRole] = useState(
-    storeSession?.role === "Production" ? "Personnel" : storeSession?.role
+    storeSession?.role === "Production"
+      ? "Personnel"
+      : storeSession?.role === "HR_Director"
+      ? "HR"
+      : storeSession?.role
   )
   const [selectedRow, setSelectedRow] = useState<T_User | null>(null)
   const [errorMsg, setErrorMsg] = useState("")
@@ -171,7 +175,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
     setName,
   } = usePaginatedUsers(
     "Pending",
-    storeSession?.role === "Production" ? "Personnel" : storeSession?.role
+    storeSession?.role === "Production"
+      ? "Personnel"
+      : storeSession?.role === "HR_Director"
+      ? "HR"
+      : storeSession?.role
   )
 
   useEffect(() => {
@@ -539,11 +547,12 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   useEffect(() => {
     if (
-      userProfile?.item.role === "Production" &&
-      userProfile?.item.locationId &&
-      locations?.items
+      userProfile?.item.role === "Production" ||
+      (userProfile?.item.role === "HR" &&
+        userProfile?.item.locationId &&
+        locations?.items)
     ) {
-      const matchingLocation = locations.items.find(
+      const matchingLocation = locations?.items.find(
         (item: Record<string, any>) => item._id === userProfile?.item.locationId
       )
 
@@ -982,7 +991,11 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         }}
                       >
                         {locations?.items?.map((item: any, index: any) => (
-                          <MenuItem key={index} value={item.name as string}>
+                          <MenuItem
+                            key={index}
+                            value={item.name as string}
+                            disabled={userProfile?.item.locationId !== item._id}
+                          >
                             <Checkbox
                               checked={selectedCity.includes(item.name)}
                               color="primary"
