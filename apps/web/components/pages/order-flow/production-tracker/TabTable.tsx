@@ -76,8 +76,14 @@ const TabTable = ({
   }
 
   useEffect(() => {
-    setMachineClassId(machineClassIds)
+    if (machineClassIds.length > 0) {
+      setMachineClassId(machineClassIds)
+    } else {
+      //@ts-expect-error
+      setMachineClassId(null)
+    }
   }, [machineClassIds])
+
   useEffect(() => {
     setSelectedJob([])
   }, [locked])
