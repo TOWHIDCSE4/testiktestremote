@@ -192,10 +192,34 @@ const MainNav = () => {
                                   <div className="h-3 w-24 bg-slate-200 rounded"></div>
                                 </div>
                               ) : (
-                                <>
-                                  {userProfile?.item?.firstName}{" "}
-                                  {userProfile?.item?.lastName}
-                                </>
+                                (() => {
+                                  if (
+                                    userProfile?.item.profile &&
+                                    userProfile?.item?.profile?.realNameDisplay
+                                  ) {
+                                    return (
+                                      <>
+                                        {userProfile?.item?.firstName}{" "}
+                                        {userProfile?.item?.lastName}
+                                      </>
+                                    )
+                                  } else if (
+                                    userProfile?.item.profile === null
+                                  ) {
+                                    return (
+                                      <>
+                                        {userProfile?.item?.firstName}{" "}
+                                        {userProfile?.item?.lastName}
+                                      </>
+                                    )
+                                  } else {
+                                    return (
+                                      <>
+                                        {userProfile?.item.profile?.profileName}
+                                      </>
+                                    )
+                                  }
+                                })()
                               )}
                             </span>
                             <span className="text-left text-gray-500 font-semibold">

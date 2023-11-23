@@ -18,6 +18,7 @@ const ProfileAndPrivacy = () => {
   )
   const storeSession = useStoreSession((state) => state)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+
   const { mutate: uploadMediaFile, isLoading: isUploadMediaFileLoading } =
     useUploadMediaFile()
   const { register, handleSubmit } = useForm<T_UserProfile>({
