@@ -31,7 +31,6 @@ import MenuItem from "@mui/material/MenuItem"
 import FormControl from "@mui/material/FormControl"
 import ListItemText from "@mui/material/ListItemText"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
-import { Listbox, Transition } from "@headlessui/react"
 import useProfile from "../../../../../hooks/users/useProfile"
 import Checkbox from "@mui/material/Checkbox"
 import useGetGlobalMetrics from "../../../../../hooks/timerLogs/useGetGlobalMetrics"
@@ -83,7 +82,6 @@ const LogsTable = ({
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   // const [city, setCity] = useState<string[]>(locationId)
   const [city, setCity] = useState<string[]>([])
-  const [isOpen, setIsOpen] = useState<boolean>(false)
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
   )
@@ -483,17 +481,8 @@ const LogsTable = ({
   }
 
   // const { Option } = Select
-
-  const handleLocationChange = (value: string | string[]) => {
-    // Check if the value is already in the city array
-    const isCitySelected = city.includes(value as string)
-
-    // If it's already selected, remove it; otherwise, add it
-    const updatedCity = isCitySelected
-      ? city.filter((item) => item !== value)
-      : [...city, value]
-
-    setCity(updatedCity as string[])
+  const handleLocationChange = (event: any) => {
+    setCity(event.target.value)
     setPartsSelected([])
     setMachineClass([])
     setMachine([])
@@ -790,151 +779,44 @@ const LogsTable = ({
                 {/* city */}
                 <div className="flex w-1/2 text-[11px] items-center">
                   <p className="w-1/6 font-semibold text-right mr-2">CITY</p>
-                  <Listbox
-                    as="div"
-                    className="space-y-1 space-x-1 w-4/6"
-                    value={city}
-                    onChange={(value) => handleLocationChange(value)}
-                    // open={isOpen as boolean}
-                  >
-                    {({ open }) => (
-                      <>
-                        <div className="relative">
-                          <span className="inline-block w-full rounded-md shadow-sm">
-                            <Listbox.Button
-                              className={`${
-                                !process
-                                  ? "text-gray-400 cursor-not-allowed bg-gray-100"
-                                  : "cursor-default bg-white"
-                              }  relative w-full rounded-md border border-gray-300  pl-3 pr-10 py-2 text-left focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition ease-in-out duration-150 sm:text-sm sm:leading-5`}
-                              onClick={() => setIsOpen(!isOpen)}
-                              aria-disabled={!process ? true : false}
-                              // open={isOpen}
-                            >
-                              <span className="block truncate">
-                                {cityCounter < 1
-                                  ? "Select locations"
-                                  : `${cityCounter} selected`}
-                              </span>
-                              <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                <svg
-                                  className="h-4 w-4"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M19 9l-7 7-7-7"
-                                  />
-                                </svg>
-                              </span>
-                            </Listbox.Button>
-                          </span>
-
-                          <Transition
-                            unmount={false}
-                            show={isOpen}
-                            leave="transition ease-in duration-100"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0 "
-                            className="absolute mt-1 w-full rounded-md bg-white shadow-lg z-10"
+                  <FormControl className="w-2/3" size="small">
+                    {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
+                    <Select
+                      labelId="demo-multiple-checkbox-label"
+                      id="demo-multiple-checkbox"
+                      multiple
+                      disabled={!process ? true : false}
+                      style={{
+                        width: "100%",
+                        border: "0.3pt solid #ccc",
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                        height: "38px",
+                      }}
+                      value={city}
+                      onChange={(event) => handleLocationChange(event)}
+                      renderValue={() => `${cityCounter} selected`}
+                      MenuProps={MenuProps}
+                    >
+                      {locations?.items?.map(
+                        (item: T_Locations, index: number) => (
+                          <MenuItem
+                            disabled={
+                              userProfile?.item.role === "Personnel" &&
+                              userProfile?.item.locationId !== item._id
+                            }
+                            key={index}
+                            value={item._id as string}
                           >
-                            <Listbox.Options
-                              static
-                              className="max-h-60 bg-slate-50 rounded-md py-1 text-base leading-6 shadow-xs overflow-auto focus:outline-none sm:text-sm sm:leading-5"
-                            >
-                              {locations?.items?.map(
-                                (item: T_Locations, index: number) => {
-                                  const selected = city.includes(
-                                    item._id as string
-                                  )
-                                  return (
-                                    <Listbox.Option
-                                      key={item._id}
-                                      value={item._id}
-                                    >
-                                      {({ active }) => (
-                                        <div
-                                          className={`${
-                                            active
-                                              ? " bg-blue-300"
-                                              : "text-gray-900"
-                                          } ${
-                                            selected
-                                              ? "bg-blue-100 hover:bg-blue-300"
-                                              : "hover:bg-gray-100"
-                                          } cursor-default select-none relative py-2 pl-4 pr-8 flex justify-between items-center`}
-                                        >
-                                          <span
-                                            className={`${
-                                              selected
-                                                ? "font-semibold"
-                                                : "font-normal"
-                                            } block truncate`}
-                                          >
-                                            {item.name}
-                                          </span>
-                                          {selected ? (
-                                            <span
-                                              className={`${
-                                                selected ? "text-white" : ""
-                                              } absolute inset-y-0 right-0 flex items-center pr-1.5`}
-                                            >
-                                              <svg
-                                                className={`${
-                                                  !selected
-                                                    ? "bg-white"
-                                                    : "bg-blue-600"
-                                                } h-5 w-5 border border-gray-300 rounded-md`}
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                              >
-                                                <path
-                                                  fillRule="evenodd"
-                                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                  clipRule="evenodd"
-                                                />
-                                              </svg>
-                                            </span>
-                                          ) : (
-                                            <span
-                                              className={`text-white absolute inset-y-0 right-0 flex items-center pr-1.5`}
-                                            >
-                                              <svg
-                                                className={`${
-                                                  !selected
-                                                    ? "bg-white"
-                                                    : "bg-blue-600"
-                                                } h-5 w-5 border border-gray-300 rounded-md`}
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                              >
-                                                <path
-                                                  fillRule="evenodd"
-                                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                  clipRule="evenodd"
-                                                />
-                                              </svg>
-                                            </span>
-                                          )}
-                                        </div>
-                                      )}
-                                    </Listbox.Option>
-                                  )
-                                }
-                              )}
-                            </Listbox.Options>
-                          </Transition>
-                        </div>
-                      </>
-                    )}
-                  </Listbox>
+                            <ListItemText primary={item.name} />
+                            <Checkbox
+                              checked={city.includes(item._id as string)}
+                            />
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                  </FormControl>
                   {/* </Space> */}
                 </div>
                 {/* Machine class */}
