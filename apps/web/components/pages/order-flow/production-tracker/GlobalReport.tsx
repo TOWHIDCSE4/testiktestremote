@@ -55,8 +55,8 @@ const GlobalTableReport = ({
     totalTons: 0,
     total: 0,
   })
-  const [keyword, setKeyword] = useState<string>("CreatedAt")
-  const [sortType, setSortType] = useState<string>("asc")
+  const [keyword, setKeyword] = useState<string>("createdAt")
+  const [sortType, setSortType] = useState<string>("desc")
   const [paginated, setPaginated] = useState(data)
   const [gainTimeArray, setGainTimeArray] = useState<Array<number | string>>([])
   const [lossTimeArray, setLossTimeArray] = useState<Array<number | string>>([])
