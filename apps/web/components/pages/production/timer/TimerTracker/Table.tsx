@@ -86,12 +86,12 @@ const Table = ({
                     : "text-sm"
                 } py-3.5 pr-3 text-left font-semibold text-gray-900 pl-4 lg:pl-4 uppercase`}
               >
-                <a href="#" className="group inline-flex items-center">
+                <div className="group inline-flex items-center">
                   Cycle
                   <span className="ml-2 flex-none rounded text-gray-400">
                     <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
                   </span>
-                </a>
+                </div>
               </th>
               <th
                 scope="col"
@@ -101,12 +101,12 @@ const Table = ({
                     : "text-sm"
                 } py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
-                <a href="#" className="group inline-flex items-center">
+                <div className="group inline-flex items-center">
                   Date
                   <span className="ml-2 flex-none rounded text-gray-400">
                     <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
                   </span>
-                </a>
+                </div>
               </th>
               <th
                 scope="col"
@@ -116,12 +116,12 @@ const Table = ({
                     : "text-sm"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
-                <a href="#" className="group inline-flex items-center">
+                <div className="group inline-flex items-center">
                   Product
                   <span className="ml-2 flex-none rounded text-gray-400">
                     <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
                   </span>
-                </a>
+                </div>
               </th>
               <th
                 scope="col"
@@ -131,12 +131,12 @@ const Table = ({
                     : "text-sm"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
-                <a href="#" className="group inline-flex items-center">
+                <div className="group inline-flex items-center">
                   Operator
                   <span className="ml-2 flex-none rounded text-gray-400">
                     <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
                   </span>
-                </a>
+                </div>
               </th>
               <th
                 scope="col"
@@ -146,12 +146,12 @@ const Table = ({
                     : "text-sm"
                 } px-0 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
-                <a href="#" className="group inline-flex items-center">
+                <div className="group inline-flex items-center">
                   ID
                   <span className="ml-2 flex-none rounded text-gray-400">
                     <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
                   </span>
-                </a>
+                </div>
               </th>
               <th
                 scope="col"
@@ -161,12 +161,12 @@ const Table = ({
                     : "text-sm"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
-                <a href="#" className="group inline-flex items-center">
+                <div className="group inline-flex items-center">
                   Status
                   <span className="ml-2 flex-none rounded text-gray-400">
                     <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
                   </span>
-                </a>
+                </div>
               </th>
               <th
                 scope="col"
@@ -176,12 +176,12 @@ const Table = ({
                     : "text-sm"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
-                <a href="#" className="group inline-flex items-center">
+                <div className="group inline-flex items-center">
                   Time
                   <span className="ml-2 flex-none rounded text-gray-400">
                     <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
                   </span>
-                </a>
+                </div>
               </th>
               <th
                 scope="col"
@@ -191,12 +191,12 @@ const Table = ({
                     : "text-sm"
                 } pl-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
-                <a href="#" className="group inline-flex items-center">
+                <div className="group inline-flex items-center">
                   Stop Reason
                   <span className="ml-2 flex-none rounded text-gray-400">
                     <ChevronUpDownIcon className="h-5 w-5" aria-hidden="true" />
                   </span>
-                </a>
+                </div>
               </th>
               {/* <th
                 scope="col"
@@ -331,7 +331,7 @@ const Table = ({
         ) : null}
         {!isPaginatedLoading && paginated?.items.length === 0 ? (
           // <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
-          <div className="text-gray-500 text-lg font-semibold">
+          <table className="w-full text-gray-500 text-lg font-semibold">
             {Array.from({ length: 5 }).map((_, index) => (
               <tr key={index} className="border-b">
                 <td
@@ -386,10 +386,10 @@ const Table = ({
                 ></td>
               </tr>
             ))}
-          </div>
+          </table>
         ) : null}
         {paginated?.items.length === 1 && (
-          <div className="text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
+          <table className="w-full text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
             {Array.from({ length: 4 }).map((_, index) => (
               <tr key={index} className="border-b">
                 <td
@@ -444,11 +444,11 @@ const Table = ({
                 ></td>
               </tr>
             ))}
-          </div>
+          </table>
         )}
 
         {paginated?.items.length === 2 && (
-          <div className="text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
+          <table className="w-full text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
             {Array.from({ length: 3 }).map((_, index) => (
               <tr key={index} className="border">
                 <td
@@ -503,11 +503,11 @@ const Table = ({
                 ></td>
               </tr>
             ))}
-          </div>
+          </table>
         )}
 
         {paginated?.items.length === 3 && (
-          <div className="text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
+          <table className="w-full text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
             {Array.from({ length: 2 }).map((_, index) => (
               <tr key={index} className="border">
                 <td
@@ -562,11 +562,11 @@ const Table = ({
                 ></td>
               </tr>
             ))}
-          </div>
+          </table>
         )}
 
         {paginated?.items.length === 4 && (
-          <div className="text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
+          <table className="w-full text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
             {Array.from({ length: 1 }).map((_, index) => (
               <tr key={index} className="border">
                 <td
@@ -621,7 +621,7 @@ const Table = ({
                 ></td>
               </tr>
             ))}
-          </div>
+          </table>
         )}
       </div>
       <Footer

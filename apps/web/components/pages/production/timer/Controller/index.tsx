@@ -369,48 +369,44 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }
   const runCycle = (fromDb?: boolean) => {
-    if (!isLocationTimeEnded) {
-      if (timerDetailData?.item?.operator) {
-        if (jobUpdateId !== "") {
-          if (!isTimerControllerEnded) {
-            setIsCycleClockStarting(true)
-            startingTimerReadings([
-              `${currentDate} - Starting timer`,
-              `${currentDate} - Timer started`,
-            ])
-            updateIsTimerStop(false)
-            setTimeout(
-              function () {
-                if (!isCycleClockRunning && !fromDb) {
-                  addCycleTimer({ timerId }, callBackReq)
-                }
-                setIsCycleClockRunning(true)
-                if (!isTimerClockRunning && !fromDb) {
-                  addControllerTimer(
-                    {
-                      timerId,
-                      locationId: timerDetailData?.item?.locationId._id,
-                    },
-                    callBackReq
-                  )
-                  runTimer()
-                }
-                setIsCycleClockStarting(false)
-              },
-              fromDb ? 0 : 3000
-            )
-          } else {
-            toast.error("You already ended this timer")
-          }
-        } else {
-          toast.error("You need to assigned a job to this timer first")
+    console.log("timerDetailData.item.operator", timerDetailData.item.operator)
+    if (isLocationTimeEnded)
+      return toast.error(controllerTimer?.message as string, { duration: 5000 })
+    if (!timerDetailData?.item?.operator._id)
+      return toast.error("You need to assigned an operator to this timer first")
+
+    if (jobUpdateId === "")
+      return toast.error("You need to assigned a job to this timer first")
+
+    if (isTimerControllerEnded)
+      return toast.error("You already ended this timer")
+
+    setIsCycleClockStarting(true)
+    startingTimerReadings([
+      `${currentDate} - Starting timer`,
+      `${currentDate} - Timer started`,
+    ])
+    updateIsTimerStop(false)
+    setTimeout(
+      function () {
+        if (!isCycleClockRunning && !fromDb) {
+          addCycleTimer({ timerId }, callBackReq)
         }
-      } else {
-        toast.error("You need to assigned an operator to this timer first")
-      }
-    } else {
-      toast.error(controllerTimer?.message as string, { duration: 5000 })
-    }
+        setIsCycleClockRunning(true)
+        if (!isTimerClockRunning && !fromDb) {
+          addControllerTimer(
+            {
+              timerId,
+              locationId: timerDetailData?.item?.locationId._id,
+            },
+            callBackReq
+          )
+          runTimer()
+        }
+        setIsCycleClockStarting(false)
+      },
+      fromDb ? 0 : 3000
+    )
   }
 
   const stopCycle = () => {

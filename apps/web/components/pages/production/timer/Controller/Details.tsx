@@ -155,14 +155,14 @@ const Details = ({
       setSelectedOperator({
         id:
           typeof timerDetails?.operator === "object" &&
-          timerDetails?.operator != null &&
-          timerDetails?.operator != undefined
+          timerDetails?.operator !== null &&
+          timerDetails?.operator !== undefined
             ? (timerDetails?.operator?._id as string)
             : "",
         name:
           typeof timerDetails?.operator === "object" &&
-          timerDetails?.operator != null &&
-          timerDetails?.operator != undefined
+          timerDetails?.operator !== null &&
+          timerDetails?.operator !== undefined
             ? `${timerDetails?.operator?.firstName} ${timerDetails?.operator?.lastName}`
             : "",
       })
@@ -317,6 +317,9 @@ const Details = ({
             displayValue={(
               selected: { id: string; name: string } | undefined
             ) => {
+              console.log("selected", selected)
+              console.log("OperatorQuery", operatorQuery)
+              console.log("SelectedOperator", selectedOperator)
               return selected && selected.id && selected.name
                 ? `${selected.name}`
                 : "Please select operator"

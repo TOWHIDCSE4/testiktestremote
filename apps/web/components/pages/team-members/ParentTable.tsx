@@ -1252,7 +1252,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         <div className="flex items-start justify-start">
                           {/* <a href="#" className="group inline-flex items-center"> */}
                           User
-                          <button onClick={(e) => handleInputChange(e, "user")}>
+                          <button
+                            onClick={(e) => handleInputChange(e, "firstName")}
+                          >
                             <svg
                               className="w-3 h-3 ml-1.5"
                               aria-hidden="true"
@@ -1281,7 +1283,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             <div className="flex items-center justify-center ml-8">
                               <span> City</span>
                               <button
-                                onClick={(e) => handleInputChange(e, "city")}
+                                onClick={(e) =>
+                                  handleInputChange(e, "locationId")
+                                }
                               >
                                 <svg
                                   className="w-3 h-3 ml-1.5"
@@ -1301,7 +1305,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 Factory<p className="text-red-600 ml-1">*</p>
                               </span>
                               <button
-                                onClick={(e) => handleInputChange(e, "factory")}
+                                onClick={(e) =>
+                                  handleInputChange(e, "factoryId")
+                                }
                               >
                                 <svg
                                   className="w-3 h-3 ml-1"
@@ -1323,7 +1329,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <p className="text-red-600 ml-1">*</p>
                                   <button
                                     onClick={(e) =>
-                                      handleInputChange(e, "machineClass")
+                                      handleInputChange(e, "machineClassId")
                                     }
                                   >
                                     <svg
@@ -1347,7 +1353,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <p className="text-red-600 ml-1">*</p>
                                   <button
                                     onClick={(e) =>
-                                      handleInputChange(e, "department")
+                                      handleInputChange(e, "role")
                                     }
                                   >
                                     <svg
@@ -1594,7 +1600,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     <th scope="col" className="w-[12%]">
                       <div className="flex items-start justify-start ml-6">
                         User
-                        <button onClick={(e) => handleInputChange(e, "user")}>
+                        <button
+                          onClick={(e) => handleInputChange(e, "firstName")}
+                        >
                           <svg
                             className="w-3 h-3 ml-1.5"
                             aria-hidden="true"
@@ -2483,7 +2491,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     <th scope="col" className="">
                       <div className="flex items-start justify-start">
                         User
-                        <button onClick={(e) => handleInputChange(e, "user")}>
+                        <button
+                          onClick={(e) => handleInputChange(e, "firstName")}
+                        >
                           <svg
                             className="w-3 h-3 ml-1.5"
                             aria-hidden="true"
@@ -2499,7 +2509,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     <th className="">
                       <div className="flex items-center justify-start ml-6">
                         <span> City</span>
-                        <button onClick={(e) => handleInputChange(e, "city")}>
+                        <button
+                          onClick={(e) => handleInputChange(e, "locationId")}
+                        >
                           <svg
                             className="w-3 h-3 ml-1.5"
                             aria-hidden="true"
@@ -2518,7 +2530,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           Factory<p className="text-red-600 ml-1">*</p>
                         </span>
                         <button
-                          onClick={(e) => handleInputChange(e, "factory")}
+                          onClick={(e) => handleInputChange(e, "factoryId")}
                         >
                           <svg
                             className="w-3 h-3 ml-1"
@@ -2540,7 +2552,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             <p className="text-red-600 ml-1">*</p>
                             <button
                               onClick={(e) =>
-                                handleInputChange(e, "machineClass")
+                                handleInputChange(e, "machineClassId")
                               }
                             >
                               <svg
@@ -2577,9 +2589,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             Department
                             <p className="text-red-600 ml-1">*</p>
                             <button
-                              onClick={(e) =>
-                                handleInputChange(e, "department")
-                              }
+                              onClick={(e) => handleInputChange(e, "role")}
                             >
                               <svg
                                 className="w-3 h-3 ml-1"
@@ -3949,7 +3959,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         <div className="flex items-start justify-start">
                           {/* <a href="#" className="group inline-flex items-center"> */}
                           User
-                          <button onClick={(e) => handleInputChange(e, "user")}>
+                          <button
+                            onClick={(e) => handleInputChange(e, "firstName")}
+                          >
                             <svg
                               className="w-3 h-3 ml-1.5"
                               aria-hidden="true"
@@ -3970,7 +3982,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             <div className="flex items-center justify-center ml-8">
                               <span> City</span>
                               <button
-                                onClick={(e) => handleInputChange(e, "city")}
+                                onClick={(e) =>
+                                  handleInputChange(e, "locationId")
+                                }
                               >
                                 <svg
                                   className="w-3 h-3 ml-1.5"
@@ -3991,7 +4005,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                 Factory<p className="text-red-600 ml-1">*</p>
                               </span>
                               <button
-                                onClick={(e) => handleInputChange(e, "factory")}
+                                onClick={(e) =>
+                                  handleInputChange(e, "factoryId")
+                                }
                               >
                                 <svg
                                   className="w-3 h-3 ml-1"
@@ -4020,7 +4036,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <p className="text-red-600 ml-1">*</p>
                                   <button
                                     onClick={(e) =>
-                                      handleInputChange(e, "machineClass")
+                                      handleInputChange(e, "machineClassId")
                                     }
                                   >
                                     <svg
@@ -4052,7 +4068,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   <p className="text-red-600 ml-1">*</p>
                                   <button
                                     onClick={(e) =>
-                                      handleInputChange(e, "department")
+                                      handleInputChange(e, "role")
                                     }
                                   >
                                     <svg
