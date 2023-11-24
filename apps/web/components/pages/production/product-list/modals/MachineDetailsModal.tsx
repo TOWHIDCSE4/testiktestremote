@@ -352,7 +352,8 @@ const MachineDetailsModal = ({
             ) : (
               <button
                 type="button"
-                className={`uppercase mt-3 inline-flex w-full rounded-md ${
+                // hidden is replaced with inline-flex when we need to show verify and unverify
+                className={`uppercase mt-3 inline-flex w-full rounded-md hidden${
                   isVerifiedMachine
                     ? "bg-red-900 hover:bg-red-800 focus:outline-red-800"
                     : "hover:bg-green-500 bg-green-600 focus:outline-green-800"
