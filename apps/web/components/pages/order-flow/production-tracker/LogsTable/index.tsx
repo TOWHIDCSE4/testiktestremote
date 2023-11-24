@@ -1365,7 +1365,11 @@ const LogsTable = ({
                                       "Unit Created"
                                         ? "text-green-500"
                                         : item.stopReason.join(", ") ===
-                                          "Worker Break"
+                                            "Worker Break" ||
+                                          item.stopReason.join(", ") ===
+                                            "Maintenance" ||
+                                          item.stopReason.join(", ") ===
+                                            "Change Part"
                                         ? "text-yellow-500"
                                         : "text-red-500"
                                     } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
@@ -1377,7 +1381,11 @@ const LogsTable = ({
                                       "Unit Created"
                                         ? "text-green-500"
                                         : item.stopReason.join(", ") ===
-                                          "Worker Break"
+                                            "Worker Break" ||
+                                          item.stopReason.join(", ") ===
+                                            "Maintenance" ||
+                                          item.stopReason.join(", ") ===
+                                            "Change Part"
                                         ? "text-yellow-500"
                                         : "text-red-500"
                                     } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
@@ -1472,7 +1480,7 @@ const LogsTable = ({
                             <td className="px-6 py-4">
                               {item.status === "Gain" ? (
                                 <span
-                                  className={`ml-4 font-bold ${
+                                  className={`ml-4 font-bold whitespace-nowrap ${
                                     item.jobId
                                       ? "text-green-500"
                                       : "text-red-500"
@@ -1481,7 +1489,7 @@ const LogsTable = ({
                                   {formatTime(item.time.toFixed(2))}
                                 </span>
                               ) : (
-                                <span className="ml-4 font-bold text-red-500">
+                                <span className="ml-4 font-bold whitespace-nowrap text-red-500">
                                   {formatTime(item.time.toFixed(2))}
                                 </span>
                               )}
@@ -1509,7 +1517,7 @@ const LogsTable = ({
                                       <div className="flex">
                                         {" "}
                                         {/* Use flex-wrap to wrap the elements */}
-                                        <span className="w-1/2 flex text-[13px]">
+                                        <span className="w-1/2 flex text-[13px] uppercase">
                                           <p
                                             className={`xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
@@ -1531,7 +1539,7 @@ const LogsTable = ({
                                               : ""}{" "}
                                           </p>
                                         </span>
-                                        <span className="w-1/2 flex text-[13px] ">
+                                        <span className="w-1/2 flex text-[13px] uppercase">
                                           <p
                                             className={`xl:w-1/3 lg:w-2/4 md:w-2/4 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
@@ -1555,7 +1563,13 @@ const LogsTable = ({
                                                   ? "text-green-500"
                                                   : item.stopReason.join(
                                                       ", "
-                                                    ) === "Worker Break"
+                                                    ) === "Worker Break" ||
+                                                    item.stopReason.join(
+                                                      ", "
+                                                    ) === "Maintenance" ||
+                                                    item.stopReason.join(
+                                                      ", "
+                                                    ) === "Change Part"
                                                   ? "text-yellow-600"
                                                   : "text-red-500"
                                               }`}
@@ -1618,9 +1632,9 @@ const LogsTable = ({
                                       </div>
                                       <div className="flex">
                                         {" "}
-                                        <span className="flex w-1/2 text-[13px] ">
+                                        <span className="flex w-1/2 text-[13px]">
                                           <p
-                                            className={` pt-2 xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pb-1 text-sm text-gray-900 font-semibold`}
+                                            className={`uppercase pt-2 xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pb-1 text-sm text-gray-900 font-semibold`}
                                           >
                                             Average Time :
                                           </p>
@@ -1632,9 +1646,9 @@ const LogsTable = ({
                                               : 0}
                                           </p>
                                         </span>
-                                        <span className="w-1/2 flex text-[13px] text-slate-900 ">
+                                        <span className="w-[53%] flex text-[13px] text-slate-900 ">
                                           <p
-                                            className={`xl:w-1/3 lg:w-2/4 md:w-2/4 text-right pt-2 pb-1 text-sm text-gray-900 font-semibold `}
+                                            className={`uppercase xl:w-2/5 lg:w-2/4 md:w-2/4 text-right pt-2 pb-1 text-sm text-gray-900 font-semibold`}
                                           >
                                             Average Weight :
                                           </p>
