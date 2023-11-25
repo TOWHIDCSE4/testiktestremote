@@ -11,7 +11,10 @@ export const verify = async (req: Request, res: Response) => {
     try {
       const { email }: any = jwt.verify(
         req.params.token,
-        keys.signKey as Secret
+        keys.signKey as Secret,
+        {
+          ignoreExpiration: true,
+        }
       )
       const RD_Session = await redisClient.hGetAll(req.params.token)
       const user = await Users.findOne({

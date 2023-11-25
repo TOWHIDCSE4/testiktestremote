@@ -18,7 +18,10 @@ const isUserLoggedIn = async (
     try {
       const { email, role }: any = jwt.verify(
         bearerToken,
-        keys.signKey as Secret
+        keys.signKey as Secret,
+        {
+          ignoreExpiration: true,
+        }
       )
       const user = await Users.findOne({ email, role })
       const RD_Session = await redisClient.hGetAll(`${bearerToken}`)
