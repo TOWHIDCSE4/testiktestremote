@@ -10,7 +10,10 @@ const isRoleAllowed = (roles: string[]) => {
       const bearerToken = bearer[1]
       const { email, role }: any = jwt.verify(
         bearerToken,
-        keys.signKey as Secret
+        keys.signKey as Secret,
+        {
+          ignoreExpiration: true,
+        }
       )
       const checkAllRole = (allRoles: string[]) => {
         const roleExist = allRoles.filter(

@@ -8,7 +8,9 @@ import * as Sentry from "@sentry/node"
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    const { email }: any = jwt.verify(req.body.token, keys.signKey as Secret)
+    const { email }: any = jwt.verify(req.body.token, keys.signKey as Secret, {
+      ignoreExpiration: true,
+    })
     const logoutUser = await Users.findOneAndUpdate(
       { email },
       {

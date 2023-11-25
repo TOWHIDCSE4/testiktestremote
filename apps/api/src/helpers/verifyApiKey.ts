@@ -16,7 +16,10 @@ const verifyApiKey = async (
     try {
       const { UniqueId, userId }: any = jwt.verify(
         bearerToken,
-        keys.signKey as Secret
+        keys.signKey as Secret,
+        {
+          ignoreExpiration: true,
+        }
       )
       const school = await schools.findOne({ UniqueId, userId })
       if (UniqueId && school?.deletedAt) {
