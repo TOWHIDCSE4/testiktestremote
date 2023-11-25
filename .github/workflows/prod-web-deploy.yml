@@ -4,8 +4,7 @@ env:
   SENTRY_WEB_DSN: ${{ secrets.SENTRY_WEB_DSN_PROD }}
 
 on:
-  push:
-    branches: ["main"]
+  workflow_dispatch:
 
 jobs:
   deployment:
