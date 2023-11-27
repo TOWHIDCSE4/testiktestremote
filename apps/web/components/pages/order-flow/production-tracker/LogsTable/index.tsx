@@ -164,6 +164,9 @@ const LogsTable = ({
       const initialMachineSelection = machines?.items?.map((item) => item._id)
       setMachine(initialMachineSelection as string[])
       setMachineCounter(machine.length)
+    } else {
+      setMachine([])
+      setMachineCounter(0)
     }
   }, [machines])
 
@@ -191,6 +194,12 @@ const LogsTable = ({
     setMachineClass(initialMachineClassSelected)
   }, [machineClasses])
 
+  useEffect(() => {
+    if (dateRange.length === 0) {
+      setStartDateForMachineClass("")
+      setEndDateForMachineClass("")
+    }
+  }, [dateRange])
   const {
     data: allParts,
     setLocationId,
@@ -239,7 +248,7 @@ const LogsTable = ({
     }
 
     fetchData()
-  }, [city, machineClass, startDate, endDate, isCheckboxChecked])
+  }, [city, machineClass, startDate, endDate, isCheckboxChecked, machine])
 
   const disabledDate = (current: any) => {
     const today = moment()
@@ -602,9 +611,6 @@ const LogsTable = ({
   useEffect(() => {
     setMachineCounter(machine.length)
     setMachineClassCounter(machineClass.length)
-    if (machine.length === 0) {
-      setPartsSelected([])
-    }
   }, [machine])
 
   useEffect(() => {
@@ -859,16 +865,13 @@ const LogsTable = ({
                               </MenuItem>
                             )
                           )
-                        : isMachineClassesLoading ?? (
+                        : !isMachineClassesLoading && (
                             // Render "No data found" when no data is available
                             <MenuItem disabled>
-                              <div className="animate-pulse flex space-x-4">
-                                <div className="h-9 w-9 rounded-full bg-slate-200"></div>
-                              </div>
-                              {/* <ListItemText
-                            className="mx-4 pl-4"
-                            primary="No data found"
-                          /> */}
+                              <ListItemText
+                                className="mx-4 pl-4"
+                                primary="No data found"
+                              />
                             </MenuItem>
                           )}
                     </Select>
@@ -900,15 +903,11 @@ const LogsTable = ({
                       }}
                       value={machine}
                       onChange={(event) => handleMachineChange(event)}
-                      renderValue={() => `${machineCounter} selected`}
+                      renderValue={() =>
+                        isMachinesLoading ? "" : `${machineCounter} selected`
+                      }
                       MenuProps={MenuProps}
                     >
-                      {isMachinesLoading && !machines && (
-                        <MenuItem disabled>
-                          <CircularProgress size={24} />{" "}
-                          {/* Display a loader while data is loading */}
-                        </MenuItem>
-                      )}
                       {machines && machines.items && machines.items.length > 0
                         ? machines?.items?.map(
                             (item: T_Machine, index: number) => (
@@ -953,7 +952,11 @@ const LogsTable = ({
                       }}
                       value={partsSelected}
                       onChange={(event) => handlePartsChange(event)}
-                      renderValue={() => `${partsCounter} selected`}
+                      renderValue={() =>
+                        machineClassCounter === 0
+                          ? ""
+                          : `${partsCounter} selected`
+                      }
                       MenuProps={MenuProps}
                     >
                       {parts && parts.items && parts.items.length > 0 ? (
@@ -2632,7 +2635,11 @@ const LogsTable = ({
             ) : null}
           </div>
         </div>
-        {isPaginatedLoading ? (
+        {isPaginatedLoading &&
+        city &&
+        machineClass &&
+        machine &&
+        partsSelected ? (
           <div className="flex mb-4 w-full">
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
@@ -3001,7 +3008,9 @@ const LogsTable = ({
             </div>
           </div>
         ) : null}
-        {(paginated?.items && paginated?.items.length === 0) || !renderData ? (
+        {(paginated?.items && paginated?.items.length === 0) ||
+        !renderData ||
+        !paginated?.items ? (
           <div className="flex mb-4 w-full">
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
               {isPaginatedLoading ? (

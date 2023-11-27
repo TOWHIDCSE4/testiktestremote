@@ -138,7 +138,7 @@ function useGlobalTimerLogsMulti(
   )
 
   useEffect(() => {
-    if (page > 1 && !process) {
+    if (page >= 1) {
       query.refetch()
     }
   }, [
