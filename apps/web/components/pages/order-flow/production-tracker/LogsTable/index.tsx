@@ -241,7 +241,7 @@ const LogsTable = ({
     }
 
     fetchData()
-  }, [city, machineClass, startDate, endDate, isCheckboxChecked])
+  }, [city, machineClass, startDate, endDate, isCheckboxChecked, machine])
 
   const disabledDate = (current: any) => {
     const today = moment()
@@ -613,9 +613,6 @@ const LogsTable = ({
   useEffect(() => {
     setMachineCounter(machine.length)
     setMachineClassCounter(machineClass.length)
-    if (machine.length === 0) {
-      setPartsSelected([])
-    }
   }, [machine])
 
   useEffect(() => {
@@ -1018,15 +1015,11 @@ const LogsTable = ({
                       }}
                       value={machine}
                       onChange={(event) => handleMachineChange(event)}
-                      renderValue={() => `${machineCounter} selected`}
+                      renderValue={() =>
+                        isMachinesLoading ? "" : `${machineCounter} selected`
+                      }
                       MenuProps={MenuProps}
                     >
-                      {isMachinesLoading && !machines && (
-                        <MenuItem disabled>
-                          <CircularProgress size={24} />{" "}
-                          {/* Display a loader while data is loading */}
-                        </MenuItem>
-                      )}
                       {machines && machines.items && machines.items.length > 0
                         ? machines?.items?.map(
                             (item: T_Machine, index: number) => (
