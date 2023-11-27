@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Table from "./Table"
 import useGetCycleTimerRealTime from "../../../../../../hooks/timers/useGetCycleTimerRealTime"
 import { hourMinuteSecond } from "../../../../../../helpers/timeConverter"
@@ -8,10 +8,15 @@ import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import useGetTimerDetails from "../../../../../../hooks/timers/useGetTimerDetails"
 import useGetAllTimerLogsCount from "../../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
+import { useSocket } from "../../../../../../store/useSocket"
+import useStoreTimer from "../../../../../../store/useStoreTimer"
 
 const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
+  const intervalRef = useRef<any>()
+  const socket = useSocket((store) => store.instance)
+  const { isTimerStop } = useStoreTimer((store) => store)
   const [dailyUnits, setDailyUnits] = useState<number>(0)
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId as string)
@@ -46,11 +51,20 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
     }
   }, [timerDetailData])
   const runCycle = () => {
-    const interval: any = setInterval(() => {
-      setCycleClockInSeconds((previousState: number) => previousState + 1)
-    }, 1000)
-    setCycleClockIntervalId(interval)
+    stopInterval()
+    if (isTimerStop !== true) {
+      intervalRef.current = setInterval(() => {
+        setCycleClockInSeconds((previousState: number) => previousState + 1)
+      }, 1000)
+      setCycleClockIntervalId(intervalRef.current)
+    }
   }
+
+  const stopInterval = () => {
+    clearInterval(intervalRef.current)
+    setIsCycleClockRunning(false)
+  }
+
   useEffect(() => {
     setCycleCockTimeArray(hourMinuteSecond(cycleClockInSeconds))
   }, [cycleClockInSeconds])
