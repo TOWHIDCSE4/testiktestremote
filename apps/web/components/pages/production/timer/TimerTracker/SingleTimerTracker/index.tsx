@@ -7,6 +7,7 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import useGetTimerDetails from "../../../../../../hooks/timers/useGetTimerDetails"
+import useGetAllTimerLogsCount from "../../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 
 const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -26,7 +27,15 @@ const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
     Array<number | string>
   >([])
   const [cycleClockIntervalId, setCycleClockIntervalId] = useState<number>(0)
+  const { data: timerLogsCount, refetch: refetchTimerLogs } =
+    useGetAllTimerLogsCount({
+      locationId: timerDetailData?.item?.locationId?._id as string,
+      timerId: timerId as string,
+    })
 
+  useEffect(() => {
+    setDailyUnits(timerLogsCount?.itemCount as number)
+  })
   useEffect(() => {
     if (timerDetailData?.item) {
       setSelectedTimerMachine(timerDetailData?.item?.machineId?.name as string)
