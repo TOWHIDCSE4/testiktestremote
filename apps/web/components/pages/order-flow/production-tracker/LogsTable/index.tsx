@@ -196,6 +196,12 @@ const LogsTable = ({
     setMachineClass(initialMachineClassSelected)
   }, [machineClasses])
 
+  useEffect(() => {
+    if (dateRange.length === 0) {
+      setStartDateForMachineClass("")
+      setEndDateForMachineClass("")
+    }
+  }, [dateRange])
   const {
     data: allParts,
     setLocationId,
