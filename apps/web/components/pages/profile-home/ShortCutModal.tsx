@@ -57,7 +57,11 @@ export default function ShortCutModal({
 
   return (
     <>
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition
+        appear
+        show={isOpen && machineClasses != undefined}
+        as={Fragment}
+      >
         <Dialog as="div" className="relative z-10" onClose={onClose}>
           <Transition.Child
             as={Fragment}
@@ -90,7 +94,7 @@ export default function ShortCutModal({
                     TIMER SHORTCUT
                   </Dialog.Title>
                   <div className="mt-5 space-y-3">
-                    {machineClasses.map((machineClass, index) => (
+                    {machineClasses?.map((machineClass, index) => (
                       <div key={index} className="space-y-2">
                         <div className="p-2 bg-gray-300 rounded-md flex justify-between">
                           <h4 className="uppercase">{machineClass[0]?.name}</h4>
