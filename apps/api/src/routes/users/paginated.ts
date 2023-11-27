@@ -17,6 +17,8 @@ export const paginated = async (req: Request, res: Response) => {
     excludeUser,
     factories,
     machineClass,
+    key,
+    sort,
   } = req.query
   if (page) {
     try {
@@ -162,12 +164,17 @@ export const paginated = async (req: Request, res: Response) => {
         ],
       })
 
+      let sorting: any = {}
+      if (key && sort) {
+        sorting[`${key}`] = sort
+      } else {
+        sorting["createdAt"] = -1
+      }
+
       const getAllUsers = await Users.find({ $and: queryFilters })
         .populate("locationId")
         .populate("factoryId")
-        .sort({
-          createdAt: -1,
-        })
+        .sort(sorting)
         .skip(7 * (Number(page) - 1))
         .limit(7)
 

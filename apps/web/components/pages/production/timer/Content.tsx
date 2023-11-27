@@ -40,12 +40,6 @@ const Content = () => {
     useMachineClasses()
 
   useEffect(() => {
-    if (userProfile) {
-      setCurrentLocationTab(userProfile.item.locationId as string)
-    }
-  }, [userProfile])
-
-  useEffect(() => {
     if (locationTabs.length === 0) {
       if (locations) {
         setLocationTabs(
@@ -77,6 +71,12 @@ const Content = () => {
     )
       setCurrentLocationTab(location?.item._id || "")
   }, [location])
+
+  useEffect(() => {
+    if (userProfile) {
+      setCurrentLocationTab(userProfile.item.locationId as string)
+    }
+  }, [userProfile])
 
   useEffect(() => {
     if (
