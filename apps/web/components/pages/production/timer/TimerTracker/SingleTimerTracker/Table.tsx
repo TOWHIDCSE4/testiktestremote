@@ -10,6 +10,7 @@ import * as utc from "dayjs/plugin/utc"
 import Footer from "./Footer"
 import { usePathname } from "next/navigation"
 import { Dispatch, useEffect } from "react"
+import useGetAllTimerLogsCount from "../../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 
 const Table = ({
   timerId,
@@ -34,13 +35,18 @@ const Table = ({
     setPage,
   } = useGetAllTimerLogs({ timerId, locationId, paginated: true })
   const { data } = useGetAllTimerLogs({ timerId, locationId })
+  const { data: timerLogsCount, refetch: refetchTimerLogs } =
+    useGetAllTimerLogsCount({
+      locationId: locationId as string,
+      timerId: timerId as string,
+    })
 
   const pathName = usePathname()
   const path = pathName.substring(0, 25)
 
   useEffect(() => {
-    if (setDailyUnits && typeof data?.itemCount === "number") {
-      setDailyUnits(data?.itemCount || 0)
+    if (setDailyUnits && typeof timerLogsCount?.itemCount === "number") {
+      setDailyUnits(timerLogsCount?.itemCount || 0)
     }
   }, [data])
 
