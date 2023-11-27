@@ -166,6 +166,9 @@ const LogsTable = ({
       const initialMachineSelection = machines?.items?.map((item) => item._id)
       setMachine(initialMachineSelection as string[])
       setMachineCounter(machine.length)
+    } else {
+      setMachine([])
+      setMachineCounter(0)
     }
   }, [machines])
 
