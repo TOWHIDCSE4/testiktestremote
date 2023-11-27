@@ -983,16 +983,13 @@ const LogsTable = ({
                               </MenuItem>
                             )
                           )
-                        : isMachineClassesLoading ?? (
+                        : !isMachineClassesLoading && (
                             // Render "No data found" when no data is available
                             <MenuItem disabled>
-                              <div className="animate-pulse flex space-x-4">
-                                <div className="h-9 w-9 rounded-full bg-slate-200"></div>
-                              </div>
-                              {/* <ListItemText
-                            className="mx-4 pl-4"
-                            primary="No data found"
-                          /> */}
+                              <ListItemText
+                                className="mx-4 pl-4"
+                                primary="No data found"
+                              />
                             </MenuItem>
                           )}
                     </Select>
@@ -1073,7 +1070,11 @@ const LogsTable = ({
                       }}
                       value={partsSelected}
                       onChange={(event) => handlePartsChange(event)}
-                      renderValue={() => `${partsCounter} selected`}
+                      renderValue={() =>
+                        machineClassCounter === 0
+                          ? ""
+                          : `${partsCounter} selected`
+                      }
                       MenuProps={MenuProps}
                     >
                       {parts && parts.items && parts.items.length > 0 ? (
@@ -2752,7 +2753,11 @@ const LogsTable = ({
             ) : null}
           </div>
         </div>
-        {isPaginatedLoading ? (
+        {isPaginatedLoading &&
+        city &&
+        machineClass &&
+        machine &&
+        partsSelected ? (
           <div className="flex mb-4 w-full">
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
@@ -3121,7 +3126,9 @@ const LogsTable = ({
             </div>
           </div>
         ) : null}
-        {(paginated?.items && paginated?.items.length === 0) || !renderData ? (
+        {(paginated?.items && paginated?.items.length === 0) ||
+        !renderData ||
+        !paginated?.items ? (
           <div className="flex mb-4 w-full">
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
               {isPaginatedLoading ? (
