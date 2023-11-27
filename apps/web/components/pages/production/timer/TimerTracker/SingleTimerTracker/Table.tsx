@@ -35,20 +35,9 @@ const Table = ({
     setPage,
   } = useGetAllTimerLogs({ timerId, locationId, paginated: true })
   const { data } = useGetAllTimerLogs({ timerId, locationId })
-  const { data: timerLogsCount, refetch: refetchTimerLogs } =
-    useGetAllTimerLogsCount({
-      locationId: locationId as string,
-      timerId: timerId as string,
-    })
 
   const pathName = usePathname()
   const path = pathName.substring(0, 25)
-
-  useEffect(() => {
-    if (setDailyUnits && typeof timerLogsCount?.itemCount === "number") {
-      setDailyUnits(timerLogsCount?.itemCount || 0)
-    }
-  }, [data])
 
   return (
     <>
