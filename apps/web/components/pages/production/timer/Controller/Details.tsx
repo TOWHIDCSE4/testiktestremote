@@ -301,8 +301,8 @@ const Details = ({
           )}
         </span>
       </h5>
-      <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-        Operator
+      <h4 className="uppercase flex font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
+        Operator <p className="text-red-600 font-bold">*</p>
       </h4>
       <Combobox
         as="div"
@@ -322,7 +322,7 @@ const Details = ({
               console.log("SelectedOperator", selectedOperator)
               return selected && selected.id && selected.name
                 ? `${selected.name}`
-                : "Please select operator"
+                : "Operator Unassigned"
             }}
           />
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
@@ -377,8 +377,8 @@ const Details = ({
           ) : null}
         </div>
       </Combobox>
-      <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-        Job
+      <h4 className="uppercase flex font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
+        Job <p className="text-red-600 font-bold">*</p>
       </h4>
       <select
         id="jobs"

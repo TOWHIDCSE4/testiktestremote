@@ -348,7 +348,7 @@ const Timer = ({
             ? `${operator?.firstName} ${operator?.lastName}`
             : typeof operator === "string"
             ? `${operator}`
-            : `Please select operator`}
+            : `Operator Unassigned`}
         </p>
         <div>
           <h2 className="font-semibold text-gray-400 text-5xl">

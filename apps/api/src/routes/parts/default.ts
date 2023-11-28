@@ -43,6 +43,19 @@ export const getPart = async (req: Request, res: Response) => {
       _id: req.params.id,
       $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
     })
+
+    if (!getPart) {
+      return res.json({
+        error: false,
+        item: null,
+        itemCount: 1,
+        message: null,
+      })
+    }
+    const partTime = Number(getPart?.time?.toFixed(2))
+
+    getPart.time = partTime ? partTime : 0
+
     res.json({
       error: false,
       item: getPart,
