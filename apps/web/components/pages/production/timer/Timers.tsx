@@ -63,7 +63,9 @@ const Timers = ({
           name: isRadialPress
             ? `${machineClass.name} and Variants`
             : machineClass.name,
-          count: timerByMachineClass.length + variantTimers.length,
+          count: isRadialPress
+            ? timerByMachineClass.length + variantTimers.length
+            : timerByMachineClass.length,
           rowNumber: machineClass.rowNumber,
           timers: isRadialPress
             ? [...timerByMachineClass, ...variantTimers]
