@@ -1106,7 +1106,7 @@ const LogsTable = ({
                     </th>
                     <th scope="col" className="w-[17%] text-slate-900">
                       <div className="flex items-center">
-                        DATE
+                        DATE/TIME
                         <button
                           onClick={(e) => handleInputChange(e, "createdAt")}
                         >
@@ -1201,7 +1201,7 @@ const LogsTable = ({
                       className="w-[15%] md:w-[20%] px-6 py-3 text-slate-900"
                     >
                       <div className="flex items-center ml-4">
-                        TIME
+                        CYCLE TIME
                         <button onClick={(e) => handleInputChange(e, "time")}>
                           <svg
                             className="w-3 h-3 ml-1.5"
@@ -2654,7 +2654,7 @@ const LogsTable = ({
                     </th>
                     <th scope="col" className="w-[17%] text-slate-900">
                       <div className="flex items-center">
-                        DATE
+                        DATE/TIME
                         <button>
                           <svg
                             className="w-3 h-3 ml-1.5"
@@ -2743,7 +2743,7 @@ const LogsTable = ({
                       className="w-[15%] md:w-[20%] px-6 py-3 text-slate-900"
                     >
                       <div className="flex items-center ">
-                        TIME
+                        CYCLE TIME
                         <button>
                           <svg
                             className="w-3 h-3 ml-1.5"
@@ -3021,7 +3021,7 @@ const LogsTable = ({
                     <tr>
                       <th scope="col" className="px-6 py-3 text-slate-900">
                         <div className="flex items-center">
-                          DATE
+                          DATE/TIME
                           <button>
                             <svg
                               className="w-3 h-3 ml-1.5"
@@ -3101,7 +3101,7 @@ const LogsTable = ({
                       </th>
                       <th scope="col" className="px-6 py-3 text-slate-900">
                         <div className="flex items-center ">
-                          TIME
+                          CYCLE TIME
                           <button>
                             <svg
                               className="w-3 h-3 ml-1.5"
