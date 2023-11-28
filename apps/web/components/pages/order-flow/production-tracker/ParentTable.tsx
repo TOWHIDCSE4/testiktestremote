@@ -89,6 +89,10 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
     }
   }, [machineClasses])
 
+  useEffect(() => {
+    setSelectedValue("client")
+  }, [currentTab])
+
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOption = e.currentTarget.value
     setSelectedValue(selectedOption)
@@ -118,7 +122,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
       })
     : []
 
-  const personnelMachineClass = machineClasses?.items.find(
+  const personnelMachineClass = machineClasses?.items?.find(
     (MachineName: any) => MachineName._id === userProfile?.item.machineClassId
   )
 
@@ -279,24 +283,31 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                         <Menu.Item>
                           {({ active }) => (
                             <div className="relative px-4 py-0.5 flex items-start">
-                              <div className="flex h-6 items-center">
-                                <input
-                                  id="all"
-                                  aria-describedby="all-description"
-                                  name="all"
-                                  type="checkbox"
-                                  className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
-                                  checked={checkAll}
-                                  onChange={(e) => {
-                                    handleSelectMachineClass(e, "all")
-                                  }}
-                                />
-                              </div>
-                              <div className="ml-3 text-sm leading-6 flex flex-col">
-                                <label htmlFor="all" className="text-gray-700">
-                                  All
-                                </label>
-                              </div>
+                              {userProfile?.item.role !== "Personnel" && (
+                                <div className="flex h-6 items-center">
+                                  <input
+                                    id="all"
+                                    aria-describedby="all-description"
+                                    name="all"
+                                    type="checkbox"
+                                    className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                    checked={checkAll}
+                                    onChange={(e) => {
+                                      handleSelectMachineClass(e, "all")
+                                    }}
+                                  />
+                                </div>
+                              )}
+                              {userProfile?.item.role !== "Personnel" && (
+                                <div className="ml-3 text-sm leading-6 flex flex-col">
+                                  <label
+                                    htmlFor="all"
+                                    className="text-gray-700"
+                                  >
+                                    All
+                                  </label>
+                                </div>
+                              )}
                             </div>
                           )}
                         </Menu.Item>
@@ -334,7 +345,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                                 </div>
                               ) : null
                             ) : (
-                              machineClasses?.items.map(
+                              machineClasses?.items?.map(
                                 (machineClassId: T_MachineClass) => (
                                   <div
                                     key={machineClassId._id}

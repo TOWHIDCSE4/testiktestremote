@@ -14,6 +14,7 @@ const TEAMMEMBERS_ADMIN_ROLES = [
 
 const Content = () => {
   const storeSession = useStoreSession(
+    //@ts-expect-error
     (
       state: {
         role:

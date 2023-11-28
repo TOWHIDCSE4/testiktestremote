@@ -114,16 +114,18 @@ const Content = () => {
             {typeState === "Product" ? (
               <button
                 type="button"
-                className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+                className="uppercase disabled:bg-gray-400 rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
                 onClick={() => setOpenNewPartModal(true)}
+                disabled={userProfile?.item.role === "Personnel"}
               >
                 New Product
               </button>
             ) : (
               <button
                 type="button"
-                className="uppercase rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+                className="uppercase rounded-md disabled:bg-gray-400 bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
                 onClick={() => setOpenNewMachineModal(true)}
+                disabled={userProfile?.item.role === "Personnel"}
               >
                 New Machine
               </button>

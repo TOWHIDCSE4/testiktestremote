@@ -69,7 +69,11 @@ export async function getGlobalTimerLogs({
   //   params.append('key', keyword);
 
   const res = await fetch(
-    `${API_URL_TIMER_LOGS}/global/multi/filter?${locationIdQueryString}&${factoryIdQueryString}&${partIdQueryString}&${machineIdQueryString}&${machineClassIdQueryString}&startDate=${startDateRange}&endDate=${endDateRange}&page=${page}&sort=${sortType}&key=${keyword}`,
+    `${API_URL_TIMER_LOGS}/global/multi/filter?${locationIdQueryString}&${factoryIdQueryString}&${partIdQueryString}&${machineIdQueryString}&${machineClassIdQueryString}${
+      startDateRange ? `&startDate=${startDateRange}` : ""
+    }${
+      endDateRange ? `&endDate=${endDateRange}` : ""
+    }&page=${page}&sort=${sortType}&key=${keyword}`,
     {
       method: "GET",
       headers: {
@@ -134,7 +138,7 @@ function useGlobalTimerLogsMulti(
   )
 
   useEffect(() => {
-    if (page > 1 && !process) {
+    if (page >= 1) {
       query.refetch()
     }
   }, [

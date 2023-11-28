@@ -76,6 +76,8 @@ const LogsTable = ({
   const [process, setProcess] = useState<boolean>(false)
   const [machineClass, setMachineClass] = useState<string[]>([])
   const [dateRange, setDateRange] = useState<Date[] | string[]>([])
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
   // const [city, setCity] = useState<string[]>(locationId)
@@ -99,11 +101,12 @@ const LogsTable = ({
   const myRef = useRef<NewWindow | null>(null)
 
   const toggleAccordion = (id: string) => {
-    if (openAccordion === id) {
-      setOpenAccordion(null)
-    } else {
-      setOpenAccordion(id)
-    }
+    setOpenAccordion((prev) => (prev === id ? null : id))
+    // if (openAccordion === id) {
+    //   setOpenAccordion(null)
+    // } else {
+    //   setOpenAccordion(id)
+    // }
   }
 
   useEffect(() => {
@@ -138,14 +141,20 @@ const LogsTable = ({
 
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
 
-  const { data: machineClasses, isLoading: isMachineClassesLoading } =
-    useMachineClasses(city)
+  const {
+    data: machineClasses,
+    setStartDateForMachineClass,
+    setEndDateForMachineClass,
+    isLoading: isMachineClassesLoading,
+  } = useMachineClasses(city)
 
   const {
     data: machines,
     isLoading: isMachinesLoading,
     setSelectedMachineClassId,
     setSelectedLocationId,
+    setEndDateRangeForMachine,
+    setStartDateRangeForMachine,
   } = useGetMachinesByMachineClassLocation()
 
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
@@ -155,6 +164,9 @@ const LogsTable = ({
       const initialMachineSelection = machines?.items?.map((item) => item._id)
       setMachine(initialMachineSelection as string[])
       setMachineCounter(machine.length)
+    } else {
+      setMachine([])
+      setMachineCounter(0)
     }
   }, [machines])
 
@@ -182,6 +194,12 @@ const LogsTable = ({
     setMachineClass(initialMachineClassSelected)
   }, [machineClasses])
 
+  useEffect(() => {
+    if (dateRange.length === 0) {
+      setStartDateForMachineClass("")
+      setEndDateForMachineClass("")
+    }
+  }, [dateRange])
   const {
     data: allParts,
     setLocationId,
@@ -215,7 +233,7 @@ const LogsTable = ({
 
     const fetchData = async () => {
       const res = await fetch(
-        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&search=${search}`,
+        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&search=${search}&startDate=${startDate}&endDate=${endDate}`,
         {
           method: "GET",
           headers: {
@@ -230,10 +248,20 @@ const LogsTable = ({
     }
 
     fetchData()
-  }, [city, machineClass])
+  }, [city, machineClass, startDate, endDate, isCheckboxChecked, machine])
 
   const disabledDate = (current: any) => {
-    return current && current >= today
+    const today = moment()
+    const fourteenDaysAgo = today.subtract(-1, "days")
+    const daysDifferenceFromFourteenDaysAgo = fourteenDaysAgo.diff(
+      current.valueOf(),
+      "days"
+    )
+    const daysDifferenceFromToday = today.diff(current.valueOf(), "days")
+    return (
+      current &&
+      (daysDifferenceFromFourteenDaysAgo <= 0 || daysDifferenceFromToday > 14)
+    )
   }
 
   const [filterBy, setFilterBy] = useState("All")
@@ -322,6 +350,12 @@ const LogsTable = ({
       datePick([currentDate, currentDate])
     } else {
       setDateRange([])
+      setStartDate("")
+      setEndDate("")
+      setStartDateRangeForMachine("")
+      setEndDateRangeForMachine("")
+      setStartDateForMachineClass("")
+      setEndDateForMachineClass("")
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -331,14 +365,20 @@ const LogsTable = ({
 
   const handleProcess = () => {
     if (process === false) {
-      const currentDate = dayjs().format("YYYY-MM-DD")
-      const oneWeekBefore = dayjs().subtract(1, "week").format("YYYY-MM-DD")
-      datePick([oneWeekBefore, currentDate])
+      // const currentDate = dayjs().format("YYYY-MM-DD")
+      // const oneWeekBefore = dayjs().subtract(1, "week").format("YYYY-MM-DD")
+      datePick([])
       setDateRange([])
       setIsCheckboxChecked(false)
     } else {
       setIsCheckboxChecked(false)
       setDateRange([])
+      setStartDate("")
+      setEndDate("")
+      setStartDateForMachineClass("")
+      setEndDateForMachineClass("")
+      setStartDateRangeForMachine("")
+      setEndDateRangeForMachine("")
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -354,6 +394,30 @@ const LogsTable = ({
         setDateRange(inputValue)
       }
       if (isCheckboxChecked) {
+        setStartDate(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDate(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateForMachineClass(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateForMachineClass(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRangeForMachine(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRangeForMachine(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
         setStartDateRange(
           dayjs(inputValue[0])
             .startOf("day")
@@ -371,6 +435,30 @@ const LogsTable = ({
           dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
         )
       } else if (inputValue && inputValue[0] && inputValue[1]) {
+        setStartDate(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDate(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateForMachineClass(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateForMachineClass(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setStartDateRangeForMachine(
+          dayjs(inputValue[0])
+            .startOf("day")
+            .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
+        setEndDateRangeForMachine(
+          dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+        )
         setStartDateRange(
           dayjs(inputValue[0])
             .startOf("day")
@@ -390,6 +478,10 @@ const LogsTable = ({
       }
     } else {
       setDateRange([])
+      setStartDate("")
+      setEndDate("")
+      setStartDateRangeForMachine("")
+      setEndDateRangeForMachine("")
       setStartDateRange("")
       setEndDateRange("")
       setStartDateRanges("")
@@ -398,7 +490,6 @@ const LogsTable = ({
   }
 
   // const { Option } = Select
-
   const handleLocationChange = (event: any) => {
     setCity(event.target.value)
     setPartsSelected([])
@@ -520,9 +611,6 @@ const LogsTable = ({
   useEffect(() => {
     setMachineCounter(machine.length)
     setMachineClassCounter(machineClass.length)
-    if (machine.length === 0) {
-      setPartsSelected([])
-    }
   }, [machine])
 
   useEffect(() => {
@@ -697,40 +785,13 @@ const LogsTable = ({
                 {/* city */}
                 <div className="flex w-1/2 text-[11px] items-center">
                   <p className="w-1/6 font-semibold text-right mr-2">CITY</p>
-                  {/* <Space direction="vertical" className="min-w-full">
-                    <Select
-                      mode="multiple"
-                      style={{ width: "100%", height: '32px', overflow: "hidden", whiteSpace: "nowrap" }}
-                      placeholder={"select city"}
-                      defaultValue={[city[0]]}
-                      size="middle"
-                      onChange={(value) => handleLocationChange(value)}
-                      dropdownRender={(menu) => (
-                        <div>
-                          {menu}
-                        </div>
-                      )}
-                    >
-                      {locations?.items?.map(
-                        (item: T_Locations, index: number) => {
-                          return (
-                            <Option
-                              key={index}
-                              value={item._id as string}
-                              label={item.name}
-                            >
-                              <Space>{item.name}</Space>
-                            </Option>
-                          )
-                        }
-                      )}
-                    </Select> */}
                   <FormControl className="w-2/3" size="small">
                     {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
                     <Select
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -769,36 +830,13 @@ const LogsTable = ({
                   <p className="w-1/6 font-semibold text-right mr-2">
                     MACHINE CLASS
                   </p>
-                  {/* <Space direction="vertical" className="min-w-full">
-                    <Select
-                      mode="multiple"
-                      style={{ width: "100%" }}
-                      placeholder={"select machine class"}
-                      size="middle"
-                      disabled={city ? false : true}
-                      onChange={(value) => handleMachineClassChange(value)}
-                    >
-                      {machineClasses?.items?.map(
-                        (item: T_MachineClass, index: number) => {
-                          return (
-                            <Option
-                              key={index}
-                              value={item._id as string}
-                              label={item.name}
-                            >
-                              {item.name}
-                            </Option>
-                          )
-                        }
-                      )}
-                    </Select>
-                  </Space> */}
                   <FormControl className="w-2/3" size="small">
                     {/* <InputLabel id="demo-multiple-checkbox-label">Tag</InputLabel> */}
                     <Select
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -827,16 +865,13 @@ const LogsTable = ({
                               </MenuItem>
                             )
                           )
-                        : isMachineClassesLoading ?? (
+                        : !isMachineClassesLoading && (
                             // Render "No data found" when no data is available
                             <MenuItem disabled>
-                              <div className="animate-pulse flex space-x-4">
-                                <div className="h-9 w-9 rounded-full bg-slate-200"></div>
-                              </div>
-                              {/* <ListItemText
-                            className="mx-4 pl-4"
-                            primary="No data found"
-                          /> */}
+                              <ListItemText
+                                className="mx-4 pl-4"
+                                primary="No data found"
+                              />
                             </MenuItem>
                           )}
                     </Select>
@@ -858,6 +893,7 @@ const LogsTable = ({
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -867,15 +903,11 @@ const LogsTable = ({
                       }}
                       value={machine}
                       onChange={(event) => handleMachineChange(event)}
-                      renderValue={() => `${machineCounter} selected`}
+                      renderValue={() =>
+                        isMachinesLoading ? "" : `${machineCounter} selected`
+                      }
                       MenuProps={MenuProps}
                     >
-                      {isMachinesLoading && !machines && (
-                        <MenuItem disabled>
-                          <CircularProgress size={24} />{" "}
-                          {/* Display a loader while data is loading */}
-                        </MenuItem>
-                      )}
                       {machines && machines.items && machines.items.length > 0
                         ? machines?.items?.map(
                             (item: T_Machine, index: number) => (
@@ -909,6 +941,7 @@ const LogsTable = ({
                       labelId="demo-multiple-checkbox-label"
                       id="demo-multiple-checkbox"
                       multiple
+                      disabled={!process ? true : false}
                       style={{
                         width: "100%",
                         border: "0.3pt solid #ccc",
@@ -919,7 +952,11 @@ const LogsTable = ({
                       }}
                       value={partsSelected}
                       onChange={(event) => handlePartsChange(event)}
-                      renderValue={() => `${partsCounter} selected`}
+                      renderValue={() =>
+                        machineClassCounter === 0
+                          ? ""
+                          : `${partsCounter} selected`
+                      }
                       MenuProps={MenuProps}
                     >
                       {parts && parts.items && parts.items.length > 0 ? (
@@ -954,7 +991,7 @@ const LogsTable = ({
                   <div className="w-2/3">
                     <Space direction="vertical" className="w-full" size={12}>
                       <RangePicker
-                        disabled={isCheckboxChecked}
+                        disabled={isCheckboxChecked || !process ? true : false}
                         //@ts-expect-error
                         value={isCheckboxChecked ? [null] : dateRange}
                         disabledDate={disabledDate}
@@ -1053,7 +1090,10 @@ const LogsTable = ({
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
-                    <th scope="col" className="w-[10%] pl-12 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[10%] lg:pl-10 xl:pl-12 text-slate-900"
+                    >
                       <input
                         id={`checkbox-table-search`}
                         type="checkbox"
@@ -1160,7 +1200,7 @@ const LogsTable = ({
                       scope="col"
                       className="w-[15%] md:w-[20%] px-6 py-3 text-slate-900"
                     >
-                      <div className="flex items-center ">
+                      <div className="flex items-center ml-4">
                         TIME
                         <button onClick={(e) => handleInputChange(e, "time")}>
                           <svg
@@ -1186,8 +1226,7 @@ const LogsTable = ({
                     paginated?.items.map((item, idx) => {
                       const rowClass =
                         idx % 2 === 0 ? "bg-gray-100" : "bg-gray-200"
-                      const isAccordionOpen =
-                        openAccordion === `accordion-arrow-icon-body-${idx}`
+                      const isAccordionOpen = openAccordion === item._id
                       const checked = isChecked(item._id ?? "")
                       return (
                         <React.Fragment key={item._id}>
@@ -1200,11 +1239,7 @@ const LogsTable = ({
                             data-accordion-target={`#accordion-arrow-icon-body-${idx}`}
                             aria-expanded={isAccordionOpen}
                             aria-controls={`accordion-arrow-icon-body-${idx}`}
-                            onClick={() =>
-                              toggleAccordion(
-                                `accordion-arrow-icon-body-${idx}`
-                              )
-                            }
+                            onClick={() => toggleAccordion(String(item._id))}
                           >
                             <td className="pr-6">
                               <div className="flex items-center">
@@ -1215,7 +1250,11 @@ const LogsTable = ({
                                       "Unit Created"
                                         ? "text-green-500"
                                         : item.stopReason.join(", ") ===
-                                          "Worker Break"
+                                            "Worker Break" ||
+                                          item.stopReason.join(", ") ===
+                                            "Maintenance" ||
+                                          item.stopReason.join(", ") ===
+                                            "Change Part"
                                         ? "text-yellow-500"
                                         : "text-red-500"
                                     } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
@@ -1227,7 +1266,11 @@ const LogsTable = ({
                                       "Unit Created"
                                         ? "text-green-500"
                                         : item.stopReason.join(", ") ===
-                                          "Worker Break"
+                                            "Worker Break" ||
+                                          item.stopReason.join(", ") ===
+                                            "Maintenance" ||
+                                          item.stopReason.join(", ") ===
+                                            "Change Part"
                                         ? "text-yellow-500"
                                         : "text-red-500"
                                     } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
@@ -1322,7 +1365,7 @@ const LogsTable = ({
                             <td className="px-6 py-4">
                               {item.status === "Gain" ? (
                                 <span
-                                  className={`font-bold ${
+                                  className={`ml-4 font-bold whitespace-nowrap ${
                                     item.jobId
                                       ? "text-green-500"
                                       : "text-red-500"
@@ -1331,7 +1374,7 @@ const LogsTable = ({
                                   {formatTime(item.time.toFixed(2))}
                                 </span>
                               ) : (
-                                <span className="font-bold text-red-500">
+                                <span className="ml-4 font-bold whitespace-nowrap text-red-500">
                                   {formatTime(item.time.toFixed(2))}
                                 </span>
                               )}
@@ -1343,10 +1386,12 @@ const LogsTable = ({
                             <tr
                               id={`accordion-arrow-icon-body-${idx}`}
                               aria-labelledby={`accordion-arrow-icon-heading-${idx}`}
-                              className={`${isAccordionOpen ? "open" : ""}`}
+                              className={`${
+                                isAccordionOpen ? "open" : ""
+                              }  #ff0000`}
                             >
                               <td colSpan={7}>
-                                <div className="border border-b-0 border-gray-100 bg-gray-100 h-13">
+                                <div className="border border-b-0 border-gray-100 h-13 bg-[#c7cebe]">
                                   <div className="flex">
                                     <span className="flex w-1/4 text-[14px] text-slate-900 font-semibold border-r-4 border-gray-500 p-0 pb-8">
                                       <p className="px-4 pt-1 text-right">
@@ -1357,9 +1402,9 @@ const LogsTable = ({
                                       <div className="flex">
                                         {" "}
                                         {/* Use flex-wrap to wrap the elements */}
-                                        <span className="w-1/3 flex px-4 text-[13px] ">
+                                        <span className="w-1/2 flex text-[13px] uppercase">
                                           <p
-                                            className={`pl-3 sm:w-3/5 md:w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                            className={`xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1368,7 +1413,7 @@ const LogsTable = ({
                                             CITY :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                            className={`pl-1 pt-2 lg:w-2/3 md:w-2/3 xl:w-2/3 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1379,9 +1424,76 @@ const LogsTable = ({
                                               : ""}{" "}
                                           </p>
                                         </span>
-                                        <span className="w-2/3 flex px-4 text-[13px] ">
+                                        <span className="w-1/2 flex text-[13px] uppercase">
                                           <p
-                                            className={`pt-2 pb-1 w-2/5 text-right text-sm text-gray-500 font-semibold ${
+                                            className={`xl:w-1/3 lg:w-2/4 md:w-2/4 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            STOP REASON :
+                                          </p>
+                                          <p
+                                            className={`xl:w-2/3 lg:w-2/4 md:w-2/4 pl-1 pt-2 pb-1 text-sm text-gray-500 ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            <span
+                                              className={`${
+                                                item.stopReason.join(", ") ===
+                                                "Unit Created"
+                                                  ? "text-green-500"
+                                                  : item.stopReason.join(
+                                                      ", "
+                                                    ) === "Worker Break" ||
+                                                    item.stopReason.join(
+                                                      ", "
+                                                    ) === "Maintenance" ||
+                                                    item.stopReason.join(
+                                                      ", "
+                                                    ) === "Change Part"
+                                                  ? "text-yellow-600"
+                                                  : "text-red-500"
+                                              }`}
+                                            >
+                                              {item.stopReason.join(", ")}
+                                            </span>
+                                          </p>
+                                        </span>
+                                      </div>
+                                      <div className="flex justify-start">
+                                        {" "}
+                                        <span className="flex w-1/2 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                          <p
+                                            className={`pt-2 xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pb-1 text-sm text-gray-500 font-semibold ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            OPERATOR :
+                                          </p>
+                                          <p
+                                            className={` pl-1 xl:w-2/3 lg:w-2/3 md:w-2/3 pt-2 pb-1 text-sm text-gray-500 overflow-hidden whitespace-nowrap overflow-ellipsis ${
+                                              item.jobId
+                                                ? "text-gray-900"
+                                                : "text-red-500"
+                                            }`}
+                                          >
+                                            {item.operator === null
+                                              ? (item.operatorName as string)
+                                              : (item.operator as string)
+                                              ? //@ts-expect-error
+                                                `${item.operator.firstName} ${item.operator.lastName}`
+                                              : ""}
+                                          </p>
+                                        </span>
+                                        <span className="flex w-1/2 sm:px-0 sm: uppercase text-[13px] whitespace-nowrap ">
+                                          <p
+                                            className={`pt-2 pb-1 xl:w-1/3 lg:w-2/4 md:w-2/4 text-right text-sm text-gray-500 font-semibold ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1390,7 +1502,7 @@ const LogsTable = ({
                                             MACHINE CLASS :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
+                                            className={`pl-1 xl:w-2/3 lg:w-2/4 md:w-2/4 pt-2 pb-1 text-sm text-gray-500 ${
                                               item.jobId
                                                 ? "text-gray-900"
                                                 : "text-red-500"
@@ -1405,62 +1517,35 @@ const LogsTable = ({
                                       </div>
                                       <div className="flex">
                                         {" "}
-                                        <span className="flex w-1/3 sm:px-0 sm:pl-1 px-4 text-[13px] ">
+                                        <span className="flex w-1/2 text-[13px]">
                                           <p
-                                            className={`pt-2 sm:w-3/5 md:w-2/5 text-right pb-1 text-sm text-gray-500 font-semibold ${
-                                              item.jobId
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
+                                            className={`uppercase pt-2 xl:w-1/3 lg:w-1/3 md:w-1/3 text-right pb-1 text-sm text-gray-900 font-semibold`}
                                           >
-                                            OPERATOR :
+                                            Average Time :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm text-gray-500 ${
-                                              item.jobId
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
+                                            className={` pl-1 xl:w-2/3 lg:w-2/3 md:w-2/3 pt-2 pb-1 text-sm text-gray-900`}
                                           >
-                                            {item.operator === null
-                                              ? (item.operatorName as string)
-                                              : (item.operator as string)
-                                              ? //@ts-expect-error
-                                                `${item.operator.firstName} ${item.operator.lastName}`
-                                              : ""}
+                                            {item.time
+                                              ? Math.round(item.time)
+                                              : 0}
                                           </p>
                                         </span>
-                                        <span className="w-2/3 flex text-[13px] px-4 text-slate-900 ">
+                                        <span className="w-[53%] flex text-[13px] text-slate-900 ">
                                           <p
-                                            className={`pl-3 w-2/5 text-right pt-2 pb-1 text-sm text-gray-500 font-semibold ${
-                                              item.jobId
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
+                                            className={`uppercase xl:w-2/5 lg:w-2/4 md:w-2/4 text-right pt-2 pb-1 text-sm text-gray-900 font-semibold`}
                                           >
-                                            STOP REASON :
+                                            Average Weight :
                                           </p>
                                           <p
-                                            className={`pl-3 pt-2 pb-1 text-sm  text-gray-500 ${
-                                              item.jobId
-                                                ? "text-gray-900"
-                                                : "text-red-500"
-                                            }`}
+                                            className={`pl-1 xl:w-2/3 lg:w-2/4 md:w-2/4 pt-2 pb-1 text-sm  text-gray-900`}
                                           >
-                                            <span
-                                              className={`${
-                                                item.stopReason.join(", ") ===
-                                                "Unit Created"
-                                                  ? "text-green-500"
-                                                  : item.stopReason.join(
-                                                      ", "
-                                                    ) === "Worker Break"
-                                                  ? "text-yellow-500"
-                                                  : "text-red-500"
-                                              }`}
-                                            >
-                                              {item.stopReason.join(", ")}
-                                            </span>
+                                            {typeof item?.partId === "object" &&
+                                            item?.partId.cageWeightActual
+                                              ? Math.round(
+                                                  item.partId.cageWeightActual
+                                                )
+                                              : 0}
                                           </p>
                                         </span>
                                       </div>
@@ -2550,22 +2635,24 @@ const LogsTable = ({
             ) : null}
           </div>
         </div>
-        {isPaginatedLoading ? (
+        {isPaginatedLoading &&
+        city &&
+        machineClass &&
+        machine &&
+        partsSelected ? (
           <div className="flex mb-4 w-full">
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
-                    {/* <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th scope="col" className="w-[10%] pl-12 text-slate-900">
                       <input
                         id={`checkbox-table-search`}
                         type="checkbox"
-                        checked={checkedProduction.length == 5}
                         className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
-                        onClick={(e) => handleSelectAllProduction(e)}
                       />
-                    </th> */}
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    </th>
+                    <th scope="col" className="w-[17%] text-slate-900">
                       <div className="flex items-center">
                         DATE
                         <button>
@@ -2576,12 +2663,15 @@ const LogsTable = ({
                             fill="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                           </svg>
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[12%] md:w-[14%] md:px-2 text-slate-900"
+                    >
                       <div className="flex items-center">
                         MACHINE
                         <button>
@@ -2592,12 +2682,15 @@ const LogsTable = ({
                             fill="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                           </svg>
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[20%] md:w-[25%] py-3 text-slate-900"
+                    >
                       <div className="flex items-center">
                         PART
                         <button>
@@ -2608,7 +2701,7 @@ const LogsTable = ({
                             fill="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                           </svg>
                         </button>
                       </div>
@@ -2624,7 +2717,7 @@ const LogsTable = ({
                             fill="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                           </svg>
                         </button>
                       </div>
@@ -2640,12 +2733,15 @@ const LogsTable = ({
                             fill="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                           </svg>
                         </button>
                       </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
+                    <th
+                      scope="col"
+                      className="w-[15%] md:w-[20%] px-6 py-3 text-slate-900"
+                    >
                       <div className="flex items-center ">
                         TIME
                         <button>
@@ -2656,7 +2752,7 @@ const LogsTable = ({
                             fill="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
                           </svg>
                         </button>
                       </div>
@@ -2912,365 +3008,354 @@ const LogsTable = ({
             </div>
           </div>
         ) : null}
-        {(paginated?.items && paginated?.items.length === 0) || !renderData ? (
+        {(paginated?.items && paginated?.items.length === 0) ||
+        !renderData ||
+        !paginated?.items ? (
           <div className="flex mb-4 w-full">
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
-              <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
-                <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
-                  <tr>
-                    {/* <th scope="col" className="px-6 py-3 text-slate-900">
-                      <input
-                        id={`checkbox-table-search`}
-                        type="checkbox"
-                        checked={checkedProduction.length == 5}
-                        className="w-4 h-4 text-gray-600 bg-gray-100 border-gray-300 rounded focus:ring-gray-500 dark:focus:ring-gray-500 dark:ring-offset-gray-100 dark:focus:ring-offset-gray-100 focus:ring-2 dark:bg-gray-100 dark:border-gray-900"
-                        onClick={(e) => handleSelectAllProduction(e)}
-                      />
-                    </th> */}
-                    <th scope="col" className="px-6 py-3 text-slate-900">
-                      <div className="flex items-center">
-                        DATE
-                        <button>
-                          <svg
-                            className="w-3 h-3 ml-1.5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
-                      <div className="flex items-center">
-                        MACHINE
-                        <button>
-                          <svg
-                            className="w-3 h-3 ml-1.5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
-                      <div className="flex items-center">
-                        PART
-                        <button>
-                          <svg
-                            className="w-3 h-3 ml-1.5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
-                      <div className="flex items-center">
-                        ID
-                        <button>
-                          <svg
-                            className="w-3 h-3 ml-1.5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
-                      <div className="flex items-center">
-                        STATUS
-                        <button>
-                          <svg
-                            className="w-3 h-3 ml-1.5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-slate-900">
-                      <div className="flex items-center ">
-                        TIME
-                        <button>
-                          <svg
-                            className="w-3 h-3 ml-1.5"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody
-                  data-accordion="open"
-                  className="border-t-4 border-indigo-900"
-                >
-                  <tr
-                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
-                    data-accordion-target="#accordion-arrow-icon-body-0"
-                    aria-expanded="false"
-                    aria-controls="accordion-arrow-icon-body-0"
-                  >
-                    <td className="pr-6 py-5">
-                      <div className="h-3">
-                        <div className="flex items-center justify-center mb-4 mt-9 w-full">
-                          <div
-                            className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-dark-blue rounded-full my-1 mx-2"
-                            role="status"
-                            aria-label="loading"
-                          >
-                            <span className="sr-only">loading...</span>
-                          </div>
+              {isPaginatedLoading ? (
+                <div></div>
+              ) : (
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
+                  <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-slate-900">
+                        <div className="flex items-center">
+                          DATE
+                          <button>
+                            <svg
+                              className="w-3 h-3 ml-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            </svg>
+                          </button>
                         </div>
-                      </div>
-                    </td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    ></th>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                  </tr>
-                  <tr
-                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
-                    data-accordion-target="#accordion-arrow-icon-body-0"
-                    aria-expanded="false"
-                    aria-controls="accordion-arrow-icon-body-0"
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-slate-900">
+                        <div className="flex items-center">
+                          MACHINE
+                          <button>
+                            <svg
+                              className="w-3 h-3 ml-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-slate-900">
+                        <div className="flex items-center">
+                          PART
+                          <button>
+                            <svg
+                              className="w-3 h-3 ml-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-slate-900">
+                        <div className="flex items-center">
+                          ID
+                          <button>
+                            <svg
+                              className="w-3 h-3 ml-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-slate-900">
+                        <div className="flex items-center">
+                          STATUS
+                          <button>
+                            <svg
+                              className="w-3 h-3 ml-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-slate-900">
+                        <div className="flex items-center ">
+                          TIME
+                          <button>
+                            <svg
+                              className="w-3 h-3 ml-1.5"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    data-accordion="open"
+                    className="border-t-4 border-indigo-900"
                   >
-                    <td className="pr-6 py-5">
-                      <div className="h-3"></div>
-                    </td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    ></th>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                  </tr>
-                  <tr
-                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
-                    data-accordion-target="#accordion-arrow-icon-body-0"
-                    aria-expanded="false"
-                    aria-controls="accordion-arrow-icon-body-0"
-                  >
-                    <td className="pr-6 py-5">
-                      <div className="h-3"></div>
-                    </td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    ></th>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                  </tr>
-                  <tr
-                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
-                    data-accordion-target="#accordion-arrow-icon-body-0"
-                    aria-expanded="false"
-                    aria-controls="accordion-arrow-icon-body-0"
-                  >
-                    <td className="pr-6 py-5">
-                      <div className="h-3"></div>
-                    </td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    ></th>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                  </tr>
-                  <tr
-                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
-                    data-accordion-target="#accordion-arrow-icon-body-0"
-                    aria-expanded="false"
-                    aria-controls="accordion-arrow-icon-body-0"
-                  >
-                    <td className="pr-6 py-5">
-                      <div className="h-3"></div>
-                    </td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    ></th>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                  </tr>
-                  <tr
-                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
-                    data-accordion-target="#accordion-arrow-icon-body-1"
-                    aria-expanded="false"
-                    aria-controls="accordion-arrow-icon-body-1"
-                  >
-                    <td className="pr-6 py-5">
-                      <div className="h-3"></div>
-                    </td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    ></th>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                  </tr>
-                  <tr
-                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100  "
-                    data-accordion-target="#accordion-arrow-icon-body-2"
-                    aria-expanded="false"
-                    aria-controls="accordion-arrow-icon-body-2"
-                  >
-                    <td className="pr-6 py-5">
-                      <div className="h-3"></div>
-                    </td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    ></th>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                  </tr>
-                  <tr
-                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
-                    data-accordion-target="#accordion-arrow-icon-body-3"
-                    aria-expanded="false"
-                    aria-controls="accordion-arrow-icon-body-3"
-                  >
-                    <td className="pr-6 py-5">
-                      <div className="h-3"></div>
-                    </td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    ></th>
-                    <td className="px-6 py-5"></td>
-                    <td className="px-6 text-sm flex flex-col text-gray-900"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                  </tr>
-                  <tr
-                    className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
-                    data-accordion-target="#accordion-arrow-icon-body-4"
-                    aria-expanded="false"
-                    aria-controls="accordion-arrow-icon-body-4"
-                  >
-                    <td className="pr-6 py-5">
-                      <div className="h-3"></div>
-                    </td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    ></th>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                  </tr>
-                  <tr
-                    className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
-                    data-accordion-target="#accordion-arrow-icon-body-4"
-                    aria-expanded="false"
-                    aria-controls="accordion-arrow-icon-body-4"
-                  >
-                    <td className="pr-6 py-5">
-                      <div className="h-3"></div>
-                    </td>
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                    ></th>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
-                    <td className="px-6 py-4"></td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="font-bold text-red-500"></span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="">
+                        <div className="h-3">
+                          <div className="flex items-center justify-center mb-4 mt-9 w-full"></div>
+                        </div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="h-3"></div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="h-3"></div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="h-3"></div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-0"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-0"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="h-3"></div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm  flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                      data-accordion-target="#accordion-arrow-icon-body-1"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-1"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="h-3"></div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100  "
+                      data-accordion-target="#accordion-arrow-icon-body-2"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-2"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="h-3"></div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200  "
+                      data-accordion-target="#accordion-arrow-icon-body-3"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-3"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="h-3"></div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-5"></td>
+                      <td className="px-6 text-sm flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
+                      data-accordion-target="#accordion-arrow-icon-body-4"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-4"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="h-3"></div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                    <tr
+                      className="bg-gray text-slate-900 font-medium border-b bg-gray-200"
+                      data-accordion-target="#accordion-arrow-icon-body-4"
+                      aria-expanded="false"
+                      aria-controls="accordion-arrow-icon-body-4"
+                    >
+                      <td className="pr-6 py-5">
+                        <div className="h-3"></div>
+                      </td>
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      ></th>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4 text-sm flex flex-col text-gray-900"></td>
+                      <td className="px-6 py-4"></td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-red-500"></span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         ) : null}
@@ -3329,36 +3414,6 @@ const LogsTable = ({
                           {
                             //@ts-expect-error
                             globalMetrics?.items?.totalTons.toFixed(4)
-                          }
-                        </span>
-                      )
-                    }
-                  </p>
-
-                  <p className="text-sm text-gray-700">
-                    Global Units Per Hour :
-                    {
-                      //@ts-expect-error
-                      globalMetrics?.items?.globalUnitsPerHour !==
-                        undefined && (
-                        <span>
-                          {
-                            //@ts-expect-error
-                            globalMetrics?.items?.globalUnitsPerHour.toFixed(4)
-                          }
-                        </span>
-                      )
-                    }
-                  </p>
-                  <p className="text-sm text-gray-700">
-                    Global Tons Per Hour :
-                    {
-                      //@ts-expect-error
-                      globalMetrics?.items?.globalTonsPerHour !== undefined && (
-                        <span>
-                          {
-                            //@ts-expect-error
-                            globalMetrics?.items?.globalTonsPerHour.toFixed(4)
                           }
                         </span>
                       )

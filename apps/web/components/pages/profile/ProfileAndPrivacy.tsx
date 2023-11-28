@@ -18,6 +18,7 @@ const ProfileAndPrivacy = () => {
   )
   const storeSession = useStoreSession((state) => state)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+
   const { mutate: uploadMediaFile, isLoading: isUploadMediaFileLoading } =
     useUploadMediaFile()
   const { register, handleSubmit } = useForm<T_UserProfile>({
@@ -147,16 +148,16 @@ const ProfileAndPrivacy = () => {
               </label>
               <input
                 type="text"
-                required
                 id="profileName"
                 disabled={
                   updateInfoLoading ||
                   isProfileLoading ||
-                  isUploadMediaFileLoading
+                  isUploadMediaFileLoading ||
+                  userProfile?.item.role === "Personnel"
                 }
                 className={`block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70`}
                 placeholder="Your profile name..."
-                {...register("profileName", { required: true })}
+                {...register("profileName", { required: false })}
               />
             </div>
           </div>

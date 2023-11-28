@@ -38,9 +38,8 @@ const NewMemberModal = ({ isOpen, onClose }: NewModalProps) => {
   const onSubmit = (data: T_User) => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
-        console.log(data)
+        close()
         if (!data.error) {
-          // router.push("/team-members");
           resetForm()
         } else {
           toast.error(String(data.message))

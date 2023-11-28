@@ -5,6 +5,7 @@ import {
 } from "../../utils/constants"
 import Users from "../../models/users"
 import * as Sentry from "@sentry/node"
+import mongoose from "mongoose"
 
 export const paginated = async (req: Request, res: Response) => {
   const {
@@ -16,6 +17,8 @@ export const paginated = async (req: Request, res: Response) => {
     excludeUser,
     factories,
     machineClass,
+    key,
+    sort,
   } = req.query
   if (page) {
     try {
@@ -24,14 +27,39 @@ export const paginated = async (req: Request, res: Response) => {
       if (role && role !== "null") {
         if (role === "HR") {
           queryFilters.push({ role: { $in: ["HR", "HR_Director"] } })
+        } else if (role === "Corporate") {
+          queryFilters.push({
+            role: {
+              $in: [
+                "Accounting",
+                "Sales",
+                "Corporate",
+                "Accounting_Director",
+                "Sales_Director",
+                "Corporate_Director",
+              ],
+            },
+          })
         } else {
           queryFilters.push({ role })
         }
       }
-
-      if (locationId) {
-        queryFilters.push({ locationId })
+      // if the locationId is not provided then return empty array
+      if (!locationId || locationId === "") {
+        return res.json({
+          error: false,
+          items: [],
+          itemCount: 0,
+          message: null,
+        })
       }
+      queryFilters.push({
+        locationId: {
+          $in: String(locationId)
+            .split(",")
+            .map((id: string) => new mongoose.Types.ObjectId(id)),
+        },
+      })
 
       if (status && status !== "null") {
         queryFilters.push({ status })
@@ -49,13 +77,27 @@ export const paginated = async (req: Request, res: Response) => {
       ) {
         factoryMachineFilter.push({
           $and: [
-            //@ts-expect-error
-            { factoryId: factories?.split(",").map((id: string) => id.trim()) },
             {
-              machineClassId: machineClass
-                //@ts-expect-error
-                ?.split(",")
-                .map((id: string) => id.trim()),
+              $or: [
+                {
+                  factoryId: (factories as string)
+                    ?.split(",")
+                    .map((id: string) => id.trim()),
+                },
+                { factoryId: { $exists: false } },
+              ],
+            },
+            {
+              $or: [
+                {
+                  machineClassId: (machineClass as string)
+                    ?.split(",")
+                    .map((id: string) => id.trim()),
+                },
+                {
+                  machineClassId: { $exists: false },
+                },
+              ],
             },
           ],
         })
@@ -65,7 +107,12 @@ export const paginated = async (req: Request, res: Response) => {
             //@ts-expect-error
             ?.split(",")
             .map((id: string) => id.trim())
-          queryFilters.push({ factoryId: { $in: factoryIds } })
+          queryFilters.push({
+            $or: [
+              { factoryId: { $exists: false } },
+              { factoryId: { $in: factoryIds } },
+            ],
+          })
         }
 
         if (machineClass && machineClass !== "") {
@@ -73,7 +120,12 @@ export const paginated = async (req: Request, res: Response) => {
             //@ts-expect-error
             ?.split(",")
             .map((id: string) => id.trim())
-          queryFilters.push({ machineClassId: { $in: machineClassIds } })
+          queryFilters.push({
+            $or: [
+              { machineClassId: { $exists: false } },
+              { machineClassId: { $in: machineClassIds } },
+            ],
+          })
         }
       }
 
@@ -112,12 +164,17 @@ export const paginated = async (req: Request, res: Response) => {
         ],
       })
 
+      let sorting: any = {}
+      if (key && sort) {
+        sorting[`${key}`] = sort
+      } else {
+        sorting["createdAt"] = -1
+      }
+
       const getAllUsers = await Users.find({ $and: queryFilters })
         .populate("locationId")
         .populate("factoryId")
-        .sort({
-          createdAt: -1,
-        })
+        .sort(sorting)
         .skip(7 * (Number(page) - 1))
         .limit(7)
 
@@ -125,7 +182,7 @@ export const paginated = async (req: Request, res: Response) => {
         $and: queryFilters,
       }).countDocuments()
 
-      res.json({
+      return res.json({
         error: false,
         items: getAllUsers,
         itemCount: usersCount,
@@ -134,7 +191,7 @@ export const paginated = async (req: Request, res: Response) => {
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       Sentry.captureException(err)
-      res.json({
+      return res.json({
         error: true,
         message: message,
         items: null,
@@ -142,7 +199,7 @@ export const paginated = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.json({
+    return res.json({
       error: true,
       message: REQUIRED_VALUES_MISSING,
       items: null,

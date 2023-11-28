@@ -14,7 +14,9 @@ const isUserLoggedIn = async (
     const bearer = bearerHeader.split(" ")
     const bearerToken = bearer[1]
     try {
-      const { email }: any = jwt.verify(bearerToken, keys.signKey as Secret)
+      const { email }: any = jwt.verify(bearerToken, keys.signKey as Secret, {
+        ignoreExpiration: true,
+      })
       const user = await Users.findOne({ email })
       if (user && user.deletedAt) {
         throw new Error("We cannot find your account in our system")

@@ -15,6 +15,7 @@ import { Combobox } from "@headlessui/react"
 import useUpdateTimerJob from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
 import useProfile from "../../../../../hooks/users/useProfile"
+import { Button, Tooltip } from "antd"
 import { useSocket } from "../../../../../store/useSocket"
 
 type T_Props = {
@@ -154,14 +155,14 @@ const Details = ({
       setSelectedOperator({
         id:
           typeof timerDetails?.operator === "object" &&
-          timerDetails?.operator != null &&
-          timerDetails?.operator != undefined
+          timerDetails?.operator !== null &&
+          timerDetails?.operator !== undefined
             ? (timerDetails?.operator?._id as string)
             : "",
         name:
           typeof timerDetails?.operator === "object" &&
-          timerDetails?.operator != null &&
-          timerDetails?.operator != undefined
+          timerDetails?.operator !== null &&
+          timerDetails?.operator !== undefined
             ? `${timerDetails?.operator?.firstName} ${timerDetails?.operator?.lastName}`
             : "",
       })
@@ -234,18 +235,36 @@ const Details = ({
       </h5>
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
         Product:{" "}
-        <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-          {isTimerDetailDataLoading ? (
-            <div className="animate-pulse flex space-x-4">
-              <div className="h-3 w-24 bg-slate-200 rounded"></div>
-            </div>
-          ) : (
-            <>
-              {typeof timerDetails?.partId === "object"
-                ? timerDetails?.partId.name
-                : "---"}
-            </>
-          )}
+        <span className="uppercase w-48 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
+          <Tooltip
+            title={
+              isTimerDetailDataLoading ? (
+                <div className="animate-pulse flex space-x-4">
+                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                </div>
+              ) : (
+                <>
+                  {typeof timerDetails?.partId === "object"
+                    ? timerDetails?.partId.name
+                    : "---"}
+                </>
+              )
+            }
+            trigger="hover"
+            placement="top"
+          >
+            {isTimerDetailDataLoading ? (
+              <div className="animate-pulse flex space-x-4">
+                <div className="h-3 w-24 bg-slate-200 rounded"></div>
+              </div>
+            ) : (
+              <>
+                {typeof timerDetails?.partId === "object"
+                  ? timerDetails?.partId.name
+                  : "---"}
+              </>
+            )}
+          </Tooltip>
         </span>
       </h5>
       <h5 className="uppercase text-sm font-medium text-gray-800 mt-2 md:text-lg xl:text-[1.5vw] 2xl:text-2xl flex items-center gap-1 xl:leading-7  dark:bg-dark-blue dark:text-white">
@@ -295,8 +314,15 @@ const Details = ({
           <Combobox.Input
             className={`block mt-2 w-full xl:w-80 2xl:w-[350px] ipadair:w-[250px] rounded-md border-0 py-1.5 pl-3 dark:bg-gray-300 bg-zinc-100 pr-10 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-xl sm:xl:leading-7 disabled:opacity-50 disabled:cursor-not-allowed`}
             onChange={(event) => setOperatorQuery(event.target.value)}
-            displayValue={(selected: { id: string; name: string }) => {
-              return selected ? selected.name : ""
+            displayValue={(
+              selected: { id: string; name: string } | undefined
+            ) => {
+              console.log("selected", selected)
+              console.log("OperatorQuery", operatorQuery)
+              console.log("SelectedOperator", selectedOperator)
+              return selected && selected.id && selected.name
+                ? `${selected.name}`
+                : "Please select operator"
             }}
           />
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">

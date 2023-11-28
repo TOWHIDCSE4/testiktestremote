@@ -13,6 +13,7 @@ import { T_Factory, T_Machine, T_MachineClass } from "custom-validator"
 import usePaginatedMachines from "../../../../hooks/machines/usePaginatedMachines"
 import DropDownMenu from "./DropDownMenu"
 import useGetMachineLocationCount from "../../../../hooks/machines/useGetMachineLocationCount"
+import useProfile from "../../../../hooks/users/useProfile"
 
 type T_LocationTabs = {
   _id?: string
@@ -58,6 +59,7 @@ const Machine = ({
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [factoryIdFilter, setFactoryIdFilter] = useState("all")
   const [machineClassIdFilter, setMachineClassIdFilter] = useState("all")
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const [nameFilter, setNameFilter] = useState("")
   const [selectedPartId, setSelectedMachineId] = useState<string | undefined>(
     ""
@@ -124,10 +126,14 @@ const Machine = ({
                 className={combineClasses(
                   tab._id === currentLocationTab
                     ? "bg-blue-950 text-white"
-                    : "bg-white text-gray-700 hover:bg-gray-50",
+                    : "bg-white text-gray-700 disabled:text-gray-400 hover:bg-gray-50",
                   "uppercase rounded-md py-3.5 font-extrabold shadow-sm ring-1 ring-inset ring-gray-200 w-full"
                 )}
                 onClick={() => setCurrentLocationTab(tab?._id as string)}
+                disabled={
+                  userProfile?.item.role === "Personnel" &&
+                  tab._id !== userProfile?.item.locationId
+                }
               >
                 {tab.name}{" "}
                 {locationsCount[index] ? `(${locationsCount[index]})` : null}
@@ -344,14 +350,18 @@ const Machine = ({
                             e: React.MouseEvent<HTMLElement>
                           ) => {
                             e.stopPropagation()
-                            setOpenDetailsModal(true)
+                            if (userProfile?.item.role !== "Personnel") {
+                              setOpenDetailsModal(true)
+                            }
                             setSelectedMachineId(product._id as string)
                           }}
                           setOpenDeleteModal={(
                             e: React.MouseEvent<HTMLElement>
                           ) => {
                             e.stopPropagation()
-                            setOpenDeleteModal(true)
+                            if (userProfile?.item.role !== "Personnel") {
+                              setOpenDeleteModal(true)
+                            }
                             setSelectedMachineId(product._id as string)
                           }}
                         />

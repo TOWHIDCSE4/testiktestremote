@@ -17,6 +17,7 @@ import DeleteModal from "./modals/DeleteModal"
 import Image from "next/image"
 import combineClasses from "../../../../helpers/combineClasses"
 import TabTableDetail from "./TabTable-detail"
+import useProfile from "../../../../hooks/users/useProfile"
 
 const TabTable = ({
   tab,
@@ -48,6 +49,7 @@ const TabTable = ({
   } = usePaginatedJobs()
 
   const [editModal, setEditModal] = useState(false)
+  const { data: userProfile } = useProfile()
   const [selectedJob, setSelectedJob] = useState<T_Job[]>([])
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [jobId, setJobId] = useState("")
@@ -74,8 +76,13 @@ const TabTable = ({
   }
 
   useEffect(() => {
-    setMachineClassId(machineClassIds)
+    if (machineClassIds.length > 0) {
+      setMachineClassId(machineClassIds)
+    } else {
+      setMachineClassId([])
+    }
   }, [machineClassIds])
+
   useEffect(() => {
     setSelectedJob([])
   }, [locked])
@@ -119,6 +126,12 @@ const TabTable = ({
     return numberOfPages ? numberOfPages : 1
   }
 
+  useEffect(() => {
+    if (numberOfPages === 1) {
+      setPage(1)
+    }
+  }, [numberOfPages, setPage])
+
   return (
     <>
       {isJobsLoading ? (
@@ -145,14 +158,10 @@ const TabTable = ({
               <th
                 scope="col"
                 className={`md:w-[3%] lg:w-[3%] py-3.5 pl-2 text-left text-sm font-semibold text-gray-900 uppercase`}
-              >
-                {/* <a href="#" className="group inline-flex">
-                  Factory
-                </a> */}
-              </th>
+              ></th>
               <th
                 scope="col"
-                className={`w-[28%] md:w-[20%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
+                className={`w-[33%] md:w-[25%] py-3.5 text-left text-sm font-semibold text-gray-900  uppercase`}
               >
                 <a href="#" className="group inline-flex">
                   Name
@@ -161,7 +170,7 @@ const TabTable = ({
 
               <th
                 scope="col"
-                className="md:w-[28%] lg:w-[10%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem] uppercase"
+                className="md:w-[30%] lg:w-[12%] py-3.5 text-left text-sm font-semibold text-gray-900 xl:w-[14rem] uppercase"
               >
                 <a href="#" className="group inline-flex">
                   Part
@@ -261,7 +270,7 @@ const TabTable = ({
                         ? job?.factory?.name
                         : ""} */}
                     </td>
-                    <td className="py-3 text-sm text-gray-800">
+                    <td className="py-3 text-sm text-gray-800 whitespace-nowrap overflow-hidden overflow-ellipsis">
                       <Tooltip
                         title={
                           <span style={{ padding: "0px 0.3em" }}>
@@ -356,62 +365,109 @@ const TabTable = ({
                             style={{ overflow: "visible" }}
                           >
                             <div className="">
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <span
-                                    className={combineClasses(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                              {tab !== "Deleted" ? (
+                                <>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <span
+                                        className={combineClasses(
+                                          active
+                                            ? "bg-gray-100 text-gray-900"
+                                            : "text-gray-700",
+                                          "block px-4 py-2 text-sm cursor-pointer text-left"
+                                        )}
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          setJobId(job._id as string)
+                                        }}
+                                      >
+                                        Details
+                                      </span>
                                     )}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setJobId(job._id as string)
-                                    }}
-                                  >
-                                    Details
-                                  </span>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <span
-                                    className={combineClasses(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <span
+                                        className={combineClasses(
+                                          active
+                                            ? "bg-gray-100 text-gray-900"
+                                            : "text-gray-700",
+                                          `${
+                                            userProfile?.item.role ===
+                                            "Personnel"
+                                              ? "block px-4 py-2 text-sm cursor-not-allowed text-left"
+                                              : "block px-4 py-2 text-sm cursor-pointer text-left"
+                                          } `
+                                        )}
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          if (
+                                            userProfile?.item.role !==
+                                            "Personnel"
+                                          ) {
+                                            setEditModal(true)
+                                          }
+                                          setJobId(job._id as string)
+                                        }}
+                                      >
+                                        Edit
+                                      </span>
                                     )}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setEditModal(true)
-                                      setJobId(job._id as string)
-                                    }}
-                                  >
-                                    Edit
-                                  </span>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <span
-                                    className={combineClasses(
-                                      active
-                                        ? "bg-gray-100 text-gray-900"
-                                        : "text-gray-700",
-                                      "block px-4 py-2 text-sm cursor-pointer text-left"
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <span
+                                        className={combineClasses(
+                                          active
+                                            ? "bg-gray-100 text-gray-900"
+                                            : "text-gray-700",
+                                          `${
+                                            userProfile?.item.role ===
+                                            "Personnel"
+                                              ? "block px-4 py-2 text-sm cursor-not-allowed text-left"
+                                              : "block px-4 py-2 text-sm cursor-pointer text-left"
+                                          } `
+                                        )}
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          if (
+                                            userProfile?.item.role !==
+                                            "Personnel"
+                                          ) {
+                                            setDeleteModal(true)
+                                          }
+                                          setJobId(job._id as string)
+                                        }}
+                                      >
+                                        Delete
+                                      </span>
                                     )}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setDeleteModal(true)
-                                      setJobId(job._id as string)
-                                    }}
-                                  >
-                                    Delete
-                                  </span>
-                                )}
-                              </Menu.Item>
+                                  </Menu.Item>
+                                </>
+                              ) : (
+                                <Menu.Item>
+                                  {({ active }) => (
+                                    <span
+                                      className={combineClasses(
+                                        active
+                                          ? "bg-gray-100 text-gray-900"
+                                          : "text-gray-700",
+                                        `${
+                                          userProfile?.item.role === "Personnel"
+                                            ? "block px-4 py-2 text-sm cursor-not-allowed text-left"
+                                            : "block px-4 py-2 text-sm cursor-pointer text-left"
+                                        } `
+                                      )}
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        // Add your logic for Restore here
+                                      }}
+                                    >
+                                      Restore
+                                    </span>
+                                  )}
+                                </Menu.Item>
+                              )}
                             </div>
                           </Menu.Items>
                         </Transition>

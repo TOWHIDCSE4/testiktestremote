@@ -10,6 +10,7 @@ import * as utc from "dayjs/plugin/utc"
 import Footer from "./Footer"
 import { usePathname } from "next/navigation"
 import { Dispatch, useEffect } from "react"
+import useGetAllTimerLogsCount from "../../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 
 const Table = ({
   timerId,
@@ -37,12 +38,6 @@ const Table = ({
 
   const pathName = usePathname()
   const path = pathName.substring(0, 25)
-
-  useEffect(() => {
-    if (setDailyUnits && typeof data?.itemCount === "number") {
-      setDailyUnits(data?.itemCount || 0)
-    }
-  }, [data])
 
   return (
     <>

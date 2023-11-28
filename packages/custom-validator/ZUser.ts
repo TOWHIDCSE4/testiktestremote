@@ -13,6 +13,9 @@ export const ZUserRoles = z.enum([
   "Accounting",
   "Sales",
   "Super",
+  "Accounting_Director",
+  "Sales_Director",
+  "Corporate_Director",
 ])
 
 export const ZUserStatus = z.enum([

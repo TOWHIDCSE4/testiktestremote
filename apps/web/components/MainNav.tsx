@@ -192,10 +192,34 @@ const MainNav = () => {
                                   <div className="h-3 w-24 bg-slate-200 rounded"></div>
                                 </div>
                               ) : (
-                                <>
-                                  {userProfile?.item?.firstName}{" "}
-                                  {userProfile?.item?.lastName}
-                                </>
+                                (() => {
+                                  if (
+                                    userProfile?.item.profile &&
+                                    userProfile?.item?.profile?.realNameDisplay
+                                  ) {
+                                    return (
+                                      <>
+                                        {userProfile?.item?.firstName}{" "}
+                                        {userProfile?.item?.lastName}
+                                      </>
+                                    )
+                                  } else if (
+                                    userProfile?.item.profile === null
+                                  ) {
+                                    return (
+                                      <>
+                                        {userProfile?.item?.firstName}{" "}
+                                        {userProfile?.item?.lastName}
+                                      </>
+                                    )
+                                  } else {
+                                    return (
+                                      <>
+                                        {userProfile?.item.profile?.profileName}
+                                      </>
+                                    )
+                                  }
+                                })()
                               )}
                             </span>
                             <span className="text-left text-gray-500 font-semibold">
@@ -282,7 +306,7 @@ const MainNav = () => {
         <SideBarNav />
       </div>
       <div className="p-4 w-full fixed bottom-0 bg-gray-200 lg:pl-72 flex items-center gap-2 justify-center z-20">
-        © {dayjs().format("YYYY")} AmeriTex Pipe & Products with{" "}
+        © {dayjs().format("YYYY")} AmeriTex Pipe & Products, made with{" "}
         <HeartIcon className="h-5 w-5 text-red-500" /> by Ieko Media.
       </div>
     </>

@@ -2,6 +2,7 @@ import { Fragment, MouseEventHandler } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid"
 import combineClasses from "../../../../helpers/combineClasses"
+import useProfile from "../../../../hooks/users/useProfile"
 
 export default function DropDownMenu({
   setOpenEditModal,
@@ -10,6 +11,8 @@ export default function DropDownMenu({
   setOpenEditModal: Function
   setOpenDeleteModal: Function
 }) {
+  const { data: userProfile } = useProfile()
+
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
@@ -39,7 +42,11 @@ export default function DropDownMenu({
                   onClick={(e) => setOpenEditModal(e)}
                   className={combineClasses(
                     active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                    "block px-4 py-2 text-sm cursor-pointer"
+                    `${
+                      userProfile?.item.role === "Personnel"
+                        ? "block px-4 py-2 text-sm cursor-not-allowed"
+                        : "block px-4 py-2 text-sm cursor-pointer"
+                    } `
                   )}
                 >
                   Edit
@@ -52,7 +59,11 @@ export default function DropDownMenu({
                   onClick={(e) => setOpenDeleteModal(e)}
                   className={combineClasses(
                     active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                    "block px-4 py-2 text-sm cursor-pointer"
+                    `${
+                      userProfile?.item.role === "Personnel"
+                        ? "block px-4 py-2 text-sm cursor-not-allowed"
+                        : "block px-4 py-2 text-sm cursor-pointer"
+                    } `
                   )}
                 >
                   Delete

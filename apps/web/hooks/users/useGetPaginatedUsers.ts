@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query"
 import {
   T_BackendResponse,
   T_Factory,
+  T_Location,
+  T_Locations,
   T_MachineClass,
   T_User,
   T_UserRole,
@@ -19,6 +21,8 @@ type T_DBReturn = Omit<T_BackendResponse, "items"> & {
 export async function getAllUsers({
   page,
   role,
+  keyword,
+  sortType,
   locationId,
   factories,
   machineClass,
@@ -27,8 +31,10 @@ export async function getAllUsers({
   excludeUser,
 }: {
   page: number
-  locationId: string
+  locationId: string[] | null
   role: T_UserRole | null
+  keyword: string | null
+  sortType: string
   factories: string | null
   status: T_UserStatus | null
   machineClass: string | null
@@ -37,7 +43,7 @@ export async function getAllUsers({
 }) {
   const token = Cookies.get("tfl")
   const res = await fetch(
-    `${API_URL_USERS}/paginated?page=${page}&role=${role}&locationId=${locationId}&status=${status}&name=${name}&excludeUser=${excludeUser}&factories=${factories}&machineClass=${machineClass}`,
+    `${API_URL_USERS}/paginated?page=${page}&role=${role}&locationId=${locationId}&status=${status}&name=${name}&excludeUser=${excludeUser}&factories=${factories}&machineClass=${machineClass}&key=${keyword}&sort=${sortType}`,
     {
       method: "GET",
       headers: {
@@ -52,15 +58,18 @@ export async function getAllUsers({
 function usePaginatedUsers(
   queryStatus: T_UserStatus | null,
   queryRole: T_UserRole
+  // queryLocation:T_Locations | null
 ) {
   const [page, setPage] = useState(1)
   const [name, setName] = useState("")
   const { data: userProfile } = useProfile()
-  const [locationId, setLocationId] = useState("")
+  const [locationId, setLocationId] = useState<string[] | null>([])
   const [role, setRole] = useState<T_UserRole | null>(queryRole)
   const [factories, setFactories] = useState<string | null>("")
   const [status, setStatus] = useState<T_UserStatus | null>(queryStatus)
   const [machineClass, setMachineClass] = useState<string | null>("")
+  const [keyword, setKeyword] = useState<string>("")
+  const [sortType, setSortType] = useState<string>("asc")
   const query = useQuery(
     [
       "paginated-users",
@@ -71,11 +80,15 @@ function usePaginatedUsers(
       name,
       factories,
       machineClass,
+      keyword,
+      sortType,
     ],
     () =>
       getAllUsers({
         page,
         role,
+        keyword,
+        sortType,
         machineClass,
         locationId,
         factories,
@@ -92,17 +105,24 @@ function usePaginatedUsers(
   useEffect(() => {
     if (
       page &&
-      (role || status || locationId || name || factories || machineClass)
+      (role ||
+        status ||
+        locationId ||
+        name ||
+        factories ||
+        machineClass ||
+        sortType)
     ) {
       query.refetch()
     }
-  }, [page, role, status, locationId, name, factories, machineClass])
+  }, [page, role, status, locationId, name, factories, machineClass, sortType])
 
   return {
     ...query,
     page,
     role,
     status,
+    sortType,
     setPage,
     setRole,
     setFactories,
@@ -110,6 +130,8 @@ function usePaginatedUsers(
     setMachineClass,
     setStatus,
     setName,
+    setKeyword,
+    setSortType,
   }
 }
 export default usePaginatedUsers

@@ -14,6 +14,14 @@ export const paginated = async (req: Request, res: Response) => {
   let { machineClassIds } = req.query
   if (page && locationId) {
     try {
+      if (!machineClassIds?.length) {
+        return res.json({
+          error: false,
+          items: [],
+          itemCount: 0,
+          message: null,
+        })
+      }
       machineClassIds = machineClassIds as string
       const machineClassidz =
         machineClassIds &&
