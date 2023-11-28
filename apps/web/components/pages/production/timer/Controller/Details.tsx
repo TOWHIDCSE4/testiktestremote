@@ -322,7 +322,7 @@ const Details = ({
               console.log("SelectedOperator", selectedOperator)
               return selected && selected.id && selected.name
                 ? `${selected.name}`
-                : "Please select operator"
+                : "Operator Unassigned"
             }}
           />
           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
