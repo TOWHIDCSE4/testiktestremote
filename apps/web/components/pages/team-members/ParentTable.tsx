@@ -2,10 +2,9 @@
 import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react"
+import { Fragment, useCallback, useEffect, useState } from "react"
 import {
   T_BackendResponse,
-  T_Location,
   T_Locations,
   T_MachineClass,
   T_UserRole,
@@ -1006,7 +1005,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                           <MenuItem
                             key={index}
                             value={item.name as string}
-                            disabled={userProfile?.item.locationId !== item._id}
+                            disabled={
+                              storeSession?.role === "Personnel" &&
+                              userProfile?.item.locationId !== item._id
+                            }
                           >
                             <Checkbox
                               checked={selectedCity.includes(item.name)}
