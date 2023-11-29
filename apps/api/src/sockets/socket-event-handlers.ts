@@ -11,7 +11,9 @@ export default function chatSocket(io: Server) {
 
     if (!token) socket.disconnect()
 
-    const { email }: any = verify(token as string, keys.signKey as Secret)
+    const { email }: any = verify(token as string, keys.signKey as Secret, {
+      ignoreExpiration: true,
+    })
 
     const user = await Users.findOne({ email })
     if (!user) socket.disconnect()
