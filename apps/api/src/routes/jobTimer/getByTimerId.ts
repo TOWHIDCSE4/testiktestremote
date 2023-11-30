@@ -21,17 +21,7 @@ export const getByTimerId = async (req: Request, res: Response) => {
         _id: new mongoose.Types.ObjectId(getDayJobTimer?.jobId),
       })
 
-      //@ts-expect-error
-      const targetCountJob = job.count
-      console.log(
-        "🚀 ~ file: getByTimerId.ts:16 ~ getByTimerId ~ getDayJobTimer:",
-        targetCountJob
-      )
-      console.log(
-        "🚀 ~ file: getByTimerId.ts:23 ~ getDayJobTimer?.jobId?._id:",
-        getDayJobTimer?.jobId?._id
-      )
-
+      const targetCountJob = job?.count
       const getStockJob = await Jobs.findOne({
         locationId: req.query.locationId,
         partId: job?.partId,
@@ -45,25 +35,12 @@ export const getByTimerId = async (req: Request, res: Response) => {
             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
           },
         ],
-        // $and: [
-        //   { status: { $ne: "Deleted" } },
-        //   { status: { $ne: "Archived" } },
-        //   { status: { $ne: "Testing" } },
-        //   {
-        //     $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-        //   },
-        // ],
       })
 
       const currCountJob = await TimerLogs.find({
         stopReason: { $in: ["Unit Created"] },
         jobId: getDayJobTimer?.jobId,
       }).countDocuments()
-
-      console.log(
-        "🚀 ~ file: getByTimerId.ts:44 ~ getByTimerId ~ currCountJob:",
-        currCountJob
-      )
 
       if (targetCountJob && currCountJob && currCountJob <= targetCountJob) {
         const limitReached = currCountJob <= targetCountJob || false
@@ -90,7 +67,7 @@ export const getByTimerId = async (req: Request, res: Response) => {
           )
 
           if (updateJobTimer) {
-            res.json({
+            return res.json({
               error: false,
               message: null,
               item: updateJobTimer,
@@ -100,14 +77,14 @@ export const getByTimerId = async (req: Request, res: Response) => {
         }
       }
 
-      res.json({
+      return res.json({
         error: false,
         message: null,
         item: getDayJobTimer,
         itemCount: null,
       })
     } else {
-      res.json({
+      return res.json({
         error: true,
         itemCount: null,
         message: REQUIRED_VALUES_MISSING,
@@ -116,7 +93,7 @@ export const getByTimerId = async (req: Request, res: Response) => {
   } catch (err: any) {
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
     Sentry.captureException(err)
-    res.json({
+    return res.json({
       error: true,
       message: message,
       items: null,
