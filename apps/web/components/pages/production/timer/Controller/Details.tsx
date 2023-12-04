@@ -317,9 +317,6 @@ const Details = ({
             displayValue={(
               selected: { id: string; name: string } | undefined
             ) => {
-              console.log("selected", selected)
-              console.log("OperatorQuery", operatorQuery)
-              console.log("SelectedOperator", selectedOperator)
               return selected && selected.id && selected.name
                 ? `${selected.name}`
                 : "Operator Unassigned"

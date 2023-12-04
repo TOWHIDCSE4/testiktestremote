@@ -96,6 +96,7 @@ const Timer = ({
           dayjs(data.timers[0].createdAt),
           timeZone ? timeZone : ""
         )
+        refetchTimerLogs()
         const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
         const secondsLapse = currentDate.diff(timerStart, "seconds", true)
         setCycleClockInSeconds(secondsLapse)
