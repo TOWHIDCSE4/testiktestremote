@@ -21,8 +21,8 @@ import { useSocket } from "../../../../../store/useSocket"
 type T_Props = {
   timerDetails: T_Timer // Show all details of controller
   isTimerDetailDataLoading: boolean // Loadind timer details
-  readingMessages: string[] // Using for messages
-  sectionDiv: React.RefObject<HTMLDivElement>
+  // readingMessages: string[] // Using for messages
+  // sectionDiv: React.RefObject<HTMLDivElement>
   jobTimer: T_JobTimer // Timer jobs list
   jobUpdateId: string
   defaultOperator: any
@@ -40,8 +40,8 @@ type T_Props = {
 const Details = ({
   timerDetails,
   isTimerDetailDataLoading,
-  readingMessages,
-  sectionDiv,
+  // readingMessages,
+  // sectionDiv,
   jobTimer,
   jobUpdateId,
   defaultOperator,
@@ -407,7 +407,7 @@ const Details = ({
         })}
         <option>Add New Job</option>
       </select>
-      <div className="relative flex">
+      {/* <div className="relative flex">
         <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
           Readings
         </h4>
@@ -428,7 +428,7 @@ const Details = ({
           )
         })}
         <div ref={sectionDiv} />
-      </div>
+      </div> */}
       <NewJobModal
         isOpen={openNewJobModal}
         locationState={
