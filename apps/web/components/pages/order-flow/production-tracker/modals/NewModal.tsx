@@ -132,6 +132,9 @@ const NewModal = ({
           queryClient.invalidateQueries({
             queryKey: ["jobs"],
           })
+          queryClient.invalidateQueries({
+            queryKey: ["job-timer-timer"],
+          })
           toast.success(String(data.message))
           setSelectedPart(
             timer
