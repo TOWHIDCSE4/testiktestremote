@@ -115,7 +115,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
     Array<number | string>
   >([])
 
-  const [readingMessages, setReadingMessages] = useState<string[]>([])
+  // const [readingMessages, setReadingMessages] = useState<string[]>([])
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
   const [endTimer, setEndTimer] = useState<boolean>(false)
   const intervalRef = useRef<any>()
@@ -245,11 +245,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }, [])
 
-  const startingTimerReadings = (messages: string[]) => {
-    setTimeout(function () {
-      setReadingMessages((previousState) => [...previousState, ...messages])
-    }, 1500)
-  }
+  // const startingTimerReadings = (messages: string[]) => {
+  //   setTimeout(function () {
+  //     setReadingMessages((previousState) => [...previousState, ...messages])
+  //   }, 1500)
+  // }
 
   // Timer Clock
 
@@ -277,11 +277,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const stopTimer = () => {
     stopInterval()
     setProgress(0)
-    startingTimerReadings([
-      `${currentDate} - Ending timer production`,
-      `${currentDate} - Timer stopped`,
-      `${currentDate} - Timer production ended`,
-    ])
+    // startingTimerReadings([
+    //   `${currentDate} - Ending timer production`,
+    //   `${currentDate} - Timer stopped`,
+    //   `${currentDate} - Timer production ended`,
+    // ])
     setCycleClockInSeconds(0)
 
     setTimeout(function () {
@@ -319,17 +319,22 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }, [controllerTimer])
 
+  const networkFailure = (errorMsg: string) => {
+    console.error(errorMsg)
+    toast.error("Oops! Network trouble. Check your connection and try again")
+  }
+
   // Cycle Clock
 
   const callBackReq = {
     onSuccess: (returnData: T_BackendResponse) => {
       if (!returnData.error) {
       } else {
-        toast.error(String(returnData.message))
+        networkFailure(String(returnData.message))
       }
     },
     onError: (err: any) => {
-      toast.error(String(err))
+      networkFailure(String(err))
     },
   }
 
@@ -359,10 +364,10 @@ const Controller = ({ timerId }: { timerId: string }) => {
         if (jobUpdateId !== "") {
           if (!isTimerControllerEnded) {
             setIsCycleClockStarting(true)
-            startingTimerReadings([
-              `${currentDate} - Starting timer`,
-              `${currentDate} - Timer started`,
-            ])
+            // startingTimerReadings([
+            //   `${currentDate} - Starting timer`,
+            //   `${currentDate} - Timer started`,
+            // ])
             updateIsTimerStop(false)
             setTimeout(
               function () {
@@ -374,7 +379,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
                         runIntervalClock()
                       },
                       onError: (err: any) => {
-                        toast.error(String(err))
+                        networkFailure(String(err))
                       },
                     }
                   )
@@ -419,12 +424,12 @@ const Controller = ({ timerId }: { timerId: string }) => {
       timerId: timerId,
       message: "stop the timer",
     })
-    startingTimerReadings([
-      `${currentDate} - Stopping timer`,
-      `${currentDate} - Timer stopped`,
-      `${currentDate} - Timer cycle reset`,
-      `${currentDate} - One unit created`,
-    ])
+    // startingTimerReadings([
+    //   `${currentDate} - Stopping timer`,
+    //   `${currentDate} - Timer stopped`,
+    //   `${currentDate} - Timer cycle reset`,
+    //   `${currentDate} - One unit created`,
+    // ])
     if (stopReasons.length === 0) {
       endAddCycleTimer(timerId, {
         onSuccess: () => {
@@ -433,7 +438,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           setIsCycleClockStarting(false)
         },
         onError: (err: any) => {
-          toast.error(String(err))
+          networkFailure(String(err))
         },
       })
       timeLogCall(jobUpdateId, ["Unit Created"])
@@ -449,7 +454,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           stopInterval()
         },
         onError: (err: any) => {
-          toast.error(String(err))
+          networkFailure(String(err))
         },
       })
       timeLogCall(jobUpdateId, stopReasons)
@@ -460,9 +465,9 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }
 
-  useEffect(() => {
-    sectionDiv.current?.scrollIntoView({ behavior: "smooth" })
-  }, [readingMessages])
+  // useEffect(() => {
+  //   sectionDiv.current?.scrollIntoView({ behavior: "smooth" })
+  // }, [readingMessages])
 
   useEffect(() => {
     if (
@@ -533,7 +538,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
             }
           },
           onError: (err: any) => {
-            toast.error(String(err))
+            networkFailure(String(err))
           },
         }
       )
@@ -585,7 +590,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           }
         },
         onError: (err: any) => {
-          console.log(String(err))
+          networkFailure(String(err))
         },
       }
     )
@@ -604,16 +609,16 @@ const Controller = ({ timerId }: { timerId: string }) => {
           setProgress(0)
           setCycleClockInSeconds(0)
           setIsCycleClockRunning(false)
-          startingTimerReadings([
-            `${currentDate} - Stopping timer`,
-            `${currentDate} - Timer stopped`,
-          ])
+          // startingTimerReadings([
+          //   `${currentDate} - Stopping timer`,
+          //   `${currentDate} - Timer stopped`,
+          // ])
         } else {
-          toast.error(String(data.message))
+          networkFailure(String(data.message))
         }
       },
       onError: (err: any) => {
-        toast.error(String(err))
+        networkFailure(String(err))
       },
     })
     endCycleTimer(timerId)
@@ -630,8 +635,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
         <Details
           timerDetails={timerDetailData?.item}
           isTimerDetailDataLoading={isTimerDetailDataLoading}
-          readingMessages={readingMessages}
-          sectionDiv={sectionDiv}
+          // readingMessages={readingMessages}
+          // sectionDiv={sectionDiv}
           jobUpdateId={jobUpdateId}
           defaultOperator={defaultOperator}
           jobTimer={jobTimer?.item as T_JobTimer}

@@ -21,8 +21,8 @@ import { useSocket } from "../../../../../store/useSocket"
 type T_Props = {
   timerDetails: T_Timer // Show all details of controller
   isTimerDetailDataLoading: boolean // Loadind timer details
-  readingMessages: string[] // Using for messages
-  sectionDiv: React.RefObject<HTMLDivElement>
+  // readingMessages: string[] // Using for messages
+  // sectionDiv: React.RefObject<HTMLDivElement>
   jobTimer: T_JobTimer // Timer jobs list
   jobUpdateId: string
   defaultOperator: any
@@ -40,8 +40,8 @@ type T_Props = {
 const Details = ({
   timerDetails,
   isTimerDetailDataLoading,
-  readingMessages,
-  sectionDiv,
+  // readingMessages,
+  // sectionDiv,
   jobTimer,
   jobUpdateId,
   defaultOperator,
@@ -86,6 +86,10 @@ const Details = ({
     id: "",
     name: "",
   })
+  const networkFailure = (errorMsg: string) => {
+    console.error(errorMsg)
+    toast.error("Oops! Network trouble. Check your connection and try again")
+  }
 
   const handleInputOperator = () => {
     const leadingTrailingSpaceRegex = /^\s|\s$/
@@ -94,14 +98,14 @@ const Details = ({
     } else {
       mutate(
         { ...timerDetails, operator: "", operatorName: operatorQuery },
-        callBackReq
+        operatorUpdatecallBackReq
       )
     }
   }
 
   useEffect(() => {
     if (isJobSwitch) {
-      updateTimerJob({ ...jobTimer, jobId: jobUpdateId }, callBackReq)
+      updateTimerJob({ ...jobTimer, jobId: jobUpdateId }, jobUpdateCallBackReq)
       toast.success("Job switch succesfully", {
         duration: 5000,
       })
@@ -120,12 +124,34 @@ const Details = ({
         name: defaultOperator.firstName + " " + defaultOperator.lastName,
       })
       if (timerDetails) {
-        mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
+        mutate(
+          { ...timerDetails, operator: defaultOperator._id },
+          operatorUpdatecallBackReq
+        )
       }
     }
   }, [defaultOperator])
 
-  const callBackReq = {
+  const operatorUpdatecallBackReq = {
+    onSuccess: (data: T_BackendResponse) => {
+      if (!data.error) {
+        queryClient.invalidateQueries({
+          queryKey: ["timer", timerDetails._id],
+        })
+        queryClient.invalidateQueries({
+          queryKey: ["job-timer-timer"],
+        })
+        toast.success("Operator has been updated")
+      } else {
+        networkFailure(String(data.message))
+      }
+    },
+    onError: (err: any) => {
+      networkFailure(String(err))
+    },
+  }
+
+  const jobUpdateCallBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
         queryClient.invalidateQueries({
@@ -139,14 +165,10 @@ const Details = ({
           timerId: timerDetails._id,
           jobInfo: data?.item,
         })
-      } else {
-        toast.error(String(data.message))
       }
     },
-    onError: (err: any) => {
-      toast.error(String(err))
-    },
   }
+
   useEffect(() => {
     if (timerDetails) {
       setFactoryId(factoryId)
@@ -191,7 +213,10 @@ const Details = ({
         selectedOperator.id !== timerDetails?.operator._id)
     ) {
       if (timerDetails) {
-        mutate({ ...timerDetails, operator: selectedOperator.id }, callBackReq)
+        mutate(
+          { ...timerDetails, operator: selectedOperator.id },
+          operatorUpdatecallBackReq
+        )
       }
     }
   }, [selectedOperator])
@@ -301,6 +326,7 @@ const Details = ({
           )}
         </span>
       </h5>
+      {/* Operator assign */}
       <h4 className="uppercase flex font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
         Operator <p className="text-red-600 font-bold">*</p>
       </h4>
@@ -374,6 +400,7 @@ const Details = ({
           ) : null}
         </div>
       </Combobox>
+      {/* Job assgin */}
       <h4 className="uppercase flex font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
         Job <p className="text-red-600 font-bold">*</p>
       </h4>
@@ -393,7 +420,10 @@ const Details = ({
           if (e.target.value === "Add New Job") {
             setOpenNewJobModal(true)
           } else {
-            updateTimerJob({ ...jobTimer, jobId: e.target.value }, callBackReq)
+            updateTimerJob(
+              { ...jobTimer, jobId: e.target.value },
+              jobUpdateCallBackReq
+            )
           }
         }}
       >
@@ -407,7 +437,7 @@ const Details = ({
         })}
         <option>Add New Job</option>
       </select>
-      <div className="relative flex">
+      {/* <div className="relative flex">
         <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
           Readings
         </h4>
@@ -428,7 +458,7 @@ const Details = ({
           )
         })}
         <div ref={sectionDiv} />
-      </div>
+      </div> */}
       <NewJobModal
         isOpen={openNewJobModal}
         locationState={
