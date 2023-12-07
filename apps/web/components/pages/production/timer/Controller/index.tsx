@@ -319,17 +319,22 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }, [controllerTimer])
 
+  const networkFailure = (errorMsg: string) => {
+    console.error(errorMsg)
+    toast.error("Oops! Network trouble. Check your connection and try again")
+  }
+
   // Cycle Clock
 
   const callBackReq = {
     onSuccess: (returnData: T_BackendResponse) => {
       if (!returnData.error) {
       } else {
-        toast.error(String(returnData.message))
+        networkFailure(String(returnData.message))
       }
     },
     onError: (err: any) => {
-      toast.error(String(err))
+      networkFailure(String(err))
     },
   }
 
@@ -374,7 +379,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
                         runIntervalClock()
                       },
                       onError: (err: any) => {
-                        toast.error(String(err))
+                        networkFailure(String(err))
                       },
                     }
                   )
@@ -433,7 +438,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           setIsCycleClockStarting(false)
         },
         onError: (err: any) => {
-          toast.error(String(err))
+          networkFailure(String(err))
         },
       })
       timeLogCall(jobUpdateId, ["Unit Created"])
@@ -449,7 +454,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           stopInterval()
         },
         onError: (err: any) => {
-          toast.error(String(err))
+          networkFailure(String(err))
         },
       })
       timeLogCall(jobUpdateId, stopReasons)
@@ -533,7 +538,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
             }
           },
           onError: (err: any) => {
-            toast.error(String(err))
+            networkFailure(String(err))
           },
         }
       )
@@ -585,7 +590,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           }
         },
         onError: (err: any) => {
-          console.log(String(err))
+          networkFailure(String(err))
         },
       }
     )
@@ -609,11 +614,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
           //   `${currentDate} - Timer stopped`,
           // ])
         } else {
-          toast.error(String(data.message))
+          networkFailure(String(data.message))
         }
       },
       onError: (err: any) => {
-        toast.error(String(err))
+        networkFailure(String(err))
       },
     })
     endCycleTimer(timerId)

@@ -86,6 +86,10 @@ const Details = ({
     id: "",
     name: "",
   })
+  const networkFailure = (errorMsg: string) => {
+    console.error(errorMsg)
+    toast.error("Oops! Network trouble. Check your connection and try again")
+  }
 
   const handleInputOperator = () => {
     const leadingTrailingSpaceRegex = /^\s|\s$/
@@ -139,11 +143,11 @@ const Details = ({
         })
         toast.success("Operator has been updated")
       } else {
-        toast.error("Network error")
+        networkFailure(String(data.message))
       }
     },
     onError: (err: any) => {
-      toast.error("Network error")
+      networkFailure(String(err))
     },
   }
 
