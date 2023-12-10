@@ -12,7 +12,6 @@ import JobTimerRoute from "./jobTimer"
 import JobRoute from "./jobs"
 import CycleTimerRoute from "./cycleTimers"
 import ControllerTimerRoute from "./controllerTimers"
-import BookmarkRoutes from "./bookmarks"
 
 const App = (app: Application) => {
   app.use(`${API_ROOT}/users`, UsersRoute)
@@ -27,7 +26,6 @@ const App = (app: Application) => {
   app.use(`${API_ROOT}/jobs`, JobRoute)
   app.use(`${API_ROOT}/cycle-timers`, CycleTimerRoute)
   app.use(`${API_ROOT}/controller-timers`, ControllerTimerRoute)
-  app.use(`${API_ROOT}/bookmarks`, BookmarkRoutes)
 }
 
 export default App

@@ -4,18 +4,6 @@ import DetailsModal from "./modals/DetailsModal"
 import DeleteModal from "./modals/DeleteModal"
 import TimerTracker from "./TimerTracker"
 import Timer from "./Timer"
-import { useBookmarks } from "../../../../hooks/bookmarks/useBookmarks"
-import toast from "react-hot-toast"
-import useProfile from "../../../../hooks/users/useProfile"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faThumbtack } from "@fortawesome/free-solid-svg-icons"
-import { USER_ROLES } from "../../../../helpers/constants"
-
-const ALLOWED_ROLES = [
-  USER_ROLES.Administrator,
-  USER_ROLES.Personnel,
-  USER_ROLES.Production,
-]
 
 type T_TimerByMachineClass = {
   id: string
@@ -36,38 +24,6 @@ function TimerCards({
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [selectedTimerId, setSelectedTimerId] = useState("")
-  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
-  const [canCreateShotCut, setCanCreateShotCut] = useState(false)
-  const { addBookmark } = useBookmarks()
-
-  useEffect(() => {
-    if (userProfile?.item?.locationId) {
-      setCanCreateShotCut(
-        ALLOWED_ROLES.includes(userProfile?.item?.role as string)
-      )
-    }
-  }, [userProfile])
-
-  const onBookmark = async (modelId: string) => {
-    try {
-      const response = await addBookmark({
-        modelId,
-        modelName: "machineClasses",
-        userId: userProfile?.item._id as string,
-      })
-      if (!response.error) {
-        toast.success(String(response.message))
-      } else {
-        toast.error(String(response.message))
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(String(error.message))
-      } else {
-        toast.error(String(error))
-      }
-    }
-  }
 
   return (
     <>
@@ -83,29 +39,16 @@ function TimerCards({
             </h6>
           )}
 
-          <div className="md:flex space-x-5">
-            {isLoading ? (
-              <div className="animate-pulse flex space-x-4">
-                <div className="h-8 w-24 bg-slate-200 rounded"></div>
-              </div>
-            ) : (
-              <h6 className="font-bold text-lg text-gray-500">
-                {timerByMachineClass.count}{" "}
-                {timerByMachineClass.count > 1 ? "Timers" : "Timer"}
-              </h6>
-            )}
-            {canCreateShotCut ? (
-              <i
-                title="Pin Section"
-                className="bg-gray-200 p-1 text-gray-800 cursor-pointer"
-                onClick={() => {
-                  onBookmark(timerByMachineClass.id)
-                }}
-              >
-                <FontAwesomeIcon icon={faThumbtack} />
-              </i>
-            ) : null}
-          </div>
+          {isLoading ? (
+            <div className="animate-pulse flex space-x-4">
+              <div className="h-8 w-24 bg-slate-200 rounded"></div>
+            </div>
+          ) : (
+            <h6 className="font-bold text-lg text-gray-500">
+              {timerByMachineClass.count}{" "}
+              {timerByMachineClass.count > 1 ? "Timers" : "Timer"}
+            </h6>
+          )}
         </div>
         {timerByMachineClass.timers.length > 0 ? (
           <>
