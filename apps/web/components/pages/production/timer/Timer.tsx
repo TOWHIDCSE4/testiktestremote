@@ -25,6 +25,9 @@ import useGetAllTimerLogsCount from "../../../../hooks/timerLogs/useGetAllTimerL
 import { useSocket } from "../../../../store/useSocket"
 import useStoreTimer from "../../../../store/useStoreTimer"
 import useControllerModal from "../../../../store/useControllerModal"
+import useGetTimerDetails from "../../../../hooks/timers/useGetTimerDetails"
+import { getObjectId } from "../../../../helpers/ids"
+import useGetTimerJobs from "../../../../hooks/timers/useGetTimerJobs"
 
 type T_Props = {
   timer: T_Timer
@@ -60,6 +63,12 @@ const Timer = ({
       locationId: timer.locationId as string,
       timerId: timer._id as string,
     })
+  const { data: timerDetailData } = useGetTimerDetails(getObjectId(timer._id))
+  const { data: jobsData } = useGetTimerJobs(
+    getObjectId(timerDetailData?.item?.locationId),
+    getObjectId(timerDetailData?.item?.factoryId),
+    getObjectId(timerDetailData?.item?.partId)
+  )
   const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimerRealTime(
     timer._id as string
   )

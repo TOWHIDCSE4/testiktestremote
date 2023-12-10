@@ -43,9 +43,11 @@ const isUserLoggedIn = async (
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       if (message === "jwt malformed") {
-        res
-          .status(401)
-          .json({ error: true, message: "Invalid authentication credentials" })
+        res.status(401).json({
+          error: true,
+          message: "Invalid authentication credentials",
+          detail: err,
+        })
       } else if (message === "jwt expired") {
         res.status(403).json({
           error: true,
