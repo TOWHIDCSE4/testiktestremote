@@ -60,11 +60,11 @@ function useGetAllTimerLogs({
       refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
     }
   )
-  useEffect(() => {
-    if (paginated && page && page > 1) {
-      query.refetch()
-    }
-  }, [page])
+  // useEffect(() => {
+  //   if (paginated && page && page > 1) {
+  //     query.refetch()
+  //   }
+  // }, [page])
   return { ...query, page, setPage }
 }
 export default useGetAllTimerLogs
