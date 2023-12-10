@@ -1,5 +1,5 @@
 import { API_URL_USERS } from "../../helpers/constants"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export async function loginUser({
   email,
@@ -22,13 +22,14 @@ export async function loginUser({
 }
 
 function useLogin() {
-  const query = useMutation(
-    ({ email, password }: { email: string; password: string }) =>
+  const queryClient = useQueryClient()
+  const query = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
       loginUser({
         email,
         password,
-      })
-  )
+      }),
+  })
   return query
 }
 

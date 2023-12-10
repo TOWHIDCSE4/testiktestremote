@@ -118,7 +118,6 @@ const SideBarNav = () => {
           queryClient.invalidateQueries({
             queryKey: ["session"],
           })
-          router.push(`/`)
         } else {
           toast.error(String(data.message))
         }

@@ -50,7 +50,6 @@ const MainNav = () => {
           queryClient.invalidateQueries({
             queryKey: ["session"],
           })
-          router.push(`/`)
         } else {
           toast.error(String(data.message))
         }
@@ -61,6 +60,11 @@ const MainNav = () => {
     }
     mutate(undefined, callBackReq)
   }
+
+  if (isUserProfileLoading) {
+    return <div>Logging you in..</div>
+  }
+  console.log("TEST TEST", userProfile)
 
   return (
     <>
