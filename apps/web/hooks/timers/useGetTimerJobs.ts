@@ -27,26 +27,15 @@ export async function getMachineLocationCount(
   return (await res.json()) as T_DBReturn
 }
 
-function useGetTimerJobs() {
-  const [locationId, setLocationId] = useState("")
-  const [factoryId, setFactoryId] = useState("")
-  const [partId, setPartId] = useState("")
-
+function useGetTimerJobs(locationId: any, factoryId: any, partId: any): any {
   const query = useQuery(
     ["timer-jobs", locationId, factoryId, partId],
     () => getMachineLocationCount(locationId, factoryId, partId),
     {
-      staleTime: THREE_MINUTES,
-      enabled: !!locationId && !!factoryId && !!partId,
+      enabled: !(!locationId || !partId || !factoryId),
     }
   )
 
-  useEffect(() => {
-    if (locationId && factoryId && partId) {
-      query.refetch()
-    }
-  }, [locationId, factoryId, partId])
-
-  return { ...query, setLocationId, setFactoryId, setPartId }
+  return { ...query }
 }
 export default useGetTimerJobs

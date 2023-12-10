@@ -29,9 +29,6 @@ type T_Props = {
   isJobTimerLoading: boolean // Timer jobs list loading
   isCycleClockRunning: boolean // Tracker run loading
   timerJobs: T_Job[] | undefined
-  setFactoryId: React.Dispatch<React.SetStateAction<string>>
-  setLocationId: React.Dispatch<React.SetStateAction<string>>
-  setPartId: React.Dispatch<React.SetStateAction<string>>
   isTimerJobsLoading: boolean
   isJobSwitch: boolean
   setIsJobSwitch: React.Dispatch<React.SetStateAction<boolean>>
@@ -48,9 +45,6 @@ const Details = ({
   isJobTimerLoading,
   isCycleClockRunning,
   timerJobs,
-  setFactoryId,
-  setLocationId,
-  setPartId,
   isTimerJobsLoading,
   isJobSwitch,
   setIsJobSwitch,
@@ -227,9 +221,6 @@ const Details = ({
   }
   useEffect(() => {
     if (timerDetails) {
-      setFactoryId(factoryId)
-      setLocationId(locationId)
-      setPartId(partId)
       setSelectedOperator({
         id:
           typeof timerDetails?.operator === "object" &&

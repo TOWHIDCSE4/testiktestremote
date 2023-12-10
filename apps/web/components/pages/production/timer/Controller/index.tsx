@@ -71,23 +71,24 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const { mutate: endControllerTimer } = useEndControllerTimer()
   const { mutate: endCycleTimer, isLoading: isEndCycleTimerLoading } =
     useEndCycleTimer()
+  const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
+    useGetTimerDetails(timerId)
+
   const {
     data: timerJobs,
     isLoading: isTimerJobsLoading,
-    setFactoryId,
-    setLocationId,
-    setPartId,
     refetch: timerJobsRefetch,
-  } = useGetTimerJobs()
+  } = useGetTimerJobs(
+    getObjectId(timerDetailData?.item?.locationId),
+    getObjectId(timerDetailData?.item?.factoryId),
+    getObjectId(timerDetailData?.item?.partId)
+  )
 
-  const onTimerDetailLoad = (timerDetail: T_Timer) => {
-    setFactoryId(getObjectId(timerDetail?.factoryId))
-    setLocationId(getObjectId(timerDetail?.locationId))
-    setPartId(getObjectId(timerDetail?.partId))
-  }
-
-  const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
-    useGetTimerDetails(timerId, onTimerDetailLoad)
+  // const onTimerDetailLoad = (timerDetail: T_Timer) => {
+  //   setFactoryId(getObjectId(timerDetail?.factoryId))
+  //   setLocationId(getObjectId(timerDetail?.locationId))
+  //   setPartId(getObjectId(timerDetail?.partId))
+  // }
 
   const { mutate: addTimerLogs } = useAddTimerLog()
 
@@ -681,7 +682,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   if (isTimerDetailDataLoading || isTimerJobsLoading || isCycleTimerLoading) {
     return (
       <div
-        className="fixed z-50 text-blue-700 animate-spin top-3 left-3"
+        className="absolute z-50 text-blue-700 animate-spin top-3 left-3"
         role="status"
         aria-label="loading"
       >
@@ -710,9 +711,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
           isJobTimerLoading={isJobTimerLoading}
           isCycleClockRunning={isCycleClockRunning}
           timerJobs={timerJobs?.items}
-          setFactoryId={setFactoryId}
-          setLocationId={setLocationId}
-          setPartId={setPartId}
           isTimerJobsLoading={isTimerJobsLoading}
           isJobSwitch={isJobSwitch}
           setIsJobSwitch={setIsJobSwitch}
@@ -761,8 +759,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
             setIsEndProductionModalOpen={setIsEndProductionModalOpen}
           />
         </div>
-        {isEndedProductionTime && (
-          <div className="fixed left-0 z-50 flex flex-col items-center justify-center w-full h-full pb-24 top-20 bg-black/80 backdrop-blur-sm">
+        {/* {isEndedProductionTime && (
+          <div className="absolute left-0 z-50 flex flex-col items-center justify-center w-full h-full pb-24 top-20 bg-black/80 backdrop-blur-sm">
             <div className="mb-10 text-6xl font-semibold text-white uppercase">
               OFFLINE
             </div>
@@ -786,7 +784,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
               </Button>
             )}
           </div>
-        )}
+        )} */}
       </div>
       <EndProductionModal
         isOpen={isEndProductionModalOpen}

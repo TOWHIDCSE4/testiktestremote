@@ -24,6 +24,7 @@ import { Socket } from "socket.io-client"
 import useGetAllTimerLogsCount from "../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import { useSocket } from "../../../../store/useSocket"
 import useStoreTimer from "../../../../store/useStoreTimer"
+import useControllerModal from "../../../../store/useControllerModal"
 
 type T_Props = {
   timer: T_Timer
@@ -74,6 +75,10 @@ const Timer = ({
   })
   const socket = useSocket((store) => store.instance)
   const { isTimerStop } = useStoreTimer((store) => store)
+  const setControllerModalTimerId = useControllerModal(
+    (state) => state.setTimerId
+  )
+  const controllerModalTimerId = useControllerModal((state) => state.timerId)
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,11 +164,17 @@ const Timer = ({
     },
   }
   const openController = () => {
-    window.open(
-      `/production/timer/controller/${timer._id}`,
-      "Timer Controller",
-      "location,status,scrollbars,resizable,width=1024, height=800"
-    )
+    if (controllerModalTimerId) {
+      return toast.error(
+        "Controller already opened. please close opened controller first"
+      )
+    }
+    if (!timer._id) {
+      return toast.error(
+        "System Error: Trying to open controller with undefined timer id"
+      )
+    }
+    setControllerModalTimerId(timer._id)
   }
   const addZeroFront = (num: number) => {
     let value = null
