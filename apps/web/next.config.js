@@ -36,6 +36,10 @@ module.exports = {
         "process.env.CONFIG_BUILD_ID": JSON.stringify(buildId),
       })
     )
+    config.externals.push({
+      "utf-8-validate": "commonjs utf-8-validate",
+      bufferutil: "commonjs bufferutil",
+    })
     return config
   },
   env: {
