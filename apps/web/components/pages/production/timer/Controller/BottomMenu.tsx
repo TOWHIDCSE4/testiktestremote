@@ -37,20 +37,18 @@ const BottomMenu = ({
   return (
     <div
       className={`${
-        stopMenu
-          ? "translate-y-0"
-          : "translate-y-[191px] xl:translate-y-[297px] 2xl:translate-y-[380px]"
-      } absolute left-[50%] -translate-x-[50%] bg-dark-blue h-62 xl:h-80 2xl:h-[430px] dark:outline dark:outline-2 dark:outline-white w-96 xl:w-[500px] 2xl:w-[800px] z-20 bottom-0 rounded-t-md px-4 pb-5 transition transform duration-1000`}
+        !stopMenu ? "translate-y-[calc(100%-30px)]" : "translate-y-0"
+      } absolute -translate-x-[50%] bg-dark-blue h-62 dark:outline dark:outline-2 dark:outline-white w-96 z-20 bottom-0 rounded-t-md px-4 pb-5 transition transform duration-1000`}
     >
-      <div className="flex items-center justify-center mt-1 mb-0 2xl:mt-3 2xl:mb-2">
+      <div className="flex items-center justify-center mt-1 mb-0">
         {stopMenu ? (
           <ChevronDoubleDownIcon
-            className="w-4 h-4 text-green-500 cursor-pointer 2xl:h-8 2xl:w-8"
+            className="w-4 h-4 text-green-500 cursor-pointer"
             onClick={() => setStopMenu(false)}
           />
         ) : (
           <ChevronDoubleUpIcon
-            className="w-4 h-4 text-green-500 cursor-pointer 2xl:h-8 2xl:w-8"
+            className="w-4 h-4 text-green-500 cursor-pointer"
             onClick={() => setStopMenu(true)}
           />
         )}

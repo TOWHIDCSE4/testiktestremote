@@ -278,7 +278,7 @@ const Timer = ({
       key={timer._id as string}
       className="bg-white rounded-md border border-gray-200 drop-shadow-lg w-[270px] "
     >
-      <div className="px-4 py-4 border-b border-gray-200 flex items-center gap-2">
+      <div className="flex items-center gap-2 px-4 py-4 border-b border-gray-200">
         <Combobox
           as="div"
           value={selectedPart}
@@ -293,7 +293,7 @@ const Timer = ({
                 return selected ? selected.name : ""
               }}
             />
-            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
               <ChevronUpDownIcon
                 className={`h-5 w-5 ${
                   isUpdateTimerLoading ? "text-gray-400" : "text-gray-600"
@@ -303,7 +303,7 @@ const Timer = ({
             </Combobox.Button>
 
             {filteredParts && filteredParts.length > 0 ? (
-              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                 {filteredParts.map((item: T_Part, index: number) => (
                   <Combobox.Option
                     key={index}
@@ -330,8 +330,8 @@ const Timer = ({
           }}
         />
       </div>
-      <div className="px-4 py-4 text-center space-y-2">
-        <h3 className="text-gray-700 font-bold uppercase text-xl">
+      <div className="px-4 py-4 space-y-2 text-center">
+        <h3 className="text-xl font-bold text-gray-700 uppercase">
           {machine?.name}
         </h3>
         {isCycleClockRunning ? (
@@ -373,9 +373,9 @@ const Timer = ({
             </h2>
           </div>
         ) : (
-          <h2 className="font-bold text-stone-400 text-5xl">00:00:00</h2>
+          <h2 className="text-5xl font-bold text-stone-400">00:00:00</h2>
         )}
-        <p className="text-amber-600 text-lg">
+        <p className="text-lg text-amber-600">
           {typeof operator === "object"
             ? `${operator?.firstName} ${operator?.lastName}`
             : typeof operator === "string"
@@ -383,12 +383,12 @@ const Timer = ({
             : `Operator Unassigned`}
         </p>
         <div>
-          <h2 className="font-semibold text-gray-400 text-5xl">
+          <h2 className="text-5xl font-semibold text-gray-400">
             {timerLogsCount?.item?.count
               ? addZeroFront(timerLogsCount?.item?.count)
               : "000"}
           </h2>
-          <h6 className="text-gray-700 font-semibold uppercase text-lg">
+          <h6 className="text-lg font-semibold text-gray-700 uppercase">
             Daily Units
           </h6>
         </div>
@@ -419,7 +419,7 @@ const Timer = ({
           </span>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-x-5 gap-y-3 px-4 my-4">
+      <div className="grid grid-cols-2 px-4 my-4 gap-x-5 gap-y-3">
         <button
           className={cn("uppercase text-sm text-white  p-1 rounded-md", {
             ["bg-stone-300"]: isJobsLoading,
@@ -432,7 +432,7 @@ const Timer = ({
           {isJobsLoading ? "Loading Jobs.." : "Controller"}
         </button>
         <button
-          className="uppercase text-sm text-white bg-stone-300 p-1 rounded-md"
+          className="p-1 text-sm text-white uppercase rounded-md bg-stone-300"
           onClick={() => alert("Coming soon...")}
         >
           Live Camera

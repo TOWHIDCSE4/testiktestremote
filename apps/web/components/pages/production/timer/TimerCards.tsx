@@ -28,23 +28,23 @@ function TimerCards({
   return (
     <>
       <div>
-        <div className="md:flex justify-between mt-7">
+        <div className="justify-between md:flex mt-7">
           {isLoading ? (
-            <div className="animate-pulse flex space-x-4">
-              <div className="h-8 w-80 bg-slate-200 rounded"></div>
+            <div className="flex space-x-4 animate-pulse">
+              <div className="h-8 rounded w-80 bg-slate-200"></div>
             </div>
           ) : (
-            <h6 className="font-bold text-lg text-gray-800 uppercase">
+            <h6 className="text-lg font-bold text-gray-800 uppercase">
               {timerByMachineClass.name} - Timers
             </h6>
           )}
 
           {isLoading ? (
-            <div className="animate-pulse flex space-x-4">
-              <div className="h-8 w-24 bg-slate-200 rounded"></div>
+            <div className="flex space-x-4 animate-pulse">
+              <div className="w-24 h-8 rounded bg-slate-200"></div>
             </div>
           ) : (
-            <h6 className="font-bold text-lg text-gray-500">
+            <h6 className="text-lg font-bold text-gray-500">
               {timerByMachineClass.count}{" "}
               {timerByMachineClass.count > 1 ? "Timers" : "Timer"}
             </h6>
@@ -64,15 +64,15 @@ function TimerCards({
               >
                 {isLoading ? (
                   <>
-                    <div className="animate-pulse flex space-x-4">
+                    <div className="flex space-x-4 animate-pulse">
                       <div className="h-[25rem] w-full mt-7 bg-slate-200 rounded"></div>
                     </div>
 
-                    <div className="animate-pulse flex space-x-4">
+                    <div className="flex space-x-4 animate-pulse">
                       <div className="h-[25rem] w-full mt-7 bg-slate-200 rounded"></div>
                     </div>
 
-                    <div className="animate-pulse flex space-x-4">
+                    <div className="flex space-x-4 animate-pulse">
                       <div className="h-[25rem] w-full mt-7 bg-slate-200 rounded"></div>
                     </div>
                   </>
@@ -97,40 +97,41 @@ function TimerCards({
                 )}
               </div>
             </div>
-            <h6 className="font-bold text-lg text-gray-800 uppercase mt-7">
+            <h6 className="text-lg font-bold text-gray-800 uppercase mt-7">
               Timer Tracker - {timerByMachineClass.name}
             </h6>
             <TimerTracker
               locationId={locationId}
+              timers={timerByMachineClass.timers}
               machineClassId={timerByMachineClass.id as string}
             />
           </>
         ) : isLoading ? (
           <>
-            <div className="mt-7 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 xl:grid-cols-3 xl:gap-x-8">
-              <div className="animate-pulse flex space-x-4">
+            <div className="grid grid-cols-1 mt-7 gap-x-8 gap-y-10 sm:grid-cols-2 xl:grid-cols-3 xl:gap-x-8">
+              <div className="flex space-x-4 animate-pulse">
                 <div className="h-[25rem] w-full mt-7 bg-slate-200 rounded"></div>
               </div>
 
-              <div className="animate-pulse flex space-x-4">
+              <div className="flex space-x-4 animate-pulse">
                 <div className="h-[25rem] w-full mt-7 bg-slate-200 rounded"></div>
               </div>
 
-              <div className="animate-pulse flex space-x-4">
+              <div className="flex space-x-4 animate-pulse">
                 <div className="h-[25rem] w-full mt-7 bg-slate-200 rounded"></div>
               </div>
             </div>
             <div>
-              <div className="animate-pulse flex space-x-4 mt-7">
+              <div className="flex space-x-4 animate-pulse mt-7">
                 <div className="h-8 w-[24rem] bg-slate-200 rounded"></div>
               </div>
-              <div className="animate-pulse flex space-x-4 mt-7">
+              <div className="flex space-x-4 animate-pulse mt-7">
                 <div className="h-[25rem] w-full bg-slate-200 rounded"></div>
               </div>
             </div>
           </>
         ) : (
-          <p className="text-gray-500 mt-4">
+          <p className="mt-4 text-gray-500">
             No timers available{" "}
             <span className="font-semibold">{timerByMachineClass.name}</span>
           </p>

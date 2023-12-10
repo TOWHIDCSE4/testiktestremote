@@ -235,11 +235,11 @@ const NewModal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" />
+          <div className="fixed inset-0 z-50 transition-opacity bg-gray-500 bg-opacity-75" />
         </Transition.Child>
 
         <div className={`fixed inset-0 overflow-y-auto z-50`}>
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div className="flex items-end justify-center min-h-full p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -249,17 +249,17 @@ const NewModal = ({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full sm:max-w-lg">
+              <Dialog.Panel className="relative w-full overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:max-w-lg">
                 <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                    <h3 className="text-gray-800 font-semibold text-2xl">
+                  <div className="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+                    <h3 className="text-2xl font-semibold text-gray-800">
                       {locationState} &gt; New Job
                     </h3>
 
-                    <div className="md:flex items-center mt-3">
+                    <div className="items-center mt-3 md:flex">
                       <label
                         htmlFor="drawingNumber"
-                        className="uppercase font-semibold text-gray-800 md:w-36"
+                        className="font-semibold text-gray-800 uppercase md:w-36"
                       >
                         Is Stock?
                       </label>
@@ -288,10 +288,10 @@ const NewModal = ({
                       </select>
                     </div>
                     {isStock === false && (
-                      <div className="md:flex items-center mt-6">
+                      <div className="items-center mt-6 md:flex">
                         <label
                           htmlFor="average-cycle"
-                          className="uppercase font-semibold text-gray-800 md:w-36"
+                          className="font-semibold text-gray-800 uppercase md:w-36"
                         >
                           Job Name
                           <span className="text-red-500 top-[-3px] relative">
@@ -313,10 +313,10 @@ const NewModal = ({
                         />
                       </div>
                     )}
-                    <div className="md:flex items-center mt-3">
+                    <div className="items-center mt-3 md:flex">
                       <label
                         htmlFor="machine-process"
-                        className="uppercase font-semibold text-gray-800 md:w-36"
+                        className="font-semibold text-gray-800 uppercase md:w-36"
                       >
                         Machine Class
                         <span className="text-red-500 top-[-3px] relative">
@@ -373,7 +373,7 @@ const NewModal = ({
                         )}
                       </select>
                     </div>
-                    <div className="md:flex items-center mt-3">
+                    <div className="items-center mt-3 md:flex">
                       <label
                         htmlFor="partId"
                         className="uppercase font-semibold text-gray-800 md:w-[8.5rem]"
@@ -424,7 +424,7 @@ const NewModal = ({
                                 partQuery
                               }}
                             />
-                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
                               <ChevronUpDownIcon
                                 className={`h-5 w-5 ${
                                   filteredParts?.length === 0
@@ -459,10 +459,10 @@ const NewModal = ({
                       </div>
                     </div>
                     {isStock && (
-                      <div className="md:flex items-center mt-3">
+                      <div className="items-center mt-3 md:flex">
                         <div className="block w-90">
                           {selectedPart?.name && (
-                            <p className="text-gray-300 italic ml-22 sm:ml-28">
+                            <p className="italic text-gray-300 ml-22 sm:ml-28">
                               (STOCK) {selectedPart?.name}
                             </p>
                           )}
@@ -470,10 +470,10 @@ const NewModal = ({
                       </div>
                     )}
                     {isStock ? null : (
-                      <div className="md:flex items-center mt-3">
+                      <div className="items-center mt-3 md:flex">
                         <label
                           htmlFor="drawingNumber"
-                          className="uppercase font-semibold text-gray-800 md:w-36"
+                          className="font-semibold text-gray-800 uppercase md:w-36"
                         >
                           Drawing Number
                           <span className="text-red-500 top-[-3px] relative">
@@ -497,10 +497,10 @@ const NewModal = ({
                     )}
                     {!isStock ? (
                       <>
-                        <div className="md:flex items-center mt-3">
+                        <div className="items-center mt-3 md:flex">
                           <label
                             htmlFor="drawingNumber"
-                            className="uppercase font-semibold text-gray-800 md:w-36"
+                            className="font-semibold text-gray-800 uppercase md:w-36"
                           >
                             Count
                             <span className="text-red-500 top-[-3px] relative">
@@ -524,10 +524,10 @@ const NewModal = ({
                             }
                           />
                         </div>
-                        <div className="md:flex items-center mt-3">
+                        <div className="items-center mt-3 md:flex">
                           <label
                             htmlFor="dueDate"
-                            className="uppercase font-semibold text-gray-800 md:w-36"
+                            className="font-semibold text-gray-800 uppercase md:w-36"
                           >
                             Due Date
                             <span className="text-red-500 top-[-3px] relative">
@@ -555,10 +555,10 @@ const NewModal = ({
                       </>
                     ) : null}
 
-                    <div className="md:flex items-center mt-3">
+                    <div className="items-center mt-3 md:flex">
                       <label
                         htmlFor="priorityStatus"
-                        className="uppercase font-semibold text-gray-800 md:w-36"
+                        className="font-semibold text-gray-800 uppercase md:w-36"
                       >
                         Priority
                       </label>
@@ -580,7 +580,7 @@ const NewModal = ({
                       </select>
                     </div>
                   </div>
-                  <div className="bg-gray-50 px-4 py-3 md:flex sm:flex-row-reverse sm:px-6">
+                  <div className="px-4 py-3 bg-gray-50 md:flex sm:flex-row-reverse sm:px-6">
                     <button
                       type="submit"
                       className="md:ml-3 justify-center uppercase flex items-center rounded-md bg-green-700 mt-4 w-full md:w-auto md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-900 disabled:opacity-70"

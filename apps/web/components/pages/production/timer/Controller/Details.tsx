@@ -274,8 +274,8 @@ const Details = ({
         Factory:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
           {isTimerDetailDataLoading ? (
-            <div className="animate-pulse flex space-x-4">
-              <div className="h-3 w-24 bg-slate-200 rounded"></div>
+            <div className="flex space-x-4 animate-pulse">
+              <div className="w-24 h-3 rounded bg-slate-200"></div>
             </div>
           ) : (
             <>
@@ -290,8 +290,8 @@ const Details = ({
         Machine:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
           {isTimerDetailDataLoading ? (
-            <div className="animate-pulse flex space-x-4">
-              <div className="h-3 w-24 bg-slate-200 rounded"></div>
+            <div className="flex space-x-4 animate-pulse">
+              <div className="w-24 h-3 rounded bg-slate-200"></div>
             </div>
           ) : (
             <>
@@ -308,8 +308,8 @@ const Details = ({
           <Tooltip
             title={
               isTimerDetailDataLoading ? (
-                <div className="animate-pulse flex space-x-4">
-                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                <div className="flex space-x-4 animate-pulse">
+                  <div className="w-24 h-3 rounded bg-slate-200"></div>
                 </div>
               ) : (
                 <>
@@ -323,8 +323,8 @@ const Details = ({
             placement="top"
           >
             {isTimerDetailDataLoading ? (
-              <div className="animate-pulse flex space-x-4">
-                <div className="h-3 w-24 bg-slate-200 rounded"></div>
+              <div className="flex space-x-4 animate-pulse">
+                <div className="w-24 h-3 rounded bg-slate-200"></div>
               </div>
             ) : (
               <>
@@ -340,8 +340,8 @@ const Details = ({
         Average Time:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
           {isTimerDetailDataLoading ? (
-            <div className="animate-pulse flex space-x-4">
-              <div className="h-3 w-24 bg-slate-200 rounded"></div>
+            <div className="flex space-x-4 animate-pulse">
+              <div className="w-24 h-3 rounded bg-slate-200"></div>
             </div>
           ) : (
             <>
@@ -357,8 +357,8 @@ const Details = ({
         Weight:{" "}
         <span className="uppercase text-sm font-semibold text-gray-500 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
           {isTimerDetailDataLoading ? (
-            <div className="animate-pulse flex space-x-4">
-              <div className="h-3 w-24 bg-slate-200 rounded"></div>
+            <div className="flex space-x-4 animate-pulse">
+              <div className="w-24 h-3 rounded bg-slate-200"></div>
             </div>
           ) : (
             <>
@@ -371,7 +371,7 @@ const Details = ({
         </span>
       </h5>
       <h4 className="uppercase flex font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-        Operator <p className="text-red-600 font-bold">*</p>
+        Operator <p className="font-bold text-red-600">*</p>
       </h4>
       <Combobox
         as="div"
@@ -416,7 +416,7 @@ const Details = ({
               ref={searchRef}
             />
             <Combobox.Button
-              className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"
+              className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none"
               onClick={() => {
                 searchRef?.current?.focus()
               }}
@@ -430,10 +430,10 @@ const Details = ({
             </Combobox.Button>
             {operatorQuery && (
               <Combobox.Button
-                className="absolute inset-y-0 right-5 flex items-center rounded-r-md px-2 focus:outline-none"
+                className="absolute inset-y-0 flex items-center px-2 right-5 rounded-r-md focus:outline-none"
                 onClick={() => handleInputOperator()}
               >
-                <span className="flex justify-start items-center">
+                <span className="flex items-center justify-start">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -474,12 +474,12 @@ const Details = ({
         )}
       </Combobox>
       {error && (
-        <div className="text-red-500 font-roboto text-sm font-semibold">
+        <div className="text-sm font-semibold text-red-500 font-roboto">
           {error}
         </div>
       )}
       <h4 className="uppercase flex font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
-        Job <p className="text-red-600 font-bold">*</p>
+        Job <p className="font-bold text-red-600">*</p>
       </h4>
       <select
         id="jobs"
@@ -514,26 +514,27 @@ const Details = ({
         </option>
       </select>
       <div className="relative flex">
-        <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
+        <h4 className="text-sm font-semibold text-gray-800 uppercase dark:bg-dark-blue dark:text-white">
           Readings
         </h4>
-        <div className="absolute w-60 md:w-[9.5rem] xl:w-[220px] 2xl:w-[200px] dark:bg-gray-300 h-[1px] mt-[26px] md:mt-[32px] xl:mt-[29px] 2xl:mt-[30px] ml-20 md:ml-24 xl:ml-[99px] 2xl:ml-[145px] bg-gray-400 "></div>
+        <div className="absolute w-60 dark:bg-gray-300 h-[1px] mt-[26px] ml-20 bg-gray-400 "></div>
       </div>
-      <div className="bg-gray-100 h-28 xl:h-30 2xl:h-28 ipadair:w-[250px] mt-2 w-[321px] 2xl:w-[350px] p-2 dark:bg-gray-300 text-gray-800 overflow-auto">
-        <h6 className="text-xs xl:text-[1.2vw] 2xl:text-lg leading-5  ">
-          Open the timer controller:
-        </h6>
-        <div className="text-xs xl:text-[1.2vw] 2xl:text-lg leading-5 ">
+      <div
+        ref={sectionDiv}
+        className="bg-gray-100 h-28 ipadair:w-[250px] mt-2 w-[321px] p-2 dark:bg-gray-300 text-gray-800 overflow-auto"
+      >
+        <h6 className="text-xs leading-5 ">Open the timer controller:</h6>
+        <div className="text-xs leading-5 ">
           ------<span className="font-medium">OPERATIONS</span>------
         </div>
         {readingMessages.map((item, index) => {
           return (
-            <p key={index} className="text-md xl:text-lg 2xl:text-md">
+            <p key={index} className="text-md">
               {item}
             </p>
           )
         })}
-        <div ref={sectionDiv} />
+        <div />
       </div>
       <NewJobModal
         isOpen={openNewJobModal}

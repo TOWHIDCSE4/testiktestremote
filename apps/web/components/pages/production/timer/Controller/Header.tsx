@@ -1,9 +1,10 @@
 import Image from "next/image"
-import React from "react"
+import React, { RefObject, useRef } from "react"
 import LogoGreen from "../../../../../assets/logo/logo-green.png"
 import LogoRed from "../../../../../assets/logo/logo-red.png"
 import { MdClose } from "react-icons/md"
 import useControllerModal from "../../../../../store/useControllerModal"
+import { QueueListIcon } from "@heroicons/react/20/solid"
 
 const Header = ({
   progress,
@@ -29,6 +30,7 @@ const Header = ({
   const closeControllerModal = useControllerModal(
     (state) => state.closeControllerModal
   )
+  const onFullscreen = () => {}
   return (
     <div
       className={`flex flex-row md:flex-row justify-around bg-dark-blue md:justify-between ${
@@ -46,12 +48,38 @@ const Header = ({
       )}
 
       <div className="flex mt-3 md:mt-0">
-        <button
-          className="self-center px-4 mr-4 bg-white rounded-md h-9"
-          onClick={() => setOpenTimerLogs(true)}
-        >
-          Production Logs
-        </button>
+        {/* TIMER LOG BUTTON */}
+        <div className="items-end px-1 py-0 pt-3 mr-5 duration-100 bg-gray-100 rounded-xl sm:mt-2 md:mt-5 2xl:mt-6 h-9">
+          <button onClick={() => setOpenTimerLogs(true)}>
+            <div className="flex">
+              <div className="mx-1">
+                <svg
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      fill="#000000"
+                      fill-rule="evenodd"
+                      d="M19 4a1 1 0 01-1 1H2a1 1 0 010-2h16a1 1 0 011 1zm0 6a1 1 0 01-1 1H2a1 1 0 110-2h16a1 1 0 011 1zm-1 7a1 1 0 100-2H2a1 1 0 100 2h16z"
+                    ></path>{" "}
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </button>
+        </div>
+        {/* DARK/LIGHT BUTTON */}
         <div className="items-end px-1 py-0 pt-2 mr-5 duration-100 bg-gray-100 rounded-xl sm:mt-2 md:mt-5 2xl:mt-6 h-9">
           <button onClick={toggleTheme}>
             {mode === "Dark" ? (
@@ -59,7 +87,7 @@ const Header = ({
                 <div className="mx-1">
                   <svg
                     width="20px"
-                    height="20px"
+                    height="26px"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -98,25 +126,62 @@ const Header = ({
                   <svg
                     width="20px"
                     height="20px"
-                    viewBox="0 0 32 32"
+                    viewBox="0 0 24 24"
+                    fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g
-                      id="Lager_94"
-                      data-name="Lager 94"
-                      transform="translate(0)"
-                    >
+                      id="SVGRepo_tracerCarrier"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></g>
+                    <g id="SVGRepo_iconCarrier">
+                      {" "}
                       <path
-                        id="Path_70"
-                        data-name="Path 70"
-                        d="M12.516,4.509A12,12,0,0,0,22.3,19.881,12.317,12.317,0,0,0,24,20a11.984,11.984,0,0,0,3.49-.514,12.1,12.1,0,0,1-9.963,8.421A12.679,12.679,0,0,1,16,28,12,12,0,0,1,12.516,4.509M16,0a16.5,16.5,0,0,0-2.212.15A16,16,0,0,0,16,32a16.526,16.526,0,0,0,2.01-.123A16.04,16.04,0,0,0,31.85,18.212,16.516,16.516,0,0,0,32,15.944,1.957,1.957,0,0,0,30,14a2.046,2.046,0,0,0-1.23.413A7.942,7.942,0,0,1,24,16a8.35,8.35,0,0,1-1.15-.08,7.995,7.995,0,0,1-5.264-12.7A2.064,2.064,0,0,0,16.056,0Z"
-                        fill="#040505"
-                      />
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M11.0174 2.80157C6.37072 3.29221 2.75 7.22328 2.75 12C2.75 17.1086 6.89137 21.25 12 21.25C16.7767 21.25 20.7078 17.6293 21.1984 12.9826C19.8717 14.6669 17.8126 15.75 15.5 15.75C11.4959 15.75 8.25 12.5041 8.25 8.5C8.25 6.18738 9.33315 4.1283 11.0174 2.80157ZM1.25 12C1.25 6.06294 6.06294 1.25 12 1.25C12.7166 1.25 13.0754 1.82126 13.1368 2.27627C13.196 2.71398 13.0342 3.27065 12.531 3.57467C10.8627 4.5828 9.75 6.41182 9.75 8.5C9.75 11.6756 12.3244 14.25 15.5 14.25C17.5882 14.25 19.4172 13.1373 20.4253 11.469C20.7293 10.9658 21.286 10.804 21.7237 10.8632C22.1787 10.9246 22.75 11.2834 22.75 12C22.75 17.9371 17.9371 22.75 12 22.75C6.06294 22.75 1.25 17.9371 1.25 12Z"
+                        fill="#1C274C"
+                      ></path>{" "}
                     </g>
                   </svg>
                 </div>
               </div>
             )}
+          </button>
+        </div>
+        {/* FULLSCREEN BUTTON */}
+        <div className="items-end px-1 py-0 pt-2 mr-5 duration-100 bg-gray-100 rounded-xl sm:mt-2 md:mt-5 2xl:mt-6 h-9">
+          <button onClick={onFullscreen}>
+            <div className="flex">
+              <div className="mx-1">
+                <svg
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      d="M9.00002 3.99998H4.00004L4 9M20 8.99999V4L15 3.99997M15 20H20L20 15M4 15L4 20L9.00002 20"
+                      stroke="#000000"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>{" "}
+                  </g>
+                </svg>
+              </div>
+            </div>
           </button>
         </div>
         <div>
