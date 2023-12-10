@@ -315,7 +315,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }
 
   useEffect(() => {
-    if (controllerTimer?.items && controllerTimer?.items.length > 0) {
+    if (
+      controllerTimer?.items &&
+      controllerTimer?.items.length > 0 &&
+      !isCycleClockRunning
+    ) {
       const secondsLapse = handleInitializeSeconds(
         controllerTimer?.items[0].createdAt,
         controllerTimer?.items[0].endAt
@@ -343,7 +347,13 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [controllerTimer])
 
   useEffect(() => {
-    refetchController()
+    const interval = setInterval(() => {
+      refetchController()
+    }, 500)
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [])
   // Cycle Clock
 
