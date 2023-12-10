@@ -56,7 +56,7 @@ const EndProductionModal = ({
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={() => {}}>
+      <Dialog as="div" className="relative z-60" onClose={() => {}}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -66,11 +66,11 @@ const EndProductionModal = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50" />
+          <div className="fixed inset-0 z-50 transition-opacity bg-gray-500 bg-opacity-75" />
         </Transition.Child>
 
         <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div className="flex items-end justify-center min-h-full p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -80,12 +80,12 @@ const EndProductionModal = ({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 w-full sm:max-w-sm sm:p-6">
+              <Dialog.Panel className="relative w-full px-4 pt-5 pb-4 overflow-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:max-w-sm sm:p-6">
                 <>
                   <div>
-                    <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-yellow-100">
+                    <div className="flex items-center justify-center w-24 h-24 mx-auto bg-yellow-100 rounded-full">
                       <ExclamationTriangleIcon
-                        className="h-12 w-12 text-yellow-700"
+                        className="w-12 h-12 text-yellow-700"
                         aria-hidden="true"
                       />
                     </div>
@@ -99,11 +99,11 @@ const EndProductionModal = ({
                       </Dialog.Title>
                     </div>
                   </div>
-                  <div className="mt-5 sm:mt-6 flex space-x-5">
+                  <div className="flex mt-5 space-x-5 sm:mt-6">
                     <button
                       type="button"
                       disabled={isEnding}
-                      className="inline-flex w-full justify-center border border-gray-300 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      className="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-gray-800 bg-white border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       onClick={onClose}
                     >
                       No
@@ -111,7 +111,7 @@ const EndProductionModal = ({
                     <button
                       type="button"
                       disabled={isEnding}
-                      className="inline-flex w-full justify-center rounded-md bg-blue-950 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70"
+                      className="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white rounded-md shadow-sm bg-blue-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70"
                       onClick={close}
                     >
                       {isEnding ? (

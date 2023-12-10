@@ -12,8 +12,8 @@ const ControllerModal = () => {
   console.log("toet tetotet", cm)
   if (!isOpen || !timerId) return null
   return (
-    <div className="fixed z-[60] top-0 w-screen h-screen">
-      <div className="w-[100%] h-[100%] mx-auto relative   bg-white shadow-md border border-gray-400 ">
+    <div className="fixed z-[40] top-0 w-screen h-screen flex items-center justify-center">
+      <div className="w-[100%] h-[100%] max-w-[1024px] max-h-[800px] mx-auto relative   bg-white shadow-md border border-gray-400 overflow-auto">
         <Controller timerId={timerId} />
       </div>
     </div>

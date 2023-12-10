@@ -716,7 +716,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
         location={timerDetailData?.item?.locationId.name}
         setOpenTimerLogs={setIsTimerLogsModalOpen}
       />
-      <div className="relative grid flex-1 grid-cols-1 px-4 md:grid-cols-2 md:px-12 mt-7 dark:text-white">
+      <div className="relative grid flex-1 grid-cols-1 px-4 overflow-auto md:grid-cols-2 md:px-12 mt-7 dark:text-white">
         <Details
           timerDetails={timerDetailData?.item}
           isTimerDetailDataLoading={isTimerDetailDataLoading}
@@ -758,24 +758,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
           isLoading={isTimerDetailDataLoading}
           timeZone={timerDetailData?.item?.locationId.timeZone}
         />
-        <div className="absolute bottom-0 w-full slides">
-          {/* Bottom Slide Menu */}
-          <BottomMenu
-            stopMenu={stopMenu}
-            setStopMenu={setStopMenu}
-            stopReasons={stopReasons}
-            setStopReasons={setStopReasons}
-            isCycleClockRunning={isCycleClockRunning}
-            stopCycle={stopCycle}
-          />
-          {/* Right Side Slide Menu */}
-          <SideMenu
-            endMenu={endMenu}
-            setEndMenu={setEndMenu}
-            endTimer={setEndTimer}
-            setIsEndProductionModalOpen={setIsEndProductionModalOpen}
-          />
-        </div>
         {/* {isEndedProductionTime && (
           <div className="absolute left-0 z-50 flex flex-col items-center justify-center w-full h-full pb-24 top-20 bg-black/80 backdrop-blur-sm">
             <div className="mb-10 text-6xl font-semibold text-white uppercase">
@@ -803,6 +785,24 @@ const Controller = ({ timerId }: { timerId: string }) => {
           </div>
         )} */}
       </div>
+      {/* Bottom Slide Menu */}
+      <div className="absolute bottom-0 x-[50%]">
+        <BottomMenu
+          stopMenu={stopMenu}
+          setStopMenu={setStopMenu}
+          stopReasons={stopReasons}
+          setStopReasons={setStopReasons}
+          isCycleClockRunning={isCycleClockRunning}
+          stopCycle={stopCycle}
+        />
+      </div>
+      {/* Right Side Slide Menu */}
+      <SideMenu
+        endMenu={endMenu}
+        setEndMenu={setEndMenu}
+        endTimer={setEndTimer}
+        setIsEndProductionModalOpen={setIsEndProductionModalOpen}
+      />
       <EndProductionModal
         isOpen={isEndProductionModalOpen}
         onClose={() => setIsEndProductionModalOpen(false)}

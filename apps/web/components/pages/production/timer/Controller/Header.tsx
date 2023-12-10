@@ -33,7 +33,7 @@ const Header = ({
     <div
       className={`flex flex-row md:flex-row justify-around bg-dark-blue md:justify-between ${
         mode === "Dark" ? "bg-dark-blue" : "bg-dark-blue"
-      } py-3 md:py-0 px-4 xl:px-8 md:px-12 h-20 items-center`}
+      } py-3 md:py-0 px-4 xl:px-8 md:px-12 h-20 items-center sticky top-0 z-20`}
     >
       {progress > 100 ? (
         <div className="flex items-center h-[90px] w-[190px] xl:h-[120px] xl:w-[230px] 2xl:h-[140px] 2xl:w-[250px] relative">
@@ -45,14 +45,14 @@ const Header = ({
         </div>
       )}
 
-      <div className="mt-3 md:mt-0 flex">
+      <div className="flex mt-3 md:mt-0">
         <button
-          className="bg-white h-9 self-center mr-4 rounded-md px-4"
+          className="self-center px-4 mr-4 bg-white rounded-md h-9"
           onClick={() => setOpenTimerLogs(true)}
         >
           Production Logs
         </button>
-        <div className="items-end duration-100 bg-gray-100 rounded-xl sm:mt-2 mr-5 md:mt-5 2xl:mt-6 h-9 py-0 pt-2 px-1">
+        <div className="items-end px-1 py-0 pt-2 mr-5 duration-100 bg-gray-100 rounded-xl sm:mt-2 md:mt-5 2xl:mt-6 h-9">
           <button onClick={toggleTheme}>
             {mode === "Dark" ? (
               <div className="flex">
@@ -126,8 +126,8 @@ const Header = ({
             } font-semibold text-center`}
           >
             {isLoading ? (
-              <div className="animate-pulse flex space-x-4">
-                <div className="h-7 w-36 bg-slate-200 rounded"></div>
+              <div className="flex space-x-4 animate-pulse">
+                <div className="rounded h-7 w-36 bg-slate-200"></div>
               </div>
             ) : (
               <>{location}</>
