@@ -48,6 +48,7 @@ import { Button } from "@mui/material"
 import { USER_ROLES } from "../../../../../helpers/constants"
 import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
+import useGetCycleTimerRealTime from "../../../../../hooks/timers/useGetCycleTimerRealTime"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -62,7 +63,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
     data: cycleTimer,
     refetch: cycleRefetch,
     isLoading: isCycleTimerLoading,
-  } = useGetCycleTimer(timerId)
+  } = useGetCycleTimerRealTime(timerId)
+  console.log("LOG INFO cycleTImerData", cycleTimer)
 
   const { mutate: addControllerTimer } = useAddControllerTimer()
   const { mutate: addCycleTimer } = useAddCycleTimer()

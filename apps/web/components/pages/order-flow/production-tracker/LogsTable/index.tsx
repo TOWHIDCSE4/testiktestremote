@@ -1086,7 +1086,7 @@ const LogsTable = ({
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-3">
             {!isPaginatedLoading &&
             paginated?.items &&
-            paginated?.items.length > 0 ? (
+            paginated?.items?.length > 0 ? (
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                 <thead className="text-xs text-gray-700 uppercase bg-white-50 dark:bg-white-700 dark:text-gray-400 shadow-none">
                   <tr>
@@ -1558,7 +1558,7 @@ const LogsTable = ({
                         </React.Fragment>
                       )
                     })}
-                  {paginated?.items.length == 1 && (
+                  {paginated?.items?.length == 1 && (
                     <>
                       <tr
                         className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
@@ -1769,7 +1769,7 @@ const LogsTable = ({
                       </tr>
                     </>
                   )}
-                  {paginated?.items.length == 2 && (
+                  {paginated?.items?.length == 2 && (
                     <>
                       <tr
                         className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
@@ -1957,7 +1957,7 @@ const LogsTable = ({
                       </tr>
                     </>
                   )}
-                  {paginated?.items.length == 3 && (
+                  {paginated?.items?.length == 3 && (
                     <>
                       <tr
                         className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
@@ -2122,7 +2122,7 @@ const LogsTable = ({
                       </tr>
                     </>
                   )}
-                  {paginated?.items.length == 4 && (
+                  {paginated?.items?.length == 4 && (
                     <>
                       <tr
                         className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
@@ -2264,7 +2264,7 @@ const LogsTable = ({
                       </tr>
                     </>
                   )}
-                  {paginated?.items.length == 5 && (
+                  {paginated?.items?.length == 5 && (
                     <>
                       <tr
                         className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
@@ -2384,7 +2384,7 @@ const LogsTable = ({
                     </>
                   )}
 
-                  {paginated?.items.length == 6 && (
+                  {paginated?.items?.length == 6 && (
                     <>
                       <tr
                         className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
@@ -2480,7 +2480,7 @@ const LogsTable = ({
                       </tr>
                     </>
                   )}
-                  {paginated?.items.length == 7 && (
+                  {paginated?.items?.length == 7 && (
                     <>
                       <tr
                         className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
@@ -2553,7 +2553,7 @@ const LogsTable = ({
                       </tr>
                     </>
                   )}
-                  {paginated?.items.length == 8 && (
+                  {paginated?.items?.length == 8 && (
                     <>
                       <tr
                         className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
@@ -2603,7 +2603,7 @@ const LogsTable = ({
                       </tr>
                     </>
                   )}
-                  {paginated?.items.length == 9 && (
+                  {paginated?.items?.length == 9 && (
                     <>
                       <tr
                         className="bg-gray text-slate-900 font-medium border-b bg-gray-100"
@@ -3008,7 +3008,7 @@ const LogsTable = ({
             </div>
           </div>
         ) : null}
-        {(paginated?.items && paginated?.items.length === 0) ||
+        {(paginated?.items && paginated?.items?.length === 0) ||
         !renderData ||
         !paginated?.items ? (
           <div className="flex mb-4 w-full">
