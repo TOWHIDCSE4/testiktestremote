@@ -2,6 +2,8 @@ import Image from "next/image"
 import React from "react"
 import LogoGreen from "../../../../../assets/logo/logo-green.png"
 import LogoRed from "../../../../../assets/logo/logo-red.png"
+import { MdClose } from "react-icons/md"
+import useControllerModal from "../../../../../store/useControllerModal"
 
 const Header = ({
   progress,
@@ -24,6 +26,9 @@ const Header = ({
       setMode("Dark")
     }
   }
+  const closeControllerModal = useControllerModal(
+    (state) => state.closeControllerModal
+  )
   return (
     <div
       className={`flex flex-row md:flex-row justify-around bg-dark-blue md:justify-between ${
@@ -136,6 +141,13 @@ const Header = ({
             Controller
           </h3>
         </div>
+        <button className="mx-5" onClick={() => closeControllerModal()}>
+          <MdClose
+            onClick={() => closeControllerModal()}
+            size={24}
+            color="white"
+          />
+        </button>
       </div>
     </div>
   )

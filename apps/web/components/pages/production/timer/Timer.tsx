@@ -24,6 +24,11 @@ import { Socket } from "socket.io-client"
 import useGetAllTimerLogsCount from "../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import { useSocket } from "../../../../store/useSocket"
 import useStoreTimer from "../../../../store/useStoreTimer"
+import useControllerModal from "../../../../store/useControllerModal"
+import useGetTimerDetails from "../../../../hooks/timers/useGetTimerDetails"
+import { getObjectId } from "../../../../helpers/ids"
+import useGetTimerJobs from "../../../../hooks/timers/useGetTimerJobs"
+import cn from "classnames"
 
 type T_Props = {
   timer: T_Timer
@@ -59,6 +64,12 @@ const Timer = ({
       locationId: timer.locationId as string,
       timerId: timer._id as string,
     })
+  const { data: timerDetailData } = useGetTimerDetails(getObjectId(timer._id))
+  const { isLoading: isJobsLoading } = useGetTimerJobs(
+    getObjectId(timerDetailData?.item?.locationId),
+    getObjectId(timerDetailData?.item?.factoryId),
+    getObjectId(timerDetailData?.item?.partId)
+  )
   const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimerRealTime(
     timer._id as string
   )
@@ -74,6 +85,10 @@ const Timer = ({
   })
   const socket = useSocket((store) => store.instance)
   const { isTimerStop } = useStoreTimer((store) => store)
+  const setControllerModalTimerId = useControllerModal(
+    (state) => state.setTimerId
+  )
+  const controllerModalTimerId = useControllerModal((state) => state.timerId)
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,11 +174,17 @@ const Timer = ({
     },
   }
   const openController = () => {
-    window.open(
-      `/production/timer/controller/${timer._id}`,
-      "Timer Controller",
-      "location,status,scrollbars,resizable,width=1024, height=800"
-    )
+    if (controllerModalTimerId) {
+      return toast.error(
+        "Controller already opened. please close opened controller first"
+      )
+    }
+    if (!timer._id) {
+      return toast.error(
+        "System Error: Trying to open controller with undefined timer id"
+      )
+    }
+    setControllerModalTimerId(timer._id)
   }
   const addZeroFront = (num: number) => {
     let value = null
@@ -390,10 +411,15 @@ const Timer = ({
       </div>
       <div className="grid grid-cols-2 gap-x-5 gap-y-3 px-4 my-4">
         <button
-          className="uppercase text-sm text-white bg-green-800 p-1 rounded-md"
+          className={cn("uppercase text-sm text-white  p-1 rounded-md", {
+            ["bg-stone-300"]: isJobsLoading,
+            ["bg-green-800"]: !isJobsLoading,
+            ["cursor-not-allowed"]: isJobsLoading,
+          })}
           onClick={openController}
+          disabled={isJobsLoading}
         >
-          Controller
+          {isJobsLoading ? "Loading Jobs.." : "Controller"}
         </button>
         <button
           className="uppercase text-sm text-white bg-stone-300 p-1 rounded-md"

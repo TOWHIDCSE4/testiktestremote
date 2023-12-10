@@ -39,7 +39,7 @@ import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
 import { useSocket } from "../../../../../store/useSocket"
 import useStoreTimer from "../../../../../store/useStoreTimer"
 import TimerLogsModal from "../modals/TimerLogsModal"
-import { useQueryClient, onlineManager } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { set } from "lodash"
 import Table from "../TimerTracker/SingleTimerTracker/Table"
 import { getObjectId } from "../../../../../helpers/ids"
@@ -48,6 +48,7 @@ import { Button } from "@mui/material"
 import { USER_ROLES } from "../../../../../helpers/constants"
 import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
+import useGetCycleTimerRealTime from "../../../../../hooks/timers/useGetCycleTimerRealTime"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -62,7 +63,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
     data: cycleTimer,
     refetch: cycleRefetch,
     isLoading: isCycleTimerLoading,
-  } = useGetCycleTimer(timerId)
+  } = useGetCycleTimerRealTime(timerId)
+  console.log("LOG INFO cycleTImerData", cycleTimer)
 
   const { mutate: addControllerTimer } = useAddControllerTimer()
   const { mutate: addCycleTimer } = useAddCycleTimer()
@@ -71,23 +73,24 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const { mutate: endControllerTimer } = useEndControllerTimer()
   const { mutate: endCycleTimer, isLoading: isEndCycleTimerLoading } =
     useEndCycleTimer()
+  const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
+    useGetTimerDetails(timerId)
+
   const {
     data: timerJobs,
     isLoading: isTimerJobsLoading,
-    setFactoryId,
-    setLocationId,
-    setPartId,
     refetch: timerJobsRefetch,
-  } = useGetTimerJobs()
+  } = useGetTimerJobs(
+    getObjectId(timerDetailData?.item?.locationId),
+    getObjectId(timerDetailData?.item?.factoryId),
+    getObjectId(timerDetailData?.item?.partId)
+  )
 
-  const onTimerDetailLoad = (timerDetail: T_Timer) => {
-    setFactoryId(getObjectId(timerDetail?.factoryId))
-    setLocationId(getObjectId(timerDetail?.locationId))
-    setPartId(getObjectId(timerDetail?.partId))
-  }
-
-  const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
-    useGetTimerDetails(timerId, onTimerDetailLoad)
+  // const onTimerDetailLoad = (timerDetail: T_Timer) => {
+  //   setFactoryId(getObjectId(timerDetail?.factoryId))
+  //   setLocationId(getObjectId(timerDetail?.locationId))
+  //   setPartId(getObjectId(timerDetail?.partId))
+  // }
 
   const { mutate: addTimerLogs } = useAddTimerLog()
 
@@ -156,16 +159,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
     )
     .format("YYYY-MM-DD HH:mm:ss")
 
-  const isOnlineRef = useRef(onlineManager.isOnline())
-  useEffect(() => {
-    // if comes from offline to onLine
-    if (!isOnlineRef.current && onlineManager.isOnline()) {
-      // invalidate local queries
-      queryClient.invalidateQueries(["timer-logs-count"])
-      queryClient.invalidateQueries(["timer-logs"])
-    }
-    isOnlineRef.current = onlineManager.isOnline()
-  }, [onlineManager.isOnline()])
   const endAndAddCallback = () => {
     setCycleClockInSeconds(0)
     setIsCycleClockStarting(false)
@@ -485,8 +478,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
     queryClient.setQueriesData(
       ["timer-logs-count", timerDetailData?.item?.locationId._id, timerId],
       (query: any) => {
-        if (query && query?.item?.count && !isStopInterval) {
+        if (
+          query &&
+          typeof query?.item?.count === "number" &&
+          !isStopInterval
+        ) {
           const current = query?.item?.count
+          console.log("tung tung tung", query, current)
+
           return set(query, ["item", "count"], current + 1)
         }
         return query
@@ -530,6 +529,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       setIsCycleClockRunning(false)
       setIsCycleClockStarting(false)
       setIsCycleClockStopping(false)
+      stopTimer()
       endCallback()
       return
     } else {
@@ -691,7 +691,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
   if (isTimerDetailDataLoading || isTimerJobsLoading || isCycleTimerLoading) {
     return (
       <div
-        className="fixed z-50 text-blue-700 animate-spin top-3 left-3"
+        className="absolute z-50 text-blue-700 animate-spin top-3 left-3"
         role="status"
         aria-label="loading"
       >
@@ -720,9 +720,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
           isJobTimerLoading={isJobTimerLoading}
           isCycleClockRunning={isCycleClockRunning}
           timerJobs={timerJobs?.items}
-          setFactoryId={setFactoryId}
-          setLocationId={setLocationId}
-          setPartId={setPartId}
           isTimerJobsLoading={isTimerJobsLoading}
           isJobSwitch={isJobSwitch}
           setIsJobSwitch={setIsJobSwitch}
@@ -771,8 +768,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
             setIsEndProductionModalOpen={setIsEndProductionModalOpen}
           />
         </div>
-        {isEndedProductionTime && (
-          <div className="fixed left-0 z-50 flex flex-col items-center justify-center w-full h-full pb-24 top-20 bg-black/80 backdrop-blur-sm">
+        {/* {isEndedProductionTime && (
+          <div className="absolute left-0 z-50 flex flex-col items-center justify-center w-full h-full pb-24 top-20 bg-black/80 backdrop-blur-sm">
             <div className="mb-10 text-6xl font-semibold text-white uppercase">
               OFFLINE
             </div>
@@ -796,7 +793,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
               </Button>
             )}
           </div>
-        )}
+        )} */}
       </div>
       <EndProductionModal
         isOpen={isEndProductionModalOpen}
