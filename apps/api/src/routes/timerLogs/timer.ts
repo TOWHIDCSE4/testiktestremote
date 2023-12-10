@@ -46,6 +46,7 @@ export const timer = async (req: Request, res: Response) => {
             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
           })
             .populate("partId")
+            .populate("machineId")
             .populate("operator")
             .sort({
               createdAt: -1,
@@ -66,6 +67,7 @@ export const timer = async (req: Request, res: Response) => {
             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
           })
             .populate("partId")
+            .populate("machineId")
             .populate("operator")
         }
         res.json({

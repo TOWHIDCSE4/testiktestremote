@@ -23,6 +23,7 @@ import useEndAddCycleTimer from "../../../../../hooks/timers/useEndAddCycleTimer
 import {
   T_BackendResponse,
   T_JobTimer,
+  T_Timer,
   T_TimerStopReason,
 } from "custom-validator"
 import toast from "react-hot-toast"
@@ -33,11 +34,18 @@ import useAddControllerTimer from "../../../../../hooks/timers/useAddControllerT
 import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer"
 import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTimerByTimerId"
 import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
-import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
+import useGetAllTimerLogsCountController from "../../../../../hooks/timerLogs/useGetAllTimerLogsCountController"
 import useProfile from "../../../../../hooks/users/useProfile"
 import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
 import { useSocket } from "../../../../../store/useSocket"
 import useStoreTimer from "../../../../../store/useStoreTimer"
+import TimerLogsModal from "../modals/TimerLogsModal"
+import { useQueryClient, onlineManager } from "@tanstack/react-query"
+import { set } from "lodash"
+import Table from "../TimerTracker/SingleTimerTracker/Table"
+import useGetAllTimerLogsController from "../../../../../hooks/timerLogs/useGetAllTimerLogsController"
+import { getObjectId } from "../../../../../helpers/ids"
+import { FaCircleNotch } from "react-icons/fa"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -45,11 +53,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
   let socket = useSocket((store) => store.instance)
   const { isTimerStop, updateIsTimerStop } = useStoreTimer((store) => store)
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
-  const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
-    useGetTimerDetails(timerId)
+
   const { data: controllerTimer, refetch: refetchController } =
     useGetControllerTimer(timerId)
-  const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimer(timerId)
+  const {
+    data: cycleTimer,
+    refetch: cycleRefetch,
+    isLoading: isCycleTimerLoading,
+  } = useGetCycleTimer(timerId)
 
   const { mutate: addControllerTimer } = useAddControllerTimer()
   const { mutate: addCycleTimer } = useAddCycleTimer()
@@ -67,13 +78,27 @@ const Controller = ({ timerId }: { timerId: string }) => {
     refetch: timerJobsRefetch,
   } = useGetTimerJobs()
 
+  const onTimerDetailLoad = (timerDetail: T_Timer) => {
+    setFactoryId(getObjectId(timerDetail?.factoryId))
+    setLocationId(getObjectId(timerDetail?.locationId))
+    setPartId(getObjectId(timerDetail?.partId))
+  }
+
+  const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
+    useGetTimerDetails(timerId, onTimerDetailLoad)
+
   const { mutate: addTimerLogs } = useAddTimerLog()
 
   const { data: timerLogsCount, refetch: refetchTimerLogs } =
-    useGetAllTimerLogsCount({
+    useGetAllTimerLogsCountController({
       locationId: timerDetailData?.item?.locationId._id,
       timerId,
     })
+
+  const { data: timerLogsData } = useGetAllTimerLogsController({
+    locationId: timerDetailData?.item?.locationId._id,
+    timerId,
+  })
 
   const { data: jobTimer, isLoading: isJobTimerLoading } =
     useGetJobTimerByTimerId({
@@ -102,23 +127,24 @@ const Controller = ({ timerId }: { timerId: string }) => {
     Array<number | string>
   >([])
 
-  const [jobUpdateId, setJobUpdateId] = useState<string>("")
   const [defaultOperator, setDefaultOperator] = useState<object>()
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
     useState(false)
   const [isCycleClockStarting, setIsCycleClockStarting] = useState(false)
   const [isCycleClockStopping, setIsCycleClockStopping] = useState(false)
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
+  const [isTimerLogsModalOpen, setIsTimerLogsModalOpen] = useState(false)
   const [isJobSwitch, setIsJobSwitch] = useState(false)
   const [cycleClockInSeconds, setCycleClockInSeconds] = useState(0)
   const [cycleClockTimeArray, setCycleCockTimeArray] = useState<
     Array<number | string>
   >([])
 
-  // const [readingMessages, setReadingMessages] = useState<string[]>([])
+  const [readingMessages, setReadingMessages] = useState<string[]>([])
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
   const [endTimer, setEndTimer] = useState<boolean>(false)
   const intervalRef = useRef<any>()
+  const queryClient = useQueryClient()
   const currentDate = dayjs
     .tz(
       dayjs(),
@@ -128,77 +154,112 @@ const Controller = ({ timerId }: { timerId: string }) => {
     )
     .format("YYYY-MM-DD HH:mm:ss")
 
+  const isOnlineRef = useRef(onlineManager.isOnline())
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const runSocket = async (data: any) => {
-      if (data.action === "pre-add") {
-        setIsTimerClockRunning(true)
-        setIsCycleClockRunning(true)
-      }
-      if (data.action === "add") {
-        runIntervalClock()
-      }
-      if (data.action === "endAndAdd") {
-      }
-      if (data.action === "end") {
-        setCycleClockInSeconds(0)
-        setProgress(0)
-        setIsCycleClockStopping(true)
-        setIsCycleClockRunning(false)
-        setIsCycleClockStarting(false)
-        stopInterval()
-      }
-      if (data.action === "end-controller") {
-        setCycleClockInSeconds(0)
-        setProgress(0)
-        setIsCycleClockStopping(true)
-        setIsCycleClockRunning(false)
-        setIsCycleClockStarting(false)
-        stopInterval()
-      }
-      if (data.action === "update-cycle" && data.timers.length > 0) {
-        const secondsLapse = handleInitializeSeconds(data.timers[0].createdAt)
-        setCycleClockInSeconds(secondsLapse)
-      }
-      if (data.action === "update-operator") {
-        if (data.user) {
-          if (data.user.role === "Personnel") {
-            setDefaultOperator(data.user)
-          }
-        }
-      }
-      if (data.action === "job-change") {
-        timerJobsRefetch()
-        switch (data?.data?.recommendation) {
-          case "SWITCH":
-            setJobUpdateId(data?.data?.jobToBe)
-            setIsJobSwitch(true)
-            break
-
-          case "STOP":
-            stopCounter()
-            setJobUpdateId("")
-            updateIsTimerStop(true)
-            break
-        }
-      }
-      if (data.action === "change-job") {
-        setJobUpdateId(data.jobInfo.jobId ?? "")
-        toast.success("Job change succesfully")
-      }
+    // if comes from offline to onLine
+    if (!isOnlineRef.current && onlineManager.isOnline()) {
+      // invalidate local queries
+      queryClient.invalidateQueries(["timer-logs-count-controller"])
+      queryClient.invalidateQueries(["timer-logs-controller"])
     }
+    isOnlineRef.current = onlineManager.isOnline()
+  }, [onlineManager.isOnline()])
+  const endAndAddCallback = () => {
+    setCycleClockInSeconds(0)
+    setIsCycleClockStarting(false)
+    runIntervalClock()
+  }
+  const endCallback = () => {
+    stopInterval()
+    setCycleClockInSeconds(0)
+    setProgress(0)
+    setIsCycleClockStopping(true)
+    setIsCycleClockRunning(false)
+    setIsCycleClockStarting(false)
+  }
+  const stopPressCallback = () => {
+    setCycleClockInSeconds(0)
+  }
+  const preAddCallback = () => {
+    setIsTimerClockRunning(true)
+    setIsCycleClockRunning(true)
+  }
+  const addCallback = () => {
+    runIntervalClock()
+  }
 
-    socket?.on(`timer-${timerId}`, runSocket)
-    socket?.emit("join-timer", {
-      action: "emit-operator",
-      timerId: timerId,
-      user: userProfile,
-    })
-    return () => {
-      socket?.off(`timer-${timerId}`, runSocket)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket, timerId])
+  // useEffect(() => {
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   const runSocket = async (data: any) => {
+  //     if (data.action === "pre-add") {
+  //       preAddCallback()
+  //     }
+  //     if (data.action === "add") {
+  //       addCallback()
+  //     }
+  //     if (data.action === "endAndAdd") {
+  //       endAndAddCallback()
+  //     }
+  //     if (data.action === "end") {
+  //       endCallback()
+  //     }
+  //     if (data.action === "end-controller") {
+  //       setCycleClockInSeconds(0)
+  //       setProgress(0)
+  //       setIsCycleClockStopping(true)
+  //       setIsCycleClockRunning(false)
+  //       setIsCycleClockStarting(false)
+  //       stopInterval()
+  //     }
+  //     if (data.action === "update-cycle" && data.timers.length > 0) {
+  //       const secondsLapse = handleInitializeSeconds(data.timers[0].createdAt)
+  //       setCycleClockInSeconds(secondsLapse)
+  //     }
+  //     if (data.action === "update-operator") {
+  //       if (data.user) {
+  //         if (data.user.role === "Personnel") {
+  //           setDefaultOperator(data.user)
+  //         }
+  //       }
+  //     }
+  //     if (data.action === "job-change") {
+  //       timerJobsRefetch()
+  //       switch (data?.data?.recommendation) {
+  //         case "SWITCH":
+  //           setJobUpdateId(data?.data?.jobToBe)
+  //           setIsJobSwitch(true)
+  //           break
+
+  //         case "STOP":
+  //           stopCounter()
+  //           setJobUpdateId("")
+  //           updateIsTimerStop(true)
+  //           break
+  //       }
+  //     }
+  //     if (data.action === "stop-press") {
+  //       stopPressCallback()
+  //     }
+  //     if (data.action === "change-job") {
+  //       setJobUpdateId(data.jobInfo.jobId ?? "")
+  //       toast.success("Job change succesfully", {
+  //         duration: 5000,
+  //         position: "bottom-center",
+  //       })
+  //     }
+  //   }
+
+  //   socket?.on(`timer-${timerId}`, runSocket)
+  //   socket?.emit("join-timer", {
+  //     action: "emit-operator",
+  //     timerId: timerId,
+  //     user: userProfile,
+  //   })
+  //   return () => {
+  //     socket?.off(`timer-${timerId}`, runSocket)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [socket, timerId])
 
   useEffect(() => {
     if (defaultOperator) {
@@ -206,37 +267,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }, [])
 
-  // Refocusing when tab minimize or change the tab
-  useEffect(() => {
-    const handleVisibilityChange = async () => {
-      // If working for when tab is visible
-      if (document.visibilityState === "visible") {
-        try {
-          cycleRefetch()
-          const response = await refetchController()
-          if (response?.data?.items[0]?.endAt) {
-            setIsTimerControllerEnded(true)
-          } else {
-            const isJobTimer = timerJobs?.items?.some(
-              (job) => job._id === jobTimer?.item?.jobId
-            )
-
-            if (!isTimerControllerEnded && isJobTimer && isTimerStop !== true) {
-              runIntervalClock()
-            }
-          }
-        } catch (error) {
-          throw error
-        }
-      }
-    }
-
-    document.addEventListener("visibilitychange", handleVisibilityChange)
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange)
-    }
-  }, [])
   let interval: any
 
   useEffect(() => {
@@ -245,11 +275,9 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }, [])
 
-  // const startingTimerReadings = (messages: string[]) => {
-  //   setTimeout(function () {
-  //     setReadingMessages((previousState) => [...previousState, ...messages])
-  //   }, 1500)
-  // }
+  const startingTimerReadings = (messages: string[]) => {
+    setReadingMessages((previousState) => [...previousState, ...messages])
+  }
 
   // Timer Clock
 
@@ -277,21 +305,19 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const stopTimer = () => {
     stopInterval()
     setProgress(0)
-    // startingTimerReadings([
-    //   `${currentDate} - Ending timer production`,
-    //   `${currentDate} - Timer stopped`,
-    //   `${currentDate} - Timer production ended`,
-    // ])
+    startingTimerReadings([
+      `${currentDate} - Ending timer production`,
+      `${currentDate} - Timer stopped`,
+      `${currentDate} - Timer production ended`,
+    ])
     setCycleClockInSeconds(0)
 
-    setTimeout(function () {
-      setIsCycleClockStopping(true)
-      setEndMenu(false)
-      setIsCycleClockRunning(false)
-      setIsTimerClockRunning(false)
-      setIsTimerControllerEnded(true)
-      endControllerTimer(timerId, callBackReq)
-    }, 3000)
+    setIsCycleClockStopping(true)
+    setEndMenu(false)
+    setIsCycleClockRunning(false)
+    setIsTimerClockRunning(false)
+    setIsTimerControllerEnded(true)
+    endControllerTimer(timerId, callBackReq)
   }
 
   useEffect(() => {
@@ -314,15 +340,13 @@ const Controller = ({ timerId }: { timerId: string }) => {
       ) {
         setIsTimerControllerEnded(true)
         setIsLocationTimeEnded(true)
-        toast.error(controllerTimer?.message as string, { duration: 5000 })
+        toast.error(controllerTimer?.message as string, {
+          duration: 5000,
+          position: "bottom-center",
+        })
       }
     }
   }, [controllerTimer])
-
-  const networkFailure = (errorMsg: string) => {
-    console.error(errorMsg)
-    toast.error("Oops! Network trouble. Check your connection and try again")
-  }
 
   // Cycle Clock
 
@@ -330,11 +354,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
     onSuccess: (returnData: T_BackendResponse) => {
       if (!returnData.error) {
       } else {
-        networkFailure(String(returnData.message))
+        toast.error(String(returnData.message), {
+          duration: 5000,
+          position: "bottom-center",
+        })
       }
     },
     onError: (err: any) => {
-      networkFailure(String(err))
+      toast.error(String(err), { duration: 5000, position: "bottom-center" })
     },
   }
 
@@ -352,135 +379,188 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const runIntervalClock = () => {
     if (isTimerControllerEnded !== true) {
       stopInterval()
-      setIsCycleClockStopping(false)
+      if (!isCycleClockStarting) {
+        setTimeout(() => {
+          setIsCycleClockStopping(false)
+        }, 3000)
+      }
+
       intervalRef.current = setInterval(() => {
         setCycleClockInSeconds((previousState: number) => previousState + 0.1)
       }, 100)
     }
   }
+
   const runCycle = (fromDb?: boolean) => {
-    if (!isLocationTimeEnded) {
-      if (timerDetailData?.item?.operator) {
-        if (jobUpdateId !== "") {
-          if (!isTimerControllerEnded) {
-            setIsCycleClockStarting(true)
-            // startingTimerReadings([
-            //   `${currentDate} - Starting timer`,
-            //   `${currentDate} - Timer started`,
-            // ])
-            updateIsTimerStop(false)
-            setTimeout(
-              function () {
-                if (!isCycleClockRunning && !fromDb) {
-                  addCycleTimer(
-                    { timerId },
-                    {
-                      onSuccess: () => {
-                        runIntervalClock()
-                      },
-                      onError: (err: any) => {
-                        networkFailure(String(err))
-                      },
-                    }
-                  )
-                }
-                setIsCycleClockRunning(true)
-                if (!isTimerClockRunning && !fromDb) {
-                  addControllerTimer(
-                    {
-                      timerId,
-                      locationId: timerDetailData?.item?.locationId._id,
-                    },
-                    callBackReq
-                  )
-                  runTimer()
-                }
-                setIsCycleClockStarting(false)
-              },
-              fromDb ? 0 : 3000
-            )
-          } else {
-            toast.error("You already ended this timer")
-          }
-        } else {
-          toast.error("You need to assigned a job to this timer first")
-        }
-      } else {
-        toast.error("You need to assigned an operator to this timer first")
-      }
-    } else {
-      toast.error(controllerTimer?.message as string, { duration: 5000 })
+    if (isLocationTimeEnded)
+      return toast.error(controllerTimer?.message as string, {
+        duration: 5000,
+        position: "bottom-center",
+      })
+
+    if (!timerDetailData?.item?.operator._id)
+      return toast.error("You need to assign an operator to this timer first", {
+        duration: 5000,
+        position: "bottom-center",
+      })
+
+    if (getJobsId() === "")
+      return toast.error("You need to assign a job to this timer first", {
+        duration: 5000,
+        position: "bottom-center",
+      })
+
+    if (isTimerControllerEnded)
+      return toast.error("You already ended this timer", {
+        duration: 5000,
+        position: "bottom-center",
+      })
+
+    setIsCycleClockStarting(true)
+    startingTimerReadings([
+      `${currentDate} - Starting timer`,
+      `${currentDate} - Timer started`,
+    ])
+    updateIsTimerStop(false)
+    if (!isCycleClockRunning && !fromDb) {
+      addCycleTimer({ timerId }, callBackReq)
     }
+    setIsCycleClockRunning(true)
+    if (!isTimerClockRunning && !fromDb) {
+      addControllerTimer(
+        {
+          timerId,
+          locationId: timerDetailData?.item?.locationId._id,
+        },
+        callBackReq
+      )
+    }
+    runIntervalClock()
+
+    setIsCycleClockStarting(false)
   }
 
-  const stopCycle = async () => {
+  const getJobsId = () => {
+    return getObjectId(timerJobs?.items[0])
+  }
+
+  const stopCycle = ({ isStopInterval } = { isStopInterval: false }) => {
+    // avoid stopping cycle when below 1 second
+    if (cycleClockInSeconds < 1) {
+      return
+    }
     updateIsTimerStop(false)
     setIsCycleClockStopping(true)
     setIsCycleClockStarting(true)
-    stopInterval()
+
     setCycleClockInSeconds(0)
     socket?.emit("stop-press", {
       action: "stop-press",
       timerId: timerId,
       message: "stop the timer",
     })
-    // startingTimerReadings([
-    //   `${currentDate} - Stopping timer`,
-    //   `${currentDate} - Timer stopped`,
-    //   `${currentDate} - Timer cycle reset`,
-    //   `${currentDate} - One unit created`,
-    // ])
+    startingTimerReadings([
+      `${currentDate} - Stopping timer`,
+      `${currentDate} - Timer stopped`,
+      `${currentDate} - Timer cycle reset`,
+      `${currentDate} - One unit created`,
+    ])
+    const jobsId = getJobsId()
+
     if (stopReasons.length === 0) {
-      endAddCycleTimer(timerId, {
-        onSuccess: () => {
-          setCycleClockInSeconds(0)
-          runIntervalClock()
-          setIsCycleClockStarting(false)
-        },
-        onError: (err: any) => {
-          networkFailure(String(err))
-        },
-      })
-      timeLogCall(jobUpdateId, ["Unit Created"])
+      endAddCycleTimer(timerId, callBackReq)
+      timeLogCall(jobsId, ["Unit Created"])
       setProgress(0)
     } else {
-      endCycleTimer(timerId, {
-        onSuccess: () => {
-          setCycleClockInSeconds(0)
-          setProgress(0)
-          setIsCycleClockStopping(true)
-          setIsCycleClockRunning(false)
-          setIsCycleClockStarting(false)
-          stopInterval()
-        },
-        onError: (err: any) => {
-          networkFailure(String(err))
-        },
-      })
-      timeLogCall(jobUpdateId, stopReasons)
+      endCycleTimer(timerId, callBackReq)
+      timeLogCall(jobsId, stopReasons)
       setProgress(0)
       setStopReasons([])
       setStopMenu(false)
       setEndMenu(false)
     }
+
+    queryClient.setQueriesData(
+      [
+        "timer-logs-count-controller",
+        timerDetailData?.item?.locationId._id,
+        timerId,
+      ],
+      (query: any) => {
+        if (query && query?.item?.count && !isStopInterval) {
+          const current = query?.item?.count
+          return set(query, ["item", "count"], current + 1)
+        }
+        return query
+      }
+    )
+    queryClient.setQueriesData(
+      ["timer-logs-controller", timerDetailData?.item?.locationId._id, timerId],
+      (query: any) => {
+        const newData = {
+          createdAt: new Date(),
+          timerId,
+          machineId: timerDetailData?.item?.machineId,
+          machineClassId: timerDetailData?.item?.machineClassId,
+          locationId: timerDetailData?.item?.locationId,
+          factoryId: timerDetailData?.item?.factoryId,
+          jobId: jobTimer?.item || "",
+          partId: timerDetailData?.item?.partId,
+          time: cycleClockInSeconds,
+          operator: timerDetailData?.item?.operator || null,
+          operatorName: timerDetailData?.item?.operator?.firstName as string,
+          status:
+            (timerDetailData?.item?.partId.time as number) > cycleClockInSeconds
+              ? "Gain"
+              : "Loss",
+          stopReason: stopReasons,
+          cycle: (timerLogsCount?.item?.count as number) + 1,
+        }
+        if (query?.items) {
+          query.items.unshift(newData)
+          if (!isStopInterval) {
+            query.itemCount += 1
+          }
+        }
+        return query
+      }
+    )
+    // if offline run endANdAdd callback manually
+
+    if (isStopInterval) {
+      stopInterval()
+      setIsCycleClockRunning(false)
+      setIsCycleClockStarting(false)
+      setIsCycleClockStopping(false)
+      endCallback()
+      return
+    } else {
+      stopPressCallback()
+      endAndAddCallback()
+      runCycle()
+    }
   }
 
-  // useEffect(() => {
-  //   sectionDiv.current?.scrollIntoView({ behavior: "smooth" })
-  // }, [readingMessages])
+  useEffect(() => {
+    sectionDiv.current?.scrollIntoView({ behavior: "smooth" })
+  }, [readingMessages])
 
   useEffect(() => {
     if (
       cycleTimer?.items &&
       cycleTimer?.items.length > 0 &&
-      jobUpdateId !== "" &&
+      getJobsId() !== "" &&
       isTimerStop !== true
     ) {
       const secondsLapse = handleInitializeSeconds(
         cycleTimer?.items[0].createdAt
       )
       setCycleClockInSeconds(secondsLapse)
-      if (!cycleTimer?.items[0].endAt) {
+      if (
+        !cycleTimer?.items[0].endAt &&
+        !isTimerDetailDataLoading &&
+        !isTimerJobsLoading
+      ) {
         if (timerDetailData?.item?.partId.time === 0) {
           setProgress(0)
         } else {
@@ -490,7 +570,13 @@ const Controller = ({ timerId }: { timerId: string }) => {
         runCycle(true)
       }
     }
-  }, [cycleTimer, jobUpdateId])
+  }, [
+    cycleTimer,
+    getJobsId(),
+    isTimerDetailDataLoading,
+    isTimerJobsLoading,
+    isCycleTimerLoading,
+  ])
 
   const handleInitializeSeconds = (createdAt?: Date, endAt?: Date | null) => {
     const timeZone = timerDetailData?.item?.locationId.timeZone
@@ -533,67 +619,41 @@ const Controller = ({ timerId }: { timerId: string }) => {
             if (!returnData.error) {
               toast.success("Job automatically assigned to this timer", {
                 duration: 5000,
+                position: "bottom-center",
               })
-              setJobUpdateId(returnData?.item?.jobId)
             }
           },
           onError: (err: any) => {
-            networkFailure(String(err))
+            toast.error(String(err), {
+              duration: 5000,
+              position: "bottom-center",
+            })
           },
         }
       )
     }
   }, [isTimerDetailDataLoading])
 
-  useEffect(() => {
-    const isJobTimer = timerJobs?.items?.some(
-      (job) => job._id === jobTimer?.item?.jobId
-    )
-    if (isJobTimer) {
-      setJobUpdateId(jobTimer?.item?.jobId ?? "")
-    }
-  }, [jobTimer, timerJobs])
-
   // function of add time log call+
   const timeLogCall = (jobId: any, stopReasons: any) => {
-    addTimerLogs(
-      {
-        timerId,
-        machineId: timerDetailData?.item?.machineId._id as string,
-        machineClassId: timerDetailData?.item?.machineClassId._id as string,
-        locationId: timerDetailData?.item?.locationId._id as string,
-        factoryId: timerDetailData?.item?.factoryId._id as string,
-        jobId: jobId,
-        partId: timerDetailData?.item?.partId._id as string,
-        time: cycleClockInSeconds,
-        operator: (timerDetailData?.item?.operator?._id as string) || null,
-        operatorName: timerDetailData?.item?.operator?.firstName as string,
-        status:
-          (timerDetailData?.item?.partId.time as number) > cycleClockInSeconds
-            ? "Gain"
-            : "Loss",
-        stopReason: stopReasons,
-        cycle: (timerLogsCount?.item?.count as number) + 1,
-      },
-      {
-        onSuccess: async () => {
-          // setCycleClockInSeconds(0)
-          refetchTimerLogs()
-          try {
-            const { isSuccess } = await cycleRefetch()
-            if (isSuccess && jobUpdateId !== "" && isTimerStop !== true) {
-              // runIntervalClock()
-              // setIsCycleClockStarting(false)
-            }
-          } catch (error) {
-            throw error
-          }
-        },
-        onError: (err: any) => {
-          networkFailure(String(err))
-        },
-      }
-    )
+    addTimerLogs({
+      timerId,
+      machineId: timerDetailData?.item?.machineId._id as string,
+      machineClassId: timerDetailData?.item?.machineClassId._id as string,
+      locationId: timerDetailData?.item?.locationId._id as string,
+      factoryId: timerDetailData?.item?.factoryId._id as string,
+      jobId: jobId,
+      partId: timerDetailData?.item?.partId._id as string,
+      time: cycleClockInSeconds,
+      operator: (timerDetailData?.item?.operator?._id as string) || null,
+      operatorName: timerDetailData?.item?.operator?.firstName as string,
+      status:
+        (timerDetailData?.item?.partId.time as number) > cycleClockInSeconds
+          ? "Gain"
+          : "Loss",
+      stopReason: stopReasons,
+      cycle: (timerLogsCount?.item?.count as number) + 1,
+    })
   }
 
   // function of stop cycle interval
@@ -609,19 +669,34 @@ const Controller = ({ timerId }: { timerId: string }) => {
           setProgress(0)
           setCycleClockInSeconds(0)
           setIsCycleClockRunning(false)
-          // startingTimerReadings([
-          //   `${currentDate} - Stopping timer`,
-          //   `${currentDate} - Timer stopped`,
-          // ])
+          startingTimerReadings([
+            `${currentDate} - Stopping timer`,
+            `${currentDate} - Timer stopped`,
+          ])
         } else {
-          networkFailure(String(data.message))
+          toast.error(String(data.message), {
+            duration: 5000,
+            position: "bottom-center",
+          })
         }
       },
       onError: (err: any) => {
-        networkFailure(String(err))
+        toast.error(String(err), { duration: 5000, position: "bottom-center" })
       },
     })
     endCycleTimer(timerId)
+  }
+
+  if (isTimerDetailDataLoading || isTimerJobsLoading || isCycleTimerLoading) {
+    return (
+      <div
+        className="fixed z-50 animate-spin text-blue-700 top-3 left-3"
+        role="status"
+        aria-label="loading"
+      >
+        <FaCircleNotch size={24} />
+      </div>
+    )
   }
 
   return (
@@ -630,14 +705,15 @@ const Controller = ({ timerId }: { timerId: string }) => {
         progress={progress}
         isLoading={isTimerDetailDataLoading}
         location={timerDetailData?.item?.locationId.name}
+        setOpenTimerLogs={setIsTimerLogsModalOpen}
       />
       <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-12 mt-7 dark:text-white">
         <Details
           timerDetails={timerDetailData?.item}
           isTimerDetailDataLoading={isTimerDetailDataLoading}
-          // readingMessages={readingMessages}
-          // sectionDiv={sectionDiv}
-          jobUpdateId={jobUpdateId}
+          readingMessages={readingMessages}
+          sectionDiv={sectionDiv}
+          jobUpdateId={getJobsId()}
           defaultOperator={defaultOperator}
           jobTimer={jobTimer?.item as T_JobTimer}
           isJobTimerLoading={isJobTimerLoading}
@@ -705,6 +781,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
             : ""
         }
         isTimerClockRunning={isTimerClockRunning}
+      />
+      <TimerLogsModal
+        isOpen={isTimerLogsModalOpen}
+        setIsOpen={setIsTimerLogsModalOpen}
+        timerlogs={timerLogsData?.items}
       />
     </div>
   )

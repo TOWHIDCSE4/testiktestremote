@@ -12,6 +12,7 @@ import Locations from "../../models/location"
 import Timers from "../../models/timers"
 import * as Sentry from "@sentry/node"
 import { getIo } from "../../config/setup-socket"
+import roleMatrix from "../../helpers/roleMatrix"
 
 export const todayControllerTimer = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
@@ -25,7 +26,9 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
         _id: timerId,
       })
       const locationId = String(timer?.locationId)
-      const isAllowed = await isProductionTimeActive({ locationId })
+      const isAllowed =
+        (await isProductionTimeActive({ locationId })) ||
+        roleMatrix.controller.start_when_production_ended.includes(user.role)
       const location = await Locations.findOne({
         _id: locationId,
       })

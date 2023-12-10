@@ -167,7 +167,17 @@ const CycleClock = ({
                     ? "scale-75 transition-transform duration-300 text-neutral-200 cursor-not-allowed"
                     : "text-neutral-600 cursor-pointer"
                 }`}
-                onClick={() => isCycleClockStarting !== true && stopCycle()}
+                onClick={() => {
+                  if (
+                    isCycleClockStarting ||
+                    isCycleClockStopping ||
+                    !isCycleClockRunning ||
+                    !cycleClockTimeArray.length
+                  ) {
+                    return
+                  }
+                  stopCycle()
+                }}
               >
                 Stop
               </button>

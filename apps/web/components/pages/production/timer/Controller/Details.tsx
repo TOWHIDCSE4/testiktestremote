@@ -5,7 +5,7 @@ import {
   T_Timer,
   T_User,
 } from "custom-validator"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import useUsers from "../../../../../hooks/users/useUsers"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
@@ -21,8 +21,8 @@ import { useSocket } from "../../../../../store/useSocket"
 type T_Props = {
   timerDetails: T_Timer // Show all details of controller
   isTimerDetailDataLoading: boolean // Loadind timer details
-  // readingMessages: string[] // Using for messages
-  // sectionDiv: React.RefObject<HTMLDivElement>
+  readingMessages: string[] // Using for messages
+  sectionDiv: React.RefObject<HTMLDivElement>
   jobTimer: T_JobTimer // Timer jobs list
   jobUpdateId: string
   defaultOperator: any
@@ -40,8 +40,8 @@ type T_Props = {
 const Details = ({
   timerDetails,
   isTimerDetailDataLoading,
-  // readingMessages,
-  // sectionDiv,
+  readingMessages,
+  sectionDiv,
   jobTimer,
   jobUpdateId,
   defaultOperator,
@@ -55,6 +55,9 @@ const Details = ({
   isJobSwitch,
   setIsJobSwitch,
 }: T_Props) => {
+  const searchRef = useRef<HTMLInputElement>(null)
+  const comboboxRef = useRef<HTMLDivElement>(null)
+  const [isComboboxFocused, setIsComboboxFocused] = useState(false)
   const queryClient = useQueryClient()
   let socket = useSocket((store) => store.instance)
   const { data: users, isLoading: isUsersLoading } = useUsers()
@@ -77,6 +80,9 @@ const Details = ({
     useUpdateTimerJob()
   const [operatorQuery, setOperatorQuery] = useState("")
   const [openNewJobModal, setOpenNewJobModal] = useState(false)
+  const [isDirty, setIsDirty] = useState(false)
+  const [isDirtyHandled, setIsDirtyHandled] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [selectedOperator, setSelectedOperator] = useState({
     id: "",
     name: "",
@@ -86,26 +92,92 @@ const Details = ({
     id: "",
     name: "",
   })
-  const networkFailure = (errorMsg: string) => {
-    console.error(errorMsg)
-    toast.error("Oops! Network trouble. Check your connection and try again")
-  }
-
   const handleInputOperator = () => {
+    searchRef.current?.focus()
     const leadingTrailingSpaceRegex = /^\s|\s$/
     if (leadingTrailingSpaceRegex.test(operatorQuery)) {
       toast.error("Please remove trailing spaces")
     } else {
       mutate(
         { ...timerDetails, operator: "", operatorName: operatorQuery },
-        operatorUpdatecallBackReq
+        callBackReq
       )
+      setError(null)
+    }
+    // update pr dirty ko false kr dega
+    setIsDirty(false)
+  }
+
+  // enter karnay pr update kr rha hy operator name
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault()
+      handleInputOperator()
     }
   }
 
+  // agar kch change hoga tb ya function chalay ga
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOperatorQuery(event.target.value)
+    setIsDirty(true)
+    setError(null)
+  }
+
+  // agar dirty hy field ya nhi hy to ya run hoga aur condition check kry ga
+
+  //kahi dusri bhi screen pr click hoga to ya useEffect run hoga aur check karay ga agar field dirty hy to ya error dega warna nhi dega
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (isDirty && !isDirtyHandled) {
+        const message =
+          "You have unsaved changes. Are you sure you want to leave?"
+        event.returnValue = message
+        return message
+      }
+    }
+
+    const handleClickOutside = () => {
+      if (isDirty && !isDirtyHandled) {
+        setError("Please save your changes before leaving.")
+        setIsDirtyHandled(true)
+      }
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+    window.addEventListener("click", handleClickOutside)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+      window.removeEventListener("click", handleClickOutside)
+    }
+  }, [isDirty, isDirtyHandled, comboboxRef.current])
+
+  useEffect(() => {
+    const handleComboboxFocus = () => {
+      setIsComboboxFocused(true)
+    }
+
+    const handleComboboxBlur = () => {
+      setIsComboboxFocused(false)
+      setIsDirtyHandled(false)
+    }
+
+    const comboboxElement = comboboxRef.current
+
+    if (comboboxElement) {
+      comboboxElement.addEventListener("focusin", handleComboboxFocus)
+      comboboxElement.addEventListener("focusout", handleComboboxBlur)
+
+      return () => {
+        comboboxElement.removeEventListener("focusin", handleComboboxFocus)
+        comboboxElement.removeEventListener("focusout", handleComboboxBlur)
+      }
+    }
+  }, [comboboxRef.current])
+
   useEffect(() => {
     if (isJobSwitch) {
-      updateTimerJob({ ...jobTimer, jobId: jobUpdateId }, jobUpdateCallBackReq)
+      updateTimerJob({ ...jobTimer, jobId: jobUpdateId }, callBackReq)
       toast.success("Job switch succesfully", {
         duration: 5000,
       })
@@ -124,34 +196,12 @@ const Details = ({
         name: defaultOperator.firstName + " " + defaultOperator.lastName,
       })
       if (timerDetails) {
-        mutate(
-          { ...timerDetails, operator: defaultOperator._id },
-          operatorUpdatecallBackReq
-        )
+        mutate({ ...timerDetails, operator: defaultOperator._id }, callBackReq)
       }
     }
   }, [defaultOperator])
 
-  const operatorUpdatecallBackReq = {
-    onSuccess: (data: T_BackendResponse) => {
-      if (!data.error) {
-        queryClient.invalidateQueries({
-          queryKey: ["timer", timerDetails._id],
-        })
-        queryClient.invalidateQueries({
-          queryKey: ["job-timer-timer"],
-        })
-        toast.success("Operator has been updated")
-      } else {
-        networkFailure(String(data.message))
-      }
-    },
-    onError: (err: any) => {
-      networkFailure(String(err))
-    },
-  }
-
-  const jobUpdateCallBackReq = {
+  const callBackReq = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
         queryClient.invalidateQueries({
@@ -165,10 +215,16 @@ const Details = ({
           timerId: timerDetails._id,
           jobInfo: data?.item,
         })
+        setOperatorQuery("")
+        // setSelectedOperator()
+      } else {
+        toast.error(String(data.message))
       }
     },
+    onError: (err: any) => {
+      toast.error(String(err))
+    },
   }
-
   useEffect(() => {
     if (timerDetails) {
       setFactoryId(factoryId)
@@ -213,10 +269,7 @@ const Details = ({
         selectedOperator.id !== timerDetails?.operator._id)
     ) {
       if (timerDetails) {
-        mutate(
-          { ...timerDetails, operator: selectedOperator.id },
-          operatorUpdatecallBackReq
-        )
+        mutate({ ...timerDetails, operator: selectedOperator.id }, callBackReq)
       }
     }
   }, [selectedOperator])
@@ -302,7 +355,7 @@ const Details = ({
           ) : (
             <>
               {typeof timerDetails?.partId === "object"
-                ? parseInt(timerDetails?.partId.time.toString())
+                ? timerDetails?.partId.time.toFixed(1)
                 : "---"}{" "}
               seconds
             </>
@@ -326,7 +379,6 @@ const Details = ({
           )}
         </span>
       </h5>
-      {/* Operator assign */}
       <h4 className="uppercase flex font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
         Operator <p className="text-red-600 font-bold">*</p>
       </h4>
@@ -335,72 +387,106 @@ const Details = ({
         value={selectedOperator}
         onChange={setSelectedOperator}
         disabled={isComboboxDisabled}
+        ref={comboboxRef}
       >
-        <div className="relative xl:w-80 ipadair:w-[250px] 2xl:w-[350px]">
-          <Combobox.Input
-            className={`block mt-2 w-full xl:w-80 2xl:w-[350px] ipadair:w-[250px] rounded-md border-0 py-1.5 pl-3 dark:bg-gray-300 bg-zinc-100 pr-10 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-xl sm:xl:leading-7 disabled:opacity-50 disabled:cursor-not-allowed`}
-            onChange={(event) => setOperatorQuery(event.target.value)}
-            displayValue={(
-              selected: { id: string; name: string } | undefined
-            ) => {
-              return selected && selected.id && selected.name
-                ? `${selected.name}`
-                : "Operator Unassigned"
-            }}
-          />
-          <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-            <ChevronUpDownIcon
-              className={`h-5 w-5 ${
-                isUpdateTimerLoading ? "text-gray-400" : "text-gray-600"
-              }`}
-              aria-hidden="true"
+        {({ open }) => (
+          <div className="relative xl:w-80 ipadair:w-[250px] 2xl:w-[350px]">
+            <Combobox.Input
+              className={`block mt-2 w-full xl:w-80 2xl:w-[350px] ipadair:w-[250px] rounded-md border-0 py-1.5 pl-3 dark:bg-gray-300 bg-zinc-100 pr-10 text-gray-900 ring-1 ring-inset ring-gray-400 focus:ring-1 focus:ring-blue-950 sm:text-sm md:text-lg xl:text-[1.5vw] 2xl:text-xl sm:xl:leading-7 disabled:opacity-50 disabled:cursor-not-allowed`}
+              onChange={(event) => {
+                setOperatorQuery(event.target.value)
+                handleInputChange(event)
+                setError(null)
+              }}
+              displayValue={(
+                selected:
+                  | { id: string; name: string; firstName?: string }
+                  | undefined
+              ) => {
+                if (operatorQuery) {
+                  return operatorQuery
+                } else if (selected && selected.id && selected.name) {
+                  setError(null)
+                  return selected.firstName
+                    ? `${selected.firstName}`
+                    : `${selected.name}`
+                } else if (timerDetails && timerDetails.operator) {
+                  const operator: string | Record<string, any> =
+                    timerDetails.operator
+                  return typeof operator === "object"
+                    ? operator.firstName
+                    : operator
+                } else {
+                  return "Operator Unassigned"
+                }
+              }}
+              onKeyDown={(e) => handleKeyPress(e)}
+              tabIndex={0}
+              ref={searchRef}
             />
-          </Combobox.Button>
-          {operatorQuery && (
             <Combobox.Button
-              className="absolute inset-y-0 right-5 flex items-center rounded-r-md px-2 focus:outline-none"
-              onClick={() => handleInputOperator()}
+              className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"
+              onClick={() => {
+                searchRef?.current?.focus()
+              }}
             >
-              <span className="flex justify-start items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.7"
-                  stroke="currentColor"
-                  className={`h-5 w-6 ${
-                    isUpdateTimerLoading ? "text-gray-400" : "text-gray-600"
-                  } mx-2`}
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
-                  />
-                </svg>
-              </span>
+              <ChevronUpDownIcon
+                className={`h-5 w-5 ${
+                  isUpdateTimerLoading ? "text-gray-400" : "text-gray-600"
+                }`}
+                aria-hidden="true"
+              />
             </Combobox.Button>
-          )}
+            {operatorQuery && (
+              <Combobox.Button
+                className="absolute inset-y-0 right-5 flex items-center rounded-r-md px-2 focus:outline-none"
+                onClick={() => handleInputOperator()}
+              >
+                <span className="flex justify-start items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.7"
+                    stroke="currentColor"
+                    className={`h-5 w-6 ${
+                      isUpdateTimerLoading ? "text-gray-400" : "text-green-600"
+                    } mx-2`}
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                    />
+                  </svg>
+                </span>
+              </Combobox.Button>
+            )}
 
-          {filteredOperator && filteredOperator.length > 0 ? (
-            <Combobox.Options className="absolute z-10 mt-1 max-h-60 xl:w-80 ipadair:w-[250px] 2xl:w-[350px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {filteredOperator.map((item: T_User, index: number) => (
-                <Combobox.Option
-                  key={index}
-                  value={{
-                    id: item._id,
-                    name: `${item.firstName} ${item.lastName}`,
-                  }}
-                  className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
-                >
-                  <span className="block">{`${item.firstName} ${item.lastName}`}</span>
-                </Combobox.Option>
-              ))}
-            </Combobox.Options>
-          ) : null}
-        </div>
+            {filteredOperator && filteredOperator.length > 0 ? (
+              <Combobox.Options className="absolute z-10 mt-1 max-h-60 xl:w-80 ipadair:w-[250px] 2xl:w-[350px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                {filteredOperator.map((item: T_User, index: number) => (
+                  <Combobox.Option
+                    key={index}
+                    value={{
+                      id: item._id,
+                      name: `${item.firstName} ${item.lastName}`,
+                    }}
+                    className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
+                  >
+                    <span className="block">{`${item.firstName} ${item.lastName}`}</span>
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            ) : null}
+          </div>
+        )}
       </Combobox>
-      {/* Job assgin */}
+      {error && (
+        <div className="text-red-500 font-roboto text-sm font-semibold">
+          {error}
+        </div>
+      )}
       <h4 className="uppercase flex font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
         Job <p className="text-red-600 font-bold">*</p>
       </h4>
@@ -420,14 +506,11 @@ const Details = ({
           if (e.target.value === "Add New Job") {
             setOpenNewJobModal(true)
           } else {
-            updateTimerJob(
-              { ...jobTimer, jobId: e.target.value },
-              jobUpdateCallBackReq
-            )
+            updateTimerJob({ ...jobTimer, jobId: e.target.value }, callBackReq)
           }
         }}
       >
-        <option value="">Select Job</option>
+        {!jobUpdateId && <option value="">Select Job</option>}
         {timerJobs?.map((item: T_Job, index: number) => {
           return (
             <option key={index} value={item._id as string}>
@@ -435,9 +518,11 @@ const Details = ({
             </option>
           )
         })}
-        <option>Add New Job</option>
+        <option disabled={userProfile?.item?.role === "Personnel"}>
+          Add New Job
+        </option>
       </select>
-      {/* <div className="relative flex">
+      <div className="relative flex">
         <h4 className="uppercase font-semibold text-sm text-gray-800 mt-4 2xl:mt-3 md:text-lg xl:text-[1.5vw] 2xl:text-2xl  dark:bg-dark-blue dark:text-white">
           Readings
         </h4>
@@ -458,7 +543,7 @@ const Details = ({
           )
         })}
         <div ref={sectionDiv} />
-      </div> */}
+      </div>
       <NewJobModal
         isOpen={openNewJobModal}
         locationState={

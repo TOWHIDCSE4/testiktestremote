@@ -7,10 +7,12 @@ const Header = ({
   progress,
   isLoading,
   location,
+  setOpenTimerLogs,
 }: {
   progress: number
   isLoading: boolean
   location: string
+  setOpenTimerLogs: (val: boolean) => void
 }) => {
   const [mode, setMode] = React.useState("")
   const toggleTheme = () => {
@@ -39,6 +41,12 @@ const Header = ({
       )}
 
       <div className="mt-3 md:mt-0 flex">
+        <button
+          className="bg-white h-9 self-center mr-4 rounded-md px-4"
+          onClick={() => setOpenTimerLogs(true)}
+        >
+          Production Logs
+        </button>
         <div className="items-end duration-100 bg-gray-100 rounded-xl sm:mt-2 mr-5 md:mt-5 2xl:mt-6 h-9 py-0 pt-2 px-1">
           <button onClick={toggleTheme}>
             {mode === "Dark" ? (

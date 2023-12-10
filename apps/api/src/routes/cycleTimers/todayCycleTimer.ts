@@ -13,6 +13,7 @@ import isProductionTimeActive from "../../helpers/isProductionTimeActive"
 import * as Sentry from "@sentry/node"
 import { getIo } from "../../config/setup-socket"
 import mongoose from "mongoose"
+import roleMatrix from "../../helpers/roleMatrix"
 
 export const todayCycleTimer = async (req: Request, res: Response) => {
   try {
@@ -27,7 +28,9 @@ export const todayCycleTimer = async (req: Request, res: Response) => {
           _id: new mongoose.Types.ObjectId(timerId as string),
         })
         const locationId = String(timer?.locationId)
-        const isAllowed = await isProductionTimeActive({ locationId })
+        const isAllowed =
+          (await isProductionTimeActive({ locationId })) ||
+          roleMatrix.controller.start_when_production_ended.includes(user.role)
         const location = await Locations.findOne({
           _id: new mongoose.Types.ObjectId(locationId),
         })

@@ -23,7 +23,7 @@ const BottomMenu = ({
 }) => {
   const stop = () => {
     if (stopReasons.length > 0 && isCycleClockRunning) {
-      stopCycle()
+      stopCycle({ isStopInterval: true })
     } else {
       if (!isCycleClockRunning) {
         toast.error("Cycle clock is not running")
