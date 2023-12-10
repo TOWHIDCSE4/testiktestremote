@@ -36,6 +36,6 @@ function useGetTimerJobs(locationId: any, factoryId: any, partId: any): any {
     }
   )
 
-  return query
+  return { ...query }
 }
 export default useGetTimerJobs
