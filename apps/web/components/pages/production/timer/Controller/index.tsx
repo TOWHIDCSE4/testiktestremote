@@ -423,7 +423,12 @@ const Controller = ({ timerId }: { timerId: string }) => {
       addCycleTimer({ timerId }, callBackReq)
     }
     setIsCycleClockRunning(true)
-    if (!isTimerClockRunning && !fromDb) {
+    console.log("LOG INFO: Controller timer", controllerTimer)
+    const hasControllerTimer =
+      Array.isArray(controllerTimer?.items) &&
+      controllerTimer?.items?.length !== 0
+
+    if (!isTimerClockRunning && !fromDb && !hasControllerTimer) {
       addControllerTimer(
         {
           timerId,
