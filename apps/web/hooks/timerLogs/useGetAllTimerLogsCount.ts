@@ -36,7 +36,7 @@ function useGetAllTimerLogsCount({
   timerId: string
 }) {
   const query = useQuery(
-    ["timer-logs", locationId, timerId],
+    ["timer-logs-count", locationId, timerId],
     () => getAllTimerLogsCount({ locationId, timerId }),
     {
       enabled: !!locationId && !!timerId,

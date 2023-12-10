@@ -31,7 +31,7 @@ const Content = () => {
           <h4 className="uppercase text-sm text-gray-500 font-medium tracking-widest mt-2">
             Profile Home
             <span className="text-black mx-2">&gt;</span>
-            <span className="text-red-500">{location?.item.name}</span>
+            <span className="text-red-500">{location?.item?.name}</span>
           </h4>
           <div className="w-full h-0.5 bg-gray-200 mt-6"></div>
         </div>
