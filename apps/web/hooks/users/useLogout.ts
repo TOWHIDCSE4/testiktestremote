@@ -1,5 +1,5 @@
 import { API_URL_USERS } from "../../helpers/constants"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 
 export async function logoutUser() {
@@ -17,7 +17,15 @@ export async function logoutUser() {
 }
 
 function useLogout() {
-  const query = useMutation(() => logoutUser())
+  const queryClient = useQueryClient()
+  const query = useMutation({
+    mutationFn: () => logoutUser(),
+    onSettled: () => {
+      queryClient.clear()
+      window.localStorage.clear()
+      window.location.href = "/"
+    },
+  })
   return query
 }
 

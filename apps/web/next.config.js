@@ -30,6 +30,14 @@ module.exports = {
       },
     ],
   },
+  webpack: (config, { webpack, buildId }) => {
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        "process.env.CONFIG_BUILD_ID": JSON.stringify(buildId),
+      })
+    )
+    return config
+  },
   env: {
     MEDIA_KEY: process.env.MEDIA_KEY,
     API_URL: process.env.API_URL,
