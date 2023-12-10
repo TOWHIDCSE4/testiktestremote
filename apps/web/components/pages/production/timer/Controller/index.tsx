@@ -39,7 +39,7 @@ import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
 import { useSocket } from "../../../../../store/useSocket"
 import useStoreTimer from "../../../../../store/useStoreTimer"
 import TimerLogsModal from "../modals/TimerLogsModal"
-import { useQueryClient, onlineManager } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { set } from "lodash"
 import Table from "../TimerTracker/SingleTimerTracker/Table"
 import { getObjectId } from "../../../../../helpers/ids"
@@ -156,16 +156,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
     )
     .format("YYYY-MM-DD HH:mm:ss")
 
-  const isOnlineRef = useRef(onlineManager.isOnline())
-  useEffect(() => {
-    // if comes from offline to onLine
-    if (!isOnlineRef.current && onlineManager.isOnline()) {
-      // invalidate local queries
-      queryClient.invalidateQueries(["timer-logs-count"])
-      queryClient.invalidateQueries(["timer-logs"])
-    }
-    isOnlineRef.current = onlineManager.isOnline()
-  }, [onlineManager.isOnline()])
   const endAndAddCallback = () => {
     setCycleClockInSeconds(0)
     setIsCycleClockStarting(false)
