@@ -315,7 +315,11 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }
 
   useEffect(() => {
-    if (controllerTimer?.items && controllerTimer?.items.length > 0) {
+    if (
+      controllerTimer?.items &&
+      controllerTimer?.items.length > 0 &&
+      !isCycleClockRunning
+    ) {
       const secondsLapse = handleInitializeSeconds(
         controllerTimer?.items[0].createdAt,
         controllerTimer?.items[0].endAt
@@ -343,7 +347,13 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }, [controllerTimer])
 
   useEffect(() => {
-    refetchController()
+    const interval = setInterval(() => {
+      refetchController()
+    }, 500)
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [])
   // Cycle Clock
 
@@ -423,7 +433,12 @@ const Controller = ({ timerId }: { timerId: string }) => {
       addCycleTimer({ timerId }, callBackReq)
     }
     setIsCycleClockRunning(true)
-    if (!isTimerClockRunning && !fromDb) {
+    console.log("LOG INFO: Controller timer", controllerTimer)
+    const hasControllerTimer =
+      Array.isArray(controllerTimer?.items) &&
+      controllerTimer?.items?.length !== 0
+
+    if (!isTimerClockRunning && !fromDb && !hasControllerTimer) {
       addControllerTimer(
         {
           timerId,
