@@ -29,6 +29,7 @@ import useGetTimerDetails from "../../../../hooks/timers/useGetTimerDetails"
 import { getObjectId } from "../../../../helpers/ids"
 import useGetTimerJobs from "../../../../hooks/timers/useGetTimerJobs"
 import cn from "classnames"
+import useGetControllerTimer from "../../../../hooks/timers/useGetControllerTimer"
 
 type T_Props = {
   timer: T_Timer
@@ -70,6 +71,10 @@ const Timer = ({
     getObjectId(timerDetailData?.item?.factoryId),
     getObjectId(timerDetailData?.item?.partId)
   )
+  const {
+    isLoading: isControllerTimerLoading,
+    refetch: controllerTimerRefetch,
+  } = useGetControllerTimer(getObjectId(timer))
   const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimerRealTime(
     timer._id as string
   )
@@ -211,6 +216,7 @@ const Timer = ({
   }, [cycleClockInSeconds])
 
   useEffect(() => {
+    controllerTimerRefetch()
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
       const timeZone = timer?.location?.timeZone
       const timerStart = dayjs.tz(
@@ -238,6 +244,10 @@ const Timer = ({
       })
     }
   }, [timer])
+
+  useEffect(() => {
+    controllerTimerRefetch()
+  }, [])
 
   const filteredParts =
     partQuery === ""
@@ -417,7 +427,7 @@ const Timer = ({
             ["cursor-not-allowed"]: isJobsLoading,
           })}
           onClick={openController}
-          disabled={isJobsLoading}
+          disabled={isJobsLoading || isControllerTimerLoading}
         >
           {isJobsLoading ? "Loading Jobs.." : "Controller"}
         </button>

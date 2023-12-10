@@ -132,6 +132,9 @@ export const timerUnitsCreatedCount = async (req: Request, res: Response) => {
       createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
     })
     if (!getDayFirstTimer) {
+      console.log(
+        `getDayfirst timer not found ${location} ${req.method} ${req.url}`
+      )
       return res.json({
         error: false,
         item: {},
@@ -145,6 +148,10 @@ export const timerUnitsCreatedCount = async (req: Request, res: Response) => {
       $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       stopReason: { $in: ["Unit Created"] },
     }).countDocuments()
+    console.log(
+      `Timer Logs Count Data on ${req.method} ${req.url}`,
+      timerLogsCount
+    )
     res.json({
       error: false,
       item: { count: timerLogsCount },

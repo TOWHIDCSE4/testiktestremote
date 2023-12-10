@@ -462,6 +462,11 @@ export const addTimeLog = async (req: Request, res: Response) => {
                       : 0) + 1,
               })
               await newTimerLog.save()
+              console.log(
+                "Timer Log Created for job:",
+                getStockJob,
+                newTimerLog
+              )
               if (
                 recommendation === JOB_ACTION.STOP ||
                 recommendation === JOB_ACTION.SWITCH
@@ -513,6 +518,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
                     : 0) + 1,
             })
             const createTimerLog = await newTimerLog.save()
+            console.log("Timer Log Created for stock:", createTimerLog)
             const limitReached = currCountJob + 1 === targetCountJob || false
             const recommendation =
               getStockJob && limitReached
