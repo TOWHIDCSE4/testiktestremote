@@ -2,15 +2,28 @@
 import { useEffect, useState } from "react"
 import useLocation from "../../../hooks/locations/useLocation"
 import useProfile from "../../../hooks/users/useProfile"
+import { USER_ROLES } from "../../../helpers/constants"
+import ShortCutModal from "./ShortCutModal"
+
+const ALLOWED_ROLES = [
+  USER_ROLES.Administrator,
+  USER_ROLES.Personnel,
+  USER_ROLES.Production,
+]
 
 const Content = () => {
   const { data, isLoading: basicInfoLoading } = useProfile()
   const { data: location, setSelectedLocationId } = useLocation()
   const [showText, setShowText] = useState(true)
+  const [canCreateShotCut, setCanCreateShotCut] = useState(false)
+
+  const closeModal = () => setCanCreateShotCut(false)
 
   useEffect(() => {
-    if (data?.item?.locationId)
+    if (data?.item?.locationId) {
       setSelectedLocationId(data?.item.locationId as string)
+      setCanCreateShotCut(ALLOWED_ROLES.includes(data?.item?.role as string))
+    }
   }, [data])
 
   return (
@@ -36,6 +49,7 @@ const Content = () => {
           <div className="w-full h-0.5 bg-gray-200 mt-6"></div>
         </div>
       </div>
+      <ShortCutModal isOpen={canCreateShotCut} onClose={closeModal} />
     </>
   )
 }
