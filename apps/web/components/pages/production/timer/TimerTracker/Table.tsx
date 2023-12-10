@@ -329,7 +329,7 @@ const Table = ({
             </div>
           </div>
         ) : null}
-        {!isPaginatedLoading && paginated?.items.length === 0 ? (
+        {!isPaginatedLoading && paginated?.items?.length === 0 ? (
           // <div className="flex items-center justify-center mb-4 mt-9 w-full h-80">
           <table className="w-full text-gray-500 text-lg font-semibold">
             {Array.from({ length: 5 }).map((_, index) => (
@@ -388,7 +388,7 @@ const Table = ({
             ))}
           </table>
         ) : null}
-        {paginated?.items.length === 1 && (
+        {paginated?.items?.length === 1 && (
           <table className="w-full text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
             {Array.from({ length: 4 }).map((_, index) => (
               <tr key={index} className="border-b">
@@ -447,7 +447,7 @@ const Table = ({
           </table>
         )}
 
-        {paginated?.items.length === 2 && (
+        {paginated?.items?.length === 2 && (
           <table className="w-full text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
             {Array.from({ length: 3 }).map((_, index) => (
               <tr key={index} className="border">
@@ -506,7 +506,7 @@ const Table = ({
           </table>
         )}
 
-        {paginated?.items.length === 3 && (
+        {paginated?.items?.length === 3 && (
           <table className="w-full text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
             {Array.from({ length: 2 }).map((_, index) => (
               <tr key={index} className="border">
@@ -565,7 +565,7 @@ const Table = ({
           </table>
         )}
 
-        {paginated?.items.length === 4 && (
+        {paginated?.items?.length === 4 && (
           <table className="w-full text-gray-500 text-lg font-semibold border-t-[1px] border-gray-200">
             {Array.from({ length: 1 }).map((_, index) => (
               <tr key={index} className="border">

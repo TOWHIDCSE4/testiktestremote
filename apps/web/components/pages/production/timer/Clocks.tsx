@@ -47,7 +47,7 @@ const Clocks = ({
     useGetLocation(locationId)
 
   const currentDate = dayjs
-    .tz(dayjs(), !isLocationLoading ? location?.item.timeZone : "")
+    .tz(dayjs(), !isLocationLoading ? location?.item?.timeZone : "")
     .format("MMM DD YYYY")
 
   const handleOnChange = (e: any) => {
@@ -177,7 +177,7 @@ const Clocks = ({
           <h6 className="uppercase text-gray-400 font-medium text-sm">Date</h6>
         </div>
         <LocalTime
-          timeZone={location?.item.timeZone ? location?.item.timeZone : ""}
+          timeZone={location?.item?.timeZone ? location?.item?.timeZone : ""}
           isLoading={isLocationLoading}
         />
         <InProduction locationId={locationId} isLoading={isLocationLoading} />
