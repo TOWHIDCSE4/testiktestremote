@@ -478,8 +478,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
     queryClient.setQueriesData(
       ["timer-logs-count", timerDetailData?.item?.locationId._id, timerId],
       (query: any) => {
-        if (query && query?.item?.count && !isStopInterval) {
+        if (
+          query &&
+          typeof query?.item?.count === "number" &&
+          !isStopInterval
+        ) {
           const current = query?.item?.count
+          console.log("tung tung tung", query, current)
+
           return set(query, ["item", "count"], current + 1)
         }
         return query
@@ -523,6 +529,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       setIsCycleClockRunning(false)
       setIsCycleClockStarting(false)
       setIsCycleClockStopping(false)
+      stopTimer()
       endCallback()
       return
     } else {
