@@ -34,7 +34,6 @@ import useAddControllerTimer from "../../../../../hooks/timers/useAddControllerT
 import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer"
 import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTimerByTimerId"
 import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
-import useGetAllTimerLogsCountController from "../../../../../hooks/timerLogs/useGetAllTimerLogsCountController"
 import useProfile from "../../../../../hooks/users/useProfile"
 import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
 import { useSocket } from "../../../../../store/useSocket"
@@ -43,9 +42,10 @@ import TimerLogsModal from "../modals/TimerLogsModal"
 import { useQueryClient, onlineManager } from "@tanstack/react-query"
 import { set } from "lodash"
 import Table from "../TimerTracker/SingleTimerTracker/Table"
-import useGetAllTimerLogsController from "../../../../../hooks/timerLogs/useGetAllTimerLogsController"
 import { getObjectId } from "../../../../../helpers/ids"
 import { FaCircleNotch } from "react-icons/fa"
+import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
+import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -90,12 +90,12 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const { mutate: addTimerLogs } = useAddTimerLog()
 
   const { data: timerLogsCount, refetch: refetchTimerLogs } =
-    useGetAllTimerLogsCountController({
+    useGetAllTimerLogsCount({
       locationId: timerDetailData?.item?.locationId._id,
       timerId,
     })
 
-  const { data: timerLogsData } = useGetAllTimerLogsController({
+  const { data: timerLogsData } = useGetAllTimerLogs({
     locationId: timerDetailData?.item?.locationId._id,
     timerId,
   })
@@ -159,8 +159,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
     // if comes from offline to onLine
     if (!isOnlineRef.current && onlineManager.isOnline()) {
       // invalidate local queries
-      queryClient.invalidateQueries(["timer-logs-count-controller"])
-      queryClient.invalidateQueries(["timer-logs-controller"])
+      queryClient.invalidateQueries(["timer-logs-count"])
+      queryClient.invalidateQueries(["timer-logs"])
     }
     isOnlineRef.current = onlineManager.isOnline()
   }, [onlineManager.isOnline()])
@@ -481,11 +481,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
 
     queryClient.setQueriesData(
-      [
-        "timer-logs-count-controller",
-        timerDetailData?.item?.locationId._id,
-        timerId,
-      ],
+      ["timer-logs-count", timerDetailData?.item?.locationId._id, timerId],
       (query: any) => {
         if (query && query?.item?.count && !isStopInterval) {
           const current = query?.item?.count
@@ -495,7 +491,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
       }
     )
     queryClient.setQueriesData(
-      ["timer-logs-controller", timerDetailData?.item?.locationId._id, timerId],
+      ["timer-logs", timerDetailData?.item?.locationId._id, timerId],
       (query: any) => {
         const newData = {
           createdAt: new Date(),
