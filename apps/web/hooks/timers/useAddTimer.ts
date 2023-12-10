@@ -1,5 +1,5 @@
 import { API_URL_TIMER } from "../../helpers/constants"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { T_Timer } from "custom-validator"
 import Cookies from "js-cookie"
 
@@ -17,7 +17,13 @@ export async function addTimer(data: T_Timer) {
 }
 
 function useAddTimer() {
-  const query = useMutation((data: T_Timer) => addTimer(data))
+  const queryClient = useQueryClient()
+  const query = useMutation({
+    mutationFn: (data: T_Timer) => addTimer(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["timers-location"])
+    },
+  })
 
   return query
 }
