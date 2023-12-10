@@ -28,6 +28,7 @@ import useControllerModal from "../../../../store/useControllerModal"
 import useGetTimerDetails from "../../../../hooks/timers/useGetTimerDetails"
 import { getObjectId } from "../../../../helpers/ids"
 import useGetTimerJobs from "../../../../hooks/timers/useGetTimerJobs"
+import cn from "classnames"
 
 type T_Props = {
   timer: T_Timer
@@ -64,7 +65,7 @@ const Timer = ({
       timerId: timer._id as string,
     })
   const { data: timerDetailData } = useGetTimerDetails(getObjectId(timer._id))
-  const { data: jobsData } = useGetTimerJobs(
+  const { isLoading: isJobsLoading } = useGetTimerJobs(
     getObjectId(timerDetailData?.item?.locationId),
     getObjectId(timerDetailData?.item?.factoryId),
     getObjectId(timerDetailData?.item?.partId)
@@ -410,10 +411,15 @@ const Timer = ({
       </div>
       <div className="grid grid-cols-2 gap-x-5 gap-y-3 px-4 my-4">
         <button
-          className="uppercase text-sm text-white bg-green-800 p-1 rounded-md"
+          className={cn("uppercase text-sm text-white  p-1 rounded-md", {
+            ["bg-stone-300"]: isJobsLoading,
+            ["bg-green-800"]: !isJobsLoading,
+            ["cursor-not-allowed"]: isJobsLoading,
+          })}
           onClick={openController}
+          disabled={isJobsLoading}
         >
-          Controller
+          {isJobsLoading ? "Loading Jobs.." : "Controller"}
         </button>
         <button
           className="uppercase text-sm text-white bg-stone-300 p-1 rounded-md"
