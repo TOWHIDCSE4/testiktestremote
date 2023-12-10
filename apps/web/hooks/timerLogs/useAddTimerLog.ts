@@ -5,6 +5,7 @@ import Cookies from "js-cookie"
 
 export async function addTimerLog(props: T_TimerLog) {
   const token = Cookies.get("tfl")
+
   const res = await fetch(`${API_URL_TIMER_LOGS}`, {
     method: "POST",
     body: JSON.stringify(props),
@@ -13,12 +14,18 @@ export async function addTimerLog(props: T_TimerLog) {
       Authorization: `Bearer ${token}`,
     },
   })
+
   const data = (await res.json()) as T_BackendResponse
   return data
 }
 
 function useAddTimerLog() {
-  const query = useMutation((props: T_TimerLog) => addTimerLog(props))
+  const query = useMutation({
+    mutationFn: (props: T_TimerLog) => addTimerLog(props),
+    onError: () => {},
+    onSuccess: () => {},
+    onSettled: (data) => {},
+  })
 
   return query
 }

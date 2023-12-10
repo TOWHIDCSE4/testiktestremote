@@ -64,7 +64,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
     refetch: cycleRefetch,
     isLoading: isCycleTimerLoading,
   } = useGetCycleTimerRealTime(timerId)
-  console.log("LOG INFO cycleTImerData", cycleTimer)
 
   const { mutate: addControllerTimer } = useAddControllerTimer()
   const { mutate: addCycleTimer } = useAddCycleTimer()
@@ -343,6 +342,9 @@ const Controller = ({ timerId }: { timerId: string }) => {
     }
   }, [controllerTimer])
 
+  useEffect(() => {
+    refetchController()
+  }, [])
   // Cycle Clock
 
   const callBackReq = {
@@ -474,62 +476,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
       setStopMenu(false)
       setEndMenu(false)
     }
-
-    queryClient.setQueriesData(
-      ["timer-logs-count", timerDetailData?.item?.locationId._id, timerId],
-      (query: any) => {
-        if (
-          query &&
-          typeof query?.item?.count === "number" &&
-          !isStopInterval
-        ) {
-          const current = query?.item?.count
-          console.log("tung tung tung", query, current)
-
-          return set(query, ["item", "count"], current + 1)
-        }
-        return query
-      }
-    )
-    queryClient.setQueriesData(
-      ["timer-logs", timerDetailData?.item?.locationId._id, timerId],
-      (query: any) => {
-        const newData = {
-          createdAt: new Date(),
-          timerId,
-          machineId: timerDetailData?.item?.machineId,
-          machineClassId: timerDetailData?.item?.machineClassId,
-          locationId: timerDetailData?.item?.locationId,
-          factoryId: timerDetailData?.item?.factoryId,
-          jobId: jobTimer?.item || "",
-          partId: timerDetailData?.item?.partId,
-          time: cycleClockInSeconds,
-          operator: timerDetailData?.item?.operator || null,
-          operatorName: timerDetailData?.item?.operator?.firstName as string,
-          status:
-            (timerDetailData?.item?.partId.time as number) > cycleClockInSeconds
-              ? "Gain"
-              : "Loss",
-          stopReason: stopReasons,
-          cycle: (timerLogsCount?.item?.count as number) + 1,
-        }
-        if (query?.items) {
-          query.items.unshift(newData)
-          if (!isStopInterval) {
-            query.itemCount += 1
-          }
-        }
-        return query
-      }
-    )
     // if offline run endANdAdd callback manually
 
     if (isStopInterval) {
       stopInterval()
       setIsCycleClockRunning(false)
+      stopCounter()
       setIsCycleClockStarting(false)
       setIsCycleClockStopping(false)
-      stopTimer()
       endCallback()
       return
     } else {
@@ -634,6 +588,60 @@ const Controller = ({ timerId }: { timerId: string }) => {
 
   // function of add time log call+
   const timeLogCall = (jobId: any, stopReasons: any) => {
+    const isStopInterval = !stopReasons.includes("Unit Created")
+
+    queryClient.setQueriesData(
+      ["timer-logs-count", timerDetailData?.item?.locationId._id, timerId],
+      (query: any) => {
+        if (
+          query &&
+          typeof query?.item?.count === "number" &&
+          !isStopInterval
+        ) {
+          const current = query?.item?.count
+
+          const increasedCount = set(query, ["item", "count"], current + 1)
+          const increasedItemCount = set(
+            increasedCount,
+            ["itemCount"],
+            current + 1
+          )
+          return increasedItemCount
+        }
+        return query
+      }
+    )
+    queryClient.setQueriesData(
+      ["timer-logs", timerDetailData?.item?.locationId._id, timerId],
+      (query: any) => {
+        const newData = {
+          createdAt: new Date(),
+          timerId,
+          machineId: timerDetailData?.item?.machineId,
+          machineClassId: timerDetailData?.item?.machineClassId,
+          locationId: timerDetailData?.item?.locationId,
+          factoryId: timerDetailData?.item?.factoryId,
+          jobId: jobTimer?.item || "",
+          partId: timerDetailData?.item?.partId,
+          time: cycleClockInSeconds,
+          operator: timerDetailData?.item?.operator || null,
+          operatorName: timerDetailData?.item?.operator?.firstName as string,
+          status:
+            (timerDetailData?.item?.partId.time as number) > cycleClockInSeconds
+              ? "Gain"
+              : "Loss",
+          stopReason: stopReasons,
+          cycle: (timerLogsCount?.item?.count || 0) + 1,
+        }
+        if (query?.items) {
+          query.items.unshift(newData)
+          if (!isStopInterval) {
+            query.itemCount += 1
+          }
+        }
+        return query
+      }
+    )
     addTimerLogs({
       timerId,
       machineId: timerDetailData?.item?.machineId._id as string,
@@ -650,7 +658,7 @@ const Controller = ({ timerId }: { timerId: string }) => {
           ? "Gain"
           : "Loss",
       stopReason: stopReasons,
-      cycle: (timerLogsCount?.item?.count as number) + 1,
+      cycle: (timerLogsCount?.item?.count || 0) + 1,
     })
   }
 

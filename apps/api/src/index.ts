@@ -7,6 +7,7 @@ import * as Sentry from "@sentry/node"
 import { setupSocket } from "./config/setup-socket"
 import sentryConfig from "./utils/sentry.config"
 import * as os from "os"
+
 const app: Application = express()
 Sentry.init(sentryConfig)
 console.log(process.env.local)
