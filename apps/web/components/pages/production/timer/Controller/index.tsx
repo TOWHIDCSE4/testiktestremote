@@ -46,6 +46,8 @@ import Table from "../TimerTracker/SingleTimerTracker/Table"
 import useGetAllTimerLogsController from "../../../../../hooks/timerLogs/useGetAllTimerLogsController"
 import { getObjectId } from "../../../../../helpers/ids"
 import { FaCircleNotch } from "react-icons/fa"
+import { Button } from "@mui/material"
+import { USER_ROLES } from "../../../../../helpers/constants"
 
 const Controller = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
@@ -687,10 +689,13 @@ const Controller = ({ timerId }: { timerId: string }) => {
     endCycleTimer(timerId)
   }
 
+  const [isEndedProductionTime, setIsEndedProductionTime] =
+    useState<boolean>(true)
+
   if (isTimerDetailDataLoading || isTimerJobsLoading || isCycleTimerLoading) {
     return (
       <div
-        className="fixed z-50 animate-spin text-blue-700 top-3 left-3"
+        className="fixed z-50 text-blue-700 animate-spin top-3 left-3"
         role="status"
         aria-label="loading"
       >
@@ -700,14 +705,14 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }
 
   return (
-    <div className="h-screen overflow-auto 2xl:text-lg  dark:bg-dark-blue dark:text-white">
+    <div className="relative flex flex-col justify-between w-full h-full overflow-hidden 2xl:text-lg dark:bg-dark-blue dark:text-white">
       <Header
         progress={progress}
         isLoading={isTimerDetailDataLoading}
         location={timerDetailData?.item?.locationId.name}
         setOpenTimerLogs={setIsTimerLogsModalOpen}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 px-4 md:px-12 mt-7 dark:text-white">
+      <div className="relative grid flex-1 grid-cols-1 px-4 md:grid-cols-2 md:px-12 mt-7 dark:text-white">
         <Details
           timerDetails={timerDetailData?.item}
           isTimerDetailDataLoading={isTimerDetailDataLoading}
@@ -746,29 +751,56 @@ const Controller = ({ timerId }: { timerId: string }) => {
           />
         </div>
         {/* End Medium - large screen show timer data */}
-      </div>
-      <Footer
-        progress={progress}
-        isLoading={isTimerDetailDataLoading}
-        timeZone={timerDetailData?.item?.locationId.timeZone}
-      />
-      <div className="slides">
-        {/* Bottom Slide Menu */}
-        <BottomMenu
-          stopMenu={stopMenu}
-          setStopMenu={setStopMenu}
-          stopReasons={stopReasons}
-          setStopReasons={setStopReasons}
-          isCycleClockRunning={isCycleClockRunning}
-          stopCycle={stopCycle}
+
+        <Footer
+          progress={progress}
+          isLoading={isTimerDetailDataLoading}
+          timeZone={timerDetailData?.item?.locationId.timeZone}
         />
-        {/* Right Side Slide Menu */}
-        <SideMenu
-          endMenu={endMenu}
-          setEndMenu={setEndMenu}
-          endTimer={setEndTimer}
-          setIsEndProductionModalOpen={setIsEndProductionModalOpen}
-        />
+        <div className="absolute bottom-0 w-full slides">
+          {/* Bottom Slide Menu */}
+          <BottomMenu
+            stopMenu={stopMenu}
+            setStopMenu={setStopMenu}
+            stopReasons={stopReasons}
+            setStopReasons={setStopReasons}
+            isCycleClockRunning={isCycleClockRunning}
+            stopCycle={stopCycle}
+          />
+          {/* Right Side Slide Menu */}
+          <SideMenu
+            endMenu={endMenu}
+            setEndMenu={setEndMenu}
+            endTimer={setEndTimer}
+            setIsEndProductionModalOpen={setIsEndProductionModalOpen}
+          />
+        </div>
+        {isEndedProductionTime && (
+          <div className="fixed left-0 z-50 flex flex-col items-center justify-center w-full h-full pb-24 top-20 bg-black/80 backdrop-blur-sm">
+            <div className="mb-10 text-6xl font-semibold text-white uppercase">
+              OFFLINE
+            </div>
+
+            {[
+              USER_ROLES.Super,
+              USER_ROLES.Administrator,
+              USER_ROLES.Production,
+            ].includes(userProfile?.item.role ?? "") && (
+              <Button
+                variant="contained"
+                className="text-normal"
+                onClick={() => {
+                  setIsEndedProductionTime(false)
+                }}
+              >
+                RESET
+                <span className="ml-4 font-bold">
+                  {timerDetailData?.item?.machineId?.name}
+                </span>
+              </Button>
+            )}
+          </div>
+        )}
       </div>
       <EndProductionModal
         isOpen={isEndProductionModalOpen}
