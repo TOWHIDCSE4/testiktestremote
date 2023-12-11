@@ -5,6 +5,7 @@ import Cookies from "js-cookie"
 
 export async function addTimerLog(props: T_TimerLog) {
   const token = Cookies.get("tfl")
+  console.log("here timer log", props)
 
   const res = await fetch(`${API_URL_TIMER_LOGS}`, {
     method: "POST",

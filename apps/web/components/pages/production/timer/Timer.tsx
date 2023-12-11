@@ -32,6 +32,7 @@ import useGetControllerTimer from "../../../../hooks/timers/useGetControllerTime
 import ControllerModal from "../../../shared/ControllerModal"
 import { ControllerDetailData } from "./ControllerV2"
 import { ControllerContextProvider } from "./ControllerV2/ControllerContext"
+import useGetJobTimerByTimerId from "../../../../hooks/jobTimer/useGetJobTimerByTimerId"
 
 type T_Props = {
   timer: T_Timer
@@ -69,6 +70,10 @@ const Timer = ({
     })
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(getObjectId(timer._id))
+  const { isLoading: isJobTimerLoading } = useGetJobTimerByTimerId({
+    locationId: timerDetailData?.item?.locationId._id,
+    timerId: getObjectId(timer),
+  })
   const { isLoading: isJobsLoading } = useGetTimerJobs(
     getObjectId(timerDetailData?.item?.locationId),
     getObjectId(timerDetailData?.item?.factoryId),
@@ -96,7 +101,10 @@ const Timer = ({
   const { isTimerStop } = useStoreTimer((store) => store)
 
   const isControllerLoading =
-    isJobsLoading || isControllerTimerLoading || isTimerDetailDataLoading
+    isJobsLoading ||
+    isControllerTimerLoading ||
+    isTimerDetailDataLoading ||
+    isJobTimerLoading
   const controllerDetailData = isTimerDetailDataLoading
     ? {}
     : {
@@ -445,8 +453,10 @@ const Timer = ({
       <ControllerContextProvider
         controllerDetailData={controllerDetailData as ControllerDetailData}
         operator={timerDetailData?.item?.operator}
-        cycleClockSeconds={cycleClockInSeconds}
         timerId={getObjectId(timer)}
+        initialCycleClockSeconds={cycleClockInSeconds}
+        initialUnitCreated={timerLogsCount?.item?.count as number}
+        isControllerModalOpen={isControllerModalOpen}
       >
         <ControllerModal
           isOpen={isControllerModalOpen}

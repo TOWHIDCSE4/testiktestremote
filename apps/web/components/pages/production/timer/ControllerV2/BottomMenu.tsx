@@ -9,13 +9,18 @@ export default function BottomMenu() {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const { setStopReasons, onStopCycleWithReasons, stopReasons } =
     useContext(ControllerContext)
-  const stopReasonsArr = [
-    "Machine Error",
-    "Machine Low",
-    "Worker Break",
-    "Maintenance",
-    "Change Part",
-  ]
+  const stopReasonsArr = (
+    [
+      "Machine Error",
+      "Machine Low",
+      "Worker Break",
+      "Maintenance",
+      "Change Part",
+    ] as const
+  ).map((v) => {
+    if (v === "Machine Low") return "Material Low"
+    return v
+  })
   return (
     <div className="absolute bottom-0 left-[50%] w-full">
       <div

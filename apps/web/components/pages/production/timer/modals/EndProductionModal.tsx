@@ -1,10 +1,11 @@
-import { Fragment, useState } from "react"
+import { Fragment, useContext, useState } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 import { ExclamationTriangleIcon } from "@heroicons/react/20/solid"
 import toast from "react-hot-toast"
 import { T_BackendResponse } from "custom-validator"
 import useUpdateControllerTimer from "../../../../../hooks/timers/useUpdateControllerTimer"
 import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
+import { ControllerContext } from "../ControllerV2/ControllerContext"
 
 interface EndProductionModalProps {
   isOpen: boolean
@@ -25,37 +26,12 @@ const EndProductionModal = ({
   isTimerClockRunning,
   machineName,
 }: EndProductionModalProps) => {
-  const [isEnding, setIsEnding] = useState(false)
-  const { mutate: endControllerTimer, isLoading: isEndControllerTimerLoading } =
-    useEndControllerTimer()
-
-  const callBackReq = {
-    onSuccess: (returnData: T_BackendResponse) => {
-      if (!returnData.error) {
-      } else {
-        toast.error(returnData.message as string)
-      }
-    },
-    onError: (err: any) => {
-      toast.error(String(err))
-    },
-  }
+  const { onEndProduction } = useContext(ControllerContext)
 
   const close = () => {
-    if (controllerTimerId && isTimerClockRunning) {
-      setIsEnding(true)
-      stopTimer()
-      setTimeout(function () {
-        endControllerTimer(timerId, callBackReq)
-        onClose()
-        toast.success("Timer was ended")
-        setIsEnding(false)
-      }, 3000)
-    } else {
-      toast.error("You already ended this timer")
-    }
+    onEndProduction()
+    onClose()
   }
-
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={() => {}}>
@@ -104,7 +80,6 @@ const EndProductionModal = ({
                   <div className="flex mt-5 space-x-5 sm:mt-6">
                     <button
                       type="button"
-                      disabled={isEnding}
                       className="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-gray-800 bg-white border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                       onClick={onClose}
                     >
@@ -112,21 +87,10 @@ const EndProductionModal = ({
                     </button>
                     <button
                       type="button"
-                      disabled={isEnding}
                       className="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white rounded-md shadow-sm bg-blue-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70"
                       onClick={close}
                     >
-                      {isEnding ? (
-                        <div
-                          className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full"
-                          role="status"
-                          aria-label="loading"
-                        >
-                          <span className="sr-only">Loading...</span>
-                        </div>
-                      ) : (
-                        "Yes"
-                      )}
+                      Yes
                     </button>
                   </div>
                 </>
