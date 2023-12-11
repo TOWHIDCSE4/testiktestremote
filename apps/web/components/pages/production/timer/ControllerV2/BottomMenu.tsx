@@ -2,10 +2,13 @@ import {
   ChevronDoubleDownIcon,
   ChevronDoubleUpIcon,
 } from "@heroicons/react/20/solid"
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { ControllerContext } from "./ControllerContext"
 
 export default function BottomMenu() {
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  const { setStopReasons, onStopCycleWithReasons, stopReasons } =
+    useContext(ControllerContext)
   const stopReasonsArr = [
     "Machine Error",
     "Machine Low",
@@ -36,7 +39,7 @@ export default function BottomMenu() {
           <button
             type="button"
             className="w-24 py-2 mt-2 text-yellow-200 uppercase rounded-md shadow-lg xl:text-xl 2xl:text-4xl 2xl:mt-6 bg-dark-blue hover:shadow-2xl"
-            onClick={() => {}}
+            onClick={onStopCycleWithReasons}
           >
             Stop
           </button>
@@ -46,6 +49,16 @@ export default function BottomMenu() {
                 <input
                   type="checkbox"
                   name="machine-error"
+                  checked={stopReasons.includes(item)}
+                  onClick={() => {
+                    if (stopReasons.includes(item)) {
+                      setStopReasons((prev: any) =>
+                        prev.filter((cItem: any) => cItem !== item)
+                      )
+                    } else {
+                      setStopReasons((prev: any[]) => [...prev, item])
+                    }
+                  }}
                   className="w-4 h-4 text-blue-500 border-gray-300 rounded 2xl:h-6 2xl:w-6 focus:ring-1 focus:ring-blue-500"
                 />
                 <label className="text-yellow-200 xl:text-xl 2xl:text-4xl">

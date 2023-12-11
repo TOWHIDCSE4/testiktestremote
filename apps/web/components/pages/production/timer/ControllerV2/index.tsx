@@ -9,6 +9,7 @@ import {
 import BottomMenu from "./BottomMenu"
 import SideMenu from "./SideMenu"
 import EndProductionModal from "../modals/EndProductionModal"
+import useAddControllerTimer from "../../../../../hooks/timers/useAddControllerTimer"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -31,61 +32,16 @@ const ControllerV2 = ({
 }: ControllerV2Props) => {
   const {
     controllerDetailData,
+    controllerClockSeconds,
+    cycleClockSeconds,
     operator,
-    cycleClockSeconds: initialCycleClockSeconds,
+    onToggleStart,
+    isCycleClockRunning,
+    unitCreated,
   } = useContext(ControllerContext)
-  const [controllerClockSeconds, setControllerClockSeconds] = useState(0)
-  const [cycleClockSeconds, setCycleClockSeconds] = useState(
-    initialCycleClockSeconds
-  )
-  const [isControllerClockRunning, setIsControllerClockRunning] =
-    useState(false)
-  const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
-  const [unitCreated, setUnitCreated] = useState(0)
 
   const controllerClockArray = hourMinuteSecond(controllerClockSeconds)
   const cycleClockSecondsArray = hourMinuteSecondMilli(cycleClockSeconds)
-
-  const controllerClockIntervalRef = useRef<any>()
-  const cycleClockIntervalRef = useRef<any>()
-
-  const stopControllerClockInterval = () => {
-    clearInterval(controllerClockIntervalRef.current)
-    setIsControllerClockRunning(false)
-  }
-  const stopCycleClockInterval = () => {
-    clearInterval(cycleClockIntervalRef.current)
-    setIsCycleClockRunning(false)
-  }
-  const startControllerClockInterval = () => {
-    stopControllerClockInterval()
-    setIsControllerClockRunning(true)
-    controllerClockIntervalRef.current = setInterval(() => {
-      setControllerClockSeconds((prev) => prev + 1)
-    }, 1000)
-  }
-
-  const startCycleClockInterval = () => {
-    stopCycleClockInterval()
-    setIsCycleClockRunning(true)
-    cycleClockIntervalRef.current = setInterval(() => {
-      setCycleClockSeconds((prev) => prev + 0.1)
-    }, 100)
-  }
-
-  const onToggleStart = () => {
-    if (!isControllerClockRunning) {
-      startControllerClockInterval()
-    }
-    if (!isCycleClockRunning) {
-      startCycleClockInterval()
-    }
-    if (isCycleClockRunning) {
-      setCycleClockSeconds(0)
-      setUnitCreated((c) => c + 1)
-    }
-  }
-
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
     useState(false)
 
