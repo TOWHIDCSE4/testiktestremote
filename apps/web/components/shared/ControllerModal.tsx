@@ -19,15 +19,10 @@ const ControllerModal = ({
     setIsFullScreen((isFullScreen) => !isFullScreen)
   if (!isOpen || !timerId) return null
   return (
-    <div className="fixed z-[40] top-0 w-screen h-screen flex items-center left-0 justify-center">
+    <div className="fixed z-[40] top-0 left-0 w-screen h-screen bg-slate-800/80 flex items-center justify-center">
       <div
-        className={cn(
-          "relative bg-white shadow-md border border-gray-400 overflow-auto",
-          {
-            "w-[100%] h-[100%] max-w-[1024px] max-h-[800px]": !isFullScreen,
-            "w-screen h-screen": isFullScreen,
-          }
-        )}
+        data-floating={!isFullScreen}
+        className="w-[100%] h-[100%] max-w-screen max-h-screen data-[floating=true]:max-w-[1024px] data-[floating=true]:max-h-[800px] data-[floating=true]:mx-auto relative   data-[floating=true]:rounded-3xl bg-white data-[floating=true]:shadow-md  data-[floating=true]:border-2 border-gray-400 overflow-auto"
       >
         <Controller
           onClose={onClose}

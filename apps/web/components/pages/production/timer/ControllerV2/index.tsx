@@ -8,6 +8,7 @@ import {
 } from "../../../../../helpers/timeConverter"
 import BottomMenu from "./BottomMenu"
 import SideMenu from "./SideMenu"
+import EndProductionModal from "../modals/EndProductionModal"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -78,6 +79,9 @@ const ControllerV2 = ({
       setUnitCreated((c) => c + 1)
     }
   }
+
+  const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
+    useState(false)
 
   return (
     <div className="absolute top-0 left-0 flex flex-col w-full h-full overflow-hidden">
@@ -154,7 +158,24 @@ const ControllerV2 = ({
       </div>
       <Footer progress={0} isLoading={false} timeZone={""} />
       <BottomMenu />
-      <SideMenu />
+      <SideMenu
+        onClick={() => {
+          setIsEndProductionModalOpen(true)
+        }}
+      />
+
+      {/* FIXME:/Elijah should rewrite this with proper variables */}
+      <EndProductionModal
+        isOpen={isEndProductionModalOpen}
+        onClose={() => {
+          setIsEndProductionModalOpen(false)
+        }}
+        stopTimer={() => {}}
+        timerId={timerId}
+        machineName={controllerDetailData.machineName ?? ""}
+        controllerTimerId={""}
+        isTimerClockRunning={false}
+      />
     </div>
   )
 }

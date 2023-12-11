@@ -207,8 +207,8 @@ const Header = ({
             Controller
           </h3>
         </div>
-        <button className="mx-5" onClick={onClose}>
-          <MdClose onClick={onClose} size={24} color="white" />
+        <button className="mx-5" onClick={() => onClose()}>
+          <MdClose onClick={() => onClose()} size={24} color="white" />
         </button>
       </div>
     </div>

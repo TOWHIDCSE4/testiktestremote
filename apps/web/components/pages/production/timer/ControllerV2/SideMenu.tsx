@@ -4,7 +4,7 @@ import {
 } from "@heroicons/react/20/solid"
 import { useState } from "react"
 
-export default function SideMenu() {
+export default function SideMenu({ onClick }: { onClick: () => void }) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   return (
     <div className="absolute bottom-0 right-0">
@@ -28,7 +28,7 @@ export default function SideMenu() {
             type="button"
             className="bg-[#274263] xl:text-xl 2xl:text-4xl rounded-l-md ml-1 2xl:ml-3 text-yellow-200 uppercase w-full py-2 text-center"
             // onClick={() => stopTimer()}
-            onClick={() => {}}
+            onClick={onClick}
           >
             End Production
           </button>
