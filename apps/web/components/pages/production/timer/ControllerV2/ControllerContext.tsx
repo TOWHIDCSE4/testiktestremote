@@ -1,6 +1,9 @@
 import {
   PropsWithChildren,
+  RefObject,
   createContext,
+  createRef,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -34,6 +37,7 @@ import { addTimerLog } from "../../../../../hooks/timerLogs/useAddTimerLog"
 import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
 import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
+import dayjs from "dayjs"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -63,6 +67,11 @@ export interface ControllerContextProps {
   setStopReasons: (...args: any) => void
   onStopCycleWithReasons: (...args: any) => void
   onEndProduction: () => void
+  readingsDivRef?: RefObject<HTMLDivElement>
+  setReadingsDivRef: (ref: RefObject<HTMLDivElement>) => void
+  readingMessages?: Array<string>
+  setReadingMessages: (messages?: Array<string>) => void
+  addReadingMessage: (message: string) => void
 }
 
 export const ControllerContext = createContext<ControllerContextProps>({
@@ -85,6 +94,11 @@ export const ControllerContext = createContext<ControllerContextProps>({
   setStopReasons: () => {},
   onStopCycleWithReasons: () => {},
   onEndProduction: () => {},
+  readingsDivRef: undefined,
+  setReadingsDivRef: (div) => {},
+  readingMessages: undefined,
+  setReadingMessages(messages) {},
+  addReadingMessage(message) {},
 })
 
 type ControllerProviderProps = PropsWithChildren & {
@@ -179,6 +193,39 @@ export const ControllerContextProvider = ({
 
   const productionTime = () => {}
 
+  const [readingsDivRef, setReadingsDivRefState] =
+    useState<RefObject<HTMLDivElement>>()
+  const setReadingsDivRef = useCallback(
+    (ref: RefObject<HTMLDivElement>) => {
+      setReadingsDivRefState(ref)
+    },
+    [setReadingsDivRefState]
+  )
+
+  const [readingMessages, setReadingMessages] = useState<Array<string>>()
+  const addReadingMessage = useCallback(
+    (message: string) => {
+      const currentTime = dayjs
+        .tz(dayjs(), timerDetailData?.item?.locationId.timezone ?? "")
+        .format("YYYY-MM-DD HH:mm:ss")
+      setReadingMessages((prev) => [
+        ...(prev ?? []),
+        `${currentTime} : ${message}`,
+      ])
+      if (readingsDivRef?.current) {
+        const div = readingsDivRef.current
+        setTimeout(
+          (div) => {
+            div.scrollTop = 999999999999999999999
+          },
+          500,
+          div
+        )
+      }
+    },
+    [timerDetailData?.item?.locationId.timezone, readingsDivRef]
+  )
+
   /* Check required data */
   if (!controllerTimerData && !controllerTimerDataLoading) {
     console.error("ControllerContext ControllerTimerData missing")
@@ -220,13 +267,14 @@ export const ControllerContextProvider = ({
     }, 1000)
   }
 
-  const startCycleClockInterval = () => {
+  const startCycleClockInterval = useCallback(() => {
     stopCycleClockInterval()
     setIsCycleClockRunning(true)
     cycleClockIntervalRef.current = setInterval(() => {
       setCycleClockSeconds((prev) => prev + 0.1)
     }, 100)
-  }
+  }, [])
+
   const onStopCycle = () => {
     setCycleClockSeconds(0)
     setUnitCreated((c) => c + 1)
@@ -240,6 +288,11 @@ export const ControllerContextProvider = ({
     }
     timeLogCall(getObjectId(jobTimer?.item))
     endAddCycleTimer(timerId)
+    // TODO:/JAMES should confirm its context
+    addReadingMessage("Stopping Timer")
+    addReadingMessage("Timer stopped")
+    addReadingMessage("Timer cycle reset")
+    addReadingMessage("Timer One unit created")
   }
 
   const onStopCycleWithReasons = () => {
@@ -255,6 +308,9 @@ export const ControllerContextProvider = ({
     setCycleClockSeconds(0)
     startCycleClockInterval()
     setIsCycleClockRunning(true)
+    // TODO:/JAMES should confirm its context
+    addReadingMessage("StartingTimer")
+    addReadingMessage("Timer started")
   }
 
   const onToggleStart = () => {
@@ -355,7 +411,7 @@ export const ControllerContextProvider = ({
         (unitCreated * controllerDetailData.weight) /
         controllerDetailData.weight,
     }))
-  }, [unitCreated])
+  }, [controllerClockSeconds, controllerDetailData.weight, unitCreated])
 
   useEffect(() => {
     if (
@@ -377,7 +433,13 @@ export const ControllerContextProvider = ({
       setUnitCreated(initialUnitCreated)
     }
     isControllerModalOpenRef.current = isControllerModalOpen
-  }, [isControllerModalOpen])
+  }, [
+    initialCycleClockSeconds,
+    initialUnitCreated,
+    isControllerModalOpen,
+    isCycleClockRunning,
+    startCycleClockInterval,
+  ])
 
   return (
     <ControllerContext.Provider
@@ -397,6 +459,11 @@ export const ControllerContextProvider = ({
         totals,
         onEndProduction,
         timerLogs: timerLogsData,
+        readingsDivRef,
+        setReadingsDivRef,
+        readingMessages,
+        setReadingMessages,
+        addReadingMessage,
       }}
     >
       {children}

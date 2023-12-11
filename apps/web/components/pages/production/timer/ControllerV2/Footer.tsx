@@ -11,18 +11,18 @@ const Footer = ({
   timeZone: string
 }) => {
   return (
-    <footer className="absolute bottom-0 w-full bg-white">
+    <footer className="relative w-full">
       <div className="relative w-full overflow-hidden progress-bar">
         <div
           className={`${progress > 100 ? "bg-red-600" : "bg-green-500"} h-4`}
           style={{ width: `${progress}%` }}
         ></div>
       </div>
-      <div className="flex flex-col items-center justify-between px-12 pt-3 pb-7 md:pb-5 md:pt-5 2xl:pt-2 2xl:pb-2 md:flex-row">
-        <h4 className="font-semibold uppercase text-blue-950 xl:text-xl 2xl:text-xl">
+      <div className="flex flex-row items-center justify-between px-12 pt-5 pb-5">
+        <h4 className="font-semibold uppercase text-blue-950 dark:text-white">
           Developed By IEKOMEDIA
         </h4>
-        <h4 className="font-semibold uppercase text-blue-950 xl:text-xl 2xl:text-xl">
+        <h4 className="font-semibold uppercase text-blue-950 dark:text-white">
           <ControllerDateTime timeZone={!isLoading ? timeZone : ""} />
         </h4>
       </div>

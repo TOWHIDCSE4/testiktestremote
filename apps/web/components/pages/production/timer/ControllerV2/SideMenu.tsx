@@ -17,7 +17,7 @@ export default function SideMenu({ onClick }: { onClick: () => void }) {
           {
             "right-5": isMaximized,
           },
-          "relative transition-transform -translate-y-[100px] translate-x-[calc(100%-30px)] data-[open=true]:translate-x-0 bg-dark-blue h-62 py-1 pl-2 rounded-l-lg"
+          "relative transition-transform -translate-y-[100px] translate-x-[calc(100%-30px)] data-[open=true]:translate-x-0 bg-dark-blue dark:border-2 dark:border-r-0 h-62 py-1 pl-2 rounded-l-lg"
         )}
       >
         <div className="flex items-center justify-center w-56">

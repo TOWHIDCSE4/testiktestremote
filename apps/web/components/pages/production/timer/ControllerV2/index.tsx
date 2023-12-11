@@ -1,4 +1,11 @@
-import { useContext, useRef, useState } from "react"
+import {
+  RefObject,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import Header from "./Header"
 import Footer from "./Footer"
 import { ControllerContext } from "./ControllerContext"
@@ -14,6 +21,7 @@ import cn from "classnames"
 import "./styles.scss"
 import useControllerModal from "../../../../../store/useControllerModal"
 import TimerLogsModal from "../modals/TimerLogsModalV2"
+import { Divider } from "@mui/material"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -43,41 +51,56 @@ const ControllerV2 = ({
     isCycleClockRunning,
     totals,
     unitCreated,
+    setReadingsDivRef,
+    readingMessages,
   } = useContext(ControllerContext)
   const [isTimerLogsModalOpen, setIsTimerLogsModalOpen] = useState(false)
-  const controllerClockArray = hourMinuteSecond(controllerClockSeconds)
-  const cycleClockSecondsArray = hourMinuteSecondMilli(cycleClockSeconds)
+  const controllerClockArray = useMemo(
+    () => hourMinuteSecond(controllerClockSeconds),
+    [controllerClockSeconds]
+  )
+  const cycleClockSecondsArray = useMemo(
+    () => hourMinuteSecondMilli(cycleClockSeconds),
+    [cycleClockSeconds]
+  )
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
     useState(false)
 
   const isCycleClockStarting = false
   const isAbleToStart = true
-
   const { isMaximized } = useControllerModal()
+
+  // FIXME:/JAMES should consider this value
+  const process = 80
+
+  const messagesRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    setReadingsDivRef(messagesRef)
+  }, [setReadingsDivRef])
 
   return (
     <div
       className={cn(
-        "absolute top-0 left-0 flex flex-col w-full h-full overflow-hidden timercontroller",
+        "flex flex-col w-full h-full justify-between overflow-hidden timercontroller",
         { "pr-5": isMaximized }
       )}
     >
       <Header
-        progress={0}
+        progress={process}
         isLoading={false}
         locationName="Conroe"
         setOpenTimerLogs={() => setIsTimerLogsModalOpen(true)}
         onClose={onClose}
         onFullScreen={onFullScreen}
       />
-      <div className="flex justify-between p-5">
+      <div
+        className={`relative flex flex-col-reverse md:flex-row md:justify-between flex-1 gap-2 px-5 overflow-auto lg:overflow-hidden`}
+      >
         {/* Left Column */}
-        <div className="flex flex-col gap-4 text-lg uppercase">
-          <div>
-            <h4 className="font-bold text-gray-800 dark:bg-dark-blue dark:text-white">
-              Details
-            </h4>
-            <div className="flex flex-col gap-1 ">
+        <div className="pane pane-left">
+          <div className="detail-pane">
+            <h4 className="detail-heading">Details</h4>
+            <div className="detail-container">
               <div className="flex gap-2">
                 <p>factory:</p>
                 <p>{controllerDetailData.factoryName}</p>
@@ -101,15 +124,38 @@ const ControllerV2 = ({
             </div>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <h4 className="font-bold text-gray-800 dark:bg-dark-blue dark:text-white">
-              Operator
-            </h4>
+          <div className="detail-pane">
+            <h4 className="detail-heading">Operator</h4>
             <p>{`${operator.firstName} ${operator.lastName}`}</p>
+          </div>
+          <div className="flex-1 detail-pane">
+            <div className="flex items-center gap-3">
+              <h4 className="detail-heading">READINGS</h4>
+              <Divider className="flex-1 dark:border-white" />
+            </div>
+            <div className="reading-pane">
+              <div
+                className="reading-collection"
+                ref={messagesRef}
+                id="messages"
+              >
+                <h6 className="">Open the timer controller:</h6>
+                <div className="">
+                  ------<span className="font-medium">OPERATIONS</span>------
+                </div>
+                {readingMessages?.map((item, index) => {
+                  return (
+                    <span className="" key={index}>
+                      {item}
+                    </span>
+                  )
+                })}
+              </div>
+            </div>
           </div>
         </div>
         {/* Right Column */}
-        <div className="flex flex-col gap-2">
+        <div className="pane pane-right">
           <div className="productiontime-container">
             Time: {controllerClockArray[0]}: {controllerClockArray[1]}:
             {controllerClockArray[2]}
@@ -117,8 +163,8 @@ const ControllerV2 = ({
 
           {/* FIXME:/James need to add process parameter exactly */}
           <div
-            className={`countdown-container ${
-              150 > 100
+            className={`countdown-container ${isMaximized ? "full" : "modal"} ${
+              process > 100
                 ? "border-red-500"
                 : isCycleClockRunning
                 ? "border-green-500"
@@ -157,29 +203,36 @@ const ControllerV2 = ({
               )}
             </button>
           </div>
+
+          <div
+            className={`results-container flex-1 ${
+              isMaximized ? "full" : "modal"
+            }`}
+          >
+            <div className="results-detail">
+              <div className="">Units Per Hour:</div>
+              <div className="">{totals.unitsPerHour.toFixed(3)}</div>
+              <div className="">Tons Per Hour:</div>
+              <div className="">{totals.tonsPerHour.toFixed(3)}</div>
+              <div className="">Total Tons:</div>
+              <div className="">{totals.totalTons.toFixed(3)}</div>
+            </div>
+            <div className="h-full results-count">
+              <div className="title">Unit Created</div>
+              <div className="results-count-number">
+                {unitCreated < 100 && <div className="zero">0</div>}
+                {unitCreated < 10 && <div className="zero">0</div>}
+                {unitCreated == 0 ? (
+                  <div className="zero">0</div>
+                ) : (
+                  <div className="digit">{unitCreated}</div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="flex uppercase text-lg items-center self-end mx-5 mt-40 gap-20">
-        <div className="flex flex-col">
-          <div className="flex gap-4">
-            <p className="font-bold">Units Per Hour:</p>
-            <p className="">{totals.unitsPerHour.toFixed(3)}</p>
-          </div>
-          <div className="flex gap-4">
-            <p className="font-bold">Tons Per Hour:</p>
-            <p className="">{totals.tonsPerHour.toFixed(3)}</p>
-          </div>
-          <div className="flex gap-4">
-            <p className="font-bold">Total Tons:</p>
-            <p className="">{totals.totalTons.toFixed(3)}</p>
-          </div>
-        </div>
-        <div className="">
-          <p>Unit Created</p>
-          <p className="text-dark-blue text-8xl">{unitCreated}</p>
-        </div>
-      </div>
-      <Footer progress={0} isLoading={false} timeZone={""} />
+      <Footer progress={process} isLoading={false} timeZone={""} />
       <BottomMenu />
       <SideMenu
         onClick={() => {
