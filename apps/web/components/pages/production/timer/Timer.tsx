@@ -445,6 +445,8 @@ const Timer = ({
       <ControllerContextProvider
         controllerDetailData={controllerDetailData as ControllerDetailData}
         operator={timerDetailData?.item?.operator}
+        cycleClockSeconds={cycleClockInSeconds}
+        timerId={getObjectId(timer)}
       >
         <ControllerModal
           isOpen={isControllerModalOpen}
