@@ -20,6 +20,7 @@
     "react-collapsed": "^4.0.4",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
+    "sass": "^1.69.5",
     "ui": "*",
     "utf-8-validate": "^5.0.10",
     "ws": "^8.0.0"

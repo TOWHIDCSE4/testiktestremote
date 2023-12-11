@@ -10,6 +10,9 @@ import BottomMenu from "./BottomMenu"
 import SideMenu from "./SideMenu"
 import EndProductionModal from "../modals/EndProductionModal"
 import useAddControllerTimer from "../../../../../hooks/timers/useAddControllerTimer"
+import cn from "classnames"
+import "./styles.scss"
+import useControllerModal from "../../../../../store/useControllerModal"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -45,8 +48,18 @@ const ControllerV2 = ({
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
     useState(false)
 
+  const isCycleClockStarting = false
+  const isAbleToStart = true
+
+  const { isMaximized } = useControllerModal()
+
   return (
-    <div className="absolute top-0 left-0 flex flex-col w-full h-full overflow-hidden">
+    <div
+      className={cn(
+        "absolute top-0 left-0 flex flex-col w-full h-full overflow-hidden timercontroller",
+        { "pr-5": isMaximized }
+      )}
+    >
       <Header
         progress={0}
         isLoading={false}
@@ -95,23 +108,53 @@ const ControllerV2 = ({
         </div>
         {/* Right Column */}
         <div className="flex flex-col gap-2">
-          <div>
+          <div className="productiontime-container">
             Time: {controllerClockArray[0]}: {controllerClockArray[1]}:
             {controllerClockArray[2]}
           </div>
-          <div className="countdown-container w-full ipadair:w-[385px] lg:w-[610px] xl:w-[680px] 2xl:w-[800px] rounded-md border-2 border-b-4 border-stone-500 border-b-green-500  bg-[#f1f2e1] pt-2 pb-3.5">
-            <div className="text-8xl">
-              {cycleClockSecondsArray[0]}:{cycleClockSecondsArray[1]}:
-              {cycleClockSecondsArray[2]}:{cycleClockSecondsArray[3]}
+
+          {/* FIXME:/James need to add process parameter exactly */}
+          <div
+            className={`countdown-container ${
+              150 > 100
+                ? "border-red-500"
+                : isCycleClockRunning
+                ? "border-green-500"
+                : "border-stone-500"
+            }`}
+          >
+            <div className="countdown-container-text">
+              <div className="countdown-container-digit">
+                {cycleClockSecondsArray[0]}
+              </div>
+              <div className="countdown-container-digit digit-divider">:</div>
+              <div className="countdown-container-digit">
+                {cycleClockSecondsArray[1]}
+              </div>
+              <div className="countdown-container-digit digit-divider">:</div>
+              <div className="countdown-container-digit">
+                {cycleClockSecondsArray[2]}
+              </div>
+              <div className="countdown-container-digit digit-divider">:</div>
+              <div className="countdown-container-digit">
+                {cycleClockSecondsArray[3]}
+              </div>
             </div>
           </div>
-          <button className="text-4xl " onClick={onToggleStart}>
-            {isCycleClockRunning ? (
-              <span className="text-red-500">Stop</span>
-            ) : (
-              <span className="text-green-600">Start</span>
-            )}
-          </button>
+          <div className="flex justify-center w-full">
+            <button
+              className={`button-clockaction ${
+                isCycleClockStarting ? "starting" : "starting-false"
+              } ${isAbleToStart ? "canstart" : "canstart-false"}`}
+              onClick={onToggleStart}
+            >
+              {isCycleClockRunning ? (
+                <span className="button-stop">Stop</span>
+              ) : (
+                <span className="button-start">Start</span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
       <div className="self-end mx-5 mt-40">

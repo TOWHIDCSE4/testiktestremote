@@ -1,0 +1,45 @@
+.timercontroller {
+  .countdown-container {
+    .countdown-container-text {
+      .countdown-container-digit {
+        &.digit-divider {
+          @apply w-8 text-6xl;
+        }
+        @apply text-8xl w-28 text-center font-semibold;
+      }
+      @apply flex px-4 items-center;
+    }
+    @apply flex-shrink-0 w-full rounded-lg border-2 border-b-4 bg-stone-200 pt-2 pb-3.5;
+  }
+
+  .productiontime-container {
+    @apply flex text-3xl items-center justify-end w-full font-bold text-stone-600;
+  }
+
+  .button-clockaction {
+    &.starting {
+      @apply scale-75 transition-transform duration-300 text-green-200 cursor-not-allowed;
+    }
+    &.starting-false {
+      @apply text-green-600 cursor-pointer;
+    }
+    &.canstart {
+    }
+    &.canstart-false {
+      @apply cursor-pointer;
+    }
+    &.stopping {
+      @apply scale-75 transition-transform duration-300 text-neutral-200 cursor-not-allowed;
+    }
+    &.stopping-false {
+      @apply text-neutral-600 cursor-pointer;
+    }
+    .button-start {
+      @apply text-green-600 cursor-pointer;
+    }
+    .button-stop {
+      @apply text-neutral-600 cursor-pointer;
+    }
+    @apply active:scale-75 transition-transform text-3xl text-5xl w-36 mt-2 tracking-wider text-center font-semibold uppercase;
+  }
+}
