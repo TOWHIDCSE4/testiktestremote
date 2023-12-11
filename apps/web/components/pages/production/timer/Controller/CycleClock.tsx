@@ -48,12 +48,12 @@ const CycleClock = ({
   }
 
   return (
-    <div className="timer  dark:bg-dark-blue dark:text-white">
-      <div className="flex items-center gap-2 justify-end  dark:bg-dark-blue dark:text-white">
+    <div className="timer dark:bg-dark-blue dark:text-white">
+      <div className="flex items-center justify-end gap-2 dark:bg-dark-blue dark:text-white">
         <h6 className="text-center md:text-right uppercase text-lg md:text-2xl xl:text-[1.5vw] 2xl:text-3xl text-gray-500 font-semibold  dark:bg-dark-blue dark:text-white">
           Time:
         </h6>
-        <div className="flex justify-center items-center  dark:bg-dark-blue dark:text-white xl:space-x-0 2xl:space-x-1 md:space-x-2 lg:space-x-1">
+        <div className="flex items-center justify-center dark:bg-dark-blue dark:text-white xl:space-x-0 2xl:space-x-1 md:space-x-2 lg:space-x-1">
           <h6 className="text-center uppercase text-lg md:text-2xl xl:text-[1.5vw] 2xl:text-3xl text-gray-500 font-semibold w-[24px] md:[30px] xl:w-[28px] 2xl:w-[37px] dark:text-white">
             {timerClockTimeArray[0]}
           </h6>
@@ -71,7 +71,7 @@ const CycleClock = ({
           </h6>
         </div>
       </div>
-      <div className="md:float-right mt-2  dark:bg-dark-blue dark:text-white">
+      <div className="mt-2 md:float-right dark:bg-dark-blue dark:text-white">
         <div className="text-lg md:text-xl xl:text-[2vw] 2xl:text-4xl">
           <div
             className={`countdown-container w-full ipadair:w-[385px] lg:w-[610px] xl:w-[680px] 2xl:w-[800px] rounded-md border-2 border-b-4 border-stone-500 border-b-green-500  bg-[#f1f2e1] pt-2 pb-3.5  ${

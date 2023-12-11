@@ -38,7 +38,7 @@ export default function BottomMenu() {
         <div className="bg-[#274263] py-2 rounded-md mt-1 h-full flex flex-col justify-start items-center">
           <button
             type="button"
-            className="w-24 py-2 mt-2 text-yellow-200 uppercase rounded-md shadow-lg xl:text-xl 2xl:text-4xl 2xl:mt-6 bg-dark-blue hover:shadow-2xl"
+            className="w-24 py-2 mt-2 text-xl text-yellow-200 uppercase rounded-md shadow-lg bg-dark-blue hover:shadow-2xl"
             onClick={onStopCycleWithReasons}
           >
             Stop
@@ -59,11 +59,9 @@ export default function BottomMenu() {
                       setStopReasons((prev: any[]) => [...prev, item])
                     }
                   }}
-                  className="w-4 h-4 text-blue-500 border-gray-300 rounded 2xl:h-6 2xl:w-6 focus:ring-1 focus:ring-blue-500"
+                  className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
                 />
-                <label className="text-yellow-200 xl:text-xl 2xl:text-4xl">
-                  {item}
-                </label>
+                <label className="text-xl text-yellow-200">{item}</label>
               </div>
             ))}
           </div>
