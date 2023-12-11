@@ -114,27 +114,29 @@ const BottomMenu = ({
           </div>
           <div className="flex items-center space-x-2 2xl:space-x-4 xl:mt-2 2xl:mt-3">
             <input
-              id="worker-break"
-              aria-describedby="worker-break-description"
-              name="worker-break"
+              id="machine-cleaning"
+              aria-describedby="machine-cleaning-description"
+              name="machine-cleaning"
               type="checkbox"
-              checked={stopReasons.includes("Worker Break")}
+              checked={stopReasons.includes("Machine Cleaning")}
               className="w-4 h-4 text-blue-500 border-gray-300 rounded 2xl:h-6 2xl:w-6 focus:ring-1 focus:ring-blue-500"
               onChange={(e) => {
                 if (e.target.checked) {
-                  setStopReasons([...stopReasons, "Worker Break"])
+                  setStopReasons([...stopReasons, "Machine Cleaning"])
                 } else {
                   setStopReasons(
-                    stopReasons.filter((reason) => reason !== "Worker Break")
+                    stopReasons.filter(
+                      (reason) => reason !== "Machine Cleaning"
+                    )
                   )
                 }
               }}
             />
             <label
-              htmlFor="worker-break"
+              htmlFor="machine-cleaning"
               className="text-yellow-200 xl:text-xl 2xl:text-4xl"
             >
-              Worker Break
+              <span>Machine Cleaning</span>
             </label>
           </div>
           <div className="flex items-center space-x-2 2xl:space-x-4 xl:mt-2 2xl:mt-3">
@@ -185,6 +187,31 @@ const BottomMenu = ({
               className="text-yellow-200 xl:text-xl 2xl:text-4xl"
             >
               Change Part
+            </label>
+          </div>
+          <div className="flex items-center space-x-2 2xl:space-x-4 xl:mt-2 2xl:mt-3">
+            <input
+              id="personal-injury"
+              aria-describedby="personal-injury-description"
+              name="personal-injury"
+              type="checkbox"
+              checked={stopReasons.includes("Personal Injury")}
+              className="w-4 h-4 text-blue-500 border-gray-300 rounded 2xl:h-6 2xl:w-6 focus:ring-1 focus:ring-blue-500"
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setStopReasons([...stopReasons, "Personal Injury"])
+                } else {
+                  setStopReasons(
+                    stopReasons.filter((reason) => reason !== "Personal Injury")
+                  )
+                }
+              }}
+            />
+            <label
+              htmlFor="personal-injury"
+              className="text-yellow-200 xl:text-xl 2xl:text-4xl"
+            >
+              Personal Injury
             </label>
           </div>
         </div>

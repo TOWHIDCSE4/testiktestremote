@@ -1250,11 +1250,13 @@ const LogsTable = ({
                                       "Unit Created"
                                         ? "text-green-500"
                                         : item.stopReason.join(", ") ===
-                                            "Worker Break" ||
+                                            "Machine Cleaning" ||
                                           item.stopReason.join(", ") ===
                                             "Maintenance" ||
                                           item.stopReason.join(", ") ===
-                                            "Change Part"
+                                            "Change Part" ||
+                                          item.stopReason.join(", ") ===
+                                            "Personal Injury"
                                         ? "text-yellow-500"
                                         : "text-red-500"
                                     } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
@@ -1266,11 +1268,13 @@ const LogsTable = ({
                                       "Unit Created"
                                         ? "text-green-500"
                                         : item.stopReason.join(", ") ===
-                                            "Worker Break" ||
+                                            "Machine Cleaning" ||
                                           item.stopReason.join(", ") ===
                                             "Maintenance" ||
                                           item.stopReason.join(", ") ===
-                                            "Change Part"
+                                            "Change Part" ||
+                                          item.stopReason.join(", ") ===
+                                            "Personal Injury"
                                         ? "text-yellow-500"
                                         : "text-red-500"
                                     } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
@@ -1448,13 +1452,16 @@ const LogsTable = ({
                                                   ? "text-green-500"
                                                   : item.stopReason.join(
                                                       ", "
-                                                    ) === "Worker Break" ||
+                                                    ) === "Machine Cleaning" ||
                                                     item.stopReason.join(
                                                       ", "
                                                     ) === "Maintenance" ||
                                                     item.stopReason.join(
                                                       ", "
-                                                    ) === "Change Part"
+                                                    ) === "Change Part" ||
+                                                    item.stopReason.join(
+                                                      ", "
+                                                    ) === "Personal Injury"
                                                   ? "text-yellow-600"
                                                   : "text-red-500"
                                               }`}

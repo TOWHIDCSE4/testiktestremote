@@ -14,9 +14,10 @@ export const ZTimerStopReason = z.enum([
   "Unit Created",
   "Machine Error",
   "Material Low",
-  "Worker Break",
+  "Machine Cleaning",
   "Maintenance",
   "Change Part",
+  "Personal Injury",
   "Production Ended",
 ])
 
