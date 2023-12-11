@@ -33,6 +33,7 @@ import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTime
 import { addTimerLog } from "../../../../../hooks/timerLogs/useAddTimerLog"
 import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
+import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -52,6 +53,7 @@ export interface ControllerContextProps {
   timerId: string | undefined
   hasControllerTimer: boolean
   stopReasons: any[]
+  timerLogs: any
   onToggleStart: () => void
   setStopReasons: (...args: any) => void
   onStopCycleWithReasons: (...args: any) => void
@@ -66,6 +68,7 @@ export const ControllerContext = createContext<ControllerContextProps>({
   unitCreated: 0,
   timerId: undefined,
   stopReasons: [],
+  timerLogs: [],
   hasControllerTimer: false,
   isCycleClockRunning: false,
   onToggleStart: () => {},
@@ -119,6 +122,12 @@ export const ControllerContextProvider = ({
   //     locationId: timerDetailData?.item?.locationId._id,
   //     timerId,
   //   })
+
+  const { data: timerLogsData } = useGetAllTimerLogs({
+    locationId: timerDetailData?.item?.locationId._id,
+    timerId,
+  })
+
   const defaultStopReasons = ["Unit Created"]
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
   const {
@@ -182,6 +191,7 @@ export const ControllerContextProvider = ({
     stopControllerClockInterval()
     setIsControllerClockRunning(true)
     controllerClockIntervalRef.current = setInterval(() => {
+      console.log("Timer Detail in Controller Context", timerDetailData)
       setControllerClockSeconds((prev) => prev + 1)
     }, 1000)
   }
@@ -193,7 +203,6 @@ export const ControllerContextProvider = ({
       setCycleClockSeconds((prev) => prev + 0.1)
     }, 100)
   }
-
   const onStopCycle = () => {
     setCycleClockSeconds(0)
     setUnitCreated((c) => c + 1)
@@ -212,6 +221,7 @@ export const ControllerContextProvider = ({
   const onStopCycleWithReasons = () => {
     stopCycleClockInterval()
     setIsCycleClockRunning(false)
+    setStopReasons([])
     setCycleClockSeconds(0)
     endCycleTimer(timerId)
     timeLogCall(getObjectId(jobTimer?.item))
@@ -348,6 +358,7 @@ export const ControllerContextProvider = ({
         onStopCycleWithReasons,
         stopReasons,
         onEndProduction,
+        timerLogs: timerLogsData,
       }}
     >
       {children}

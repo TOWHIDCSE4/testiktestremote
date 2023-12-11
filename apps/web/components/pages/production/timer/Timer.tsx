@@ -33,6 +33,7 @@ import ControllerModal from "../../../shared/ControllerModal"
 import { ControllerDetailData } from "./ControllerV2"
 import { ControllerContextProvider } from "./ControllerV2/ControllerContext"
 import useGetJobTimerByTimerId from "../../../../hooks/jobTimer/useGetJobTimerByTimerId"
+import useGetAllTimerLogs from "../../../../hooks/timerLogs/useGetAllTimerLogs"
 
 type T_Props = {
   timer: T_Timer
@@ -60,6 +61,10 @@ const Timer = ({
   const queryClient = useQueryClient()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
   const { data: totalTonsUnit } = useTotalTonsUnit({
+    locationId: timer.locationId as string,
+    timerId: timer._id as string,
+  })
+  const { isLoading: isTimerLogsLoading } = useGetAllTimerLogs({
     locationId: timer.locationId as string,
     timerId: timer._id as string,
   })
@@ -104,7 +109,8 @@ const Timer = ({
     isJobsLoading ||
     isControllerTimerLoading ||
     isTimerDetailDataLoading ||
-    isJobTimerLoading
+    isJobTimerLoading ||
+    isTimerLogsLoading
   const controllerDetailData = isTimerDetailDataLoading
     ? {}
     : {

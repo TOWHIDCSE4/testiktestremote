@@ -1,10 +1,11 @@
 import Image from "next/image"
-import React, { RefObject, useRef } from "react"
+import React, { RefObject, useContext, useRef } from "react"
 import LogoGreen from "../../../../../assets/logo/logo-green.png"
 import LogoRed from "../../../../../assets/logo/logo-red.png"
 import { MdClose } from "react-icons/md"
 import useControllerModal from "../../../../../store/useControllerModal"
 import { QueueListIcon } from "@heroicons/react/20/solid"
+import { ControllerContext } from "./ControllerContext"
 
 const Header = ({
   progress,
@@ -21,6 +22,7 @@ const Header = ({
   onClose: () => void
   onFullScreen: () => void
 }) => {
+  const { timerLogs } = useContext(ControllerContext)
   const [mode, setMode] = React.useState("")
   const toggleTheme = () => {
     if (mode === "Dark") {
@@ -50,36 +52,39 @@ const Header = ({
 
       <div className="flex mt-3 md:mt-0">
         {/* TIMER LOG BUTTON */}
-        <div className="items-end px-1 py-0 pt-3 mr-5 duration-100 bg-gray-100 rounded-xl sm:mt-2 md:mt-5 2xl:mt-6 h-9">
-          <button onClick={() => setOpenTimerLogs(true)}>
-            <div className="flex">
-              <div className="mx-1">
-                <svg
-                  width="20px"
-                  height="20px"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                >
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                  <g
-                    id="SVGRepo_tracerCarrier"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></g>
-                  <g id="SVGRepo_iconCarrier">
-                    {" "}
-                    <path
-                      fill="#000000"
-                      fill-rule="evenodd"
-                      d="M19 4a1 1 0 01-1 1H2a1 1 0 010-2h16a1 1 0 011 1zm0 6a1 1 0 01-1 1H2a1 1 0 110-2h16a1 1 0 011 1zm-1 7a1 1 0 100-2H2a1 1 0 100 2h16z"
-                    ></path>{" "}
-                  </g>
-                </svg>
+        {!!timerLogs && (
+          <div className="items-end px-1 py-0 pt-3 mr-5 duration-100 bg-gray-100 rounded-xl sm:mt-2 md:mt-5 2xl:mt-6 h-9">
+            <button onClick={() => setOpenTimerLogs(true)}>
+              <div className="flex">
+                <div className="mx-1">
+                  <svg
+                    width="20px"
+                    height="20px"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                  >
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g
+                      id="SVGRepo_tracerCarrier"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></g>
+                    <g id="SVGRepo_iconCarrier">
+                      {" "}
+                      <path
+                        fill="#000000"
+                        fill-rule="evenodd"
+                        d="M19 4a1 1 0 01-1 1H2a1 1 0 010-2h16a1 1 0 011 1zm0 6a1 1 0 01-1 1H2a1 1 0 110-2h16a1 1 0 011 1zm-1 7a1 1 0 100-2H2a1 1 0 100 2h16z"
+                      ></path>{" "}
+                    </g>
+                  </svg>
+                </div>
               </div>
-            </div>
-          </button>
-        </div>
+            </button>
+          </div>
+        )}
+
         {/* DARK/LIGHT BUTTON */}
         <div className="items-end px-1 py-0 pt-2 mr-5 duration-100 bg-gray-100 rounded-xl sm:mt-2 md:mt-5 2xl:mt-6 h-9">
           <button onClick={toggleTheme}>
