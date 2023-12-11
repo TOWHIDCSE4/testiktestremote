@@ -26,7 +26,7 @@ import {
   T_Timer,
   T_TimerStopReason,
 } from "custom-validator"
-import toast from "react-hot-toast"
+import toast, { Toaster } from "react-hot-toast"
 import useGetCycleTimer from "../../../../../hooks/timers/useGetCycleTimer"
 import useEndCycleTimer from "../../../../../hooks/timers/useEndCycleTimer"
 import useAddTimerLog from "../../../../../hooks/timerLogs/useAddTimerLog"
@@ -509,7 +509,12 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }
 
   useEffect(() => {
-    sectionDiv.current?.scrollIntoView({ behavior: "smooth" })
+    if (sectionDiv.current) {
+      sectionDiv.current.scrollTo({
+        top: 999999999999999999,
+        behavior: "smooth",
+      })
+    }
   }, [readingMessages])
 
   useEffect(() => {
@@ -711,6 +716,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
   const [isEndedProductionTime, setIsEndedProductionTime] =
     useState<boolean>(true)
 
+  const divRef = useRef<HTMLDivElement>(null)
+
   if (isTimerDetailDataLoading || isTimerJobsLoading || isCycleTimerLoading) {
     return (
       <div
@@ -724,14 +731,18 @@ const Controller = ({ timerId }: { timerId: string }) => {
   }
 
   return (
-    <div className="relative flex flex-col justify-between w-full h-full overflow-hidden 2xl:text-lg dark:bg-dark-blue dark:text-white">
+    <div
+      ref={divRef}
+      className="relative flex flex-col justify-between w-full h-full overflow-hidden 2xl:text-lg dark:bg-dark-blue dark:text-white"
+    >
+      <Toaster />
       <Header
         progress={progress}
         isLoading={isTimerDetailDataLoading}
         location={timerDetailData?.item?.locationId.name}
         setOpenTimerLogs={setIsTimerLogsModalOpen}
       />
-      <div className="relative grid flex-1 grid-cols-1 px-4 md:grid-cols-2 md:px-12 mt-7 dark:text-white">
+      <div className="relative grid flex-1 grid-cols-1 px-4 overflow-hidden md:grid-cols-2 md:px-12 mt-7 dark:text-white">
         <Details
           timerDetails={timerDetailData?.item}
           isTimerDetailDataLoading={isTimerDetailDataLoading}
@@ -773,8 +784,8 @@ const Controller = ({ timerId }: { timerId: string }) => {
           isLoading={isTimerDetailDataLoading}
           timeZone={timerDetailData?.item?.locationId.timeZone}
         />
-        <div className="absolute bottom-0 w-full slides">
-          {/* Bottom Slide Menu */}
+        {/* Bottom Slide Menu */}
+        <div className="absolute bottom-0 left-[50%] w-full">
           <BottomMenu
             stopMenu={stopMenu}
             setStopMenu={setStopMenu}
@@ -782,13 +793,6 @@ const Controller = ({ timerId }: { timerId: string }) => {
             setStopReasons={setStopReasons}
             isCycleClockRunning={isCycleClockRunning}
             stopCycle={stopCycle}
-          />
-          {/* Right Side Slide Menu */}
-          <SideMenu
-            endMenu={endMenu}
-            setEndMenu={setEndMenu}
-            endTimer={setEndTimer}
-            setIsEndProductionModalOpen={setIsEndProductionModalOpen}
           />
         </div>
         {/* {isEndedProductionTime && (
@@ -818,11 +822,19 @@ const Controller = ({ timerId }: { timerId: string }) => {
           </div>
         )} */}
       </div>
+      {/* Right Side Slide Menu */}
+      <SideMenu
+        endMenu={endMenu}
+        setEndMenu={setEndMenu}
+        endTimer={setEndTimer}
+        setIsEndProductionModalOpen={setIsEndProductionModalOpen}
+      />
       <EndProductionModal
         isOpen={isEndProductionModalOpen}
         onClose={() => setIsEndProductionModalOpen(false)}
         stopTimer={stopTimer}
         timerId={timerId}
+        machineName={timerDetailData?.item?.machineId?.name}
         controllerTimerId={
           controllerTimer?.items[0]?._id
             ? (controllerTimer?.items[0]._id as string)

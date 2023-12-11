@@ -24,9 +24,11 @@ function classNames(...classes) {
 const TimerTracker = ({
   locationId,
   machineClassId,
+  timers,
 }: {
   locationId: string
   machineClassId: string
+  timers?: T_Timer[]
 }) => {
   const pathName = usePathname()
   const {
@@ -34,7 +36,7 @@ const TimerTracker = ({
     isLoading: isTimersByLocationLoading,
     setLocationId,
   } = useTimersByLocation()
-  const [timers, setTimers] = useState<T_Timer[]>([])
+  // const [timers, setTimers] = useState<T_Timer[]>([])
   const [selectedTimerMachine, setSelectedTimerMachine] = useState<string>("")
   const [selectedTimerId, setSelectedTimerId] = useState<string>("")
   const [selectedLocationId, setSelectedLocationId] = useState<string>("")
@@ -67,7 +69,7 @@ const TimerTracker = ({
       setSelectedTimerMachine(timers[0]?.machine?.name as string)
       setSelectedTimerId(timers[0]?._id as string)
       setSelectedLocationId(timers[0]?.locationId as string)
-      setTimers(timers as T_Timer[])
+      // setTimers(timers as T_Timer[])
     }
   }, [timersByLocation, machineClassId])
 
@@ -97,12 +99,12 @@ const TimerTracker = ({
                 <select
                   id="tabs"
                   name="tabs"
-                  className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-blue-950"
+                  className="block w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-1 focus:ring-blue-950"
                   defaultValue={
-                    timers.find((tab) => tab._id === selectedTimerId)?._id
+                    timers?.find((tab) => tab._id === selectedTimerId)?._id
                   }
                 >
-                  {timers.map((tab) => (
+                  {timers?.map((tab) => (
                     <option key={tab._id}>{tab?.machine?.name}</option>
                   ))}
                 </select>
@@ -110,10 +112,10 @@ const TimerTracker = ({
               <div></div>
               <div className="hidden sm:block">
                 <nav
-                  className="isolate flex divide-x divide-gray-200"
+                  className="flex divide-x divide-gray-200 isolate"
                   aria-label="Tabs"
                 >
-                  {timers.map((tab, tabIdx) => (
+                  {timers?.map((tab, tabIdx) => (
                     <button
                       key={tabIdx}
                       className={classNames(

@@ -1,4 +1,5 @@
 "use client"
+import NewWindow from "react-new-window"
 import useControllerModal from "../../store/useControllerModal"
 import Controller from "../pages/production/timer/Controller"
 
@@ -12,11 +13,17 @@ const ControllerModal = () => {
   console.log("toet tetotet", cm)
   if (!isOpen || !timerId) return null
   return (
-    <div className="fixed z-[60] top-0 w-screen h-screen">
-      <div className="w-[100%] h-[100%] mx-auto relative   bg-white shadow-md border border-gray-400 ">
-        <Controller timerId={timerId} />
+    <NewWindow
+      features={{ width: 1024, height: 800 }}
+      copyStyles
+      onUnload={() => closeControllerModal()}
+    >
+      <div className="fixed z-[40] top-0 w-screen h-screen flex items-center justify-center">
+        <div className="w-[100%] h-[100%] max-w-[1024px] max-h-[800px] mx-auto relative   bg-white shadow-md border border-gray-400 overflow-auto">
+          <Controller timerId={timerId} />
+        </div>
       </div>
-    </div>
+    </NewWindow>
   )
 }
 
