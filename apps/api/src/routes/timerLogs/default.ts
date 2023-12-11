@@ -402,6 +402,7 @@ export const getTimeLog = async (req: Request, res: Response) => {
 export const addTimeLog = async (req: Request, res: Response) => {
   try {
     const io = getIo()
+    console.error("timerbody", req.body)
     const parsedTimerLog = ZTimerLog.safeParse(req.body)
     if (parsedTimerLog.success) {
       try {
@@ -578,6 +579,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
         }
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        console.error(message)
         Sentry.captureException(err)
         res.json({
           error: true,
@@ -587,6 +589,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
         })
       }
     } else {
+      console.error(parsedTimerLog.error.issues)
       res.json({
         error: true,
         message: parsedTimerLog.error.issues,
@@ -595,6 +598,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
       })
     }
   } catch (error: any) {
+    console.error(error)
     Sentry.captureException(error)
     res.json({
       error: true,

@@ -31,3 +31,17 @@ export function formatTime(seconds: string) {
   }
   return result
 }
+
+export const getSecondsDifferent = (
+  timeZone: string = "",
+  createdAt?: Date,
+  endAt?: Date | null
+) => {
+  const timerStart = dayjs.tz(dayjs(createdAt), timeZone ? timeZone : "")
+
+  return (
+    dayjs
+      .tz(endAt ? dayjs(endAt) : dayjs(), timeZone ? timeZone : "")
+      .diff(timerStart, "seconds", true) ?? ""
+  )
+}
