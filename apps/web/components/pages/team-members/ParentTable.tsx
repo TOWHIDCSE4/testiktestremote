@@ -3123,16 +3123,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               <button
                                                 disabled={
                                                   !checkedProved ||
-                                                  (userProfile?.item.role ===
-                                                    "Production" &&
-                                                    (
-                                                      item?.locationId as unknown as Record<
-                                                        string,
-                                                        any
-                                                      >
-                                                    )?._id !==
-                                                      userProfile?.item
-                                                        .locationId)
+                                                  userProfile?.item.role ===
+                                                    "Production"
+                                                  //   &&
+                                                  // userProfile?.item
+                                                  //   .factoryId ===
+                                                  //   //@ts-expect-error
+                                                  //   item.factoryId?._id
                                                 }
                                                 className={combineClasses(
                                                   active
@@ -3193,16 +3190,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             <button
                                               disabled={
                                                 !checkedProved ||
-                                                (userProfile?.item.role ===
-                                                  "Production" &&
-                                                  (
-                                                    item?.locationId as unknown as Record<
-                                                      string,
-                                                      any
-                                                    >
-                                                  )?._id !==
-                                                    userProfile?.item
-                                                      .locationId)
+                                                userProfile?.item.role ===
+                                                  "Production"
+                                                //   &&
+                                                // userProfile?.item
+                                                //   .factoryId ===
+                                                //   //@ts-expect-error
+                                                //   item.factoryId?._id
                                               }
                                               className={combineClasses(
                                                 active
@@ -3232,16 +3226,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                             <button
                                               disabled={
                                                 !checkedProved ||
-                                                (userProfile?.item.role ===
-                                                  "Production" &&
-                                                  (
-                                                    item?.locationId as unknown as Record<
-                                                      string,
-                                                      any
-                                                    >
-                                                  )?._id !==
-                                                    userProfile?.item
-                                                      .locationId)
+                                                userProfile?.item.role ===
+                                                  "Production"
+                                                //   &&
+                                                // userProfile?.item
+                                                //   .factoryId ===
+                                                //   //@ts-expect-error
+                                                //   item.factoryId?._id
                                               }
                                               className={combineClasses(
                                                 active
