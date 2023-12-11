@@ -6,6 +6,8 @@ import {
   hourMinuteSecond,
   hourMinuteSecondMilli,
 } from "../../../../../helpers/timeConverter"
+import BottomMenu from "./BottomMenu"
+import SideMenu from "./SideMenu"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -78,7 +80,7 @@ const ControllerV2 = ({
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="absolute top-0 left-0 flex flex-col w-full h-full overflow-hidden">
       <Header
         progress={0}
         isLoading={false}
@@ -87,11 +89,11 @@ const ControllerV2 = ({
         onClose={onClose}
         onFullScreen={onFullScreen}
       />
-      <div className="flex p-5 justify-between">
+      <div className="flex justify-between p-5">
         {/* Left Column */}
-        <div className="flex flex-col gap-4 uppercase text-lg">
+        <div className="flex flex-col gap-4 text-lg uppercase">
           <div>
-            <h4 className="  text-gray-800  font-bold  dark:bg-dark-blue dark:text-white">
+            <h4 className="font-bold text-gray-800 dark:bg-dark-blue dark:text-white">
               Details
             </h4>
             <div className="flex flex-col gap-1 ">
@@ -119,7 +121,7 @@ const ControllerV2 = ({
           </div>
 
           <div className="flex flex-col gap-1">
-            <h4 className="  text-gray-800  font-bold  dark:bg-dark-blue dark:text-white">
+            <h4 className="font-bold text-gray-800 dark:bg-dark-blue dark:text-white">
               Operator
             </h4>
             <p>{`${operator.firstName} ${operator.lastName}`}</p>
@@ -137,7 +139,7 @@ const ControllerV2 = ({
               {cycleClockSecondsArray[2]}:{cycleClockSecondsArray[3]}
             </div>
           </div>
-          <button className=" text-4xl" onClick={onToggleStart}>
+          <button className="text-4xl " onClick={onToggleStart}>
             {isCycleClockRunning ? (
               <span className="text-red-500">Stop</span>
             ) : (
@@ -146,11 +148,13 @@ const ControllerV2 = ({
           </button>
         </div>
       </div>
-      <div className="self-end mt-40 mx-5">
+      <div className="self-end mx-5 mt-40">
         <p>Unit Created</p>
         <p className="text-dark-blue text-8xl">{unitCreated}</p>
       </div>
       <Footer progress={0} isLoading={false} timeZone={""} />
+      <BottomMenu />
+      <SideMenu />
     </div>
   )
 }
