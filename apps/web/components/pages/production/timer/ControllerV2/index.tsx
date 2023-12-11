@@ -41,6 +41,7 @@ const ControllerV2 = ({
     operator,
     onToggleStart,
     isCycleClockRunning,
+    totals,
     unitCreated,
   } = useContext(ControllerContext)
   const [isTimerLogsModalOpen, setIsTimerLogsModalOpen] = useState(false)
@@ -158,9 +159,25 @@ const ControllerV2 = ({
           </div>
         </div>
       </div>
-      <div className="self-end mx-5 mt-40">
-        <p>Unit Created</p>
-        <p className="text-dark-blue text-8xl">{unitCreated}</p>
+      <div className="flex uppercase text-lg items-center self-end mx-5 mt-40 gap-20">
+        <div className="flex flex-col">
+          <div className="flex gap-4">
+            <p className="font-bold">Units Per Hour:</p>
+            <p className="">{totals.unitsPerHour.toFixed(3)}</p>
+          </div>
+          <div className="flex gap-4">
+            <p className="font-bold">Tons Per Hour:</p>
+            <p className="">{totals.tonsPerHour.toFixed(3)}</p>
+          </div>
+          <div className="flex gap-4">
+            <p className="font-bold">Total Tons:</p>
+            <p className="">{totals.totalTons.toFixed(3)}</p>
+          </div>
+        </div>
+        <div className="">
+          <p>Unit Created</p>
+          <p className="text-dark-blue text-8xl">{unitCreated}</p>
+        </div>
       </div>
       <Footer progress={0} isLoading={false} timeZone={""} />
       <BottomMenu />
