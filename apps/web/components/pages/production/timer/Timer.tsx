@@ -24,12 +24,14 @@ import { Socket } from "socket.io-client"
 import useGetAllTimerLogsCount from "../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import { useSocket } from "../../../../store/useSocket"
 import useStoreTimer from "../../../../store/useStoreTimer"
-import useControllerModal from "../../../../store/useControllerModal"
 import useGetTimerDetails from "../../../../hooks/timers/useGetTimerDetails"
 import { getObjectId } from "../../../../helpers/ids"
 import useGetTimerJobs from "../../../../hooks/timers/useGetTimerJobs"
 import cn from "classnames"
 import useGetControllerTimer from "../../../../hooks/timers/useGetControllerTimer"
+import ControllerModal from "../../../shared/ControllerModal"
+import { ControllerDetailData } from "./ControllerV2"
+import { ControllerContextProvider } from "./ControllerV2/ControllerContext"
 
 type T_Props = {
   timer: T_Timer
@@ -65,7 +67,8 @@ const Timer = ({
       locationId: timer.locationId as string,
       timerId: timer._id as string,
     })
-  const { data: timerDetailData } = useGetTimerDetails(getObjectId(timer._id))
+  const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
+    useGetTimerDetails(getObjectId(timer._id))
   const { isLoading: isJobsLoading } = useGetTimerJobs(
     getObjectId(timerDetailData?.item?.locationId),
     getObjectId(timerDetailData?.item?.factoryId),
@@ -78,6 +81,7 @@ const Timer = ({
   const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimerRealTime(
     timer._id as string
   )
+  const [isControllerModalOpen, setIsControllerModalOpen] = useState(false)
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
   const [cycleClockInSeconds, setCycleClockInSeconds] = useState(0)
   const [cycleClockTimeArray, setCycleCockTimeArray] = useState<
@@ -90,10 +94,18 @@ const Timer = ({
   })
   const socket = useSocket((store) => store.instance)
   const { isTimerStop } = useStoreTimer((store) => store)
-  const setControllerModalTimerId = useControllerModal(
-    (state) => state.setTimerId
-  )
-  const controllerModalTimerId = useControllerModal((state) => state.timerId)
+
+  const isControllerLoading =
+    isJobsLoading || isControllerTimerLoading || isTimerDetailDataLoading
+  const controllerDetailData = isTimerDetailDataLoading
+    ? {}
+    : {
+        factoryName: timerDetailData?.item?.factoryId.name,
+        machineName: timerDetailData?.item?.machineId.name,
+        partName: timerDetailData?.item?.partId.name,
+        averageTime: timerDetailData?.item?.partId.time,
+        weight: timerDetailData?.item?.partId.tons,
+      }
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -179,17 +191,7 @@ const Timer = ({
     },
   }
   const openController = () => {
-    if (controllerModalTimerId) {
-      return toast.error(
-        "Controller already opened. please close opened controller first"
-      )
-    }
-    if (!timer._id) {
-      return toast.error(
-        "System Error: Trying to open controller with undefined timer id"
-      )
-    }
-    setControllerModalTimerId(timer._id)
+    setIsControllerModalOpen(true)
   }
   const addZeroFront = (num: number) => {
     let value = null
@@ -274,171 +276,183 @@ const Timer = ({
   }
 
   return (
-    <div
-      key={timer._id as string}
-      className="bg-white rounded-md border border-gray-200 drop-shadow-lg w-[270px] "
-    >
-      <div className="flex items-center gap-2 px-4 py-4 border-b border-gray-200">
-        <Combobox
-          as="div"
-          value={selectedPart}
-          onChange={updateTimerPart}
-          disabled={isCycleClockRunning ? true : isUpdateTimerLoading}
-        >
-          <div className="relative">
-            <Combobox.Input
-              className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 disabled:opacity-50 disabled:cursor-not-allowed`}
-              onChange={(event) => setPartQuery(event.target.value)}
-              displayValue={(selected: { id: string; name: string }) => {
-                return selected ? selected.name : ""
-              }}
-            />
-            <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
-              <ChevronUpDownIcon
-                className={`h-5 w-5 ${
-                  isUpdateTimerLoading ? "text-gray-400" : "text-gray-600"
-                }`}
-                aria-hidden="true"
+    <>
+      <div
+        key={timer._id as string}
+        className="bg-white rounded-md border border-gray-200 drop-shadow-lg w-[270px] "
+      >
+        <div className="flex items-center gap-2 px-4 py-4 border-b border-gray-200">
+          <Combobox
+            as="div"
+            value={selectedPart}
+            onChange={updateTimerPart}
+            disabled={isCycleClockRunning ? true : isUpdateTimerLoading}
+          >
+            <div className="relative">
+              <Combobox.Input
+                className={`w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 disabled:opacity-50 disabled:cursor-not-allowed`}
+                onChange={(event) => setPartQuery(event.target.value)}
+                displayValue={(selected: { id: string; name: string }) => {
+                  return selected ? selected.name : ""
+                }}
               />
-            </Combobox.Button>
+              <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
+                <ChevronUpDownIcon
+                  className={`h-5 w-5 ${
+                    isUpdateTimerLoading ? "text-gray-400" : "text-gray-600"
+                  }`}
+                  aria-hidden="true"
+                />
+              </Combobox.Button>
 
-            {filteredParts && filteredParts.length > 0 ? (
-              <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                {filteredParts.map((item: T_Part, index: number) => (
-                  <Combobox.Option
-                    key={index}
-                    value={{ id: item._id, name: item.name }}
-                    className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
-                  >
-                    <span className="block">{item.name}</span>
-                  </Combobox.Option>
-                ))}
-              </Combobox.Options>
-            ) : null}
+              {filteredParts && filteredParts.length > 0 ? (
+                <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  {filteredParts.map((item: T_Part, index: number) => (
+                    <Combobox.Option
+                      key={index}
+                      value={{ id: item._id, name: item.name }}
+                      className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
+                    >
+                      <span className="block">{item.name}</span>
+                    </Combobox.Option>
+                  ))}
+                </Combobox.Options>
+              ) : null}
+            </div>
+          </Combobox>
+          <DropDownMenu
+            setOpenEditModal={(e: React.MouseEvent<HTMLElement>) => {
+              e.stopPropagation()
+              setOpenDetailsModal(true)
+              setSelectedTimerId(timer._id as string)
+            }}
+            setOpenDeleteModal={(e: React.MouseEvent<HTMLElement>) => {
+              e.stopPropagation()
+              setOpenDeleteModal(true)
+              setSelectedTimerId(timer._id as string)
+            }}
+          />
+        </div>
+        <div className="px-4 py-4 space-y-2 text-center">
+          <h3 className="text-xl font-bold text-gray-700 uppercase">
+            {machine?.name}
+          </h3>
+          {isCycleClockRunning ? (
+            <div className="flex items-center justify-center">
+              <h2
+                className={`text-center font-bold text-5xl ${
+                  !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
+                }`}
+              >
+                {cycleClockTimeArray[0]}
+              </h2>
+              <span
+                className={`text-center font-bold text-5xl ${
+                  !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
+                }`}
+              >
+                :
+              </span>
+              <h2
+                className={`text-center font-bold text-5xl ${
+                  !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
+                }`}
+              >
+                {cycleClockTimeArray[1]}
+              </h2>
+              <span
+                className={`text-center font-bold text-5xl ${
+                  !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
+                }`}
+              >
+                :
+              </span>
+              <h2
+                className={`text-center font-bold text-5xl ${
+                  !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
+                }`}
+              >
+                {cycleClockTimeArray[2]}
+              </h2>
+            </div>
+          ) : (
+            <h2 className="text-5xl font-bold text-stone-400">00:00:00</h2>
+          )}
+          <p className="text-lg text-amber-600">
+            {typeof operator === "object"
+              ? `${operator?.firstName} ${operator?.lastName}`
+              : typeof operator === "string"
+              ? `${operator}`
+              : `Operator Unassigned`}
+          </p>
+          <div>
+            <h2 className="text-5xl font-semibold text-gray-400">
+              {timerLogsCount?.item?.count
+                ? addZeroFront(timerLogsCount?.item?.count)
+                : "000"}
+            </h2>
+            <h6 className="text-lg font-semibold text-gray-700 uppercase">
+              Daily Units
+            </h6>
           </div>
-        </Combobox>
-        <DropDownMenu
-          setOpenEditModal={(e: React.MouseEvent<HTMLElement>) => {
-            e.stopPropagation()
-            setOpenDetailsModal(true)
-            setSelectedTimerId(timer._id as string)
-          }}
-          setOpenDeleteModal={(e: React.MouseEvent<HTMLElement>) => {
-            e.stopPropagation()
-            setOpenDeleteModal(true)
-            setSelectedTimerId(timer._id as string)
-          }}
+        </div>
+        <div className="px-4">
+          <div className="flex justify-between text-gray-900">
+            <span>Total Tons:</span>
+            <span>
+              {totalTonsUnit?.item?.tons
+                ? totalTonsUnit?.item?.tons.toFixed(3)
+                : "0.000"}
+            </span>
+          </div>
+          <div className="flex justify-between text-gray-900">
+            <span>Average Ton/hr:</span>
+            <span>
+              {totalTonsUnit?.item?.tonsPerHour
+                ? totalTonsUnit?.item?.tonsPerHour.toFixed(3)
+                : "0.000"}
+            </span>
+          </div>
+          <div className="flex justify-between text-gray-900">
+            <span>Average Unit/hr: </span>
+            <span>
+              {totalTonsUnit?.item?.unitPerHour
+                ? Math.round(totalTonsUnit?.item.unitPerHour)
+                : "0"}
+            </span>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 px-4 my-4 gap-x-5 gap-y-3">
+          <button
+            className={cn("uppercase text-sm text-white  p-1 rounded-md", {
+              ["bg-stone-300"]: isJobsLoading,
+              ["bg-green-800"]: !isJobsLoading,
+              ["cursor-not-allowed"]: isJobsLoading,
+            })}
+            onClick={openController}
+            disabled={isControllerLoading}
+          >
+            {isControllerLoading ? "Loading Controller.." : "Controller"}
+          </button>
+          <button
+            className="p-1 text-sm text-white uppercase rounded-md bg-stone-300"
+            onClick={() => alert("Coming soon...")}
+          >
+            Live Camera
+          </button>
+        </div>
+      </div>
+      <ControllerContextProvider
+        controllerDetailData={controllerDetailData as ControllerDetailData}
+        operator={timerDetailData?.item?.operator}
+      >
+        <ControllerModal
+          isOpen={isControllerModalOpen}
+          onClose={() => setIsControllerModalOpen(false)}
+          timerId={timer._id}
         />
-      </div>
-      <div className="px-4 py-4 space-y-2 text-center">
-        <h3 className="text-xl font-bold text-gray-700 uppercase">
-          {machine?.name}
-        </h3>
-        {isCycleClockRunning ? (
-          <div className="flex items-center justify-center">
-            <h2
-              className={`text-center font-bold text-5xl ${
-                !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
-              }`}
-            >
-              {cycleClockTimeArray[0]}
-            </h2>
-            <span
-              className={`text-center font-bold text-5xl ${
-                !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
-              }`}
-            >
-              :
-            </span>
-            <h2
-              className={`text-center font-bold text-5xl ${
-                !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
-              }`}
-            >
-              {cycleClockTimeArray[1]}
-            </h2>
-            <span
-              className={`text-center font-bold text-5xl ${
-                !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
-              }`}
-            >
-              :
-            </span>
-            <h2
-              className={`text-center font-bold text-5xl ${
-                !isCycleClockRunning ? "text-stone-400" : "text-stone-800"
-              }`}
-            >
-              {cycleClockTimeArray[2]}
-            </h2>
-          </div>
-        ) : (
-          <h2 className="text-5xl font-bold text-stone-400">00:00:00</h2>
-        )}
-        <p className="text-lg text-amber-600">
-          {typeof operator === "object"
-            ? `${operator?.firstName} ${operator?.lastName}`
-            : typeof operator === "string"
-            ? `${operator}`
-            : `Operator Unassigned`}
-        </p>
-        <div>
-          <h2 className="text-5xl font-semibold text-gray-400">
-            {timerLogsCount?.item?.count
-              ? addZeroFront(timerLogsCount?.item?.count)
-              : "000"}
-          </h2>
-          <h6 className="text-lg font-semibold text-gray-700 uppercase">
-            Daily Units
-          </h6>
-        </div>
-      </div>
-      <div className="px-4">
-        <div className="flex justify-between text-gray-900">
-          <span>Total Tons:</span>
-          <span>
-            {totalTonsUnit?.item?.tons
-              ? totalTonsUnit?.item?.tons.toFixed(3)
-              : "0.000"}
-          </span>
-        </div>
-        <div className="flex justify-between text-gray-900">
-          <span>Average Ton/hr:</span>
-          <span>
-            {totalTonsUnit?.item?.tonsPerHour
-              ? totalTonsUnit?.item?.tonsPerHour.toFixed(3)
-              : "0.000"}
-          </span>
-        </div>
-        <div className="flex justify-between text-gray-900">
-          <span>Average Unit/hr: </span>
-          <span>
-            {totalTonsUnit?.item?.unitPerHour
-              ? Math.round(totalTonsUnit?.item.unitPerHour)
-              : "0"}
-          </span>
-        </div>
-      </div>
-      <div className="grid grid-cols-2 px-4 my-4 gap-x-5 gap-y-3">
-        <button
-          className={cn("uppercase text-sm text-white  p-1 rounded-md", {
-            ["bg-stone-300"]: isJobsLoading,
-            ["bg-green-800"]: !isJobsLoading,
-            ["cursor-not-allowed"]: isJobsLoading,
-          })}
-          onClick={openController}
-          disabled={isJobsLoading || isControllerTimerLoading}
-        >
-          {isJobsLoading ? "Loading Jobs.." : "Controller"}
-        </button>
-        <button
-          className="p-1 text-sm text-white uppercase rounded-md bg-stone-300"
-          onClick={() => alert("Coming soon...")}
-        >
-          Live Camera
-        </button>
-      </div>
-    </div>
+      </ControllerContextProvider>
+    </>
   )
 }
 export default Timer

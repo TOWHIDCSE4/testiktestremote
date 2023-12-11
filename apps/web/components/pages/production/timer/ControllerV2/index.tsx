@@ -1,0 +1,158 @@
+import { useContext, useRef, useState } from "react"
+import Header from "./Header"
+import Footer from "./Footer"
+import { ControllerContext } from "./ControllerContext"
+import {
+  hourMinuteSecond,
+  hourMinuteSecondMilli,
+} from "../../../../../helpers/timeConverter"
+
+export interface ControllerDetailData {
+  factoryName: string
+  machineName: string
+  partName: string
+  averageTime: number
+  weight: number
+}
+
+interface ControllerV2Props {
+  timerId: any
+  onClose: () => void
+  onFullScreen: () => void
+}
+
+const ControllerV2 = ({
+  timerId,
+  onClose,
+  onFullScreen,
+}: ControllerV2Props) => {
+  const { controllerDetailData, operator } = useContext(ControllerContext)
+  const [controllerClockSeconds, setControllerClockSeconds] = useState(0)
+  const [cycleClockSeconds, setCycleClockSeconds] = useState(0)
+  const [isControllerClockRunning, setIsControllerClockRunning] =
+    useState(false)
+  const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
+  const [unitCreated, setUnitCreated] = useState(0)
+
+  const controllerClockArray = hourMinuteSecond(controllerClockSeconds)
+  const cycleClockSecondsArray = hourMinuteSecondMilli(cycleClockSeconds)
+
+  const controllerClockIntervalRef = useRef<any>()
+  const cycleClockIntervalRef = useRef<any>()
+
+  const stopControllerClockInterval = () => {
+    clearInterval(controllerClockIntervalRef.current)
+    setIsControllerClockRunning(false)
+  }
+  const stopCycleClockInterval = () => {
+    clearInterval(cycleClockIntervalRef.current)
+    setIsCycleClockRunning(false)
+  }
+  const startControllerClockInterval = () => {
+    stopControllerClockInterval()
+    setIsControllerClockRunning(true)
+    controllerClockIntervalRef.current = setInterval(() => {
+      setControllerClockSeconds((prev) => prev + 1)
+    }, 1000)
+  }
+
+  const startCycleClockInterval = () => {
+    stopCycleClockInterval()
+    setIsCycleClockRunning(true)
+    cycleClockIntervalRef.current = setInterval(() => {
+      setCycleClockSeconds((prev) => prev + 0.1)
+    }, 100)
+  }
+
+  const onToggleStart = () => {
+    if (!isControllerClockRunning) {
+      startControllerClockInterval()
+    }
+    if (!isCycleClockRunning) {
+      startCycleClockInterval()
+    }
+    if (isCycleClockRunning) {
+      setCycleClockSeconds(0)
+      setUnitCreated((c) => c + 1)
+    }
+  }
+
+  return (
+    <div className="flex flex-col">
+      <Header
+        progress={0}
+        isLoading={false}
+        locationName="Conroe"
+        setOpenTimerLogs={() => {}}
+        onClose={onClose}
+        onFullScreen={onFullScreen}
+      />
+      <div className="flex p-5 justify-between">
+        {/* Left Column */}
+        <div className="flex flex-col gap-4 uppercase text-lg">
+          <div>
+            <h4 className="  text-gray-800  font-bold  dark:bg-dark-blue dark:text-white">
+              Details
+            </h4>
+            <div className="flex flex-col gap-1 ">
+              <div className="flex gap-2">
+                <p>factory:</p>
+                <p>{controllerDetailData.factoryName}</p>
+              </div>
+              <div className="flex gap-2">
+                <p>machine:</p>
+                <p>{controllerDetailData.machineName}</p>
+              </div>
+              <div className="flex gap-2">
+                <p>Product:</p>
+                <p>{controllerDetailData.partName}</p>
+              </div>
+              <div className="flex gap-2">
+                <p>Average Time:</p>
+                <p>{controllerDetailData.averageTime} seconds</p>
+              </div>
+              <div className="flex gap-2">
+                <p>Weight:</p>
+                <p>{controllerDetailData.weight?.toFixed(3)} tons</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <h4 className="  text-gray-800  font-bold  dark:bg-dark-blue dark:text-white">
+              Operator
+            </h4>
+            <p>{`${operator.firstName} ${operator.lastName}`}</p>
+          </div>
+        </div>
+        {/* Right Column */}
+        <div className="flex flex-col gap-2">
+          <div>
+            Time: {controllerClockArray[0]}: {controllerClockArray[1]}:
+            {controllerClockArray[2]}
+          </div>
+          <div className="countdown-container w-full ipadair:w-[385px] lg:w-[610px] xl:w-[680px] 2xl:w-[800px] rounded-md border-2 border-b-4 border-stone-500 border-b-green-500  bg-[#f1f2e1] pt-2 pb-3.5">
+            <div className="text-8xl">
+              {cycleClockSecondsArray[0]}:{cycleClockSecondsArray[1]}:
+              {cycleClockSecondsArray[2]}:{cycleClockSecondsArray[3]}
+            </div>
+          </div>
+          <button className=" text-4xl" onClick={onToggleStart}>
+            {isCycleClockRunning ? (
+              <span className="text-red-500">Stop</span>
+            ) : (
+              <span className="text-green-600">Start</span>
+            )}
+          </button>
+        </div>
+      </div>
+      <div className="self-end mt-40 mx-5">
+        <p>Unit Created</p>
+        <p className="text-dark-blue text-8xl">{unitCreated}</p>
+      </div>
+      <Footer progress={0} isLoading={false} timeZone={""} />
+    </div>
+  )
+}
+
+export default ControllerV2

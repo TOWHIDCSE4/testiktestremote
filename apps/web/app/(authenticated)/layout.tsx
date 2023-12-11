@@ -25,7 +25,6 @@ export default function RootLayout({
             </div>
             <div className="lg:ml-80">{children}</div>
           </AuthGuard>
-          <ControllerModal />
         </QueryWrapper>
       </body>
     </html>
