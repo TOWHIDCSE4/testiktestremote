@@ -13,9 +13,10 @@ export default function BottomMenu() {
     [
       "Machine Error",
       "Machine Low",
-      "Worker Break",
+      "Machine Cleaning",
       "Maintenance",
       "Change Part",
+      "Personal Injury",
     ] as const
   ).map((v) => {
     if (v === "Machine Low") return "Material Low"
