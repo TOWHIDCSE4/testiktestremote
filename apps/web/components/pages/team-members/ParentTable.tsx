@@ -64,9 +64,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const approveChecking = (item: any, userId: string) => {
     if (
-      item._id === userId ||
       storeSession?.role === "Administrator" ||
-      "HR_Director"
+      storeSession?.role === "HR_Director" ||
+      (storeSession?.role === "Production" && item._id === userId)
     ) {
       setCheckedProved(true)
     } else {
@@ -3121,16 +3121,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                           <Menu.Item>
                                             {({ active }) => (
                                               <button
-                                                disabled={
-                                                  !checkedProved ||
-                                                  userProfile?.item.role ===
-                                                    "Production"
-                                                  //   &&
-                                                  // userProfile?.item
-                                                  //   .factoryId ===
-                                                  //   //@ts-expect-error
-                                                  //   item.factoryId?._id
-                                                }
+                                                disabled={!checkedProved}
                                                 className={combineClasses(
                                                   active
                                                     ? "bg-gray-100  text-gray-900"
@@ -3188,16 +3179,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                         <Menu.Item>
                                           {({ active }) => (
                                             <button
-                                              disabled={
-                                                !checkedProved ||
-                                                userProfile?.item.role ===
-                                                  "Production"
-                                                //   &&
-                                                // userProfile?.item
-                                                //   .factoryId ===
-                                                //   //@ts-expect-error
-                                                //   item.factoryId?._id
-                                              }
+                                              disabled={!checkedProved}
                                               className={combineClasses(
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
@@ -3224,16 +3206,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                         <Menu.Item>
                                           {({ active }) => (
                                             <button
-                                              disabled={
-                                                !checkedProved ||
-                                                userProfile?.item.role ===
-                                                  "Production"
-                                                //   &&
-                                                // userProfile?.item
-                                                //   .factoryId ===
-                                                //   //@ts-expect-error
-                                                //   item.factoryId?._id
-                                              }
+                                              disabled={!checkedProved}
                                               className={combineClasses(
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
