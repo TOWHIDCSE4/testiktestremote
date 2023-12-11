@@ -24,12 +24,9 @@ const AuthGuard = ({ children }: Props) => {
   }, [isLoading, data, updateStoreSession])
 
   if (!isLoading && data?.error) {
-    if (typeof window !== undefined) {
-      Cookies.remove("tfl")
-      window.localStorage.clear()
-      window.location.href = "/"
-    }
-    return null
+    Cookies.remove("tfl")
+    router.push("/")
+    return <>{children}</>
   } else if (isLoading) {
     return (
       <div
