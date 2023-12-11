@@ -67,7 +67,7 @@ export default function BottomMenu() {
                   }}
                   className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
                 />
-                <label className="text-xl text-yellow-200">{item}</label>
+                <label className="text-md text-yellow-200">{item}</label>
               </div>
             ))}
           </div>
