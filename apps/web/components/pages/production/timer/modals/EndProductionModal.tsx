@@ -57,65 +57,6 @@ const EndProductionModal = ({
   }
 
   return (
-    <>
-      {isOpen && (
-        <div
-          className="absolute top-0 left-0 z-50 flex flex-col w-full h-full overflow-y-auto text-white"
-          style={{ background: "#202b3bde" }}
-        >
-          <div className="flex flex-col items-end justify-center min-h-full p-4 text-center sm:items-center sm:p-0">
-            <>
-              <div>
-                <div className="flex items-center justify-center w-24 h-24 mx-auto bg-yellow-100 rounded-full">
-                  <ExclamationTriangleIcon
-                    className="w-12 h-12 text-yellow-700"
-                    aria-hidden="true"
-                  />
-                </div>
-                <div className="mt-3 text-center sm:mt-5">
-                  <h3 className="text-base font-semibold leading-6 text-white">
-                    You are ending production for{" "}
-                    <span className="font-bold">{machineName}</span> - Do you
-                    confirm?
-                  </h3>
-                </div>
-              </div>
-              <div className="flex mt-5 space-x-5 sm:mt-6">
-                <button
-                  type="button"
-                  disabled={isEnding}
-                  className="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-gray-800 bg-white border border-gray-300 rounded-md shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  onClick={onClose}
-                >
-                  No
-                </button>
-                <button
-                  type="button"
-                  disabled={isEnding}
-                  className="inline-flex justify-center w-full px-3 py-2 text-sm font-semibold text-white rounded-md shadow-sm bg-blue-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70"
-                  onClick={close}
-                >
-                  {isEnding ? (
-                    <div
-                      className="animate-spin inline-block w-4 h-4 border-[2px] border-current border-t-transparent text-white rounded-full"
-                      role="status"
-                      aria-label="loading"
-                    >
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  ) : (
-                    "Yes"
-                  )}
-                </button>
-              </div>
-            </>
-          </div>
-        </div>
-      )}
-    </>
-  )
-
-  return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={() => {}}>
         <Transition.Child
