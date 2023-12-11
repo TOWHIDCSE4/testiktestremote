@@ -134,9 +134,9 @@ const BottomMenu = ({
             />
             <label
               htmlFor="machine-cleaning"
-              className="text-yellow-200 xl:text-xl 2xl:text-4xl whitespace-nowrap"
+              className="text-yellow-200 xl:text-xl 2xl:text-4xl"
             >
-              Machine Cleaning
+              <span>Machine Cleaning</span>
             </label>
           </div>
           <div className="flex items-center space-x-2 2xl:space-x-4 xl:mt-2 2xl:mt-3">
