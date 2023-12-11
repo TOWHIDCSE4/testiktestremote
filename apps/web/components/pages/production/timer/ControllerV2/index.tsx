@@ -13,6 +13,7 @@ import useAddControllerTimer from "../../../../../hooks/timers/useAddControllerT
 import cn from "classnames"
 import "./styles.scss"
 import useControllerModal from "../../../../../store/useControllerModal"
+import TimerLogsModal from "../modals/TimerLogsModalV2"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -42,7 +43,7 @@ const ControllerV2 = ({
     isCycleClockRunning,
     unitCreated,
   } = useContext(ControllerContext)
-
+  const [isTimerLogsModalOpen, setIsTimerLogsModalOpen] = useState(false)
   const controllerClockArray = hourMinuteSecond(controllerClockSeconds)
   const cycleClockSecondsArray = hourMinuteSecondMilli(cycleClockSeconds)
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
@@ -64,7 +65,7 @@ const ControllerV2 = ({
         progress={0}
         isLoading={false}
         locationName="Conroe"
-        setOpenTimerLogs={() => {}}
+        setOpenTimerLogs={() => setIsTimerLogsModalOpen(true)}
         onClose={onClose}
         onFullScreen={onFullScreen}
       />
@@ -180,6 +181,10 @@ const ControllerV2 = ({
         machineName={controllerDetailData.machineName ?? ""}
         controllerTimerId={""}
         isTimerClockRunning={false}
+      />
+      <TimerLogsModal
+        isOpen={isTimerLogsModalOpen}
+        setIsOpen={setIsTimerLogsModalOpen}
       />
     </div>
   )
