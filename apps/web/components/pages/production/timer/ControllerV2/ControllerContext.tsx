@@ -352,8 +352,7 @@ export const ControllerContextProvider = ({
       totalTons: unitCreated * controllerDetailData.weight,
       unitsPerHour: unitCreated / Math.round(hoursLapse),
       tonsPerHour:
-        (unitCreated * controllerDetailData.weight) /
-        controllerDetailData.weight,
+        (unitCreated * controllerDetailData.weight) / Math.round(hoursLapse),
     }))
   }, [unitCreated])
 
