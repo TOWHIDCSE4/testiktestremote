@@ -54,6 +54,11 @@ export interface ControllerContextProps {
   hasControllerTimer: boolean
   stopReasons: any[]
   timerLogs: any
+  totals: {
+    unitsPerHour: number
+    tonsPerHour: number
+    totalTons: number
+  }
   onToggleStart: () => void
   setStopReasons: (...args: any) => void
   onStopCycleWithReasons: (...args: any) => void
@@ -69,6 +74,11 @@ export const ControllerContext = createContext<ControllerContextProps>({
   timerId: undefined,
   stopReasons: [],
   timerLogs: [],
+  totals: {
+    unitsPerHour: 0,
+    tonsPerHour: 0,
+    totalTons: 0,
+  },
   hasControllerTimer: false,
   isCycleClockRunning: false,
   onToggleStart: () => {},
@@ -145,6 +155,19 @@ export const ControllerContextProvider = ({
     useState(false)
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
   const [unitCreated, setUnitCreated] = useState(0)
+  const [totals, setTotals] = useState({
+    unitsPerHour: 0,
+    tonsPerHour: 0,
+    totalTons: 0,
+  })
+  // setTotals({
+  //   unitsPerHour: count / Math.round(hoursLapse),
+  //   tonsPerHour:
+  //     (count * (timerDetailData?.item?.partId.tons as number)) /
+  //     Math.round(hoursLapse),
+  //   totalTons: count * (timerDetailData?.item?.partId.tons as number),
+  // })
+
   const queryClient = useQueryClient()
 
   const controllerClockIntervalRef = useRef<any>()
@@ -153,6 +176,8 @@ export const ControllerContextProvider = ({
   const hasControllerTimer =
     Array.isArray(controllerTimerData?.items) &&
     controllerTimerData!.items.length > 0
+
+  const productionTime = () => {}
 
   /* Check required data */
   if (!controllerTimerData && !controllerTimerDataLoading) {
@@ -191,7 +216,6 @@ export const ControllerContextProvider = ({
     stopControllerClockInterval()
     setIsControllerClockRunning(true)
     controllerClockIntervalRef.current = setInterval(() => {
-      console.log("Timer Detail in Controller Context", timerDetailData)
       setControllerClockSeconds((prev) => prev + 1)
     }, 1000)
   }
@@ -321,6 +345,19 @@ export const ControllerContextProvider = ({
   }
 
   useEffect(() => {
+    const hoursLapse =
+      controllerClockSeconds > 3600 ? controllerClockSeconds / 3600 : 1
+    setTotals((current) => ({
+      ...current,
+      totalTons: unitCreated * controllerDetailData.weight,
+      unitsPerHour: unitCreated / Math.round(hoursLapse),
+      tonsPerHour:
+        (unitCreated * controllerDetailData.weight) /
+        controllerDetailData.weight,
+    }))
+  }, [unitCreated])
+
+  useEffect(() => {
     if (
       !isControllerModalOpenRef.current &&
       isControllerModalOpen &&
@@ -357,6 +394,7 @@ export const ControllerContextProvider = ({
         onToggleStart,
         onStopCycleWithReasons,
         stopReasons,
+        totals,
         onEndProduction,
         timerLogs: timerLogsData,
       }}
