@@ -29,9 +29,15 @@ const ControllerV2 = ({
   onClose,
   onFullScreen,
 }: ControllerV2Props) => {
-  const { controllerDetailData, operator } = useContext(ControllerContext)
+  const {
+    controllerDetailData,
+    operator,
+    cycleClockSeconds: initialCycleClockSeconds,
+  } = useContext(ControllerContext)
   const [controllerClockSeconds, setControllerClockSeconds] = useState(0)
-  const [cycleClockSeconds, setCycleClockSeconds] = useState(0)
+  const [cycleClockSeconds, setCycleClockSeconds] = useState(
+    initialCycleClockSeconds
+  )
   const [isControllerClockRunning, setIsControllerClockRunning] =
     useState(false)
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
