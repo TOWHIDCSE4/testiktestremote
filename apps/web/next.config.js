@@ -1,60 +1,11 @@
 const { existsSync } = require("fs")
+const { withSentryConfig } = require("@sentry/nextjs")
+
 require("dotenv").config({
   path: existsSync("../../.env") ? "../../.env" : "../../../.env",
 })
 
-module.exports = {
-  async rewrites() {
-    return [
-      {
-        source: "/api/files/:path*",
-        destination: `${process.env.MEDIA_URL}/api/files/:path*`,
-      },
-      {
-        source: "/files/:path*",
-        destination: `${process.env.MEDIA_URL}/files/:path*`,
-      },
-      {
-        source: "/api/:path*",
-        destination: `${process.env.API_URL}/api/:path*`,
-      },
-    ]
-  },
-  reactStrictMode: true,
-  transpilePackages: ["ui"],
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-    ],
-  },
-  webpack: (config, { webpack, buildId }) => {
-    config.plugins.push(
-      new webpack.DefinePlugin({
-        "process.env.CONFIG_BUILD_ID": JSON.stringify(buildId),
-      })
-    )
-    config.externals.push({
-      "utf-8-validate": "commonjs utf-8-validate",
-      bufferutil: "commonjs bufferutil",
-    })
-    return config
-  },
-  env: {
-    MEDIA_KEY: process.env.MEDIA_KEY,
-    API_URL: process.env.API_URL,
-    SENTRY_WEB_DSN: process.env.SENTRY_WEB_DSN,
-  },
-}
-
-// Injected content via Sentry wizard below
-
-const { withSentryConfig } = require("@sentry/nextjs")
-
 module.exports = withSentryConfig(
-  module.exports,
   {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options
@@ -83,5 +34,52 @@ module.exports = withSentryConfig(
 
     // Automatically tree-shake Sentry logger statements to reduce bundle size
     disableLogger: true,
+  },
+  {
+    async rewrites() {
+      return [
+        {
+          source: "/api/files/:path*",
+          destination: `${process.env.MEDIA_URL}/api/files/:path*`,
+        },
+        {
+          source: "/files/:path*",
+          destination: `${process.env.MEDIA_URL}/files/:path*`,
+        },
+        {
+          source: "/api/:path*",
+          destination: `${process.env.API_URL}/api/:path*`,
+        },
+      ]
+    },
+    reactStrictMode: true,
+    transpilePackages: ["ui"],
+    images: {
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname: "**",
+        },
+      ],
+    },
+    webpack: (config, { webpack, buildId }) => {
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          "process.env.CONFIG_BUILD_ID": JSON.stringify(buildId),
+        })
+      )
+      config.externals.push({
+        "utf-8-validate": "commonjs utf-8-validate",
+        bufferutil: "commonjs bufferutil",
+      })
+      return config
+    },
+    env: {
+      MEDIA_KEY: process.env.MEDIA_KEY,
+      API_URL: process.env.API_URL,
+      SENTRY_WEB_DSN: process.env.SENTRY_WEB_DSN,
+      SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
+    },
   }
 )
+// Injected content via Sentry wizard below
