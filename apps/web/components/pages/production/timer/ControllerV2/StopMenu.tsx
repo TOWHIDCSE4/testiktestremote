@@ -5,14 +5,13 @@ export default function StopMenuComponent({
   isOpen,
   toggleOpen,
 }: {
-  isOpen: boolean
+  isOpen?: boolean
   toggleOpen: () => void
 }) {
-  // const [isOpen, setIsOpen] = useState<boolean>(false)
   return (
     <div
       className={`absolute right-0 w-[270px] bottom-32 transition-all ${
-        isOpen ? "translate-x-full" : "translate-x-0"
+        !isOpen ? "translate-x-full" : "translate-x-0"
       }`}
     >
       <div className="border-[#5d5d5d] h-[190px] border-2 bg-[#0f2034] flex rounded-l-lg border-r-0">

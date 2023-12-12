@@ -4,11 +4,11 @@ import { HiChevronDoubleLeft } from "react-icons/hi"
 export default function EndProdMenuComponent({
   onClick,
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [isOpen, setIsOpen] = useState<boolean>()
   return (
     <div
       className={`absolute right-0 w-56 bottom-10 transition-all ${
-        isOpen ? "translate-x-[calc(100%-18px)]" : "translate-x-0"
+        !isOpen ? "translate-x-[calc(100%-18px)]" : "translate-x-0"
       }`}
     >
       <div className="">
@@ -20,7 +20,7 @@ export default function EndProdMenuComponent({
           >
             <HiChevronDoubleLeft
               className={`w-3 h-3  transition-all ${
-                isOpen ? "rotate-0" : "rotate-180"
+                !isOpen ? "rotate-0" : "rotate-180"
               } mx-auto mt-1 text-[#da8d00] font-bold`}
             />
           </button>
