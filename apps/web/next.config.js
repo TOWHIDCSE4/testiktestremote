@@ -62,7 +62,8 @@ module.exports = withSentryConfig(
     // Suppresses source map uploading logs during build
     silent: true,
     org: "elite-l0",
-    project: "apms-web-dev",
+    project: process.env.SENTRY_PROJECT,
+    authToken: process.env.SENTRY_AUTH_TOKEN,
   },
   {
     // For all available options, see:
