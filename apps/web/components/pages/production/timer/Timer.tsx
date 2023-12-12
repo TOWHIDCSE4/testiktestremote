@@ -97,6 +97,7 @@ const Timer = ({
   const [cycleClockTimeArray, setCycleCockTimeArray] = useState<
     Array<number | string>
   >([])
+  const [unitCreated, setUnitCreated] = useState(0)
   const [partQuery, setPartQuery] = useState("")
   const [selectedPart, setSelectedPart] = useState({
     id: typeof timer.partId === "string" && timer.partId ? timer.partId : "",
@@ -120,6 +121,18 @@ const Timer = ({
         averageTime: timerDetailData?.item?.partId.time,
         weight: timerDetailData?.item?.partId.tons,
       }
+
+  const onControllerStopCycle = (unit: number) => {
+    setCycleClockInSeconds(0)
+    runCycle()
+    setUnitCreated(unit)
+  }
+
+  const onControllerStopCycleWithReasons = (unit: number) => {
+    setCycleClockInSeconds(0)
+    stopInterval()
+    setUnitCreated(unit)
+  }
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -236,6 +249,15 @@ const Timer = ({
       setIsCycleClockRunning(false)
     }
   }, [cycleTimer])
+
+  useEffect(() => {
+    if (
+      timerLogsCount?.item?.count &&
+      timerLogsCount?.item?.count > unitCreated
+    ) {
+      setUnitCreated(timerLogsCount?.item?.count)
+    }
+  }, [timerLogsCount?.item?.count])
 
   useEffect(() => {
     if (timer.part) {
@@ -383,9 +405,7 @@ const Timer = ({
           </p>
           <div>
             <h2 className="text-5xl font-semibold text-gray-400">
-              {timerLogsCount?.item?.count
-                ? addZeroFront(timerLogsCount?.item?.count)
-                : "000"}
+              {unitCreated ? addZeroFront(unitCreated) : "000"}
             </h2>
             <h6 className="text-lg font-semibold text-gray-700 uppercase">
               Daily Units
@@ -445,6 +465,9 @@ const Timer = ({
         initialCycleClockSeconds={cycleClockInSeconds}
         initialUnitCreated={timerLogsCount?.item?.count as number}
         isControllerModalOpen={isControllerModalOpen}
+        onStopCycle={onControllerStopCycle}
+        onStopCycleWithReasons={onControllerStopCycleWithReasons}
+        onEndProduction={onControllerStopCycleWithReasons}
       >
         <ControllerModal
           isOpen={isControllerModalOpen}

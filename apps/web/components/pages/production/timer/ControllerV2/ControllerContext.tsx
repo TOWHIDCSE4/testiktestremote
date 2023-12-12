@@ -94,6 +94,9 @@ type ControllerProviderProps = PropsWithChildren & {
   isControllerModalOpen: boolean
   initialCycleClockSeconds: number
   initialUnitCreated: number
+  onStopCycle: (unit: number) => void
+  onStopCycleWithReasons: (unit: number) => void
+  onEndProduction: (unit: number) => void
 }
 
 export const ControllerContextProvider = ({
@@ -104,6 +107,9 @@ export const ControllerContextProvider = ({
   initialCycleClockSeconds,
   isControllerModalOpen,
   initialUnitCreated,
+  onStopCycle: onStopCycleProps,
+  onStopCycleWithReasons: onStopCycleWithReasonsProps,
+  onEndProduction: onEndProductionProps,
 }: ControllerProviderProps) => {
   const { data: profileData } = useProfile()
   const operatorId = getObjectId(operator)
@@ -202,6 +208,10 @@ export const ControllerContextProvider = ({
     setIsControllerClockRunning(false)
     setIsCycleClockRunning(false)
     endControllerTimer(timerId)
+
+    if (onEndProductionProps) {
+      onEndProductionProps(unitCreated)
+    }
   }
 
   const stopControllerClockInterval = () => {
@@ -240,6 +250,9 @@ export const ControllerContextProvider = ({
     }
     timeLogCall(getObjectId(jobTimer?.item))
     endAddCycleTimer(timerId)
+    if (onStopCycleProps) {
+      onStopCycleProps(unitCreated)
+    }
   }
 
   const onStopCycleWithReasons = () => {
@@ -249,6 +262,9 @@ export const ControllerContextProvider = ({
     setCycleClockSeconds(0)
     endCycleTimer(timerId)
     timeLogCall(getObjectId(jobTimer?.item))
+    if (onStopCycleWithReasonsProps) {
+      onStopCycleWithReasonsProps(unitCreated)
+    }
   }
 
   const onStartCycle = () => {
