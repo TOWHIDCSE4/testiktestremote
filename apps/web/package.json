@@ -13,6 +13,7 @@
     "@tailwindcss/forms": "^0.5.4",
     "@tanstack/react-query-devtools": "^4.32.5",
     "bufferutil": "^4.0.8",
+    "class-variance-authority": "^0.7.0",
     "custom-validator": "*",
     "dotenv": "^16.3.1",
     "next": "^13.4.1",

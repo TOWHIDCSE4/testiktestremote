@@ -26,7 +26,7 @@ export default function BottomMenu() {
     <div className="absolute bottom-0 left-[50%] w-full">
       <div
         data-open={isOpen}
-        className="relative w-96 transition-transform -translate-x-[50%] translate-y-[calc(100%-30px)] data-[open=true]:translate-y-0 bg-dark-blue h-62 px-2 rounded-t-lg"
+        className="relative w-96 transition-transform -translate-x-[50%] translate-y-[calc(100%-30px)] data-[open=true]:translate-y-0 bg-dark-blue dark:border-2 dark:border-b-0 border-white h-62 px-2 rounded-t-lg"
       >
         <div className="flex items-center justify-center h-[30px]">
           {isOpen ? (
@@ -56,6 +56,7 @@ export default function BottomMenu() {
                   type="checkbox"
                   name="machine-error"
                   checked={stopReasons.includes(item)}
+                  onChange={(eve) => {}}
                   onClick={() => {
                     if (stopReasons.includes(item)) {
                       setStopReasons((prev: any) =>

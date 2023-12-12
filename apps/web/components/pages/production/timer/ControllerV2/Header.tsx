@@ -2,10 +2,14 @@ import Image from "next/image"
 import React, { RefObject, useContext, useRef } from "react"
 import LogoGreen from "../../../../../assets/logo/logo-green.png"
 import LogoRed from "../../../../../assets/logo/logo-red.png"
+import LogoGold from "../../../../../assets/logo/logo-gold.png"
 import { MdClose } from "react-icons/md"
+import { BiFullscreen } from "react-icons/bi"
 import useControllerModal from "../../../../../store/useControllerModal"
 import { QueueListIcon } from "@heroicons/react/20/solid"
 import { ControllerContext } from "./ControllerContext"
+
+import { LuMaximize, LuMenu, LuMoon } from "react-icons/lu"
 
 const Header = ({
   progress,
@@ -35,10 +39,36 @@ const Header = ({
   }
 
   return (
+    <div className="flex items-center justify-between w-full py-5 text-white px-9 bg-dark-blue ">
+      <div>
+        <Image
+          src={LogoGold}
+          alt="logo-gold"
+          height={75}
+          className="h-[72px]"
+        />
+      </div>
+      <div className="flex items-center justify-center gap-5">
+        <button className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9">
+          <LuMenu />
+        </button>
+        <button className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9">
+          <LuMoon />
+        </button>
+        <button className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9">
+          <BiFullscreen />
+        </button>
+      </div>
+      <div className="flex flex-col items-center justify-center">
+        <div className="text-6xl font-bold uppercase! font-lato">CONROE</div>
+        <div className="text-lg">PRODUCTION TIME: 00:00:00</div>
+      </div>
+    </div>
+  )
+
+  return (
     <div
-      className={`flex flex-row md:flex-row justify-around bg-dark-blue md:justify-between ${
-        mode === "Dark" ? "bg-dark-blue" : "bg-dark-blue"
-      } py-3 md:py-0 px-4 xl:px-8 md:px-12 h-20 items-center sticky top-0 z-20`}
+      className={`flex flex-row md:flex-row justify-around bg-dark-blue md:justify-between dark:bg-dark-blue py-3 md:py-0 px-4 xl:px-8 md:px-12 h-20 items-center sticky top-0 z-20`}
     >
       {progress > 100 ? (
         <div className="flex items-center h-[90px] w-[190px] xl:h-[120px] xl:w-[230px] 2xl:h-[140px] 2xl:w-[250px] relative">
