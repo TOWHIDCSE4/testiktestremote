@@ -14,6 +14,7 @@ import cn from "classnames"
 import "./styles.scss"
 import useControllerModal from "../../../../../store/useControllerModal"
 import TimerLogsModal from "../modals/TimerLogsModalV2"
+import JobDropdwown from "./JobDropdown"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -42,6 +43,9 @@ const ControllerV2 = ({
     onToggleStart,
     isCycleClockRunning,
     totals,
+    isJobsLoading,
+    isControllerJobLoading,
+    isChangingJob,
     unitCreated,
   } = useContext(ControllerContext)
   const [isTimerLogsModalOpen, setIsTimerLogsModalOpen] = useState(false)
@@ -107,6 +111,13 @@ const ControllerV2 = ({
             </h4>
             <p>{`${operator.firstName} ${operator.lastName}`}</p>
           </div>
+
+          <div className="flex flex-col gap-1">
+            <h4 className="font-bold text-gray-800 dark:bg-dark-blue dark:text-white">
+              <JobDropdwown />
+            </h4>
+            <p>{`${operator.firstName} ${operator.lastName}`}</p>
+          </div>
         </div>
         {/* Right Column */}
         <div className="flex flex-col gap-2">
@@ -149,8 +160,15 @@ const ControllerV2 = ({
                 isCycleClockStarting ? "starting" : "starting-false"
               } ${isAbleToStart ? "canstart" : "canstart-false"}`}
               onClick={onToggleStart}
+              disabled={isJobsLoading || isControllerJobLoading}
             >
-              {isCycleClockRunning ? (
+              {isChangingJob ? (
+                <span className="text-2xl">Changing controller job</span>
+              ) : isControllerJobLoading ? (
+                <span className="text-2xl">Assigning Job to Controller</span>
+              ) : isJobsLoading ? (
+                <span className="text-2xl">Loading Controller Jobs</span>
+              ) : isCycleClockRunning ? (
                 <span className="button-stop">Stop</span>
               ) : (
                 <span className="button-start">Start</span>
