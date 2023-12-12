@@ -1,18 +1,22 @@
 import { useContext } from "react"
 import { ControllerContext } from "./ControllerContext"
+import useColor from "./useColor"
 
 export default function ConsoleComponent() {
   const { variant } = useContext(ControllerContext)
+  const color = useColor({ variant })
   return (
     <div className="relative flex flex-col justify-between flex-1">
-      <div className="absolute top-0 -translate-y-full h-1 w-full bg-[#0f2034]"></div>
-      <div className="absolute top-0 -translate-y-full left-16">
-        <div className="rounded-t-lg border-2 border-[#5d5d5d] border-b-0 bg-[#da8d00] text-xl text-[#0f2034] font-normal uppercase flex w-fit">
-          <div className="bg-[#e9ecf1] border-4 border-b-0 border-[#0f2034] rounded-t-md px-4 py-1 leading-none -mt-[2px] -mx-[2px]">
-            READINGS
+      <div className="absolute top-0 -translate-y-full h-[1px] w-full bg-stone-500"></div>
+      <div className="absolute top-0 flex -translate-y-full left-16">
+        <div className="relative flex items-end h-12">
+          <div
+            className={`bg-${color} rounded-t-lg z-0 border-[1px] border-stone-500 px-4 py-2 leading-none -mt-[2px] -mx-[2px]`}
+          >
+            Logs
           </div>
-          <div className="px-2 py-1 leading-none border-4 border-b-0 border-transparent -mt-[2px] -mx-[2px]">
-            LOGS
+          <div className="bg-white shadow-lg rounded-t-lg z-0 border-[1px] border-b-white border-stone-500 px-4 py-2 leading-none -mt-[2px] -mx-[2px]">
+            READINGS
           </div>
         </div>
       </div>
