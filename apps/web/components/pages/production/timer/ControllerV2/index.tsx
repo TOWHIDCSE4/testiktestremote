@@ -1,5 +1,6 @@
 import {
   RefObject,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -22,6 +23,24 @@ import "./styles.scss"
 import useControllerModal from "../../../../../store/useControllerModal"
 import TimerLogsModal from "../modals/TimerLogsModalV2"
 import { Divider } from "@mui/material"
+import { HiChevronDoubleDown, HiChevronDoubleLeft } from "react-icons/hi"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { Lato } from "next/font/google"
+import ResultsBoardComponent from "./Results"
+import StopMenuComponent from "./StopMenu"
+import EndProdMenuComponent from "./EndProdMenu"
+import DetailContextComponent from "./DetailContext"
+import DigitalClockComponent from "./DigitalClock"
+import FancyButtonComponent from "./FancyButton"
+import ConsoleComponent from "./Console"
+
+const lato = Lato({
+  weight: ["100", "300", "400", "700", "900"],
+  style: ["normal", "italic"],
+  display: "optional",
+  subsets: ["latin", "latin-ext"],
+})
 
 export interface ControllerDetailData {
   factoryName: string
@@ -78,10 +97,76 @@ const ControllerV2 = ({
     setReadingsDivRef(messagesRef)
   }, [setReadingsDivRef])
 
+  const [isStopMenuOpen, setIsStopMenuOpen] = useState<boolean>(false)
+  const toggleIsStopMenuOpen = useCallback(() => {
+    setIsStopMenuOpen(!isStopMenuOpen)
+  }, [isStopMenuOpen, setIsStopMenuOpen])
+
+  return (
+    <div
+      className={cn(
+        "flex flex-col w-full h-full justify-between overflow-hidden",
+        lato.className,
+        { "pr-5": isMaximized }
+      )}
+    >
+      <Header
+        progress={process}
+        isLoading={false}
+        locationName="Conroe"
+        setOpenTimerLogs={() => setIsTimerLogsModalOpen(true)}
+        onClose={onClose}
+        onFullScreen={onFullScreen}
+      />
+      <div className="relative flex gap-8 px-12 py-0 mt-8">
+        <div className="flex-1 py-0">
+          <DigitalClockComponent />
+          <div className="flex justify-between mt-6">
+            <DetailContextComponent />
+            <div>
+              <FancyButtonComponent
+                textSize={"lg"}
+                className="font-bold"
+                onClick={() => {
+                  toggleIsStopMenuOpen()
+                }}
+              >
+                P
+              </FancyButtonComponent>
+            </div>
+          </div>
+          <div className="flex items-center gap-10 pl-4 mt-6 mb-24">
+            <FancyButtonComponent className="gap-4 px-4 py-2">
+              <span className="text-[#7a828d] text-normal italic">
+                *Add Operator
+              </span>
+              <HiChevronDoubleDown className="text-[#da8d00]" />
+            </FancyButtonComponent>
+            <FancyButtonComponent className="gap-4 px-4 py-2">
+              <span className="text-[#7a828d] text-normal italic">
+                *Job Assigning
+              </span>
+              <HiChevronDoubleDown className="text-[#da8d00]" />
+            </FancyButtonComponent>
+          </div>
+        </div>
+        <ResultsBoardComponent />
+
+        <StopMenuComponent
+          isOpen={isStopMenuOpen}
+          toggleOpen={toggleIsStopMenuOpen}
+        />
+        <EndProdMenuComponent />
+      </div>
+      <ConsoleComponent />
+    </div>
+  )
+
   return (
     <div
       className={cn(
         "flex flex-col w-full h-full justify-between overflow-hidden timercontroller",
+        lato.className,
         { "pr-5": isMaximized }
       )}
     >

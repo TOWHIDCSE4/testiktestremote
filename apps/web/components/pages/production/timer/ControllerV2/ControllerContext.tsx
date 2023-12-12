@@ -48,6 +48,7 @@ export interface ControllerDetailData {
 }
 
 export interface ControllerContextProps {
+  variant: "idle" | "active" | "danger"
   controllerDetailData: Partial<ControllerDetailData>
   operator: any
   cycleClockSeconds: number
@@ -75,6 +76,7 @@ export interface ControllerContextProps {
 }
 
 export const ControllerContext = createContext<ControllerContextProps>({
+  variant: "idle",
   controllerDetailData: {},
   operator: {},
   cycleClockSeconds: 0,
@@ -441,9 +443,13 @@ export const ControllerContextProvider = ({
     startCycleClockInterval,
   ])
 
+  const [variant, setVariant] =
+    useState<ControllerContextProps["variant"]>("idle")
+
   return (
     <ControllerContext.Provider
       value={{
+        variant,
         controllerDetailData,
         operator: currentOperator,
         cycleClockSeconds,
