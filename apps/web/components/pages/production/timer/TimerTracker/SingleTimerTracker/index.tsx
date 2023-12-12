@@ -8,14 +8,12 @@ import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import useGetTimerDetails from "../../../../../../hooks/timers/useGetTimerDetails"
 import useGetAllTimerLogsCount from "../../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
-import { useSocket } from "../../../../../../store/useSocket"
 import useStoreTimer from "../../../../../../store/useStoreTimer"
 
 const SingleTimeTracker = ({ timerId }: { timerId: string }) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
   const intervalRef = useRef<any>()
-  const socket = useSocket((store) => store.instance)
   const { isTimerStop } = useStoreTimer((store) => store)
   const [dailyUnits, setDailyUnits] = useState<number>(0)
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
