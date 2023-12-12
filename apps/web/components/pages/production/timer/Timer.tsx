@@ -16,7 +16,10 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import useGetCycleTimerRealTime from "../../../../hooks/timers/useGetCycleTimerRealTime"
-import { hourMinuteSecondMilli } from "../../../../helpers/timeConverter"
+import {
+  hourMinuteSecond,
+  hourMinuteSecondMilli,
+} from "../../../../helpers/timeConverter"
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import { initializeSocket } from "../../../../helpers/socket"
@@ -104,7 +107,7 @@ const Timer = ({
     name: timer?.part ? timer?.part?.name : "",
   })
   const socket = useSocket((store) => store.instance)
-  const { isTimerStop } = useStoreTimer((store) => store)
+  // const { isTimerStop } = useStoreTimer((store) => store)
 
   const isControllerLoading =
     isJobsLoading ||
@@ -124,19 +127,25 @@ const Timer = ({
 
   const onControllerStopCycle = (unit: number) => {
     setCycleClockInSeconds(0)
+    setCycleCockTimeArray(hourMinuteSecond(0))
     runCycle()
     setUnitCreated(unit)
   }
 
   const onControllerStopCycleWithReasons = (unit: number) => {
     setCycleClockInSeconds(0)
+    setCycleCockTimeArray(hourMinuteSecond(0))
     stopInterval()
     setUnitCreated(unit)
   }
 
   const onControllerModalClosed = (unit: number, seconds: number) => {
     setCycleClockInSeconds(seconds)
+    setCycleCockTimeArray(hourMinuteSecond(seconds))
     setUnitCreated(unit)
+    if (seconds > 0 && !isCycleClockRunning) {
+      runCycle()
+    }
   }
 
   useEffect(() => {
@@ -225,12 +234,10 @@ const Timer = ({
   }
   const runCycle = () => {
     stopInterval()
-    if (isTimerStop !== true) {
-      setIsCycleClockRunning(true)
-      intervalRef.current = setInterval(() => {
-        setCycleClockInSeconds((previousState: number) => previousState + 0.1)
-      }, 100)
-    }
+    setIsCycleClockRunning(true)
+    intervalRef.current = setInterval(() => {
+      setCycleClockInSeconds((previousState: number) => previousState + 0.1)
+    }, 100)
   }
   useEffect(() => {
     setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
