@@ -134,6 +134,11 @@ const Timer = ({
     setUnitCreated(unit)
   }
 
+  const onControllerModalClosed = (unit: number, seconds: number) => {
+    setCycleClockInSeconds(seconds)
+    setUnitCreated(unit)
+  }
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const runSocket = (data: any) => {
@@ -466,6 +471,7 @@ const Timer = ({
         initialUnitCreated={timerLogsCount?.item?.count as number}
         isControllerModalOpen={isControllerModalOpen}
         onStopCycle={onControllerStopCycle}
+        onControllerModalClosed={onControllerModalClosed}
         onStopCycleWithReasons={onControllerStopCycleWithReasons}
         onEndProduction={onControllerStopCycleWithReasons}
       >

@@ -97,6 +97,7 @@ type ControllerProviderProps = PropsWithChildren & {
   onStopCycle: (unit: number) => void
   onStopCycleWithReasons: (unit: number) => void
   onEndProduction: (unit: number) => void
+  onControllerModalClosed: (unit: number, seconds: number) => void
 }
 
 export const ControllerContextProvider = ({
@@ -110,6 +111,7 @@ export const ControllerContextProvider = ({
   onStopCycle: onStopCycleProps,
   onStopCycleWithReasons: onStopCycleWithReasonsProps,
   onEndProduction: onEndProductionProps,
+  onControllerModalClosed,
 }: ControllerProviderProps) => {
   const { data: profileData } = useProfile()
   const operatorId = getObjectId(operator)
@@ -373,6 +375,7 @@ export const ControllerContextProvider = ({
   }, [unitCreated])
 
   useEffect(() => {
+    // on open
     if (
       !isControllerModalOpenRef.current &&
       isControllerModalOpen &&
@@ -390,6 +393,11 @@ export const ControllerContextProvider = ({
       initialUnitCreated
     ) {
       setUnitCreated(initialUnitCreated)
+    }
+
+    // on close
+    if (isControllerModalOpenRef.current && !isControllerModalOpen) {
+      onControllerModalClosed(unitCreated, cycleClockSeconds)
     }
     isControllerModalOpenRef.current = isControllerModalOpen
   }, [isControllerModalOpen])
