@@ -60,7 +60,6 @@ module.exports = withSentryConfig(
     silent: true,
     org: "elite-l0",
     project: process.env.SENTRY_PROJECT,
-    authToken: process.env.SENTRY_AUTH_TOKEN,
   },
   {
     // For all available options, see:
