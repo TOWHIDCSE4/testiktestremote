@@ -48,21 +48,41 @@ const Header = ({
           className="h-[72px]"
         />
       </div>
-      <div className="flex items-center justify-center gap-5">
-        <button className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9">
+      <div className="flex items-center justify-center flex-1 gap-5">
+        <button
+          onClick={() => setOpenTimerLogs(true)}
+          className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9"
+        >
           <LuMenu />
         </button>
-        <button className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9">
+        <button
+          onClick={toggleTheme}
+          className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9"
+        >
           <LuMoon />
         </button>
-        <button className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9">
+        <button
+          onClick={onFullScreen}
+          className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9"
+        >
           <BiFullscreen />
         </button>
       </div>
       <div className="flex flex-col items-center justify-center">
-        <div className="text-6xl font-bold uppercase! font-lato">CONROE</div>
+        <div className="text-6xl font-bold uppercase">
+          {isLoading ? (
+            <div className="flex space-x-4 animate-pulse">
+              <div className="rounded h-7 w-36 bg-slate-200"></div>
+            </div>
+          ) : (
+            <>{locationName}</>
+          )}
+        </div>
         <div className="text-lg">PRODUCTION TIME: 00:00:00</div>
       </div>
+      <button className="absolute right-2 top-2" onClick={() => onClose()}>
+        <MdClose onClick={() => onClose()} size={24} color="white" />
+      </button>
     </div>
   )
 

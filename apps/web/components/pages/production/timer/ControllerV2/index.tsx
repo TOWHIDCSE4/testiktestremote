@@ -93,7 +93,7 @@ const ControllerV2 = ({
     setReadingsDivRef(messagesRef)
   }, [setReadingsDivRef])
 
-  const [isStopMenuOpen, setIsStopMenuOpen] = useState<boolean>(false)
+  const [isStopMenuOpen, setIsStopMenuOpen] = useState<boolean>()
   const toggleIsStopMenuOpen = useCallback(() => {
     setIsStopMenuOpen(!isStopMenuOpen)
   }, [isStopMenuOpen, setIsStopMenuOpen])

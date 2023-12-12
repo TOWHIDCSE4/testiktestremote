@@ -20,7 +20,7 @@ export default function ConsoleComponent() {
           </div>
         </div>
       </div>
-      <div className="relative border-b-[4px] p-5 flex-1 border-[#0f2034]">
+      <div className="relative border-b-[1px] p-5 flex-1 border-[#0f2034]">
         <div className="absolute w-full h-full overflow-auto">
           Starting timer
         </div>
