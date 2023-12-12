@@ -45,6 +45,11 @@ const navigation = [
     ],
   },
   {
+    name: "AI Operations",
+    slug: "ai-operations",
+    href: "/ai-operations",
+  },
+  {
     name: "Operations",
     slug: "operations",
     children: [
