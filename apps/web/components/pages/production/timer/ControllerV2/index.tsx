@@ -74,14 +74,10 @@ const ControllerV2 = ({
     readingMessages,
   } = useContext(ControllerContext)
   const [isTimerLogsModalOpen, setIsTimerLogsModalOpen] = useState(false)
-  const controllerClockArray = useMemo(
-    () => hourMinuteSecond(controllerClockSeconds),
-    [controllerClockSeconds]
-  )
-  const cycleClockSecondsArray = useMemo(
-    () => hourMinuteSecondMilli(cycleClockSeconds),
-    [cycleClockSeconds]
-  )
+
+  const controllerClockArray = hourMinuteSecond(controllerClockSeconds)
+  const cycleClockSecondsArray = hourMinuteSecondMilli(cycleClockSeconds)
+
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
     useState(false)
 

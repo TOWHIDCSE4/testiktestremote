@@ -281,13 +281,13 @@ export const ControllerContextProvider = ({
     }, 1000)
   }
 
-  const startCycleClockInterval = useCallback(() => {
+  const startCycleClockInterval = () => {
     stopCycleClockInterval()
     setIsCycleClockRunning(true)
     cycleClockIntervalRef.current = setInterval(() => {
       setCycleClockSeconds((prev) => prev + 0.1)
     }, 100)
-  }, [])
+  }
 
   const onStopCycle = () => {
     setCycleClockSeconds(0)
