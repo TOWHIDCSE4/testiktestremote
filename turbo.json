@@ -8,6 +8,8 @@
       "env": [
         "NODE_ENV",
         "ENCRYPT_KEY",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_PROJECT",
         "SIGN_KEY",
         "MONGO_URL",
         "REDIS_URL",
