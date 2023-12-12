@@ -158,7 +158,6 @@ const ControllerV2 = ({
             <h4 className="font-bold text-gray-800 dark:bg-dark-blue dark:text-white">
               <JobDropdwown />
             </h4>
-            <p>{`${operator.firstName} ${operator.lastName}`}</p>
           </div>
         </div>
         {/* Right Column */}
