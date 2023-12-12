@@ -6,6 +6,7 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
+        "NODE_ENV",
         "ENCRYPT_KEY",
         "SIGN_KEY",
         "MONGO_URL",
