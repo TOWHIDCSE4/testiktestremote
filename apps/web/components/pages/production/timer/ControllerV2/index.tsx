@@ -42,6 +42,7 @@ const lato = Lato({
   subsets: ["latin", "latin-ext"],
 })
 import JobDropdwown from "./JobDropdown"
+import OperatorDropdown from "./OperatorDropdown"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -149,9 +150,11 @@ const ControllerV2 = ({
             </div>
           </div>
 
-          <div className="detail-pane">
-            <h4 className="detail-heading">Operator</h4>
-            <p>{`${operator.firstName} ${operator.lastName}`}</p>
+          <div className="flex flex-col gap-1">
+            <h4 className="font-bold text-gray-800 dark:bg-dark-blue dark:text-white">
+              Operator
+            </h4>
+            <OperatorDropdown />
           </div>
 
           <div className="flex flex-col gap-1">
