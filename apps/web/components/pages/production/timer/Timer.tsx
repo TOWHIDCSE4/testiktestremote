@@ -130,7 +130,6 @@ const Timer = ({
       if (data.action === "endAndAdd") {
         setCycleClockInSeconds(0)
         runCycle()
-        refetchTimerLogs()
       }
       if (data.action === "end") {
         setCycleClockInSeconds(0)
@@ -142,10 +141,14 @@ const Timer = ({
           dayjs(data.timers[0].createdAt),
           timeZone ? timeZone : ""
         )
-        refetchTimerLogs()
         const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
         const secondsLapse = currentDate.diff(timerStart, "seconds", true)
-        setCycleClockInSeconds(secondsLapse)
+        setCycleClockInSeconds((current: number) => {
+          if (secondsLapse > current) {
+            return secondsLapse
+          }
+          return current
+        })
       }
       if (data.action === "end-controller") {
         stopInterval()
@@ -163,22 +166,6 @@ const Timer = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, timer._id])
-
-  // Refocusing when tab minimize or change the tab
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      // If condition working for when tab is visible
-      if (document.visibilityState === "visible") {
-        cycleRefetch()
-      }
-    }
-
-    document.addEventListener("visibilitychange", handleVisibilityChange)
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange)
-    }
-  }, [])
 
   const intervalRef = useRef<any>()
   useEffect(() => {
@@ -232,7 +219,6 @@ const Timer = ({
   }, [cycleClockInSeconds])
 
   useEffect(() => {
-    controllerTimerRefetch()
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
       const timeZone = timer?.location?.timeZone
       const timerStart = dayjs.tz(
@@ -260,10 +246,6 @@ const Timer = ({
       })
     }
   }, [timer])
-
-  useEffect(() => {
-    controllerTimerRefetch()
-  }, [])
 
   const filteredParts =
     partQuery === ""

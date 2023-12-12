@@ -15,7 +15,7 @@ import isEmpty from "lodash/isEmpty"
 import { ZTimerLog } from "custom-validator"
 import Jobs from "../../models/jobs"
 import * as Sentry from "@sentry/node"
-import { getIo } from "../../config/setup-socket"
+import { getIo, ioEmit } from "../../config/setup-socket"
 import jobTimer from "../../models/jobTimer"
 import { trusted } from "mongoose"
 
@@ -268,7 +268,7 @@ export const getTimeLog = async (req: Request, res: Response) => {
 //                 recommendation === JOB_ACTION.STOP ||
 //                 recommendation === JOB_ACTION.SWITCH
 //               ) {
-//                 io.emit(`timer-${req.body.timerId}`, {
+//                 ioEmit(`timer-${req.body.timerId}`, {
 //                   action: `job-change`,
 //                   route: "POST/timer-log",
 //                   data: {
@@ -332,7 +332,7 @@ export const getTimeLog = async (req: Request, res: Response) => {
 //               recommendation === JOB_ACTION.STOP ||
 //               recommendation === JOB_ACTION.SWITCH
 //             ) {
-//               io.emit(`timer-${req.body.timerId}`, {
+//               ioEmit(`timer-${req.body.timerId}`, {
 //                 action: `job-change`,
 //                 route: "POST/timer-log",
 //                 data: {
@@ -472,7 +472,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
                 recommendation === JOB_ACTION.STOP ||
                 recommendation === JOB_ACTION.SWITCH
               ) {
-                io.emit(`timer-${req.body.timerId}`, {
+                ioEmit(`timer-${req.body.timerId}`, {
                   action: `job-change`,
                   route: "POST/timer-log",
                   data: {
@@ -537,7 +537,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
               recommendation === JOB_ACTION.STOP ||
               recommendation === JOB_ACTION.SWITCH
             ) {
-              io.emit(`timer-${req.body.timerId}`, {
+              ioEmit(`timer-${req.body.timerId}`, {
                 action: `job-change`,
                 route: "POST/timer-log",
                 data: {

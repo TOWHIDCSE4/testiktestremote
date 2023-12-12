@@ -16,7 +16,7 @@ import JobTimer from "../../models/jobTimer"
 import { timer } from "../timerLogs/timer"
 import TimerLogs from "../../models/timerLogs"
 import Jobs from "../../models/jobs"
-import { getIo } from "../../config/setup-socket"
+import { getIo, ioEmit } from "../../config/setup-socket"
 
 export const getAllTimers = async (req: Request, res: Response) => {
   try {
@@ -104,7 +104,7 @@ export const getTimer = async (req: Request, res: Response) => {
       recommendation === JOB_ACTION.STOP ||
       recommendation === JOB_ACTION.SWITCH
     ) {
-      io.emit(`timer-${req.body.timerId}`, {
+      ioEmit(`timer-${req.body.timerId}`, {
         action: `job-change`,
         route: "GET//timers",
         data: {
