@@ -110,6 +110,10 @@ type ControllerProviderProps = PropsWithChildren & {
   isControllerModalOpen: boolean
   initialCycleClockSeconds: number
   initialUnitCreated: number
+  onStopCycle: (unit: number) => void
+  onStopCycleWithReasons: (unit: number) => void
+  onEndProduction: (unit: number) => void
+  onControllerModalClosed: (unit: number, seconds: number) => void
 }
 
 export const ControllerContextProvider = ({
@@ -120,6 +124,10 @@ export const ControllerContextProvider = ({
   initialCycleClockSeconds,
   isControllerModalOpen,
   initialUnitCreated,
+  onStopCycle: onStopCycleProps,
+  onStopCycleWithReasons: onStopCycleWithReasonsProps,
+  onEndProduction: onEndProductionProps,
+  onControllerModalClosed,
 }: ControllerProviderProps) => {
   const { data: profileData } = useProfile()
   const operatorId = getObjectId(operator)
@@ -251,6 +259,10 @@ export const ControllerContextProvider = ({
     setIsControllerClockRunning(false)
     setIsCycleClockRunning(false)
     endControllerTimer(timerId)
+
+    if (onEndProductionProps) {
+      onEndProductionProps(unitCreated)
+    }
   }
 
   const stopControllerClockInterval = () => {
@@ -295,6 +307,9 @@ export const ControllerContextProvider = ({
     addReadingMessage("Timer stopped")
     addReadingMessage("Timer cycle reset")
     addReadingMessage("Timer One unit created")
+    if (onStopCycleProps) {
+      onStopCycleProps(unitCreated)
+    }
   }
 
   const onStopCycleWithReasons = () => {
@@ -304,6 +319,9 @@ export const ControllerContextProvider = ({
     setCycleClockSeconds(0)
     endCycleTimer(timerId)
     timeLogCall(getObjectId(jobTimer?.item))
+    if (onStopCycleWithReasonsProps) {
+      onStopCycleWithReasonsProps(unitCreated)
+    }
   }
 
   const onStartCycle = () => {
@@ -410,12 +428,12 @@ export const ControllerContextProvider = ({
       totalTons: unitCreated * controllerDetailData.weight,
       unitsPerHour: unitCreated / Math.round(hoursLapse),
       tonsPerHour:
-        (unitCreated * controllerDetailData.weight) /
-        controllerDetailData.weight,
+        (unitCreated * controllerDetailData.weight) / Math.round(hoursLapse),
     }))
   }, [controllerClockSeconds, controllerDetailData.weight, unitCreated])
 
   useEffect(() => {
+    // on open
     if (
       !isControllerModalOpenRef.current &&
       isControllerModalOpen &&
@@ -433,6 +451,11 @@ export const ControllerContextProvider = ({
       initialUnitCreated
     ) {
       setUnitCreated(initialUnitCreated)
+    }
+
+    // on close
+    if (isControllerModalOpenRef.current && !isControllerModalOpen) {
+      onControllerModalClosed(unitCreated, cycleClockSeconds)
     }
     isControllerModalOpenRef.current = isControllerModalOpen
   }, [

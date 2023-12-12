@@ -2,6 +2,7 @@ import { Socket, io } from "socket.io-client"
 import { create } from "zustand"
 import { combine } from "zustand/middleware"
 import { API_URL } from "../helpers/constants"
+import * as Sentry from "@sentry/nextjs"
 
 const InitialState = {
   instance: undefined as Socket | undefined,
@@ -16,12 +17,44 @@ export const useSocket = create(
 
       const url = `${API_URL}?authorization=Bearer ${token}`
       const socket = io(url, { transports: ["websocket"] })
+      let reconnectInterval: any = null
 
-      socket.on("connect", () => console.log("Socket Connected"))
-      socket.on("disconnect", () => console.log("Socket Disconnected"))
-      socket.on("connect_failed", () => {
-        socket.close()
-        set((state) => ({ ...state, instance: undefined }))
+      const stopReconnectInterval = () => {
+        clearInterval(reconnectInterval)
+      }
+      const initReconnect = () => {
+        stopReconnectInterval()
+        reconnectInterval = setInterval(() => {
+          if (socket.connected) {
+            stopReconnectInterval()
+            return
+          }
+          socket.connect()
+        }, 1500)
+      }
+      socket.on("connect", () => {
+        stopReconnectInterval()
+        console.log("Socket connected")
+      })
+      socket.on("disconnect", () => {
+        console.log("Socket Disconnection")
+      })
+      socket.io.on("reconnect_attempt", () => {
+        console.log("Socket Atempt to reconnect")
+      })
+      socket.io.on("reconnect_error", () => {
+        console.log("Error while trying to reconnect")
+        initReconnect()
+      })
+      socket.io.on("reconnect", () => {
+        stopReconnectInterval()
+        console.log("Socket Reconnected")
+      })
+      socket.on("connect_error", () => {
+        initReconnect()
+        Sentry.captureException("Warn: Connect Error Happened on Socket", {
+          level: "warning",
+        })
       })
 
       return set((state) => ({ ...state, instance: socket }))

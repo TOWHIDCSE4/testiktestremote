@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io"
 import { Secret, verify } from "jsonwebtoken"
 import { keys } from "../config/keys"
 import Users from "../models/users"
+import { ioEmit } from "../config/setup-socket"
 
 export default function chatSocket(io: Server) {
   io.on("connection", async (socket: Socket) => {
@@ -26,14 +27,14 @@ export default function chatSocket(io: Server) {
       if (data.action == "emit-operator") {
         const { action, timerId, ...rest } = data
         if (timerId) {
-          io.emit(`timer-${timerId}`, { action: "update-operator", user: user })
+          ioEmit(`timer-${timerId}`, { action: "update-operator", user: user })
         }
       }
     })
 
     socket.on("event", (message: any) => {
       // Handle chat message logic here (e.g., save to a database)
-      io.emit("event", { ...message, from: "server" }) // Broadcast the message to all clients
+      ioEmit("event", { ...message, from: "server" }) // Broadcast the message to all clients
     })
 
     socket.on(
@@ -44,7 +45,7 @@ export default function chatSocket(io: Server) {
         if (!timerId) {
           return ""
         }
-        io.emit(`timer-${timerId}`, data)
+        ioEmit(`timer-${timerId}`, data)
       }
     )
 
@@ -56,7 +57,7 @@ export default function chatSocket(io: Server) {
         if (!timerId) {
           return ""
         }
-        io.emit(`timer-${timerId}`, data)
+        ioEmit(`timer-${timerId}`, data)
       }
     )
 

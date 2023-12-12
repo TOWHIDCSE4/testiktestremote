@@ -6,7 +6,7 @@ import { Request, Response } from "express"
 import CycleTimers from "../../models/cycleTimers"
 import ControllerTimers from "../../models/controllerTimers"
 import * as Sentry from "@sentry/node"
-import { getIo } from "../../config/setup-socket"
+import { getIo, ioEmit } from "../../config/setup-socket"
 
 export const endControllerTimer = async (req: Request, res: Response) => {
   const { timerId } = req.body
@@ -37,7 +37,7 @@ export const endControllerTimer = async (req: Request, res: Response) => {
           }
         )
 
-        io.emit(`timer-${timerId}`, {
+        ioEmit(`timer-${timerId}`, {
           action: "end-controller",
           route: "PATCH/controller-timers/end",
           data: endTimer,

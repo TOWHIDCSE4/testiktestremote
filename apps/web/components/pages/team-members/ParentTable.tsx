@@ -64,9 +64,9 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
 
   const approveChecking = (item: any, userId: string) => {
     if (
-      item._id === userId ||
       storeSession?.role === "Administrator" ||
-      "HR_Director"
+      storeSession?.role === "HR_Director" ||
+      (storeSession?.role === "Production" && item._id === userId)
     ) {
       setCheckedProved(true)
     } else {
@@ -1314,37 +1314,64 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               </button>
                             </div>
                           </th>
-                          <th className="">
-                            <div className="flex items-start justify-start ml-7">
-                              <span className="flex">
-                                Factory<p className="text-red-600 ml-1">*</p>
-                              </span>
-                              <button
-                                onClick={(e) =>
-                                  handleInputChange(e, "factoryId")
-                                }
-                              >
-                                <svg
-                                  className="w-3 h-3 ml-1"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="currentColor"
-                                  viewBox="0 0 24 24"
+                          {selectedRole !== "Personnel" && (
+                            <th className="">
+                              <div className="flex items-start justify-start ml-7">
+                                <span className="flex">
+                                  Factory<p className="text-red-600 ml-1">*</p>
+                                </span>
+                                <button
+                                  onClick={(e) =>
+                                    handleInputChange(e, "factoryId")
+                                  }
                                 >
-                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                                </svg>
-                              </button>
-                            </div>
-                          </th>
+                                  <svg
+                                    className="w-3 h-3 ml-1"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </th>
+                          )}
                           {selectedRole === "Personnel" ? (
-                            <th colSpan={2}>
-                              <div className="flex items-start justify-start px-0 py-3 ml-9">
-                                <div className="flex items-center overflow-ellipsis whitespace-nowrap">
-                                  Machine Class
-                                  <p className="text-red-600 ml-1">*</p>
+                            <>
+                              <th colSpan={2}>
+                                <div className="flex items-start justify-start px-0 py-3 ml-9">
+                                  <div className="flex items-center overflow-ellipsis whitespace-nowrap">
+                                    Machine Class
+                                    <p className="text-red-600 ml-1">*</p>
+                                    <button
+                                      onClick={(e) =>
+                                        handleInputChange(e, "machineClassId")
+                                      }
+                                    >
+                                      <svg
+                                        className="w-3 h-3 ml-1"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </div>
+                              </th>
+                              <th className="">
+                                <div className="flex items-start justify-start">
+                                  <span className="flex">
+                                    Factory
+                                    <p className="text-red-600 ml-1">*</p>
+                                  </span>
                                   <button
                                     onClick={(e) =>
-                                      handleInputChange(e, "machineClassId")
+                                      handleInputChange(e, "factoryId")
                                     }
                                   >
                                     <svg
@@ -1358,8 +1385,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     </svg>
                                   </button>
                                 </div>
-                              </div>
-                            </th>
+                              </th>
+                            </>
                           ) : (
                             <th colSpan={2} className="">
                               <div className="flex items-start justify-start px-0 py-3 ml-11">
@@ -2539,36 +2566,60 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                         </button>
                       </div>
                     </th>
-                    <th className="">
-                      <div className="flex items-start justify-start ml-2">
-                        <span className="flex">
-                          Factory<p className="text-red-600 ml-1">*</p>
-                        </span>
-                        <button
-                          onClick={(e) => handleInputChange(e, "factoryId")}
-                        >
-                          <svg
-                            className="w-3 h-3 ml-1"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                          </svg>
-                        </button>
-                      </div>
-                    </th>
-                    {selectedRole === "Personnel" ? (
+                    {selectedRole !== "Personnel" && (
                       <th className="">
-                        <div className="flex items-start justify-start px-0 py-3 ml-9">
-                          <div className="flex items-center overflow-ellipsis whitespace-nowrap">
-                            Machine Class
-                            <p className="text-red-600 ml-1">*</p>
+                        <div className="flex items-start justify-start ml-2">
+                          <span className="flex">
+                            Factory<p className="text-red-600 ml-1">*</p>
+                          </span>
+                          <button
+                            onClick={(e) => handleInputChange(e, "factoryId")}
+                          >
+                            <svg
+                              className="w-3 h-3 ml-1"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </th>
+                    )}
+                    {selectedRole === "Personnel" ? (
+                      <>
+                        <th className="">
+                          <div className="flex items-start justify-start px-0 py-3 ml-9">
+                            <div className="flex items-center overflow-ellipsis whitespace-nowrap">
+                              Machine Class
+                              <p className="text-red-600 ml-1">*</p>
+                              <button
+                                onClick={(e) =>
+                                  handleInputChange(e, "machineClassId")
+                                }
+                              >
+                                <svg
+                                  className="w-3 h-3 ml-1"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                        </th>
+                        <th className="">
+                          <div className="flex items-start justify-start ml-12">
+                            <span className="flex">
+                              Factory<p className="text-red-600 ml-1">*</p>
+                            </span>
                             <button
-                              onClick={(e) =>
-                                handleInputChange(e, "machineClassId")
-                              }
+                              onClick={(e) => handleInputChange(e, "factoryId")}
                             >
                               <svg
                                 className="w-3 h-3 ml-1"
@@ -2581,8 +2632,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                               </svg>
                             </button>
                           </div>
-                        </div>
-                      </th>
+                        </th>
+                      </>
                     ) : (
                       <th colSpan={1} className="">
                         <div
@@ -2761,199 +2812,291 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                   </ul>
                                 </div>
                               </td>
-                              <td className="text-sm text-gray-500 items-start justify-center">
-                                {item?.role === "HR_Director" ||
-                                item?.role === "Accounting_Director" ||
-                                item?.role === "Sales_Director" ||
-                                item?.role === "Corporate_Director" ? (
-                                  <div></div>
-                                ) : (
-                                  <button
-                                    id="dropdownFactoryButton"
-                                    data-dropdown-toggle="dropdown"
-                                    className="w-30 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-normal"
-                                    type="button"
-                                    disabled={
-                                      isLocationsLoading ||
-                                      isUpdateUserLoading ||
-                                      isPaginatedLoading ||
-                                      selectedRole === "Personnel"
-                                    }
-                                    onClick={() => handleHideFactory(idx)}
-                                  >
-                                    <svg
-                                      height="25"
-                                      viewBox="0 0 48 48"
-                                      width="25"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      className={`${
-                                        selectedRole === "Personnel"
-                                          ? "hidden"
-                                          : ""
-                                      }`}
+                              {selectedRole !== "Personnel" && (
+                                <td className="text-sm text-gray-500 items-start justify-center">
+                                  {item?.role === "HR_Director" ||
+                                  item?.role === "Accounting_Director" ||
+                                  item?.role === "Sales_Director" ||
+                                  item?.role === "Corporate_Director" ? (
+                                    <div></div>
+                                  ) : (
+                                    <button
+                                      id="dropdownFactoryButton"
+                                      data-dropdown-toggle="dropdown"
+                                      className="w-30 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-normal"
+                                      type="button"
+                                      disabled={
+                                        isLocationsLoading ||
+                                        isUpdateUserLoading ||
+                                        isPaginatedLoading
+                                      }
+                                      onClick={() => handleHideFactory(idx)}
                                     >
-                                      <path d="M14 20l10 10 10-10z" />
-                                      <path d="M0 0h48v48h-48z" fill="none" />
-                                    </svg>
-                                    <span className="truncate">
-                                      {item.isGlobalFactory ?? false
-                                        ? "Global"
-                                        : item?.factoryId
-                                        ? typeof item.factoryId === "string"
-                                          ? item.factoryId
-                                          : item.factoryId.name
-                                        : "Select Factory"}
-                                    </span>
-                                  </button>
-                                )}
-
-                                <div
-                                  id="dropdownFactory"
-                                  className={`z-50 fixed ${
-                                    isOpenFactory == idx ? "block" : "hidden"
-                                  }  sm:top-[13.8rem] absolute  overflow-y-auto mt-2  w-85 rounded-lg bg-white border border-gray-300 z-50`}
-                                >
-                                  <ul
-                                    style={{ height: 145 }}
-                                    className="py-2 overflow-auto text-sm text-gray-700 dark:text-gray-200 w-40"
-                                    aria-labelledby="dropdownFactoryButton"
-                                  >
-                                    {factories?.items?.map(
-                                      (factory: any, index: any) => (
-                                        <li key={index}>
-                                          <a
-                                            href="#"
-                                            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            onClick={() => {
-                                              const value = factory._id
-                                              if (value !== "Global") {
-                                                mutate(
-                                                  {
-                                                    ...item,
-                                                    factoryId: value,
-                                                    isGlobalFactory: false,
-                                                  },
-                                                  callBackReq
-                                                )
-                                              } else {
-                                                mutate(
-                                                  {
-                                                    ...item,
-                                                    factoryId: null,
-                                                    isGlobalFactory: true,
-                                                  },
-                                                  callBackReq
-                                                )
-                                              }
-                                              setIsOpenFactory(undefined)
-                                            }}
-                                          >
-                                            {factory.name}
-                                          </a>
-                                        </li>
-                                      )
-                                    )}
-                                  </ul>
-                                </div>
-                              </td>
-
-                              {selectedRole === "Personnel" ? (
-                                <td
-                                  className={`text-sm text-gray-500 items-center justify-center`}
-                                >
-                                  <button
-                                    id="dropdownFactoryButton"
-                                    data-dropdown-toggle="dropdown"
-                                    className="w-56 rounded-md whitespace-nowrap text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
-                                    type="button"
-                                    disabled={
-                                      isLocationsLoading ||
-                                      isUpdateUserLoading ||
-                                      isPaginatedLoading
-                                    }
-                                    onClick={() => handleHideRole(idx)}
-                                  >
-                                    <svg
-                                      height="25"
-                                      viewBox="0 0 48 48"
-                                      width="30"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path d="M14 20l10 10 10-10z" />
-                                      <path d="M0 0h48v48h-48z" fill="none" />
-                                    </svg>
-                                    <span>
-                                      {item.machineClassId ? (
-                                        machineClass.items.map(
-                                          (machineClass: any) =>
-                                            machineClass._id ===
-                                            item.machineClassId ? (
-                                              <div key={machineClass._id}>
-                                                {machineClass.name}
-                                              </div>
-                                            ) : null
-                                        )
-                                      ) : (
-                                        <div>Select Machine Class</div>
-                                      )}
-                                    </span>
-                                  </button>
+                                      <svg
+                                        height="25"
+                                        viewBox="0 0 48 48"
+                                        width="25"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        // className={`${
+                                        //   selectedRole === "Personnel"
+                                        //     ? "hidden"
+                                        //     : ""
+                                        // }`}
+                                      >
+                                        <path d="M14 20l10 10 10-10z" />
+                                        <path d="M0 0h48v48h-48z" fill="none" />
+                                      </svg>
+                                      <span className="truncate">
+                                        {item.isGlobalFactory ?? false
+                                          ? "Global"
+                                          : item?.factoryId
+                                          ? typeof item.factoryId === "string"
+                                            ? item.factoryId
+                                            : item.factoryId.name
+                                          : "Select Factory"}
+                                      </span>
+                                    </button>
+                                  )}
 
                                   <div
                                     id="dropdownFactory"
                                     className={`z-50 fixed ${
-                                      isOpenRole == idx ? "block" : "hidden"
-                                    } bg-white divide-y overflow-y-auto h-40 divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                                      isOpenFactory == idx ? "block" : "hidden"
+                                    }  sm:top-[13.8rem] absolute  overflow-y-auto mt-2  w-85 rounded-lg bg-white border border-gray-300 z-50`}
                                   >
                                     <ul
-                                      className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                      style={{ height: 145 }}
+                                      className="py-2 overflow-auto text-sm text-gray-700 dark:text-gray-200 w-40"
                                       aria-labelledby="dropdownFactoryButton"
                                     >
-                                      {machineClass.items.map(
-                                        (
-                                          machineClassId: any,
-                                          index: string
-                                        ) => (
-                                          <a
-                                            key={index}
-                                            className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                            onClick={() => {
-                                              const value = machineClassId._id
-                                              const machineClassFactoryId =
-                                                machineClassId.factoryId
-                                              if (value !== "Global") {
-                                                mutate(
-                                                  {
-                                                    ...item,
-                                                    factoryId:
-                                                      machineClassFactoryId,
-                                                    machineClassId: value,
-                                                    isGlobalFactory: false,
-                                                  },
-                                                  callBackReq
-                                                )
-                                              } else {
-                                                mutate(
-                                                  {
-                                                    ...item,
-                                                    machineClassId: null,
-                                                    isGlobalFactory: true,
-                                                  },
-                                                  callBackReq
-                                                )
-                                              }
-                                              setIsOpenRole(undefined)
-                                            }}
-                                          >
-                                            <li key={index}>
-                                              {machineClassId.name}
-                                            </li>
-                                          </a>
+                                      {factories?.items?.map(
+                                        (factory: any, index: any) => (
+                                          <li key={index}>
+                                            <a
+                                              href="#"
+                                              className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                              onClick={() => {
+                                                const value = factory._id
+                                                if (value !== "Global") {
+                                                  mutate(
+                                                    {
+                                                      ...item,
+                                                      factoryId: value,
+                                                      isGlobalFactory: false,
+                                                    },
+                                                    callBackReq
+                                                  )
+                                                } else {
+                                                  mutate(
+                                                    {
+                                                      ...item,
+                                                      factoryId: null,
+                                                      isGlobalFactory: true,
+                                                    },
+                                                    callBackReq
+                                                  )
+                                                }
+                                                setIsOpenFactory(undefined)
+                                              }}
+                                            >
+                                              {factory.name}
+                                            </a>
+                                          </li>
                                         )
                                       )}
                                     </ul>
                                   </div>
                                 </td>
+                              )}
+
+                              {selectedRole === "Personnel" ? (
+                                <>
+                                  <td
+                                    className={`text-sm text-gray-500 items-center justify-center`}
+                                  >
+                                    <button
+                                      id="dropdownFactoryButton"
+                                      data-dropdown-toggle="dropdown"
+                                      className="w-56 rounded-md whitespace-nowrap text-start space-x-1 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-not-allowed"
+                                      type="button"
+                                      disabled={
+                                        isLocationsLoading ||
+                                        isUpdateUserLoading ||
+                                        isPaginatedLoading
+                                      }
+                                      onClick={() => handleHideRole(idx)}
+                                    >
+                                      <svg
+                                        height="25"
+                                        viewBox="0 0 48 48"
+                                        width="30"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path d="M14 20l10 10 10-10z" />
+                                        <path d="M0 0h48v48h-48z" fill="none" />
+                                      </svg>
+                                      <span>
+                                        {item.machineClassId ? (
+                                          machineClass.items.map(
+                                            (machineClass: any) =>
+                                              machineClass._id ===
+                                              item.machineClassId ? (
+                                                <div key={machineClass._id}>
+                                                  {machineClass.name}
+                                                </div>
+                                              ) : null
+                                          )
+                                        ) : (
+                                          <div>Select Machine Class</div>
+                                        )}
+                                      </span>
+                                    </button>
+
+                                    <div
+                                      id="dropdownFactory"
+                                      className={`z-50 fixed ${
+                                        isOpenRole == idx ? "block" : "hidden"
+                                      } bg-white divide-y overflow-y-auto h-40 divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700`}
+                                    >
+                                      <ul
+                                        className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                                        aria-labelledby="dropdownFactoryButton"
+                                      >
+                                        {machineClass.items.map(
+                                          (
+                                            machineClassId: any,
+                                            index: string
+                                          ) => (
+                                            <a
+                                              key={index}
+                                              className="block px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                              onClick={() => {
+                                                const value = machineClassId._id
+                                                const machineClassFactoryId =
+                                                  machineClassId.factoryId
+                                                if (value !== "Global") {
+                                                  mutate(
+                                                    {
+                                                      ...item,
+                                                      factoryId:
+                                                        machineClassFactoryId,
+                                                      machineClassId: value,
+                                                      isGlobalFactory: false,
+                                                    },
+                                                    callBackReq
+                                                  )
+                                                } else {
+                                                  mutate(
+                                                    {
+                                                      ...item,
+                                                      machineClassId: null,
+                                                      isGlobalFactory: true,
+                                                    },
+                                                    callBackReq
+                                                  )
+                                                }
+                                                setIsOpenRole(undefined)
+                                              }}
+                                            >
+                                              <li key={index}>
+                                                {machineClassId.name}
+                                              </li>
+                                            </a>
+                                          )
+                                        )}
+                                      </ul>
+                                    </div>
+                                  </td>
+                                  <td className="text-sm text-gray-500 items-start justify-center">
+                                    <button
+                                      id="dropdownFactoryButton"
+                                      data-dropdown-toggle="dropdown"
+                                      className="w-30 ml-10 rounded-md whitespace-nowrap overflow-ellipsis text-start space-x-2 bg-opacity-0 flex bg-gray-300 border-none focus:ring-opacity-0 ring-opacity-0 border-0 py-1  text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 sm:text-sm sm:leading-6 disabled:opacity-70 disabled:cursor-normal"
+                                      type="button"
+                                      disabled={
+                                        isLocationsLoading ||
+                                        isUpdateUserLoading ||
+                                        isPaginatedLoading ||
+                                        selectedRole === "Personnel"
+                                      }
+                                      onClick={() => handleHideFactory(idx)}
+                                    >
+                                      <svg
+                                        height="25"
+                                        viewBox="0 0 48 48"
+                                        width="25"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className={`${
+                                          selectedRole === "Personnel"
+                                            ? "hidden"
+                                            : ""
+                                        }`}
+                                      >
+                                        <path d="M14 20l10 10 10-10z" />
+                                        <path d="M0 0h48v48h-48z" fill="none" />
+                                      </svg>
+                                      <span className="truncate">
+                                        {item.isGlobalFactory ?? false
+                                          ? "Global"
+                                          : item?.factoryId
+                                          ? typeof item.factoryId === "string"
+                                            ? item.factoryId
+                                            : item.factoryId.name
+                                          : "Select Factory"}
+                                      </span>
+                                    </button>
+                                    <div
+                                      id="dropdownFactory"
+                                      className={`z-50 fixed ${
+                                        isOpenFactory == idx
+                                          ? "block"
+                                          : "hidden"
+                                      }  sm:top-[13.8rem] absolute  overflow-y-auto mt-2  w-85 rounded-lg bg-white border border-gray-300 z-50`}
+                                    >
+                                      <ul
+                                        style={{ height: 145 }}
+                                        className="py-2 overflow-auto text-sm text-gray-700 dark:text-gray-200 w-40"
+                                        aria-labelledby="dropdownFactoryButton"
+                                      >
+                                        {factories?.items?.map(
+                                          (factory: any, index: any) => (
+                                            <li key={index}>
+                                              <a
+                                                href="#"
+                                                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                                                onClick={() => {
+                                                  const value = factory._id
+                                                  if (value !== "Global") {
+                                                    mutate(
+                                                      {
+                                                        ...item,
+                                                        factoryId: value,
+                                                        isGlobalFactory: false,
+                                                      },
+                                                      callBackReq
+                                                    )
+                                                  } else {
+                                                    mutate(
+                                                      {
+                                                        ...item,
+                                                        factoryId: null,
+                                                        isGlobalFactory: true,
+                                                      },
+                                                      callBackReq
+                                                    )
+                                                  }
+                                                  setIsOpenFactory(undefined)
+                                                }}
+                                              >
+                                                {factory.name}
+                                              </a>
+                                            </li>
+                                          )
+                                        )}
+                                      </ul>
+                                    </div>
+                                  </td>
+                                </>
                               ) : (
                                 <td
                                   className={`text-sm py-[2%] text-gray-500 items-start justify-start`}
@@ -3121,16 +3264,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                           <Menu.Item>
                                             {({ active }) => (
                                               <button
-                                                disabled={
-                                                  !checkedProved ||
-                                                  userProfile?.item.role ===
-                                                    "Production"
-                                                  //   &&
-                                                  // userProfile?.item
-                                                  //   .factoryId ===
-                                                  //   //@ts-expect-error
-                                                  //   item.factoryId?._id
-                                                }
+                                                disabled={!checkedProved}
                                                 className={combineClasses(
                                                   active
                                                     ? "bg-gray-100  text-gray-900"
@@ -3188,16 +3322,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                         <Menu.Item>
                                           {({ active }) => (
                                             <button
-                                              disabled={
-                                                !checkedProved ||
-                                                userProfile?.item.role ===
-                                                  "Production"
-                                                //   &&
-                                                // userProfile?.item
-                                                //   .factoryId ===
-                                                //   //@ts-expect-error
-                                                //   item.factoryId?._id
-                                              }
+                                              disabled={!checkedProved}
                                               className={combineClasses(
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
@@ -3224,16 +3349,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                         <Menu.Item>
                                           {({ active }) => (
                                             <button
-                                              disabled={
-                                                !checkedProved ||
-                                                userProfile?.item.role ===
-                                                  "Production"
-                                                //   &&
-                                                // userProfile?.item
-                                                //   .factoryId ===
-                                                //   //@ts-expect-error
-                                                //   item.factoryId?._id
-                                              }
+                                              disabled={!checkedProved}
                                               className={combineClasses(
                                                 active
                                                   ? "bg-gray-100 text-gray-900"
@@ -4014,44 +4130,64 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                             </div>
                           </th>
 
-                          <th className="">
-                            <div className="flex items-start justify-start ml-7">
-                              <span className="flex">
-                                Factory<p className="text-red-600 ml-1">*</p>
-                              </span>
-                              <button
-                                onClick={(e) =>
-                                  handleInputChange(e, "factoryId")
-                                }
-                              >
-                                <svg
-                                  className="w-3 h-3 ml-1"
-                                  aria-hidden="true"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
-                                </svg>
-                              </button>
-                            </div>
-                            {/* <span className="ml-2 flex-none rounded text-gray-400">
-                    <ChevronUpDownIcon
-                    className="h-5 w-5"
-                    aria-hidden="true"
-                    />
-                  </span>
-                  </a> */}
-                          </th>
-                          {selectedRole === "Personnel" ? (
+                          {selectedRole !== "Personnel" && (
                             <th className="">
-                              <div className="flex items-start justify-start px-0 py-3 ml-9">
-                                <div className="flex items-center overflow-ellipsis whitespace-nowrap">
-                                  Machine Class
-                                  <p className="text-red-600 ml-1">*</p>
+                              <div className="flex items-start justify-start ml-7">
+                                <span className="flex">
+                                  Factory<p className="text-red-600 ml-1">*</p>
+                                </span>
+                                <button
+                                  onClick={(e) =>
+                                    handleInputChange(e, "factoryId")
+                                  }
+                                >
+                                  <svg
+                                    className="w-3 h-3 ml-1"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </th>
+                          )}
+                          {selectedRole === "Personnel" ? (
+                            <>
+                              <th className="">
+                                <div className="flex items-start justify-start px-0 py-3 ml-9">
+                                  <div className="flex items-center overflow-ellipsis whitespace-nowrap">
+                                    Machine Class
+                                    <p className="text-red-600 ml-1">*</p>
+                                    <button
+                                      onClick={(e) =>
+                                        handleInputChange(e, "machineClassId")
+                                      }
+                                    >
+                                      <svg
+                                        className="w-3 h-3 ml-1"
+                                        aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </div>
+                              </th>
+                              <th className="">
+                                <div className="flex items-center justify-center ml-24">
+                                  <span className="flex">
+                                    Factory
+                                    <p className="text-red-600 ml-1">*</p>
+                                  </span>
                                   <button
                                     onClick={(e) =>
-                                      handleInputChange(e, "machineClassId")
+                                      handleInputChange(e, "factoryId")
                                     }
                                   >
                                     <svg
@@ -4065,16 +4201,8 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                     </svg>
                                   </button>
                                 </div>
-                              </div>
-
-                              {/* <span className="ml-2 flex-none rounded text-gray-400">
-                    <ChevronUpDownIcon
-                      className="h-5 w-5"
-                      aria-hidden="true"
-                    />
-                  </span>
-                  </a> */}
-                            </th>
+                              </th>
+                            </>
                           ) : (
                             <th colSpan={1} className="">
                               <div className="flex items-start justify-start px-0 py-3 ml-11">

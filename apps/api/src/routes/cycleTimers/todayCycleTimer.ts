@@ -11,7 +11,7 @@ import Locations from "../../models/location"
 import Timers from "../../models/timers"
 import isProductionTimeActive from "../../helpers/isProductionTimeActive"
 import * as Sentry from "@sentry/node"
-import { getIo } from "../../config/setup-socket"
+import { getIo, ioEmit } from "../../config/setup-socket"
 import mongoose from "mongoose"
 import roleMatrix from "../../helpers/roleMatrix"
 
@@ -48,7 +48,7 @@ export const todayCycleTimer = async (req: Request, res: Response) => {
             endAt: null,
             createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
           }).sort({ createdAt: -1 })
-          io.emit(`timer-${timerId}`, {
+          ioEmit(`timer-${timerId}`, {
             action: `update-cycle`,
             user: user,
             timers: getAllActiveControllerTimerToday,
@@ -66,7 +66,7 @@ export const todayCycleTimer = async (req: Request, res: Response) => {
             endAt: null,
             createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
           }).sort({ createdAt: -1 })
-          io.emit(`timer-${timerId}`, {
+          ioEmit(`timer-${timerId}`, {
             action: `update-cycle`,
             user: user,
             timers: getAllActiveControllerTimerToday,

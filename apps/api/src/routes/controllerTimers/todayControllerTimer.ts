@@ -11,7 +11,7 @@ import isProductionTimeActive from "../../helpers/isProductionTimeActive"
 import Locations from "../../models/location"
 import Timers from "../../models/timers"
 import * as Sentry from "@sentry/node"
-import { getIo } from "../../config/setup-socket"
+import { getIo, ioEmit } from "../../config/setup-socket"
 import roleMatrix from "../../helpers/roleMatrix"
 
 export const todayControllerTimer = async (req: Request, res: Response) => {
@@ -45,7 +45,7 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
           ...(id && { _id: id }),
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
         })
-        io.emit(`timer-${timerId}`, {
+        ioEmit(`timer-${timerId}`, {
           action: `update-operator`,
           user: user,
           timers: getAllActiveControllerTimerToday,
@@ -62,7 +62,7 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
           ...(id && { _id: id }),
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
         })
-        io.emit(`timer-${timerId}`, {
+        ioEmit(`timer-${timerId}`, {
           action: `update-operator`,
           user: user,
           timers: getAllActiveControllerTimerToday,

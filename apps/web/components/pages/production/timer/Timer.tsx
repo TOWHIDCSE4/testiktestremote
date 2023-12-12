@@ -16,7 +16,10 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import useGetCycleTimerRealTime from "../../../../hooks/timers/useGetCycleTimerRealTime"
-import { hourMinuteSecondMilli } from "../../../../helpers/timeConverter"
+import {
+  hourMinuteSecond,
+  hourMinuteSecondMilli,
+} from "../../../../helpers/timeConverter"
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
 import { Combobox } from "@headlessui/react"
 import { initializeSocket } from "../../../../helpers/socket"
@@ -97,13 +100,14 @@ const Timer = ({
   const [cycleClockTimeArray, setCycleCockTimeArray] = useState<
     Array<number | string>
   >([])
+  const [unitCreated, setUnitCreated] = useState(0)
   const [partQuery, setPartQuery] = useState("")
   const [selectedPart, setSelectedPart] = useState({
     id: typeof timer.partId === "string" && timer.partId ? timer.partId : "",
     name: timer?.part ? timer?.part?.name : "",
   })
   const socket = useSocket((store) => store.instance)
-  const { isTimerStop } = useStoreTimer((store) => store)
+  // const { isTimerStop } = useStoreTimer((store) => store)
 
   const isControllerLoading =
     isJobsLoading ||
@@ -121,6 +125,29 @@ const Timer = ({
         weight: timerDetailData?.item?.partId.tons,
       }
 
+  const onControllerStopCycle = (unit: number) => {
+    setCycleClockInSeconds(0)
+    setCycleCockTimeArray(hourMinuteSecond(0))
+    runCycle()
+    setUnitCreated(unit)
+  }
+
+  const onControllerStopCycleWithReasons = (unit: number) => {
+    setCycleClockInSeconds(0)
+    setCycleCockTimeArray(hourMinuteSecond(0))
+    stopInterval()
+    setUnitCreated(unit)
+  }
+
+  const onControllerModalClosed = (unit: number, seconds: number) => {
+    setCycleClockInSeconds(seconds)
+    setCycleCockTimeArray(hourMinuteSecond(seconds))
+    setUnitCreated(unit)
+    if (seconds > 0 && !isCycleClockRunning) {
+      runCycle()
+    }
+  }
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const runSocket = (data: any) => {
@@ -130,7 +157,6 @@ const Timer = ({
       if (data.action === "endAndAdd") {
         setCycleClockInSeconds(0)
         runCycle()
-        refetchTimerLogs()
       }
       if (data.action === "end") {
         setCycleClockInSeconds(0)
@@ -142,10 +168,14 @@ const Timer = ({
           dayjs(data.timers[0].createdAt),
           timeZone ? timeZone : ""
         )
-        refetchTimerLogs()
         const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
         const secondsLapse = currentDate.diff(timerStart, "seconds", true)
-        setCycleClockInSeconds(secondsLapse)
+        setCycleClockInSeconds((current: number) => {
+          if (secondsLapse > current) {
+            return secondsLapse
+          }
+          return current
+        })
       }
       if (data.action === "end-controller") {
         stopInterval()
@@ -163,22 +193,6 @@ const Timer = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, timer._id])
-
-  // Refocusing when tab minimize or change the tab
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      // If condition working for when tab is visible
-      if (document.visibilityState === "visible") {
-        cycleRefetch()
-      }
-    }
-
-    document.addEventListener("visibilitychange", handleVisibilityChange)
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange)
-    }
-  }, [])
 
   const intervalRef = useRef<any>()
   useEffect(() => {
@@ -220,19 +234,16 @@ const Timer = ({
   }
   const runCycle = () => {
     stopInterval()
-    if (isTimerStop !== true) {
-      setIsCycleClockRunning(true)
-      intervalRef.current = setInterval(() => {
-        setCycleClockInSeconds((previousState: number) => previousState + 0.1)
-      }, 100)
-    }
+    setIsCycleClockRunning(true)
+    intervalRef.current = setInterval(() => {
+      setCycleClockInSeconds((previousState: number) => previousState + 0.1)
+    }, 100)
   }
   useEffect(() => {
     setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
   }, [cycleClockInSeconds])
 
   useEffect(() => {
-    controllerTimerRefetch()
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
       const timeZone = timer?.location?.timeZone
       const timerStart = dayjs.tz(
@@ -252,6 +263,15 @@ const Timer = ({
   }, [cycleTimer])
 
   useEffect(() => {
+    if (
+      timerLogsCount?.item?.count &&
+      timerLogsCount?.item?.count > unitCreated
+    ) {
+      setUnitCreated(timerLogsCount?.item?.count)
+    }
+  }, [timerLogsCount?.item?.count])
+
+  useEffect(() => {
     if (timer.part) {
       setSelectedPart({
         id:
@@ -260,10 +280,6 @@ const Timer = ({
       })
     }
   }, [timer])
-
-  useEffect(() => {
-    controllerTimerRefetch()
-  }, [])
 
   const filteredParts =
     partQuery === ""
@@ -401,9 +417,7 @@ const Timer = ({
           </p>
           <div>
             <h2 className="text-5xl font-semibold text-gray-400">
-              {timerLogsCount?.item?.count
-                ? addZeroFront(timerLogsCount?.item?.count)
-                : "000"}
+              {unitCreated ? addZeroFront(unitCreated) : "000"}
             </h2>
             <h6 className="text-lg font-semibold text-gray-700 uppercase">
               Daily Units
@@ -463,6 +477,10 @@ const Timer = ({
         initialCycleClockSeconds={cycleClockInSeconds}
         initialUnitCreated={timerLogsCount?.item?.count as number}
         isControllerModalOpen={isControllerModalOpen}
+        onStopCycle={onControllerStopCycle}
+        onControllerModalClosed={onControllerModalClosed}
+        onStopCycleWithReasons={onControllerStopCycleWithReasons}
+        onEndProduction={onControllerStopCycleWithReasons}
       >
         <ControllerModal
           isOpen={isControllerModalOpen}
