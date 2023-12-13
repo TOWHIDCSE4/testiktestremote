@@ -393,6 +393,12 @@ export const ControllerContextProvider = ({
   }
 
   const onStartCycle = () => {
+    if (socket) {
+      socket.emit(`start-press`, {
+        timerId,
+        action: "start-press",
+      })
+    }
     setClockMilliSeconds(0)
     startCycleClockInterval()
     setIsCycleClockRunning(true)
@@ -406,12 +412,6 @@ export const ControllerContextProvider = ({
       timerId,
     }
     if (!isControllerClockRunning) {
-      if (socket) {
-        socket.emit(`start-press`, {
-          timerId,
-          action: "start-press",
-        })
-      }
       // Job & operator validation
       if (!getObjectId(jobTimer?.item)) {
         toast.error("Cannot start a controller without job assigned")
