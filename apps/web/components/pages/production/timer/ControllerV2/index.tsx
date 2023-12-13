@@ -24,6 +24,7 @@ import OperatorSelectComponent from "./OperatorSelector"
 import JobSelectComponent from "./JobSelector"
 
 export interface ControllerDetailData {
+  locationName: string
   factoryName: string
   machineName: string
   partName: string
@@ -65,7 +66,7 @@ const ControllerV2 = ({
     >
       <Header
         isLoading={false}
-        locationName="Conroe"
+        locationName={controllerDetailData.locationName}
         setOpenTimerLogs={() => setIsTimerLogsModalOpen(true)}
         onClose={onClose}
         onFullScreen={onFullScreen}
