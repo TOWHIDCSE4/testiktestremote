@@ -128,7 +128,7 @@ export default function OperatorSelectComponent() {
         </Combobox.Button>
         {filteredOperator && filteredOperator.length > 0 ? (
           <Combobox.Options
-            className="absolute z-10 bottom-1 max-h-20 xl:w-80 ipadair:w-[250px] 2xl:w-[350px] overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            className="absolute top-[120]  z-[90]  max-h-40 xl:w-80 ipadair:w-[250px] 2xl:w-[350px] overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
             style={{ width: "200px" }} // Adjust the width as needed
           >
             {filteredOperator.map((item: T_User, index: number) => (
@@ -138,7 +138,7 @@ export default function OperatorSelectComponent() {
                   id: item._id,
                   name: `${item.firstName} ${item.lastName}`,
                 }}
-                className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
+                className={` cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
               >
                 <span className="block">{`${item.firstName} ${item.lastName}`}</span>
               </Combobox.Option>
