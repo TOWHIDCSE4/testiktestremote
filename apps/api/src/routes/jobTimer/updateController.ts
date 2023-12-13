@@ -61,7 +61,7 @@ export const updateController = async (req: Request, res: Response) => {
           message: UPDATE_SUCCESS_MESSAGE,
         })
       } else {
-        res.json({
+        res.status(404).json({
           error: true,
           message: "Timer reading does not exist",
           items: null,

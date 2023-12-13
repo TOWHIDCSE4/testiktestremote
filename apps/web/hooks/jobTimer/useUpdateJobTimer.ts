@@ -16,6 +16,10 @@ export async function updateJobTimer(props: T_JobTimer) {
       },
     }
   )
+  if (!res.ok) {
+    const errrorJson = await res.json()
+    throw new Error(errrorJson?.message || "Job Change Unexpected Error")
+  }
   return await res.json()
 }
 

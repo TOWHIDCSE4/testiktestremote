@@ -23,6 +23,7 @@ import {
   T_BackendResponse,
   T_ControllerTimer,
   T_CycleTimer,
+  T_JobTimer,
   T_TimerStopReason,
 } from "custom-validator"
 import useGetCycleTimer from "../../../../../hooks/timers/useGetCycleTimer"
@@ -63,6 +64,7 @@ export interface ControllerContextProps {
   timerId: string | undefined
   hasControllerTimer: boolean
   stopReasons: any[]
+  controllerJob: any
   isControllerJobLoading: boolean
   timerLogs: any
   jobs: any[]
@@ -105,6 +107,7 @@ export const ControllerContext = createContext<ControllerContextProps>({
     tonsPerHour: 0,
     totalTons: 0,
   },
+  controllerJob: {},
   hasControllerTimer: false,
   isCycleClockRunning: false,
   onToggleStart: () => {},
@@ -166,7 +169,6 @@ export const ControllerContextProvider = ({
       locationId: timerDetailData?.item?.locationId._id,
       timerId,
     })
-  const [isChangingJob, setIsChangingJob] = useState(false)
 
   const { mutate: endControllerTimer } = useEndControllerTimer()
   // const { data: timerLogsCount, refetch: refetchTimerLogs } =
@@ -192,7 +194,8 @@ export const ControllerContextProvider = ({
   const { mutate: endAddCycleTimer } = useEndAddCycleTimer()
   const { mutate: endCycleTimer } = useEndCycleTimer()
   const { mutate: assignJobToTimer } = useAssignJobToTimer()
-  const { mutate: updateTimerJob } = useUpdateJobTimer()
+  const { mutate: updateJobTimer, isLoading: isChangingJob } =
+    useUpdateJobTimer()
 
   const [controllerClockSeconds, setControllerClockSeconds] = useState(0)
   const [cycleClockSeconds, setCycleClockSeconds] = useState(0)
@@ -360,8 +363,9 @@ export const ControllerContextProvider = ({
     }
     if (!isControllerClockRunning) {
       // Job & operator validation
-      if (!getObjectId(jobTimer)) {
+      if (!getObjectId(jobTimer?.item)) {
         toast.error("Cannot start a controller without job assigned")
+        console.error("job timer is", jobTimer)
         return
       }
       if (!getObjectId(operator)) {
@@ -380,16 +384,23 @@ export const ControllerContextProvider = ({
   }
 
   const onJobChange = (job: any) => {
-    setIsChangingJob(true)
-    updateTimerJob(job, {
-      onError: () => {
-        toast.error("Error while trying to changing jobs for this controller")
+    const updatedJobTimer: T_JobTimer = {
+      _id: getObjectId(jobTimer?.item),
+      jobId: getObjectId(job),
+      timerId,
+    }
+    updateJobTimer(updatedJobTimer, {
+      onError: (err: any) => {
+        toast.error(err?.message)
       },
-      onSuccess: () => {
+      onSuccess: (res) => {
+        if (res.error) {
+          toast.error(res.message)
+          return
+        }
         toast.success("Success changing job for the controller")
       },
       onSettled: () => {
-        setIsChangingJob(false)
         queryClient.invalidateQueries([
           "job-timer-timer",
           getObjectId(timerDetailData?.item?.locationId),
@@ -401,13 +412,31 @@ export const ControllerContextProvider = ({
 
   useEffect(() => {
     if (timerDetailData) {
-      assignJobToTimer({
-        timerId,
-        partId: timerDetailData?.item?.partId._id as string,
-        factoryId: timerDetailData?.item?.factoryId._id as string,
-        locationId: timerDetailData?.item?.locationId._id as string,
-        status: "Active",
-      })
+      assignJobToTimer(
+        {
+          timerId,
+          partId: timerDetailData?.item?.partId._id as string,
+          factoryId: timerDetailData?.item?.factoryId._id as string,
+          locationId: timerDetailData?.item?.locationId._id as string,
+          status: "Active",
+        },
+        {
+          onSuccess: (res) => {
+            if (isControllerModalOpen) {
+              if (res.error) {
+                toast.error(res.message)
+                return
+              }
+              toast.success("Successfully assigning job to controller")
+            }
+          },
+          onError: (err: any) => {
+            if (isControllerModalOpen) {
+              toast.error(err.message)
+            }
+          },
+        }
+      )
     }
   }, [timerDetailData])
   // function of add time log call+
@@ -563,6 +592,7 @@ export const ControllerContextProvider = ({
         operator: currentOperator,
         jobs: timerJobs?.items || [],
         isJobsLoading: isTimerJobsLoading,
+        controllerJob: jobTimer?.item,
         isControllerJobLoading,
         onJobChange,
         isChangingJob,
