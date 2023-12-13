@@ -105,6 +105,7 @@ export default function FancyButtonComponent({
   return (
     <button
       {...buttonProps}
+      disabled={disabled}
       onClick={onClick}
       className={`rounded-lg overflow-hidden border-2 border-[#5D5D5D] ${buttonCV(
         {
