@@ -156,10 +156,24 @@ const Timer = ({
         runCycle()
       }
       if (data.action === "endAndAdd") {
+        if (!isControllerModalOpen) {
+          queryClient.invalidateQueries([
+            "timer-logs",
+            timer.locationId,
+            getObjectId(timer),
+          ])
+        }
         setCycleClockInSeconds(0)
         runCycle()
       }
       if (data.action === "end") {
+        if (!isControllerModalOpen) {
+          queryClient.invalidateQueries([
+            "timer-logs",
+            timer.locationId,
+            getObjectId(timer),
+          ])
+        }
         setCycleClockInSeconds(0)
         stopInterval()
       }

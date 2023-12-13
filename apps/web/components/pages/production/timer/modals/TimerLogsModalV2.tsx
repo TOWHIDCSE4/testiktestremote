@@ -23,10 +23,16 @@ const TimerLogsModal = ({
   const perPage = 5
   const startIndex = (page - 1) * perPage
   const endIndex = startIndex + perPage
-  const totalPage = timerLogs?.length
-    ? Math.ceil(timerLogs.length / perPage)
-    : 0
-  const data = timerLogs?.items?.slice(startIndex, endIndex) || []
+  const totalPage = timerLogs?.items?.length
+    ? Math.ceil(timerLogs?.items?.length / perPage)
+    : 1
+  const data =
+    timerLogs?.items
+      ?.map((log: any, i: number) => ({
+        ...log,
+        sortedCycle: timerLogs?.items?.length - i,
+      }))
+      ?.slice(startIndex, endIndex) || []
   return (
     <div
       className={cn("w-fit relative", {
@@ -64,7 +70,7 @@ const TimerLogsModal = ({
                   {log.status}
                 </td>
                 <td>{formatTime(log.time.toFixed(2))}</td>
-                <td>{log.cycle}</td>
+                <td>{log.sortedCycle}</td>
               </tr>
             ))}
           </tbody>

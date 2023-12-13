@@ -35,7 +35,7 @@ import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
 import { set } from "lodash"
 import { useQueryClient } from "@tanstack/react-query"
 import useGetJobTimerByTimerId from "../../../../../hooks/jobTimer/useGetJobTimerByTimerId"
-import { addTimerLog } from "../../../../../hooks/timerLogs/useAddTimerLog"
+import useAddTimerLog from "../../../../../hooks/timerLogs/useAddTimerLog"
 import useGetAllTimerLogsCount from "../../../../../hooks/timerLogs/useGetAllTimerLogsCount"
 import useEndControllerTimer from "../../../../../hooks/timers/useEndControllerTimer"
 import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
@@ -161,6 +161,7 @@ export const ControllerContextProvider = ({
     useGetControllerTimer(timerId)
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
+  const { mutate: addTimerLog } = useAddTimerLog()
   const {
     data: timerJobs,
     isLoading: isTimerJobsLoading,
@@ -521,7 +522,9 @@ export const ControllerContextProvider = ({
             (timerDetailData?.item?.partId.time as number) > cycleClockSeconds
               ? "Gain"
               : "Loss",
-          stopReason: stopReasons,
+          stopReason: stopReasons.length
+            ? stopReasons
+            : (defaultStopReasons as T_TimerStopReason[]),
           cycle: unitCreated + 1,
         }
         if (query?.items) {
@@ -605,7 +608,6 @@ export const ControllerContextProvider = ({
   const [progress, setProgress] = useState<number>()
 
   useEffect(() => {
-    console.log(controllerDetailData.averageTime, cycleClockSeconds)
     if (cycleClockSeconds == 0) {
       setProgress(0)
     } else if (controllerDetailData.averageTime == 0) {
