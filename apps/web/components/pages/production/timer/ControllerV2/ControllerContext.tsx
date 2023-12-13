@@ -44,6 +44,7 @@ import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer
 import toast from "react-hot-toast"
 import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
+import { useSocket } from "../../../../../store/useSocket"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -217,6 +218,7 @@ export const ControllerContextProvider = ({
     tonsPerHour: 0,
     totalTons: 0,
   })
+  const socket = useSocket((state) => state.instance)
   // setTotals({
   //   unitsPerHour: count / Math.round(hoursLapse),
   //   tonsPerHour:
@@ -296,6 +298,12 @@ export const ControllerContextProvider = ({
     if (onEndProductionProps) {
       onEndProductionProps(unitCreated)
     }
+    if (socket) {
+      socket.emit(`end-production`, {
+        timerId,
+        action: "end-production",
+      })
+    }
   }
 
   const stopControllerClockInterval = () => {
@@ -310,7 +318,9 @@ export const ControllerContextProvider = ({
     stopControllerClockInterval()
     setIsControllerClockRunning(true)
     controllerClockIntervalRef.current = setInterval(() => {
-      setClockSeconds((prev) => prev + 1)
+      setClockSeconds((prev) => {
+        return prev + 1
+      })
     }, 1000)
   }
 
@@ -326,7 +336,16 @@ export const ControllerContextProvider = ({
 
   const onStopCycle = () => {
     setClockMilliSeconds(0)
-    setUnitCreated((c) => c + 1)
+    setUnitCreated((c) => {
+      if (socket) {
+        socket.emit(`stop-press`, {
+          timerId,
+          action: "stop-press",
+          currentUnit: c + 1,
+        })
+      }
+      return c + 1
+    })
     startCycleClockInterval()
     if (!hasControllerTimer) {
       const controllerTimerValue: T_ControllerTimer = {
@@ -350,6 +369,16 @@ export const ControllerContextProvider = ({
     }
   }
 
+  useEffect(() => {
+    if (socket && clockSeconds && timerId) {
+      socket.emit(`cycle-tick`, {
+        timerId,
+        action: "cycle-tick",
+        second: clockSeconds,
+      })
+    }
+  }, [socket, clockSeconds, timerId])
+
   const onStopCycleWithReasons = () => {
     timeLogCall(getObjectId(jobTimer?.item))
     stopCycleClockInterval()
@@ -360,6 +389,12 @@ export const ControllerContextProvider = ({
     setIsStopDisabled(false)
     if (onStopCycleWithReasonsProps) {
       onStopCycleWithReasonsProps(unitCreated)
+    }
+    if (socket) {
+      socket.emit(`end-controller`, {
+        timerId,
+        action: "end-controller",
+      })
     }
   }
 
