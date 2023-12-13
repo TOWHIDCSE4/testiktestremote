@@ -153,6 +153,9 @@ const Timer = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const runSocket = (data: any) => {
       console.log("socket got event", data)
+      if (data.action === "pre-add") {
+        runCycle()
+      }
       if (data.action === "add") {
         runCycle()
       }
@@ -217,18 +220,14 @@ const Timer = ({
           }
           return current
         })
-        if (!isControllerModalOpen) {
-          queryClient.invalidateQueries([
-            "timer-logs",
-            timer.locationId,
-            timer._id,
-          ])
-          queryClient.invalidateQueries([
-            "timer-logs-count",
-            timer.locationId,
-            timer._id,
-          ])
-        }
+      }
+      if (data.action === "pre-end") {
+        stopInterval()
+        setCycleClockInSeconds(0)
+      }
+      if (data.action === "end") {
+        stopInterval()
+        setCycleClockInSeconds(0)
       }
     }
     socket?.on(`timer-${timer._id}`, runSocket)

@@ -299,9 +299,9 @@ export const ControllerContextProvider = ({
       onEndProductionProps(unitCreated)
     }
     if (socket) {
-      socket.emit(`end-production`, {
+      socket.emit(`end-production-pressed`, {
         timerId,
-        action: "end-production",
+        action: "end-production-pressed",
       })
     }
   }
@@ -385,9 +385,9 @@ export const ControllerContextProvider = ({
       onStopCycleWithReasonsProps(unitCreated)
     }
     if (socket) {
-      socket.emit(`end-controller`, {
+      socket.emit(`end-controller-pressed`, {
         timerId,
-        action: "end-controller",
+        action: "end-controller-pressed",
       })
     }
   }
@@ -406,12 +406,6 @@ export const ControllerContextProvider = ({
       timerId,
     }
     if (!isControllerClockRunning) {
-      if (socket) {
-        socket.emit(`start-press`, {
-          timerId,
-          action: "start-press",
-        })
-      }
       // Job & operator validation
       if (!getObjectId(jobTimer?.item)) {
         toast.error("Cannot start a controller without job assigned")
@@ -422,7 +416,12 @@ export const ControllerContextProvider = ({
         toast.error("Cannot start a controller without operator assigned")
         return
       }
-
+      if (socket) {
+        socket.emit(`start-press`, {
+          timerId,
+          action: "start-press",
+        })
+      }
       startControllerClockInterval()
       addCycleTimer(cycleTimerValue)
     }
