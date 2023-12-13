@@ -623,17 +623,16 @@ export const ControllerContextProvider = ({
   }, [controllerDetailData.averageTime, clockMilliSeconds])
 
   useEffect(() => {
-    console.log({ isControllerClockRunning, progress })
     setVariant(
-      !isControllerClockRunning
+      !isCycleClockRunning
         ? "idle"
         : progress == undefined
         ? "danger"
-        : progress > 100
+        : progress >= 100
         ? "danger"
         : "active"
     )
-  }, [progress, isControllerClockRunning])
+  }, [progress, isCycleClockRunning])
 
   return (
     <ControllerContext.Provider
