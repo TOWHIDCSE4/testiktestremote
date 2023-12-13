@@ -461,10 +461,6 @@ export const ControllerContextProvider = ({
   }
 
   const onOperatorChange = (operator: string) => {
-    console.log(
-      "🚀 ~ file: ControllerContext.tsx:405 ~ onOperatorChange ~ operator:",
-      operator
-    )
     // setIsChangingJob(true)
     updateTimerOperator(
       { ...timerDetailData?.item, operator },
