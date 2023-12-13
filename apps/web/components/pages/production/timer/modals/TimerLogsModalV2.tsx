@@ -3,6 +3,7 @@ import cn from "classnames"
 import { formatDate, formatTime } from "../../../../../helpers/date"
 import { useContext, useState } from "react"
 import { ControllerContext } from "../ControllerV2/ControllerContext"
+import dayjs from "dayjs"
 
 interface TimerLogsModalProps {
   isOpen: boolean
@@ -28,7 +29,9 @@ const TimerLogsModal = ({
     : 1
   const data =
     timerLogs?.items
-      ?.toReversed()
+      ?.toSorted((a: any, b: any) => {
+        return dayjs(b.createdAt).unix() - dayjs(a.createdAt).unix()
+      })
       ?.map((log: any, i: number) => ({
         ...log,
         sortedCycle: timerLogs?.items?.length - i,
