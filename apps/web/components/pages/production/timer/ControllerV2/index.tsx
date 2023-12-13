@@ -44,7 +44,7 @@ const ControllerV2 = ({
   onFullScreen,
 }: ControllerV2Props) => {
   const { variant, controllerDetailData } = useContext(ControllerContext)
-  const [isTimerLogsModalOpen, setIsTimerLogsModalOpen] = useState(false)
+  const [isLogsOpen, setIsLogsOpen] = useState(false)
 
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
     useState(false)
@@ -67,7 +67,7 @@ const ControllerV2 = ({
       <Header
         isLoading={false}
         locationName={controllerDetailData.locationName ?? ""}
-        setOpenTimerLogs={() => setIsTimerLogsModalOpen(true)}
+        setOpenTimerLogs={() => setIsLogsOpen(true)}
         onClose={onClose}
         onFullScreen={onFullScreen}
       />
@@ -112,7 +112,7 @@ const ControllerV2 = ({
           }}
         />
       </div>
-      <ConsoleComponent />
+      <ConsoleComponent isLogsOpen={isLogsOpen} setIsLogsOpen={setIsLogsOpen} />
       <EndProductionModal
         isOpen={isEndProductionModalOpen}
         onClose={() => {
@@ -123,10 +123,6 @@ const ControllerV2 = ({
         machineName={controllerDetailData.machineName ?? ""}
         controllerTimerId={""}
         isTimerClockRunning={false}
-      />
-      <TimerLogsModal
-        isOpen={isTimerLogsModalOpen}
-        setIsOpen={setIsTimerLogsModalOpen}
       />
     </div>
   )

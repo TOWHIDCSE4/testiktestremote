@@ -29,13 +29,13 @@ const TimerLogsModal = ({
   const data = timerLogs?.items?.slice(startIndex, endIndex) || []
   return (
     <div
-      className={cn("w-fit relative", {
+      className={cn("w-full absolute overflow-auto top-0 h-full", {
         hidden: !isOpen,
       })}
     >
-      <div className="fixed inset-0 w-[70%] flex flex-col  mx-auto rounded shadow-lg items-center justify-center p-4 bg-white h-fit top-[50%]">
-        <table className="w-full">
-          <thead className="border-b-4 border-blue-800 font-bold h-10">
+      <div className="relative flex flex-col items-center justify-between w-full h-full mx-auto overflow-auto bg-white rounded shadow-lg">
+        <table className="justify-between flex-1 w-full h-full overflow-auto">
+          <thead className="sticky top-0 w-full h-5 font-bold bg-white border-b-4 border-blue-800">
             <th>Date / Time</th>
             <th>Machine</th>
             <th>Part</th>
@@ -43,11 +43,11 @@ const TimerLogsModal = ({
             <th>Cycle Time</th>
             <th>Cycle</th>
           </thead>
-          <tbody>
+          <tbody className="flex-1 w-full overflow-auto">
             {data.map((log: any, i: any) => (
               <tr
                 key={log._id}
-                className={cn("text-center h-10", {
+                className={cn("text-center h-5", {
                   "bg-gray-100": isEven(i + 1),
                   "bg-gray-200": !isEven(i + 1),
                 })}
@@ -69,11 +69,11 @@ const TimerLogsModal = ({
             ))}
           </tbody>
         </table>
-        <div className="self-end flex gap-4 items-center mt-2">
+        <div className="sticky bottom-0 flex items-center self-start gap-4 p-2 mb-2 ml-2 border border-white rounded-full shadow-lg bg-white/30 backdrop-blur-sm">
           <p>
             Page: {page} of {totalPage}
           </p>
-          <div className="flex rounded-md border-gray-500 border overflow-hidden">
+          <div className="flex overflow-hidden border border-gray-500 rounded-md">
             <button
               className={cn(
                 "px-4 py-1 hover:bg-gray-100  border-r border-gray-500",
@@ -99,12 +99,12 @@ const TimerLogsModal = ({
             </button>
           </div>
         </div>
-        <div
-          className=" font-bold absolute top-0 right-2 cursor-pointer"
+        {/* <div
+          className="absolute top-0 font-bold cursor-pointer right-2"
           onClick={() => setIsOpen(false)}
         >
           X
-        </div>
+        </div> */}
       </div>
     </div>
   )
