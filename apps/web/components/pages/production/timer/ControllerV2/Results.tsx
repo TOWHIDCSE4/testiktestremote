@@ -22,6 +22,7 @@ export default function ResultsBoardComponent() {
     isControllerJobLoading,
     isChangingJob,
     unitCreated,
+    isStopDisabled,
   } = useContext(ControllerContext)
 
   return (
@@ -32,7 +33,7 @@ export default function ResultsBoardComponent() {
           textSize={"lg"}
           className="font-bold uppercase"
           onClick={onToggleStart}
-          disabled={isJobsLoading || isControllerJobLoading}
+          disabled={isJobsLoading || isControllerJobLoading || isStopDisabled}
           trigger={"on"}
         >
           {isChangingJob ? (
