@@ -1,4 +1,9 @@
+import { useContext } from "react"
+import { ControllerContext } from "./ControllerContext"
+
 export default function DetailContextComponent() {
+  const { controllerDetailData } = useContext(ControllerContext)
+
   return (
     <div>
       <h4 className="mt-2 text-2xl text-[#0f2034] uppercase font-bold">
@@ -7,25 +12,35 @@ export default function DetailContextComponent() {
       <div className="indent-4">
         <div>
           <span className="text-[#0f2034] font-semibold">Factory : </span>
-          <span className="text-[#858585]">Pipe and Box</span>
+          <span className="text-[#858585]">
+            {controllerDetailData.factoryName}
+          </span>
         </div>
         <div>
           <span className="text-[#0f2034] font-semibold">Machine : </span>
-          <span className="text-[#858585]">RP1625</span>
+          <span className="text-[#858585]">
+            {controllerDetailData.machineName}
+          </span>
         </div>
         <div>
           <span className="text-[#0f2034] font-semibold">Product : </span>
-          <span className="text-[#858585]">66X4 CL4 RUBBER GASKET</span>
+          <span className="text-[#858585]">
+            {controllerDetailData.partName}
+          </span>
         </div>
         <div>
           <span className="text-[#0f2034] font-semibold">Average Time : </span>
-          <span className="text-[#858585]">135 Seconds</span>
+          <span className="text-[#858585]">
+            {controllerDetailData.averageTime} Seconds
+          </span>
         </div>
         <div>
           <span className="text-[#0f2034] font-semibold">
             Average Weight :{" "}
           </span>
-          <span className="text-[#858585]">3.490 Tons</span>
+          <span className="text-[#858585]">
+            {controllerDetailData.weight?.toFixed(3)}Tons
+          </span>
         </div>
       </div>
     </div>

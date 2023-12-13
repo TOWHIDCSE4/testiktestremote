@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { HiChevronDoubleLeft } from "react-icons/hi"
+import { ControllerContext } from "./ControllerContext"
 
 export default function StopMenuComponent({
   isOpen,
@@ -8,6 +9,22 @@ export default function StopMenuComponent({
   isOpen?: boolean
   toggleOpen: () => void
 }) {
+  const { setStopReasons, onStopCycleWithReasons, stopReasons } =
+    useContext(ControllerContext)
+  const stopReasonsArr = (
+    [
+      "Machine Error",
+      "Machine Low",
+      "Machine Cleaning",
+      "Maintenance",
+      "Change Part",
+      "Personal Injury",
+    ] as const
+  ).map((v) => {
+    if (v === "Machine Low") return "Material Low"
+    return v
+  })
+
   return (
     <div
       className={`absolute right-0 w-[270px] bottom-32 transition-all ${
@@ -24,55 +41,45 @@ export default function StopMenuComponent({
           <button className="flex items-center justify-center">
             <HiChevronDoubleLeft className="w-3 h-3 mx-auto mt-1 text-[#da8d00] font-bold" />
           </button>
-          <p
+          <button
             className="text-sm font-semibold text-white"
             style={{ writingMode: "vertical-lr" }}
           >
             PAUSE PRODUCTION
-          </p>
+          </button>
         </button>
         <div className="border-[#da8d00] bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1">
           <div className="px-4 py-2">
-            <div className="flex items-center gap-4">
-              <span className="w-3 h-3 bg-white border border-[#0f2034] rounded-full"></span>
-              <label className="uppercase text-[#0f2034] text-normal font-medium">
-                MACHINE CLEANING
-              </label>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="w-3 h-3 bg-white border border-[#0f2034] rounded-full"></span>
-              <label className="uppercase text-[#0f2034] text-normal font-medium">
-                CHANGE PART
-              </label>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="w-3 h-3 bg-white border border-[#0f2034] rounded-full"></span>
-              <label className="uppercase text-[#0f2034] text-normal font-medium">
-                MAINTENANCE
-              </label>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="w-3 h-3 bg-white border border-[#0f2034] rounded-full"></span>
-              <label className="uppercase text-[#0f2034] text-normal font-medium">
-                MATERIAL LOW
-              </label>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="w-3 h-3 bg-white border border-[#0f2034] rounded-full"></span>
-              <label className="uppercase text-[#0f2034] text-normal font-medium">
-                PERSONAL INJURY
-              </label>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="w-3 h-3 bg-white border border-[#0f2034] rounded-full"></span>
-              <label className="uppercase text-[#0f2034] text-normal font-medium">
-                MACHINE ERROR
-              </label>
-            </div>
+            {stopReasonsArr.map((item, key) => (
+              <div key={key} className="flex items-center gap-4">
+                <input
+                  type="checkbox"
+                  name="machine-error"
+                  checked={stopReasons.includes(item)}
+                  onChange={(eve) => {}}
+                  onClick={() => {
+                    if (stopReasons.includes(item)) {
+                      setStopReasons((prev: any) =>
+                        prev.filter((cItem: any) => cItem !== item)
+                      )
+                    } else {
+                      setStopReasons((prev: any[]) => [...prev, item])
+                    }
+                  }}
+                  className="w-3 h-3 bg-white border border-[#0f2034] rounded-full"
+                />
+                <label className="uppercase text-[#0f2034] text-normal font-medium">
+                  {item}
+                </label>
+              </div>
+            ))}
           </div>
           <div className="flex justify-between px-5">
             <p className="text-[#858585] italic text-sm">*Select One</p>
-            <button className="border-2 border-[#90959b] bg-[#e8ebf0] leading-none rounded-lg text-[#0f2034] px-4 font-semibold">
+            <button
+              onClick={onStopCycleWithReasons}
+              className="border-2 border-[#90959b] bg-[#e8ebf0] leading-none rounded-lg text-[#0f2034] px-4 font-semibold"
+            >
               OK
             </button>
           </div>
