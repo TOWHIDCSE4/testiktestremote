@@ -39,7 +39,12 @@ export default function chatSocket(io: Server) {
 
     socket.on(
       "stop-press",
-      (data: { action: string; timerId: string; message?: string }) => {
+      (data: {
+        action: string
+        timerId: string
+        message?: string
+        currentUnit: number
+      }) => {
         // Handle chat message logic here (e.g., save to a database)
         const { timerId } = data
         if (!timerId) {
@@ -56,6 +61,39 @@ export default function chatSocket(io: Server) {
         const { timerId } = data
         if (!timerId) {
           return ""
+        }
+        ioEmit(`timer-${timerId}`, data)
+      }
+    )
+
+    socket.on(
+      "cycle-tick",
+      (data: { action: string; timerId: string; second: number }) => {
+        const { timerId } = data
+        if (!timerId) {
+          return
+        }
+        ioEmit(`timer-${timerId}`, data)
+      }
+    )
+
+    socket.on(
+      "end-controller-pressed",
+      (data: { action: string; timerId: string }) => {
+        const { timerId } = data
+        if (!timerId) {
+          return
+        }
+        ioEmit(`timer-${timerId}`, data)
+      }
+    )
+
+    socket.on(
+      "end-production-pressed",
+      (data: { action: string; timerId: string }) => {
+        const { timerId } = data
+        if (!timerId) {
+          return
         }
         ioEmit(`timer-${timerId}`, data)
       }

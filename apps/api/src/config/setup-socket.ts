@@ -16,13 +16,7 @@ export function setupSocket(expressApp: Application) {
 }
 
 export async function ioEmit(topic: string, message: any) {
-  const sockets = await io.fetchSockets()
-  sockets.forEach((s) => {
-    s.emit(topic, {
-      ...message,
-      socketId: s.id,
-    })
-  })
+  io.emit(topic, message)
 }
 
 export function getIo(): Server {

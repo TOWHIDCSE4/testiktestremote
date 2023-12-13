@@ -195,15 +195,44 @@ const Timer = ({
           return current
         })
       }
-      if (data.action === "end-controller") {
+      if (data.action === "cycle-tick") {
+        if (!isControllerModalOpen && !isCycleClockRunning) {
+          runCycle()
+        }
+        setCycleClockInSeconds((current: number) => {
+          if (data.second > current) {
+            return data.second
+          }
+          return current
+        })
+      }
+      if (
+        data.action.includes("end-controller") ||
+        data.action.includes("end-production")
+      ) {
         stopInterval()
         setCycleClockInSeconds(0)
       }
       if (data.action === "stop-press") {
         stopInterval()
         setCycleClockInSeconds(0)
+        setUnitCreated((current) => {
+          if (data.currentUnit > current) {
+            return data.currentUnit
+          }
+          return current
+        })
         if (!isControllerModalOpen) {
-          setUnitCreated((current) => current + 1)
+          queryClient.invalidateQueries([
+            "timer-logs",
+            timer.locationId,
+            timer._id,
+          ])
+          queryClient.invalidateQueries([
+            "timer-logs-count",
+            timer.locationId,
+            timer._id,
+          ])
         }
       }
     }
