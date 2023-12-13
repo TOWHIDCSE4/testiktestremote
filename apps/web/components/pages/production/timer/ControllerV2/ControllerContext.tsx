@@ -362,10 +362,10 @@ export const ControllerContextProvider = ({
     }
     if (!isControllerClockRunning) {
       // Job & operator validation
-      // if (!getObjectId(jobTimer)) {
-      //   toast.error("Cannot start a controller without job assigned")
-      //   return
-      // }
+      if (!getObjectId(jobTimer)) {
+        toast.error("Cannot start a controller without job assigned")
+        return
+      }
       if (!getObjectId(operator)) {
         toast.error("Cannot start a controller without operator assigned")
         return
