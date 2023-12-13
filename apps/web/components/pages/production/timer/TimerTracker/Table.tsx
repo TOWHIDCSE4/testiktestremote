@@ -335,52 +335,52 @@ const Table = ({
             {Array.from({ length: 5 }).map((_, index) => (
               <tr key={index} className="border-b">
                 <td
-                  className={`py-10 pl-4 pr-3 ${
+                  className={`py-[35px] pl-4 pr-3 ${
                     index === 4 ? "" : "border-b"
                   }  text-sm font-medium sm:pl-6 lg:pl-8 `}
                 ></td>
                 <td
                   className={`px-8 ${
                     index === 4 ? "" : "border-b"
-                  } py-10 text-sm text-gray-500 flex flex-col `}
+                  } py-[35px] text-sm text-gray-500 flex flex-col `}
                 ></td>
                 <td
-                  className={`px-12 py-10 ${
+                  className={`px-12 py-[35px] ${
                     index === 4 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-14 py-10 ${
+                  className={`px-14 py-[35px] ${
                     index === 4 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-16 py-10 ${
+                  className={`px-16 py-[35px] ${
                     index === 4 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-10 py-10 ${
+                  className={`px-10 py-[35px] ${
                     index === 4 ? "" : "border-b"
                   } text-sm text-gray-500`}
                 ></td>
                 <td
-                  className={`px-14 py-10 ${
+                  className={`px-14 py-[35px] ${
                     index === 4 ? "" : "border-b"
                   } text-sm`}
                 ></td>
                 <td
-                  className={`px-12 py-10 ${
+                  className={`px-12 py-[35px] ${
                     index === 4 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`py-10 px-24 ${
+                  className={`py-[35px] px-24 ${
                     index === 4 ? "" : "border-b"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
                 <td
-                  className={`py-10 px-8 ${
+                  className={`py-[35px] px-8 ${
                     index === 4 ? "" : "border-b"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
@@ -393,52 +393,52 @@ const Table = ({
             {Array.from({ length: 4 }).map((_, index) => (
               <tr key={index} className="border-b">
                 <td
-                  className={`py-10 pl-4 pr-3 ${
+                  className={`py-9 pl-4 pr-3 ${
                     index === 3 ? "" : "border-b"
                   }  text-sm font-medium sm:pl-6 lg:pl-8 `}
                 ></td>
                 <td
-                  className={`px-8 ${
+                  className={`px-8 py-9 ${
                     index === 3 ? "" : "border-b"
-                  } py-10 text-sm text-gray-500 flex flex-col `}
+                  }  text-sm text-gray-500 flex flex-col `}
                 ></td>
                 <td
-                  className={`px-12 py-10 ${
-                    index === 3 ? "" : "border-b"
-                  } text-sm text-gray-500 `}
-                ></td>
-                <td
-                  className={`px-14 py-10 ${
+                  className={`px-12 py-[29px] ${
                     index === 3 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-16 py-10 ${
+                  className={`px-14 py-[29px] ${
                     index === 3 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-10 py-10 ${
+                  className={`px-16 py-[29px] ${
+                    index === 3 ? "" : "border-b"
+                  } text-sm text-gray-500 `}
+                ></td>
+                <td
+                  className={`px-10 py-[29px] ${
                     index === 3 ? "" : "border-b"
                   } text-sm text-gray-500`}
                 ></td>
                 <td
-                  className={`px-14 py-10 ${
+                  className={`px-14 py-[29px] ${
                     index === 3 ? "" : "border-b"
                   } text-sm`}
                 ></td>
                 <td
-                  className={`px-12 py-10 ${
+                  className={`px-12 py-[29px] ${
                     index === 3 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`py-10 px-24 ${
+                  className={` px-24 py-[29px] ${
                     index === 3 ? "" : "border-b"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
                 <td
-                  className={`py-10 px-8 ${
+                  className={`py-[29px] px-8 ${
                     index === 3 ? "" : "border-b"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
@@ -452,52 +452,52 @@ const Table = ({
             {Array.from({ length: 3 }).map((_, index) => (
               <tr key={index} className="border">
                 <td
-                  className={`py-10 pl-4 pr-3 ${
+                  className={`py-[35px] pl-4 pr-3 ${
                     index === 2 ? "" : "border-b"
                   }  text-sm font-medium sm:pl-6 lg:pl-8 `}
                 ></td>
                 <td
                   className={`px-8 ${
                     index === 2 ? "" : "border-b"
-                  } py-10 text-sm text-gray-500 flex flex-col `}
+                  } py-[35px] text-sm text-gray-500 flex flex-col `}
                 ></td>
                 <td
-                  className={`px-12 py-10 ${
+                  className={`px-12 py-[35px] ${
                     index === 2 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-14 py-10 ${
+                  className={`px-14 py-[35px] ${
                     index === 2 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-16 py-10 ${
+                  className={`px-16 py-[35px] ${
                     index === 2 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-10 py-10 ${
+                  className={`px-10 py-[35px] ${
                     index === 2 ? "" : "border-b"
                   } text-sm text-gray-500`}
                 ></td>
                 <td
-                  className={`px-14 py-10 ${
+                  className={`px-14 py-[35px] ${
                     index === 2 ? "" : "border-b"
                   } text-sm`}
                 ></td>
                 <td
-                  className={`px-12 py-10 ${
+                  className={`px-12 py-[35px] ${
                     index === 2 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`py-10 px-24 ${
+                  className={`py-[35px] px-24 ${
                     index === 2 ? "" : "border-b"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
                 <td
-                  className={`py-10 px-8 ${
+                  className={`py-[35px] px-8 ${
                     index === 2 ? "" : "border-b"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
@@ -511,52 +511,52 @@ const Table = ({
             {Array.from({ length: 2 }).map((_, index) => (
               <tr key={index} className="border">
                 <td
-                  className={`py-10 pl-4 pr-3 ${
+                  className={`py-[35px] pl-4 pr-3 ${
                     index === 1 ? "" : "border-b"
                   }  text-sm font-medium sm:pl-6 lg:pl-8 `}
                 ></td>
                 <td
                   className={`px-8 ${
                     index === 1 ? "" : "border-b"
-                  } py-10 text-sm text-gray-500 flex flex-col `}
+                  } py-[35px] text-sm text-gray-500 flex flex-col `}
                 ></td>
                 <td
-                  className={`px-12 py-10 ${
+                  className={`px-12 py-[35px] ${
                     index === 1 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-14 py-10 ${
+                  className={`px-14 py-[35px] ${
                     index === 1 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-16 py-10 ${
+                  className={`px-16 py-[35px] ${
                     index === 1 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-10 py-10 ${
+                  className={`px-10 py-[35px] ${
                     index === 1 ? "" : "border-b"
                   } text-sm text-gray-500`}
                 ></td>
                 <td
-                  className={`px-14 py-10 ${
+                  className={`px-14 py-[35px] ${
                     index === 1 ? "" : "border-b"
                   } text-sm`}
                 ></td>
                 <td
-                  className={`px-12 py-10 ${
+                  className={`px-12 py-[35px] ${
                     index === 1 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`py-10 px-24 ${
+                  className={`py-[35px] px-24 ${
                     index === 1 ? "" : "border-b"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
                 <td
-                  className={`py-10 px-8 ${
+                  className={`py-[35px] px-8 ${
                     index === 1 ? "" : "border-b"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
@@ -570,52 +570,52 @@ const Table = ({
             {Array.from({ length: 1 }).map((_, index) => (
               <tr key={index} className="border">
                 <td
-                  className={`py-10 pl-4 pr-3 ${
+                  className={`py-[35px] pl-4 pr-3 ${
                     index === 0 ? "" : "border-b"
                   }  text-sm font-medium sm:pl-6 lg:pl-8 `}
                 ></td>
                 <td
                   className={`px-8 ${
                     index === 0 ? "" : "border-b"
-                  } py-10 text-sm text-gray-500 flex flex-col `}
+                  } py-[29px] text-sm text-gray-500 flex flex-col `}
                 ></td>
                 <td
-                  className={`px-12 py-10 ${
+                  className={`px-12 py-[29px] ${
                     index === 0 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-14 py-10 ${
+                  className={`px-14 py-[29px] ${
                     index === 0 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-16 py-10 ${
+                  className={`px-16 py-[29px] ${
                     index === 0 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`px-10 py-10 ${
+                  className={`px-10 py-[29px] ${
                     index === 0 ? "" : "border-b"
                   } text-sm text-gray-500`}
                 ></td>
                 <td
-                  className={`px-14 py-10 ${
+                  className={`px-14 py-[29px] ${
                     index === 0 ? "" : "border-b"
                   } text-sm`}
                 ></td>
                 <td
-                  className={`px-12 py-10 ${
+                  className={`px-12py-[29px]0 ${
                     index === 0 ? "" : "border-b"
                   } text-sm text-gray-500 `}
                 ></td>
                 <td
-                  className={`py-10 px-24 ${
+                  className={`py-[29px] px-24 ${
                     index === 0 ? "" : "border-b"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
                 <td
-                  className={`py-10 px-8 ${
+                  className={`py-[29px] px-8 ${
                     index === 0 ? "" : "border-b"
                   } text-right text-sm font-medium sm:pr-6 lg:pr-8`}
                 ></td>
