@@ -214,8 +214,8 @@ const Timer = ({
         setCycleClockInSeconds(0)
       }
       if (data.action === "stop-press") {
-        stopInterval()
         setCycleClockInSeconds(0)
+        runCycle()
         setUnitCreated((current) => {
           if (data.currentUnit > current) {
             return data.currentUnit
