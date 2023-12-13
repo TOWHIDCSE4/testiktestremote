@@ -5,10 +5,11 @@ import * as Sentry from "@sentry/node"
 
 export const getOperatorList = async (req: Request, res: Response) => {
   try {
+    const { machineClassId, locationId } = req.query
     const query = {
       status: "Approved",
-      machineClassId: req.body.machineClassId,
-      location: req.body.locationId,
+      machineClassId,
+      locationId,
       role: { $ne: "Administrator" },
     }
     const usersCounts = await Users.find(query).countDocuments()
