@@ -178,6 +178,9 @@ const Timer = ({
         stopInterval()
       }
       if (data.action === "update-cycle" && data.timers.length > 0) {
+        if (!isControllerModalOpen && !isCycleClockRunning) {
+          runCycle()
+        }
         const timeZone = timer?.location?.timeZone
         const timerStart = dayjs.tz(
           dayjs(data.timers[0].createdAt),
