@@ -393,6 +393,12 @@ export const ControllerContextProvider = ({
   }
 
   const onStartCycle = () => {
+    if (socket) {
+      socket.emit(`start-press`, {
+        timerId,
+        action: "start-press",
+      })
+    }
     setClockMilliSeconds(0)
     startCycleClockInterval()
     setIsCycleClockRunning(true)
