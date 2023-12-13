@@ -5,9 +5,10 @@ import {
   UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
 import mongoose from "mongoose"
-import { groupBy, map } from "lodash"
+import { groupBy, map, chain } from "lodash"
 import * as Sentry from "@sentry/node"
 import dayjs from "dayjs"
+import { any } from "zod"
 
 export const paginated = async (req: Request, res: Response) => {
   const { page, locationId, status, selectedjob, search } = req.query
@@ -223,6 +224,41 @@ export const paginated = async (req: Request, res: Response) => {
 
         item.timerLogs = timerLogsByDate
         return item
+      })
+
+      getAllJobs.forEach((job, index) => {
+        let { timerLogs } = job
+        if (timerLogs.length) {
+          const groupedLogs = chain(timerLogs)
+            .groupBy((log) => log?.date?.split(":")[0]) // Extracting only the date part
+            .mapValues((dateGroup) =>
+              groupBy(
+                dateGroup.flatMap((log) => log.items),
+                "operatorName"
+              )
+            )
+            .value()
+
+          const maping = Object.values(groupedLogs)
+            .map((item) => {
+              const array = Object.values(item).flat()
+              let [itm] = array
+              if (!itm) {
+                return []
+              }
+              const result = {
+                date: dayjs(new Date(itm?.createdAt)).format(
+                  "YYYY-MM-DD:HH:mm"
+                ),
+                items: [itm],
+                operatorName: itm?.operatorName,
+                count: array.length,
+              }
+              return result
+            })
+            .filter(Boolean)
+          getAllJobs[index].timerLogs = maping
+        }
       })
 
       res.json({

@@ -78,7 +78,7 @@ const TabTableDetail: FC<{ job: any; selected?: boolean }> = ({
                       ? log.items[0].machineId
                       : log.items[0].machineId?.name}
                   </td>
-                  <td>{log.items.length}</td>
+                  <td>{log.count}</td>
                   {/* <td>4</td> */}
                   <td>
                     {/* Pat Keo */}
