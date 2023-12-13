@@ -1,10 +1,13 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { HiChevronDoubleLeft } from "react-icons/hi"
+import { ControllerContext } from "./ControllerContext"
 
 export default function EndProdMenuComponent({
   onClick,
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const [isOpen, setIsOpen] = useState<boolean>()
+  const { variant, controllerDetailData } = useContext(ControllerContext)
+
   return (
     <div
       className={`absolute right-0 w-56 bottom-10 transition-all ${

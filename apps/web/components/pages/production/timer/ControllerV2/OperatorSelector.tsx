@@ -13,7 +13,7 @@ import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
 import { useQueryClient } from "@tanstack/react-query"
 
 export default function OperatorSelectComponent() {
-  const { timerId } = useContext(ControllerContext)
+  const { timerId, variant } = useContext(ControllerContext)
   const { data: timerDetails, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
   const queryClient = useQueryClient()
@@ -75,7 +75,7 @@ export default function OperatorSelectComponent() {
           })
           ?.slice(0, 30)
   return (
-    <FancyButtonComponent trigger={"off"}>
+    <FancyButtonComponent trigger={"off"} intent={variant}>
       <Combobox value={selectedOperator} onChange={setSelectedOperator}>
         <Combobox.Input
           as={Fragment}

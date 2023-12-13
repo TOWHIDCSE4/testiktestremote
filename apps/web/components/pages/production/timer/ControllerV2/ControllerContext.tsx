@@ -53,6 +53,7 @@ export interface ControllerDetailData {
 
 export interface ControllerContextProps {
   variant: "idle" | "active" | "danger"
+  progress: number | undefined
   controllerDetailData: Partial<ControllerDetailData>
   operator: any
   cycleClockSeconds: number
@@ -86,6 +87,7 @@ export interface ControllerContextProps {
 
 export const ControllerContext = createContext<ControllerContextProps>({
   variant: "idle",
+  progress: undefined,
   controllerDetailData: {},
   operator: {},
   cycleClockSeconds: 0,
@@ -529,10 +531,34 @@ export const ControllerContextProvider = ({
   const [variant, setVariant] =
     useState<ControllerContextProps["variant"]>("idle")
 
+  const [progress, setProgress] = useState<number>()
+
+  useEffect(() => {
+    console.log(controllerDetailData.averageTime, cycleClockSeconds)
+    if (cycleClockSeconds == 0 || controllerDetailData.averageTime == 0) {
+      setProgress(0)
+    } else
+      setProgress(
+        Math.floor((cycleClockSeconds * 100) / controllerDetailData.averageTime)
+      )
+  }, [controllerDetailData.averageTime, cycleClockSeconds])
+
+  useEffect(() => {
+    console.log({ isControllerClockRunning, progress })
+    setVariant(
+      !isControllerClockRunning || progress === undefined
+        ? "idle"
+        : progress > 100
+        ? "danger"
+        : "active"
+    )
+  }, [progress, isControllerClockRunning])
+
   return (
     <ControllerContext.Provider
       value={{
         variant,
+        progress,
         controllerDetailData,
         operator: currentOperator,
         jobs: timerJobs?.items || [],
