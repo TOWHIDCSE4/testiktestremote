@@ -344,7 +344,7 @@ export const ControllerContextProvider = ({
       socket.emit(`stop-press`, {
         timerId,
         action: "stop-press",
-        currentUnit: c + 1,
+        currentUnit: unitCreated + 1,
       })
     }
     setUnitCreated((c) => {
