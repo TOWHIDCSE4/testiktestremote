@@ -184,6 +184,9 @@ const Timer = ({
       if (data.action === "stop-press") {
         stopInterval()
         setCycleClockInSeconds(0)
+        if (!isControllerModalOpen) {
+          setUnitCreated((current) => current + 1)
+        }
       }
     }
     socket?.on(`timer-${timer._id}`, runSocket)

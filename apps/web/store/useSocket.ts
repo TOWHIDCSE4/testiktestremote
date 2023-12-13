@@ -30,7 +30,7 @@ export const useSocket = create(
             return
           }
           socket.connect()
-        }, 1500)
+        }, 500)
       }
       socket.on("connect", () => {
         stopReconnectInterval()
@@ -49,6 +49,9 @@ export const useSocket = create(
       socket.io.on("reconnect", () => {
         stopReconnectInterval()
         console.log("Socket Reconnected")
+      })
+      socket.io.on("reconnect_failed", () => {
+        console.log("Socket Error while trying to reconnect")
       })
       socket.on("connect_error", () => {
         initReconnect()
