@@ -31,7 +31,7 @@ export default function ConsoleComponent({
             }}
             className={`flex items-center flex-shrink-0 px-5 py-3 space-x-2 rounded-t-lg ${
               !isLogsOpen
-                ? `bg-${color} border-b`
+                ? `bg-${color.toUpperCase()} border-b`
                 : `bg-transparent border border-b-0`
             } border-dark-blue`}
           >
@@ -43,7 +43,7 @@ export default function ConsoleComponent({
             }}
             className={`flex items-center flex-shrink-0 px-5 py-3 space-x-2 rounded-t-lg ${
               isLogsOpen
-                ? `bg-${color} border-b`
+                ? `bg-${color.toUpperCase()} border-b`
                 : `bg-transparent border border-b-0`
             } border-dark-blue`}
           >
