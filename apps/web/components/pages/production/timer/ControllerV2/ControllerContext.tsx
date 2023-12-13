@@ -370,16 +370,6 @@ export const ControllerContextProvider = ({
     }
   }
 
-  useEffect(() => {
-    if (socket && clockSeconds && timerId) {
-      socket.emit(`cycle-tick`, {
-        timerId,
-        action: "cycle-tick",
-        second: clockSeconds,
-      })
-    }
-  }, [socket, clockSeconds, timerId])
-
   const onStopCycleWithReasons = () => {
     timeLogCall(getObjectId(jobTimer?.item))
     stopCycleClockInterval()
@@ -413,6 +403,12 @@ export const ControllerContextProvider = ({
       timerId,
     }
     if (!isControllerClockRunning) {
+      if (socket) {
+        socket.emit(`start-press`, {
+          timerId,
+          action: "start-press",
+        })
+      }
       // Job & operator validation
       if (!getObjectId(jobTimer?.item)) {
         toast.error("Cannot start a controller without job assigned")
