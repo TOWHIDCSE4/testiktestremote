@@ -118,6 +118,7 @@ const Timer = ({
   const controllerDetailData = isTimerDetailDataLoading
     ? {}
     : {
+        locationName: timerDetailData?.item?.locationId.name,
         factoryName: timerDetailData?.item?.factoryId.name,
         machineName: timerDetailData?.item?.machineId.name,
         partName: timerDetailData?.item?.partId.name,

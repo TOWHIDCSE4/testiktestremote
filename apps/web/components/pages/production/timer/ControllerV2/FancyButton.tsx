@@ -79,11 +79,13 @@ export default function FancyButtonComponent({
   trigger,
   textSize,
   padding,
+  ...buttonProps
 }: { children: ReactNode } & React.ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof internalCV> &
   VariantProps<typeof buttonCV>) {
   return (
     <button
+      {...buttonProps}
       onClick={onClick}
       className={`rounded-lg overflow-hidden border-2 border-[#5D5D5D] ${buttonCV(
         {
