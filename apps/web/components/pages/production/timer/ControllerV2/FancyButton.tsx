@@ -18,8 +18,18 @@ const buttonCV = cva("transition-all", {
         "active:bg-[#8d4c14]",
         "disabled:active:scale-100",
       ],
-      active: ["bg-green-500", "active:scale-95", "disabled:active:scale-100"],
-      danger: ["bg-red-600", "active:scale-95", "disabled:active:scale-100"],
+      active: [
+        "bg-green-500",
+        "active:bg-green-600",
+        "active:scale-95",
+        "disabled:active:scale-100",
+      ],
+      danger: [
+        "bg-red-600",
+        "active:bg-red-700",
+        "active:scale-95",
+        "disabled:active:scale-100",
+      ],
     },
     trigger: {
       off: "",

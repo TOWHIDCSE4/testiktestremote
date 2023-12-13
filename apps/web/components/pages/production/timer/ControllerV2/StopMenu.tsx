@@ -36,20 +36,22 @@ export default function StopMenuComponent({
     >
       <div className="relative border-[#5d5d5d] h-[190px] border-2 bg-[#0f2034] flex rounded-l-lg border-r-0">
         <div className="relative flex items-center h-full px-1 text-center">
-          <button
-            onClick={() => {
-              toggleOpen()
-            }}
+          <div
             className="absolute left-7 text-sm font-semibold text-white -translate-x-[50%]"
             // style={{ writingMode: "vertical-lr" }}
           >
             <div className="w-40 -rotate-90 break-keep">PAUSE PRODUCTION</div>
-          </button>
-          <div className="flex items-center justify-center pr-5">
+          </div>
+          <button
+            className="flex items-center justify-center pr-5"
+            onClick={() => {
+              toggleOpen()
+            }}
+          >
             <HiChevronDoubleLeft
               className={`transition-colors rotate-180 w-3 h-3 mx-auto mt-1 text-${color} font-bold`}
             />
-          </div>
+          </button>
         </div>
         <div
           className={`transition-colors border-${color} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1 !flex-shrink-0`}
