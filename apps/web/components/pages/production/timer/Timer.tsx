@@ -204,6 +204,9 @@ const Timer = ({
         stopInterval()
         setCycleClockInSeconds(0)
       }
+      if (data.action === "start-press") {
+        runCycle()
+      }
       if (data.action === "stop-press") {
         stopInterval()
         setCycleClockInSeconds(0)
