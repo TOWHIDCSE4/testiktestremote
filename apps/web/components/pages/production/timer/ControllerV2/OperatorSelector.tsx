@@ -3,15 +3,13 @@ import FancyButtonComponent from "./FancyButton"
 import { Fragment, useContext, useEffect, useRef, useState } from "react"
 import { ControllerContext } from "./ControllerContext"
 import { Combobox } from "@headlessui/react"
-import useUsers from "../../../../../hooks/users/useUsers"
 import { T_User } from "custom-validator"
 import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
 import toast from "react-hot-toast"
-import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
-import { useQueryClient } from "@tanstack/react-query"
 import useColor from "./useColor"
 import { PiUserPlus } from "react-icons/pi"
 import useGetOperatorList from "../../../../../hooks/users/useGetOperatorList"
+import useUsers from "../../../../../hooks/users/useUsers"
 
 export default function OperatorSelectComponent() {
   const searchRef = useRef<HTMLInputElement>(null)
@@ -20,7 +18,6 @@ export default function OperatorSelectComponent() {
 
   const { data: timerDetails, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
-  const { data: users, isLoading: isUsersLoading } = useGetOperatorList()
   const [operatorQuery, setOperatorQuery] = useState("")
   const [isDirty, setIsDirty] = useState(false)
   const [isDirtyHandled, setIsDirtyHandled] = useState(false)
@@ -32,6 +29,8 @@ export default function OperatorSelectComponent() {
       " " +
       timerDetails?.item?.operator?.lastName,
   })
+  const { data: users, isLoading: isUsersLoading } = useUsers()
+  // const { data: users, isLoading: isUsersLoading } = useGetOperatorList(timerDetails?.item?.machineClassId, timerDetails?.item?.locationId)
 
   useEffect(() => {
     if (
@@ -128,7 +127,10 @@ export default function OperatorSelectComponent() {
           <HiChevronDoubleDown className={`text-${color}`} />
         </Combobox.Button>
         {filteredOperator && filteredOperator.length > 0 ? (
-          <Combobox.Options className="absolute z-10 bottom-1 max-h-20 xl:w-80 ipadair:w-[250px] 2xl:w-[350px] overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Combobox.Options
+            className="absolute z-10 bottom-1 max-h-20 xl:w-80 ipadair:w-[250px] 2xl:w-[350px] overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+            style={{ width: "200px" }} // Adjust the width as needed
+          >
             {filteredOperator.map((item: T_User, index: number) => (
               <Combobox.Option
                 key={index}
