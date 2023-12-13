@@ -152,6 +152,7 @@ const Timer = ({
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const runSocket = (data: any) => {
+      console.log("socket got event", data)
       if (data.action === "add") {
         runCycle()
       }
@@ -214,6 +215,7 @@ const Timer = ({
         setCycleClockInSeconds(0)
       }
       if (data.action === "stop-press") {
+        stopInterval()
         setCycleClockInSeconds(0)
         runCycle()
         setUnitCreated((current) => {
