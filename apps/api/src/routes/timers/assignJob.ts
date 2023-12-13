@@ -20,6 +20,7 @@ export const assignJob = async (req: Request, res: Response) => {
       const getDayJobTimer = await JobTimer.findOne({
         timerId: req.body.timerId,
       })
+      console.log(getDayJobTimer)
       const job = await Jobs.findOne({
         _id: getDayJobTimer?.jobId,
         $and: [
