@@ -192,8 +192,8 @@ export const ControllerContextProvider = ({
   const { mutate: assignJobToTimer } = useAssignJobToTimer()
   const { mutate: updateTimerJob } = useUpdateJobTimer()
 
-  const [controllerClockSeconds, setControllerClockSeconds] = useState(0)
-  const [cycleClockSeconds, setCycleClockSeconds] = useState(0)
+  const [clockSeconds, setClockSeconds] = useState(0)
+  const [clockMilliSeconds, setClockMilliSeconds] = useState(0)
   const [isControllerClockRunning, setIsControllerClockRunning] =
     useState(false)
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
@@ -273,8 +273,8 @@ export const ControllerContextProvider = ({
   const onEndProduction = () => {
     stopControllerClockInterval()
     stopCycleClockInterval()
-    setControllerClockSeconds(0)
-    setCycleClockSeconds(0)
+    setClockSeconds(0)
+    setClockMilliSeconds(0)
     setIsControllerClockRunning(false)
     setIsCycleClockRunning(false)
     endControllerTimer(timerId)
@@ -296,7 +296,7 @@ export const ControllerContextProvider = ({
     stopControllerClockInterval()
     setIsControllerClockRunning(true)
     controllerClockIntervalRef.current = setInterval(() => {
-      setControllerClockSeconds((prev) => prev + 1)
+      setClockSeconds((prev) => prev + 1)
     }, 1000)
   }
 
@@ -304,12 +304,14 @@ export const ControllerContextProvider = ({
     stopCycleClockInterval()
     setIsCycleClockRunning(true)
     cycleClockIntervalRef.current = setInterval(() => {
-      setCycleClockSeconds((prev) => prev + 0.1)
+      setClockMilliSeconds((prev) => {
+        return prev + 0.1
+      })
     }, 100)
   }
 
   const onStopCycle = () => {
-    setCycleClockSeconds(0)
+    setClockMilliSeconds(0)
     setUnitCreated((c) => c + 1)
     startCycleClockInterval()
     if (!hasControllerTimer) {
@@ -335,7 +337,7 @@ export const ControllerContextProvider = ({
     stopCycleClockInterval()
     setIsCycleClockRunning(false)
     setStopReasons([])
-    setCycleClockSeconds(0)
+    setClockMilliSeconds(0)
     endCycleTimer(timerId)
     timeLogCall(getObjectId(jobTimer?.item))
     if (onStopCycleWithReasonsProps) {
@@ -344,7 +346,7 @@ export const ControllerContextProvider = ({
   }
 
   const onStartCycle = () => {
-    setCycleClockSeconds(0)
+    setClockMilliSeconds(0)
     startCycleClockInterval()
     setIsCycleClockRunning(true)
     // TODO:/JAMES should confirm its context
@@ -441,11 +443,11 @@ export const ControllerContextProvider = ({
           factoryId: timerDetailData?.item?.factoryId,
           jobId: jobId,
           partId: timerDetailData?.item?.partId,
-          time: cycleClockSeconds,
+          time: clockMilliSeconds,
           operator: timerDetailData?.item?.operator || null,
           operatorName: timerDetailData?.item?.operator?.firstName as string,
           status:
-            (timerDetailData?.item?.partId.time as number) > cycleClockSeconds
+            (timerDetailData?.item?.partId.time as number) > clockMilliSeconds
               ? "Gain"
               : "Loss",
           stopReason: stopReasons,
@@ -466,11 +468,11 @@ export const ControllerContextProvider = ({
       factoryId: timerDetailData?.item?.factoryId._id as string,
       jobId: jobId,
       partId: timerDetailData?.item?.partId._id as string,
-      time: cycleClockSeconds,
+      time: clockMilliSeconds,
       operator: (timerDetailData?.item?.operator?._id as string) || null,
       operatorName: timerDetailData?.item?.operator?.firstName as string,
       status:
-        (timerDetailData?.item?.partId.time as number) > cycleClockSeconds
+        (timerDetailData?.item?.partId.time as number) > clockMilliSeconds
           ? "Gain"
           : "Loss",
       stopReason: stopReasons.length
@@ -481,16 +483,19 @@ export const ControllerContextProvider = ({
   }
 
   useEffect(() => {
-    const hoursLapse =
-      controllerClockSeconds > 3600 ? controllerClockSeconds / 3600 : 1
-    setTotals((current) => ({
-      ...current,
-      totalTons: unitCreated * controllerDetailData.weight,
-      unitsPerHour: unitCreated / Math.round(hoursLapse),
-      tonsPerHour:
-        (unitCreated * controllerDetailData.weight) / Math.round(hoursLapse),
-    }))
-  }, [controllerClockSeconds, controllerDetailData.weight, unitCreated])
+    if (timerDetailData?.item?.createdAt) {
+      const noOfHours = dayjs(new Date()).diff(
+        new Date(timerDetailData?.item?.createdAt),
+        "hours"
+      )
+      setTotals((current) => ({
+        ...current,
+        totalTons: unitCreated * controllerDetailData.weight,
+        unitsPerHour: noOfHours / unitCreated,
+        tonsPerHour: (noOfHours / unitCreated) * controllerDetailData.weight,
+      }))
+    }
+  }, [unitCreated])
 
   useEffect(() => {
     // on open
@@ -499,7 +504,7 @@ export const ControllerContextProvider = ({
       isControllerModalOpen &&
       initialCycleClockSeconds > 0
     ) {
-      setCycleClockSeconds(initialCycleClockSeconds)
+      setClockMilliSeconds(initialCycleClockSeconds)
       if (!isCycleClockRunning) {
         startCycleClockInterval()
         setIsCycleClockRunning(true)
@@ -515,7 +520,7 @@ export const ControllerContextProvider = ({
 
     // on close
     if (isControllerModalOpenRef.current && !isControllerModalOpen) {
-      onControllerModalClosed(unitCreated, cycleClockSeconds)
+      onControllerModalClosed(unitCreated, clockMilliSeconds)
     }
     isControllerModalOpenRef.current = isControllerModalOpen
   }, [
@@ -540,10 +545,10 @@ export const ControllerContextProvider = ({
         isControllerJobLoading,
         onJobChange,
         isChangingJob,
-        cycleClockSeconds,
+        cycleClockSeconds: clockMilliSeconds,
         hasControllerTimer,
         isCycleClockRunning,
-        controllerClockSeconds,
+        controllerClockSeconds: clockSeconds,
         timerId,
         unitCreated,
         setStopReasons,
