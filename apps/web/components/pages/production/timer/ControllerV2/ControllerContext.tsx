@@ -335,6 +335,9 @@ export const ControllerContextProvider = ({
   }
 
   const onStopCycle = () => {
+    if (isStopDisabled) {
+      return
+    }
     timeLogCall(getObjectId(jobTimer?.item))
     setClockMilliSeconds(0)
     setUnitCreated((c) => {
