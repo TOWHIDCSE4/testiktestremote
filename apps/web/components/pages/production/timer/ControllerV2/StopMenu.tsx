@@ -34,27 +34,27 @@ export default function StopMenuComponent({
         !isOpen ? "translate-x-full" : "translate-x-0"
       }`}
     >
-      <div className="border-[#5d5d5d] h-[190px] border-2 bg-[#0f2034] flex rounded-l-lg border-r-0">
+      <div className="relative border-[#5d5d5d] h-[190px] border-2 bg-[#0f2034] flex rounded-l-lg border-r-0">
         <button
           onClick={() => {
             toggleOpen()
           }}
-          className="flex items-center px-1 text-center rotate-180"
+          className="relative flex items-center h-full px-1 text-center"
         >
-          <button className="flex items-center justify-center">
-            <HiChevronDoubleLeft
-              className={`transition-colors w-3 h-3 mx-auto mt-1 text-${color} font-bold`}
-            />
-          </button>
-          <button
-            className="text-sm font-semibold text-white"
-            style={{ writingMode: "vertical-lr" }}
+          <div
+            className="absolute left-7 text-sm font-semibold text-white -translate-x-[50%]"
+            // style={{ writingMode: "vertical-lr" }}
           >
-            PAUSE PRODUCTION
-          </button>
+            <div className="w-40 -rotate-90 break-keep">PAUSE PRODUCTION</div>
+          </div>
+          <div className="flex items-center justify-center pr-5">
+            <HiChevronDoubleLeft
+              className={`transition-colors rotate-180 w-3 h-3 mx-auto mt-1 text-${color} font-bold`}
+            />
+          </div>
         </button>
         <div
-          className={`transition-colors border-${color} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1`}
+          className={`transition-colors border-${color} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1 !flex-shrink-0`}
         >
           <div className="px-4 py-2">
             {stopReasonsArr.map((item, key) => (
