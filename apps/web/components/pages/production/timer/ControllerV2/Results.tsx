@@ -1,4 +1,3 @@
-import { cva, type VariantProps } from "class-variance-authority"
 import { Lato } from "next/font/google"
 import FancyButtonComponent from "./FancyButton"
 import { useContext } from "react"
