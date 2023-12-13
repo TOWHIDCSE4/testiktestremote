@@ -28,6 +28,7 @@ const TimerLogsModal = ({
     : 1
   const data =
     timerLogs?.items
+      ?.toReversed()
       ?.map((log: any, i: number) => ({
         ...log,
         sortedCycle: timerLogs?.items?.length - i,
