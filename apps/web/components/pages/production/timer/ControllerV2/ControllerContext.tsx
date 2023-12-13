@@ -50,6 +50,7 @@ export interface ControllerDetailData {
   machineName: string
   partName: string
   averageTime: number
+  locationName: string
   weight: number
 }
 
