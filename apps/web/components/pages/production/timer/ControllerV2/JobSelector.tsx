@@ -57,7 +57,11 @@ const JobSelectComponent = () => {
       >
         <option value="select_job">Select Job</option>
         {jobOptions.map((option) => (
-          <option value={option.value} key={option.label}>
+          <option
+            value={option.value}
+            key={option.label}
+            selected={getObjectId(controllerJob) === option.value}
+          >
             {option.label}
           </option>
         ))}
