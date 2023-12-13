@@ -66,16 +66,23 @@ export default function chatSocket(io: Server) {
       }
     )
 
-    socket.on(
-      "cycle-tick",
-      (data: { action: string; timerId: string; second: number }) => {
-        const { timerId } = data
-        if (!timerId) {
-          return
-        }
-        ioEmit(`timer-${timerId}`, data)
+    // socket.on(
+    //   "cycle-tick",
+    //   (data: { action: string; timerId: string; second: number }) => {
+    //     const { timerId } = data
+    //     if (!timerId) {
+    //       return
+    //     }
+    //     ioEmit(`timer-${timerId}`, data)
+    //   }
+    // )
+    socket.on("start-press", (data: { action: string; timerId: string }) => {
+      const { timerId } = data
+      if (!timerId) {
+        return
       }
-    )
+      ioEmit(`timer-${timerId}`, data)
+    })
 
     socket.on(
       "end-controller-pressed",

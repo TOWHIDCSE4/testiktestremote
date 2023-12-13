@@ -196,17 +196,7 @@ const Timer = ({
           return current
         })
       }
-      if (data.action === "cycle-tick") {
-        if (!isControllerModalOpen && !isCycleClockRunning) {
-          runCycle()
-        }
-        setCycleClockInSeconds((current: number) => {
-          if (data.second > current) {
-            return data.second
-          }
-          return current
-        })
-      }
+
       if (
         data.action.includes("end-controller") ||
         data.action.includes("end-production")
