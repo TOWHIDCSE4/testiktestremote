@@ -1,4 +1,4 @@
-import { useContext, useState } from "react"
+import { useContext, useRef, useState } from "react"
 import { ControllerContext } from "./ControllerContext"
 import { getObjectId } from "../../../../../helpers/ids"
 import FancyButtonComponent from "./FancyButton"
@@ -24,6 +24,7 @@ const JobSelectComponent = () => {
 
   const { data: timerDetails, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
+  const dropdownRef = useRef<HTMLSelectElement>()
   const partId =
     typeof timerDetails?.partId === "object" && timerDetails?.partId._id
       ? timerDetails?.partId._id
@@ -38,8 +39,15 @@ const JobSelectComponent = () => {
     <FancyButtonComponent trigger={"off"} intent={variant}>
       <select
         disabled={isJobsLoading || isControllerJobLoading || isChangingJob}
+        ref={dropdownRef as any}
         onChange={(e) => {
-          if (e.target.value === "Add New Job") {
+          if (e.target.value === "select_job") {
+            return
+          }
+          if (e.target.value === "add_job") {
+            if (dropdownRef.current) {
+              dropdownRef.current.value = "select_job"
+            }
             setOpenNewJobModal(true)
           } else {
             onJobChange(jobs.find((job) => getObjectId(job) === e.target.value))
@@ -47,12 +55,13 @@ const JobSelectComponent = () => {
         }}
         className="bg-transparent p-0 border-none max-w-[12rem] overflow-hidden text-[#7a828d] text-normal italic"
       >
+        <option value="select_job">Select Job</option>
         {jobOptions.map((option) => (
           <option value={option.value} key={option.label}>
             {option.label}
           </option>
         ))}
-        <option>Add New Job</option>
+        <option value="add_job">Add New Job</option>
       </select>
       <NewJobModal
         isOpen={openNewJobModal}
@@ -64,7 +73,12 @@ const JobSelectComponent = () => {
             : "Loading..."
         }
         locationId={locationId}
-        onClose={() => setOpenNewJobModal(false)}
+        onClose={() => {
+          if (dropdownRef.current) {
+            dropdownRef.current.value = "select_job"
+          }
+          setOpenNewJobModal(false)
+        }}
         partId={partId}
         timerDetails={timerDetails?.item}
         timer={true}
