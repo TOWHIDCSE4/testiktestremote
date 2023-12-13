@@ -340,14 +340,14 @@ export const ControllerContextProvider = ({
     }
     timeLogCall(getObjectId(jobTimer?.item))
     setClockMilliSeconds(0)
+    if (socket) {
+      socket.emit(`stop-press`, {
+        timerId,
+        action: "stop-press",
+        currentUnit: c + 1,
+      })
+    }
     setUnitCreated((c) => {
-      if (socket) {
-        socket.emit(`stop-press`, {
-          timerId,
-          action: "stop-press",
-          currentUnit: c + 1,
-        })
-      }
       return c + 1
     })
     startCycleClockInterval()
