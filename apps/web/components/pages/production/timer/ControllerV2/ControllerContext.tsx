@@ -43,6 +43,7 @@ import dayjs from "dayjs"
 import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer"
 import toast from "react-hot-toast"
 import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
+import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -85,6 +86,7 @@ export interface ControllerContextProps {
   setReadingMessages: (messages?: Array<string>) => void
   addReadingMessage: (message: string) => void
   onJobChange: (jobId: string) => void
+  onOperatorChange: (operatorId: string) => void
 }
 
 export const ControllerContext = createContext<ControllerContextProps>({
@@ -120,6 +122,7 @@ export const ControllerContext = createContext<ControllerContextProps>({
   setReadingMessages(messages) {},
   addReadingMessage(message) {},
   onJobChange: () => {},
+  onOperatorChange: () => {},
 })
 
 type ControllerProviderProps = PropsWithChildren & {
@@ -194,6 +197,7 @@ export const ControllerContextProvider = ({
   const { mutate: endAddCycleTimer } = useEndAddCycleTimer()
   const { mutate: endCycleTimer } = useEndCycleTimer()
   const { mutate: assignJobToTimer } = useAssignJobToTimer()
+  const { mutate: updateTimerOperator } = useUpdateTimer()
   const { mutate: updateJobTimer, isLoading: isChangingJob } =
     useUpdateJobTimer()
 
@@ -416,6 +420,35 @@ export const ControllerContextProvider = ({
     })
   }
 
+  const onOperatorChange = (operator: string) => {
+    console.log(
+      "🚀 ~ file: ControllerContext.tsx:405 ~ onOperatorChange ~ operator:",
+      operator
+    )
+    // setIsChangingJob(true)
+    updateTimerOperator(
+      { ...timerDetailData?.item, operator },
+      {
+        onError: (e) => {
+          console.log(
+            "🚀 ~ file: ControllerContext.tsx:409 ~ onOperatorChange ~ e:",
+            e
+          )
+          toast.error(
+            "Error while trying to change operator for this controller"
+          )
+        },
+        onSuccess: () => {
+          toast.success("Operator updated")
+        },
+        onSettled: () => {
+          // setIsChangingJob(false)
+          queryClient.invalidateQueries(["timer", timerId])
+        },
+      }
+    )
+  }
+
   useEffect(() => {
     if (timerDetailData) {
       assignJobToTimer(
@@ -576,6 +609,7 @@ export const ControllerContextProvider = ({
         isJobsLoading: isTimerJobsLoading,
         controllerJob: jobTimer?.item,
         isControllerJobLoading,
+        onOperatorChange,
         onJobChange,
         isChangingJob,
         cycleClockSeconds,
