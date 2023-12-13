@@ -104,7 +104,6 @@ export default function FancyButtonComponent({
           trigger,
         }
       )} disabled:bg-stone-400`}
-      {...resProps}
     >
       <div
         className={`rounded-md outline outline-2 outline-[#5d5d5d] ${className} ${internalCV(

@@ -66,7 +66,7 @@ const ControllerV2 = ({
     >
       <Header
         isLoading={false}
-        locationName={controllerDetailData.locationName}
+        locationName={controllerDetailData.locationName ?? ""}
         setOpenTimerLogs={() => setIsTimerLogsModalOpen(true)}
         onClose={onClose}
         onFullScreen={onFullScreen}
