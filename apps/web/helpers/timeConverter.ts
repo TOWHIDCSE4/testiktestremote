@@ -32,3 +32,14 @@ export function hourMinuteSecondMilli(
       : millisecondsOnly[1],
   ]
 }
+
+export function hourMinuteSecondInNumber(timeInSeconds: number): number[] {
+  let hours: number = Math.floor(timeInSeconds / 3600)
+  let minutes: number = Math.floor((timeInSeconds - hours * 3600) / 60)
+  let seconds: number = Math.trunc(timeInSeconds - hours * 3600 - minutes * 60)
+  let milliseconds: number = Math.floor(
+    (timeInSeconds - hours * 3600 - minutes * 60 - seconds) * 100
+  )
+
+  return [hours, minutes, seconds, milliseconds]
+}

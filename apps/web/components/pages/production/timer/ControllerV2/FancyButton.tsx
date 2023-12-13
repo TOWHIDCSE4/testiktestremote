@@ -12,14 +12,24 @@ const lato = Lato({
 const buttonCV = cva("div", {
   variants: {
     intent: {
-      idle: ["bg-[#DA8D00]", "active:bg-orange"],
+      idle: ["bg-[#DA8D00]"],
       active: ["bg-green-500"],
       danger: ["bg-red-600"],
     },
+    trigger: {
+      off: "",
+      on: "",
+    },
     size: {
-      sm: ["pr-4", "active:pr-2 active:mr-2"],
-      md: ["pr-10", "active:pr-5 active:mr-5"],
-      lg: ["pr-15", "active:pr-7 active:mr-8"],
+      sm: [
+        "pr-4",
+        // , "active:pr-0 active:pl-4"
+      ],
+      md: ["pr-10", , "active:pr-0 active:pl-10"],
+      lg: [
+        "pr-15",
+        // , "active:pr-0 active:pl-15"
+      ],
     },
     textSize: {
       none: [],
@@ -28,10 +38,18 @@ const buttonCV = cva("div", {
       lg: ["text-[3rem]"],
     },
   },
+  compoundVariants: [
+    {
+      size: "sm",
+      trigger: "on",
+      className: "active:pr-0 active:pl-10",
+    },
+  ],
   defaultVariants: {
     textSize: "none",
     intent: "idle",
     size: "sm",
+    trigger: "on",
   },
 })
 
@@ -54,6 +72,7 @@ export default function FancyButtonComponent({
   className,
   size,
   intent,
+  trigger,
   textSize,
   padding,
 }: { children: ReactNode } & React.ButtonHTMLAttributes<HTMLButtonElement> &
@@ -67,6 +86,7 @@ export default function FancyButtonComponent({
           size,
           textSize,
           intent,
+          trigger,
         }
       )}`}
     >
