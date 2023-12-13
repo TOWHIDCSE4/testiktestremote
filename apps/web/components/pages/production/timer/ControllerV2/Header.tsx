@@ -11,6 +11,7 @@ import { ControllerContext } from "./ControllerContext"
 
 import { LuMaximize, LuMenu, LuMoon } from "react-icons/lu"
 import { hourMinuteSecond } from "../../../../../helpers/timeConverter"
+import useColor from "./useColor"
 
 const Header = ({
   isLoading,
@@ -27,6 +28,9 @@ const Header = ({
 }) => {
   const { timerLogs, controllerClockSeconds, variant, progress } =
     useContext(ControllerContext)
+
+  const color = useColor({ variant })
+
   const controllerClockArray = hourMinuteSecond(controllerClockSeconds)
 
   const [mode, setMode] = React.useState("")
@@ -41,7 +45,7 @@ const Header = ({
   }
 
   return (
-    <div className="relative flex items-center justify-between w-full py-5 text-white px-9 bg-dark-blue ">
+    <div className="relative flex flex-wrap items-center justify-between w-full py-5 text-white px-9 bg-dark-blue ">
       <div>
         <Image
           src={
@@ -95,19 +99,10 @@ const Header = ({
         <MdClose onClick={() => onClose()} size={24} color="white" />
       </button>
       <div className="absolute bottom-0 left-0 w-full h-4 overflow-hidden">
-        {!progress || progress == 0 ? (
-          <></>
-        ) : (
-          <div
-            className={`h-4 w-[${progress}]% bg-${
-              variant == "idle"
-                ? "yellow-700"
-                : variant == "danger"
-                ? "red-600"
-                : "green-600"
-            }`}
-          ></div>
-        )}
+        <div
+          className={`h-4 top-0 left-0 bg-${color}`}
+          style={{ width: `${progress}%` }}
+        ></div>
       </div>
     </div>
   )

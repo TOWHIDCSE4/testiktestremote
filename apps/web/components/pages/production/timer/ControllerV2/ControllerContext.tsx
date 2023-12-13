@@ -564,8 +564,10 @@ export const ControllerContextProvider = ({
 
   useEffect(() => {
     console.log(controllerDetailData.averageTime, cycleClockSeconds)
-    if (cycleClockSeconds == 0 || controllerDetailData.averageTime == 0) {
+    if (cycleClockSeconds == 0) {
       setProgress(0)
+    } else if (controllerDetailData.averageTime == 0) {
+      setProgress(100)
     } else
       setProgress(
         Math.floor((cycleClockSeconds * 100) / controllerDetailData.averageTime)
@@ -575,8 +577,10 @@ export const ControllerContextProvider = ({
   useEffect(() => {
     console.log({ isControllerClockRunning, progress })
     setVariant(
-      !isControllerClockRunning || progress === undefined
+      !isControllerClockRunning
         ? "idle"
+        : progress == undefined
+        ? "danger"
         : progress > 100
         ? "danger"
         : "active"
