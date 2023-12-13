@@ -1,6 +1,7 @@
 import { useContext, useState } from "react"
 import { HiChevronDoubleLeft } from "react-icons/hi"
 import { ControllerContext } from "./ControllerContext"
+import useColor from "./useColor"
 
 export default function StopMenuComponent({
   isOpen,
@@ -9,8 +10,10 @@ export default function StopMenuComponent({
   isOpen?: boolean
   toggleOpen: () => void
 }) {
-  const { setStopReasons, onStopCycleWithReasons, stopReasons } =
+  const { variant, setStopReasons, onStopCycleWithReasons, stopReasons } =
     useContext(ControllerContext)
+  const color = useColor({ variant })
+
   const stopReasonsArr = (
     [
       "Machine Error",
@@ -39,7 +42,9 @@ export default function StopMenuComponent({
           className="flex items-center px-1 text-center rotate-180"
         >
           <button className="flex items-center justify-center">
-            <HiChevronDoubleLeft className="w-3 h-3 mx-auto mt-1 text-[#da8d00] font-bold" />
+            <HiChevronDoubleLeft
+              className={`transition-colors w-3 h-3 mx-auto mt-1 text-${color} font-bold`}
+            />
           </button>
           <button
             className="text-sm font-semibold text-white"
@@ -48,7 +53,9 @@ export default function StopMenuComponent({
             PAUSE PRODUCTION
           </button>
         </button>
-        <div className="border-[#da8d00] bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1">
+        <div
+          className={`transition-colors border-${color} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1`}
+        >
           <div className="px-4 py-2">
             {stopReasonsArr.map((item, key) => (
               <div key={key} className="flex items-center gap-4">

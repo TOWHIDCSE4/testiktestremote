@@ -16,7 +16,7 @@ const lato = Lato({
   subsets: ["latin", "latin-ext"],
 })
 
-const clockDigitCV = cva("div", {
+const clockDigitCV = cva("transition-colors", {
   variants: {
     intent: {
       zero: ["text-[#BEBEBE]", "text-center", "font-bold"],
@@ -52,7 +52,7 @@ export default function DigitalClockComponent() {
 
   return (
     <div
-      className={`border-4 border-${color} bg-${color} bg-opacity-10 rounded-lg px-6 ${lato.className}`}
+      className={`border-4 transition-colors border-${color} bg-${color} bg-opacity-10 rounded-lg px-6 ${lato.className}`}
     >
       <div className="flex items-center justify-center gap-3 h-[6rem]">
         <div

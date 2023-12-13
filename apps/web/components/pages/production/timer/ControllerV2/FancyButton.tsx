@@ -9,10 +9,10 @@ const lato = Lato({
   subsets: ["latin", "latin-ext"],
 })
 
-const buttonCV = cva("div", {
+const buttonCV = cva("transition-all", {
   variants: {
     intent: {
-      idle: ["bg-[#DA8D00]"],
+      idle: ["bg-[#DA8D00]", "active:scale-95", "active:bg-[#8d4c14]"],
       active: ["bg-green-500"],
       danger: ["bg-red-600"],
     },
@@ -21,15 +21,9 @@ const buttonCV = cva("div", {
       on: "",
     },
     size: {
-      sm: [
-        "pr-4",
-        // , "active:pr-0 active:pl-4"
-      ],
-      md: ["pr-10", , "active:pr-0 active:pl-10"],
-      lg: [
-        "pr-15",
-        // , "active:pr-0 active:pl-15"
-      ],
+      sm: ["pr-4"],
+      md: ["pr-10"],
+      lg: ["pr-15"],
     },
     textSize: {
       none: [],
@@ -42,7 +36,17 @@ const buttonCV = cva("div", {
     {
       size: "sm",
       trigger: "on",
-      className: "active:pr-0 active:pl-10",
+      className: "active:pr-0 active:pl-4",
+    },
+    {
+      size: "md",
+      trigger: "on",
+      className: "active:pr-5 active:pl-5",
+    },
+    {
+      size: "lg",
+      trigger: "on",
+      className: "active:pr-7 active:pl-8",
     },
   ],
   defaultVariants: {

@@ -15,6 +15,7 @@ export default function ResultsBoardComponent() {
   const isCycleClockStarting = false
   const isAbleToStart = true
   const {
+    variant,
     onToggleStart,
     totals,
     isCycleClockRunning,
@@ -35,6 +36,7 @@ export default function ResultsBoardComponent() {
           onClick={onToggleStart}
           disabled={isJobsLoading || isControllerJobLoading || isStopDisabled}
           trigger={"on"}
+          intent={variant}
         >
           {isChangingJob ? (
             <>Changing controller job</>

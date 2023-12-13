@@ -11,6 +11,7 @@ const JobSelectComponent = () => {
     onJobChange,
     isChangingJob,
     isCycleClockRunning,
+    variant,
   } = useContext(ControllerContext)
   const jobOptions = jobs.map((job) => ({
     label: job.name,
@@ -18,7 +19,7 @@ const JobSelectComponent = () => {
   }))
 
   return (
-    <FancyButtonComponent trigger={"off"}>
+    <FancyButtonComponent trigger={"off"} intent={variant}>
       <select
         disabled={
           isJobsLoading ||
