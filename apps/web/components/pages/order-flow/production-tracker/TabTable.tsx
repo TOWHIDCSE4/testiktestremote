@@ -109,11 +109,12 @@ const TabTable = ({
     let sum = 0
 
     for (const obj of arr) {
-      if ("items" in obj) {
-        sum += obj.items.length
-      } else if (Array.isArray(obj)) {
-        sum += obj.length
-      }
+      // if ("items" in obj) {
+      //   sum += obj.items.length
+      // } else if (Array.isArray(obj)) {
+      //   sum += obj.length
+      // }
+      sum = sum + Number(obj.count)
     }
 
     return sum
