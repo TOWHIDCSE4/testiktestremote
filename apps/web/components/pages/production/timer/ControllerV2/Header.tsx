@@ -10,6 +10,7 @@ import { QueueListIcon } from "@heroicons/react/20/solid"
 import { ControllerContext } from "./ControllerContext"
 
 import { LuMaximize, LuMenu, LuMoon } from "react-icons/lu"
+import { hourMinuteSecond } from "../../../../../helpers/timeConverter"
 
 const Header = ({
   progress,
@@ -26,7 +27,9 @@ const Header = ({
   onClose: () => void
   onFullScreen: () => void
 }) => {
-  const { timerLogs } = useContext(ControllerContext)
+  const { timerLogs, controllerClockSeconds } = useContext(ControllerContext)
+  const controllerClockArray = hourMinuteSecond(controllerClockSeconds)
+
   const [mode, setMode] = React.useState("")
   const toggleTheme = () => {
     if (mode === "Dark") {
@@ -78,7 +81,10 @@ const Header = ({
             <>{locationName}</>
           )}
         </div>
-        <div className="text-lg">PRODUCTION TIME: 00:00:00</div>
+        <div className="text-lg">
+          PRODUCTION TIME: {controllerClockArray[0]}: {controllerClockArray[1]}:
+          {controllerClockArray[2]}
+        </div>
       </div>
       <button className="absolute right-2 top-2" onClick={() => onClose()}>
         <MdClose onClick={() => onClose()} size={24} color="white" />
