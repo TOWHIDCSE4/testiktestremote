@@ -1,151 +1,180 @@
-import { HiChevronDoubleDown } from "react-icons/hi"
-import FancyButtonComponent from "./FancyButton"
-import { Fragment, useContext, useEffect, useRef, useState } from "react"
-import { ControllerContext } from "./ControllerContext"
-import { Combobox } from "@headlessui/react"
-import { T_User } from "custom-validator"
-import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
-import toast from "react-hot-toast"
-import useColor from "./useColor"
-import { PiUserPlus } from "react-icons/pi"
-import useGetOperatorList from "../../../../../hooks/users/useGetOperatorList"
+import { Combobox, Transition } from "@headlessui/react"
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid"
+import React, {
+  Fragment,
+  experimental_useEffectEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import useUsers from "../../../../../hooks/users/useUsers"
+import { ControllerContext } from "./ControllerContext"
+import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
+import { PiUserPlus } from "react-icons/pi"
+import toast from "react-hot-toast"
+import { HiChevronDoubleDown } from "react-icons/hi"
+import useColor from "./useColor"
 
-export default function OperatorSelectComponent() {
-  const searchRef = useRef<HTMLInputElement>(null)
-  const { timerId, variant, onOperatorChange } = useContext(ControllerContext)
+const OperatorSelectComponent = () => {
+  const inputRef = useRef<HTMLInputElement>(null)
+  // Context
+  const { timerId, variant, onOperatorChange, operator, isCycleClockRunning } =
+    useContext(ControllerContext)
   const color = useColor({ variant })
 
-  const { data: timerDetails, isLoading: isTimerDetailDataLoading } =
-    useGetTimerDetails(timerId)
-  const [operatorQuery, setOperatorQuery] = useState("")
-  const [isDirty, setIsDirty] = useState(false)
-  const [isDirtyHandled, setIsDirtyHandled] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [selectedOperator, setSelectedOperator] = useState({
-    id: timerDetails?.item?.operator?._id,
-    name:
-      timerDetails?.item?.operator?.firstName +
-      " " +
-      timerDetails?.item?.operator?.lastName,
+  // Queries
+  const timerDetailsQuery = useGetTimerDetails(timerId)
+  const usersQuery = useUsers({
+    onSuccess: (data: any) =>
+      toast.success(
+        `${timerDetailsQuery?.data?.item?.operator?.firstName} ${timerDetailsQuery?.data?.item?.operator?.lastName} is assigned alredy.`
+      ),
   })
-  const { data: users, isLoading: isUsersLoading } = useUsers()
-  // const { data: users, isLoading: isUsersLoading } = useGetOperatorList(timerDetails?.item?.machineClassId, timerDetails?.item?.locationId)
 
+  const [selected, setSelected] = useState({
+    id: timerDetailsQuery?.data?.item?.operator._id,
+    name:
+      operator?.firstName === undefined
+        ? `${timerDetailsQuery?.data?.item?.operator?.firstName} ${timerDetailsQuery?.data?.item?.operator?.lastName}`
+        : `${operator?.firstName} ${operator?.lastName}`,
+  })
+  const [query, setQuery] = useState("")
+
+  // This useEffect will run when Operator is Changed
   useEffect(() => {
     if (
-      (selectedOperator.id && !timerDetails?.operator) ||
-      (selectedOperator.id &&
-        typeof timerDetails?.operator === "object" &&
-        selectedOperator.id !== timerDetails?.operator._id)
+      (selected?.id && !timerDetailsQuery?.data?.operator) ||
+      (selected?.id &&
+        typeof timerDetailsQuery?.data?.operator === "object" &&
+        selected?.id !== timerDetailsQuery?.data?.operator._id)
     ) {
-      if (timerDetails) {
-        onOperatorChange(selectedOperator.id)
-      }
+      if (timerDetailsQuery?.data) onOperatorChange(selected?.id, "")
     }
-  }, [selectedOperator])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected])
 
   const handleInputOperator = () => {
-    searchRef.current?.focus()
+    inputRef.current?.focus()
     const leadingTrailingSpaceRegex = /^\s|\s$/
-    if (leadingTrailingSpaceRegex.test(operatorQuery)) {
+    if (leadingTrailingSpaceRegex.test(query)) {
       toast.error("Please remove trailing spaces")
-    } else {
-      setError(null)
     }
-    setIsDirty(false)
-  }
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setOperatorQuery(event.target.value)
-    setIsDirty(true)
-    setError(null)
-  }
-
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      console.log("registered")
-      event.preventDefault()
-      handleInputOperator()
-    }
+    onOperatorChange("", query)
   }
 
   const filteredOperator =
-    operatorQuery === ""
-      ? users?.items?.slice(0, 30)
-      : users?.items
+    query === ""
+      ? usersQuery?.data?.items?.slice(0, 30)
+      : usersQuery?.data?.items
           ?.filter((user) => {
             return (
-              user.firstName
-                .toLowerCase()
-                .includes(operatorQuery.toLowerCase()) ||
-              user.lastName.toLowerCase().includes(operatorQuery.toLowerCase())
+              user.firstName.toLowerCase().includes(query.toLowerCase()) ||
+              user.lastName.toLowerCase().includes(query.toLowerCase())
             )
           })
           ?.slice(0, 30)
 
+  const isDisableInput =
+    usersQuery?.isLoading || usersQuery?.isFetching || isCycleClockRunning
+
   return (
-    <FancyButtonComponent trigger={"off"} intent={variant}>
-      <Combobox value={selectedOperator} onChange={setSelectedOperator}>
-        <Combobox.Input
-          as={Fragment}
-          onChange={(event) => {
-            setOperatorQuery(event.target.value)
-            handleInputChange(event)
-            setError(null)
-          }}
-          displayValue={(
-            selected:
-              | { id: string; name: string; firstName?: string }
-              | undefined
-          ) => {
-            if (operatorQuery) {
-              return operatorQuery
-            } else if (selected && selected.id && selected.name) {
-              return selected.firstName
-                ? `${selected.firstName}`
-                : `${selected.name}`
-            } else {
-              return "Operator Unassigned"
+    <Combobox
+      disabled={
+        usersQuery?.isLoading || usersQuery?.isFetching || isCycleClockRunning
+      }
+      value={selected}
+      onChange={(selected: any) =>
+        setSelected({
+          id: selected?._id,
+          name: `${selected?.firstName} ${selected?.lastName}`,
+        })
+      }
+    >
+      <div className={`relative mt-1 `}>
+        <div className="w-6 h-full bg-[#DA8D00] absolute -right-4 rounded-r-md border-2 border-gray-700" />
+        <div className="relative flex w-full cursor-default overflow-hidden rounded-lg border-2 border-gray-700 bg-[#E8EBF0] text-left  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+          <Combobox.Input
+            className={`w-full border-none py-1.5 pl-3 font-semibold  pr-10 text-sm leading-5 text-[#5D5D5D] focus:ring-0 bg-[#E8EBF0] italic ${
+              isDisableInput ? "cursor-not-allowed" : ""
+            }`}
+            displayValue={(selected: any) =>
+              timerDetailsQuery?.data?.item?.operator?.firstName &&
+              timerDetailsQuery?.data?.item?.operator?.lastName
+                ? selected.name
+                : operator?.firstName
             }
-          }}
-          // onKeyDown={(e) => handleKeyPress(e)}
-          // tabIndex={0}
-          // ref={searchRef}
-        >
-          <input className="bg-transparent p-0 border-none max-w-[12rem] text-[#7a828d] text-normal italic" />
-        </Combobox.Input>
-        {operatorQuery && (
-          <Combobox.Button
-            className={`w-5 h-5 text-${color} rounded-full flex items-center justify-center border-${color} border hover:bg-${color} !bg-opacity-20`}
-            onClick={() => handleInputOperator()}
-          >
-            <PiUserPlus />
-          </Combobox.Button>
-        )}
-        <Combobox.Button onClick={() => handleInputOperator()}>
-          <HiChevronDoubleDown className={`text-${color}`} />
-        </Combobox.Button>
-        {filteredOperator && filteredOperator.length > 0 ? (
-          <Combobox.Options
-            className="absolute z-10 bottom-1 max-h-20 xl:w-80 ipadair:w-[250px] 2xl:w-[350px] overflow-auto rounded-md bg-white text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-            style={{ width: "200px" }} // Adjust the width as needed
-          >
-            {filteredOperator.map((item: T_User, index: number) => (
-              <Combobox.Option
-                key={index}
-                value={{
-                  id: item._id,
-                  name: `${item.firstName} ${item.lastName}`,
-                }}
-                className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
+            onChange={(event) => setQuery(event.target.value)}
+            ref={inputRef}
+          />
+          <div className="flex items-center space-x-2">
+            {query && (
+              <Combobox.Button
+                className={`absolute z-10 inset-y-0 right-5 flex items-center pr-2`}
+                onClick={() => handleInputOperator()}
               >
-                <span className="block">{`${item.firstName} ${item.lastName}`}</span>
-              </Combobox.Option>
-            ))}
+                <PiUserPlus />
+              </Combobox.Button>
+            )}
+            <Combobox.Button
+              onClick={() => inputRef.current?.focus()}
+              className="absolute z-20 inset-y-0 right-0 flex items-center pr-2"
+            >
+              <HiChevronDoubleDown className={`text-${color}`} />
+            </Combobox.Button>
+          </div>
+        </div>
+        <Transition
+          as={Fragment}
+          leave="transition ease-in duration-100"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+          afterLeave={() => setQuery("")}
+        >
+          <Combobox.Options className="absolute mt-1 z-50 max-h-40 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+            {filteredOperator?.length === 0 && query !== "" ? (
+              <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
+                Nothing found.
+              </div>
+            ) : (
+              filteredOperator?.map((person) => (
+                <Combobox.Option
+                  key={person._id}
+                  className={({ active }) =>
+                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                      active ? "bg-[#E8EBF0] text-black" : "text-black-900"
+                    }`
+                  }
+                  value={person}
+                >
+                  {({ selected, active }) => (
+                    <>
+                      <span
+                        className={`block truncate ${
+                          selected ? "font-medium" : "font-normal"
+                        }`}
+                      >
+                        {person.firstName + " " + person.lastName}
+                      </span>
+                      {selected ? (
+                        <span
+                          className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
+                            active ? "text-white" : "text-teal-600"
+                          }`}
+                        >
+                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                      ) : null}
+                    </>
+                  )}
+                </Combobox.Option>
+              ))
+            )}
           </Combobox.Options>
-        ) : null}
-      </Combobox>
-    </FancyButtonComponent>
+        </Transition>
+      </div>
+    </Combobox>
   )
 }
+
+export default OperatorSelectComponent

@@ -22,14 +22,31 @@ export default function chatSocket(io: Server) {
     socket["user"] = user
 
     console.log("User connected")
-    socket.on("join-timer", (data: any) => {
-      console.log(data)
-      if (data.action == "emit-operator") {
-        const { action, timerId, ...rest } = data
-        if (timerId) {
-          ioEmit(`timer-${timerId}`, { action: "update-operator", user: user })
-        }
-      }
+    socket.on("join-timer", ({ timerId }) => {
+      // console.log(data)
+      // if (data.action == "emit-operator") {
+      //   const { action, timerId, ...rest } = data
+      //   if (timerId) {
+      //     ioEmit(`timer-${timerId}`, { action: "update-operator", user: user })
+      //   }
+      // }
+
+      socket.join(timerId)
+    })
+
+    socket.on("leave-timer", ({ timerId }) => {
+      socket.leave(timerId)
+    })
+
+    socket.on("controller-timer-tick", ({ timerId, ...otherData }) => {
+      socket
+        .to(timerId)
+        .emit("controller-timer-tick", { timerId, ...otherData })
+    })
+    socket.on("controller-reconnect", ({ timerId, ...otherData }) => {
+      socket
+        .to(timerId)
+        .emit("controller-timer-tick", { timerId, ...otherData })
     })
 
     socket.on("event", (message: any) => {
@@ -39,7 +56,12 @@ export default function chatSocket(io: Server) {
 
     socket.on(
       "stop-press",
-      (data: { action: string; timerId: string; message?: string }) => {
+      (data: {
+        action: string
+        timerId: string
+        message?: string
+        currentUnit: number
+      }) => {
         // Handle chat message logic here (e.g., save to a database)
         const { timerId } = data
         if (!timerId) {
@@ -56,6 +78,46 @@ export default function chatSocket(io: Server) {
         const { timerId } = data
         if (!timerId) {
           return ""
+        }
+        ioEmit(`timer-${timerId}`, data)
+      }
+    )
+
+    // socket.on(
+    //   "cycle-tick",
+    //   (data: { action: string; timerId: string; second: number }) => {
+    //     const { timerId } = data
+    //     if (!timerId) {
+    //       return
+    //     }
+    //     ioEmit(`timer-${timerId}`, data)
+    //   }
+    // )
+    socket.on("start-press", (data: { action: string; timerId: string }) => {
+      const { timerId } = data
+      if (!timerId) {
+        return
+      }
+      ioEmit(`timer-${timerId}`, data)
+    })
+
+    socket.on(
+      "end-controller-pressed",
+      (data: { action: string; timerId: string }) => {
+        const { timerId } = data
+        if (!timerId) {
+          return
+        }
+        ioEmit(`timer-${timerId}`, data)
+      }
+    )
+
+    socket.on(
+      "end-production-pressed",
+      (data: { action: string; timerId: string }) => {
+        const { timerId } = data
+        if (!timerId) {
+          return
         }
         ioEmit(`timer-${timerId}`, data)
       }

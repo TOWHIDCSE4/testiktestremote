@@ -44,6 +44,7 @@ import useAssignJobToTimer from "../../../../../hooks/timers/useAssignJobToTimer
 import toast from "react-hot-toast"
 import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
+import { useSocket } from "../../../../../store/useSocket"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -90,7 +91,7 @@ export interface ControllerContextProps {
   setReadingMessages: (messages?: Array<string>) => void
   addReadingMessage: (message: string) => void
   onJobChange: (jobId: string) => void
-  onOperatorChange: (operatorId: string) => void
+  onOperatorChange: (operatorId: string, operatorName: string) => void
 }
 
 export const ControllerContext = createContext<ControllerContextProps>({
@@ -160,11 +161,11 @@ export const ControllerContextProvider = ({
 }: ControllerProviderProps) => {
   const { data: profileData } = useProfile()
   const operatorId = getObjectId(operator)
-  const currentOperator = operatorId ? operator : profileData?.item
   const { data: controllerTimerData, isLoading: controllerTimerDataLoading } =
     useGetControllerTimer(timerId)
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
+  const currentOperator = timerDetailData?.item?.operator ?? profileData?.item
   const { mutate: addTimerLog } = useAddTimerLog()
   const {
     data: timerJobs,
@@ -221,6 +222,7 @@ export const ControllerContextProvider = ({
     tonsPerHour: 0,
     totalTons: 0,
   })
+  const socket = useSocket((state) => state.instance)
   // setTotals({
   //   unitsPerHour: count / Math.round(hoursLapse),
   //   tonsPerHour:
@@ -300,6 +302,12 @@ export const ControllerContextProvider = ({
     if (onEndProductionProps) {
       onEndProductionProps(unitCreated)
     }
+    if (socket) {
+      socket.emit(`end-production-pressed`, {
+        timerId,
+        action: "end-production-pressed",
+      })
+    }
   }
 
   const stopControllerClockInterval = () => {
@@ -314,7 +322,9 @@ export const ControllerContextProvider = ({
     stopControllerClockInterval()
     setIsControllerClockRunning(true)
     controllerClockIntervalRef.current = setInterval(() => {
-      setClockSeconds((prev) => prev + 1)
+      setClockSeconds((prev) => {
+        return prev + 1
+      })
     }, 1000)
   }
 
@@ -329,9 +339,28 @@ export const ControllerContextProvider = ({
   }
 
   const onStopCycle = () => {
+    if (isStopDisabled) {
+      return
+    }
+    timeLogCall(getObjectId(jobTimer?.item))
     setClockMilliSeconds(0)
-    setUnitCreated((c) => c + 1)
+    if (socket) {
+      socket.emit(`stop-press`, {
+        timerId,
+        action: "stop-press",
+        currentUnit: unitCreated + 1,
+      })
+    }
+    setUnitCreated((c) => {
+      return c + 1
+    })
     startCycleClockInterval()
+    if (socket) {
+      socket.emit(`start-press`, {
+        timerId,
+        action: "start-press",
+      })
+    }
     if (!hasControllerTimer) {
       const controllerTimerValue: T_ControllerTimer = {
         timerId: timerId,
@@ -365,9 +394,21 @@ export const ControllerContextProvider = ({
     if (onStopCycleWithReasonsProps) {
       onStopCycleWithReasonsProps(unitCreated)
     }
+    if (socket) {
+      socket.emit(`end-controller-pressed`, {
+        timerId,
+        action: "end-controller-pressed",
+      })
+    }
   }
 
   const onStartCycle = () => {
+    if (socket) {
+      socket.emit(`start-press`, {
+        timerId,
+        action: "start-press",
+      })
+    }
     setClockMilliSeconds(0)
     startCycleClockInterval()
     setIsCycleClockRunning(true)
@@ -391,7 +432,12 @@ export const ControllerContextProvider = ({
         toast.error("Cannot start a controller without operator assigned")
         return
       }
-
+      if (socket) {
+        socket.emit(`start-press`, {
+          timerId,
+          action: "start-press",
+        })
+      }
       startControllerClockInterval()
       addCycleTimer(cycleTimerValue)
     }
@@ -429,14 +475,14 @@ export const ControllerContextProvider = ({
     })
   }
 
-  const onOperatorChange = (operator: string) => {
-    console.log(
-      "🚀 ~ file: ControllerContext.tsx:405 ~ onOperatorChange ~ operator:",
-      operator
-    )
+  const onOperatorChange = (operator: string, operatorName: string) => {
     // setIsChangingJob(true)
     updateTimerOperator(
-      { ...timerDetailData?.item, operator },
+      {
+        ...timerDetailData?.item,
+        operator: operatorName ? "" : operator,
+        operatorName: operatorName ? operatorName : "",
+      },
       {
         onError: (e) => {
           console.log(
@@ -453,6 +499,7 @@ export const ControllerContextProvider = ({
         onSettled: () => {
           // setIsChangingJob(false)
           queryClient.invalidateQueries(["timer", timerId])
+          if (operatorName) queryClient.invalidateQueries(["users"])
         },
       }
     )
@@ -563,15 +610,14 @@ export const ControllerContextProvider = ({
 
   useEffect(() => {
     if (timerDetailData?.item?.createdAt) {
-      const noOfHours = dayjs(new Date()).diff(
-        new Date(timerDetailData?.item?.createdAt),
-        "hours"
-      )
+      const hours = new Date(
+        controllerTimerData?.items[0]?.createdAt as Date
+      ).getHours()
       setTotals((current) => ({
         ...current,
         totalTons: unitCreated * controllerDetailData.weight,
-        unitsPerHour: noOfHours / unitCreated,
-        tonsPerHour: (noOfHours / unitCreated) * controllerDetailData.weight,
+        unitsPerHour: unitCreated / hours,
+        tonsPerHour: (unitCreated * controllerDetailData.weight) / hours,
       }))
     }
   }, [unitCreated])
@@ -625,6 +671,36 @@ export const ControllerContextProvider = ({
         Math.floor((clockMilliSeconds * 100) / controllerDetailData.averageTime)
       )
   }, [controllerDetailData.averageTime, clockMilliSeconds])
+
+  useEffect(() => {
+    if (isControllerModalOpenRef.current) {
+      socket?.emit("controller-timer-tick", {
+        timerId,
+        unitCreated,
+        isCycleClockRunning,
+        cycleClockSeconds: clockMilliSeconds,
+      })
+    }
+    const subscriber = useSocket.subscribe(({ isConnected }) => {
+      if (isConnected) {
+        socket?.emit("controller-reconnect", {
+          timerId,
+          unitCreated,
+          isCycleClockRunning,
+          cycleClockSeconds: clockMilliSeconds,
+        })
+      }
+    })
+    return () => {
+      subscriber()
+    }
+  }, [
+    socket,
+    timerId,
+    unitCreated,
+    isCycleClockRunning,
+    parseInt(String(clockMilliSeconds)),
+  ])
 
   useEffect(() => {
     setVariant(
