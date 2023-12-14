@@ -58,6 +58,8 @@ export interface ControllerDetailData {
 export interface ControllerContextProps {
   variant: "idle" | "active" | "danger"
   progress: number | undefined
+  isStopMenuOpen: boolean
+  setIsStopMenuOpen: (val: boolean) => void
   controllerDetailData: Partial<ControllerDetailData>
   operator: any
   cycleClockSeconds: number
@@ -95,6 +97,8 @@ export interface ControllerContextProps {
 export const ControllerContext = createContext<ControllerContextProps>({
   variant: "idle",
   progress: undefined,
+  isStopMenuOpen: false,
+  setIsStopMenuOpen: (val) => {},
   controllerDetailData: {},
   operator: {},
   cycleClockSeconds: 0,
@@ -710,11 +714,15 @@ export const ControllerContextProvider = ({
     )
   }, [progress, isCycleClockRunning])
 
+  const [isStopMenuOpen, setIsStopMenuOpen] = useState<boolean>(false)
+
   return (
     <ControllerContext.Provider
       value={{
         variant,
         progress,
+        isStopMenuOpen,
+        setIsStopMenuOpen,
         controllerDetailData,
         operator: currentOperator,
         jobs: timerJobs?.items || [],

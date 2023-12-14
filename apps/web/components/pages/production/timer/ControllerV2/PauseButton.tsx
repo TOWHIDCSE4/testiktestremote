@@ -2,22 +2,40 @@ import { useContext } from "react"
 import FancyButtonComponent from "./FancyButton"
 import { ControllerContext } from "./ControllerContext"
 
-export default function PauseButtonComponent({
-  onClick,
-}: {
-  onClick?: () => void
-}) {
-  const { variant } = useContext(ControllerContext)
+export default function PauseButtonComponent() {
+  const { variant, isStopMenuOpen, setIsStopMenuOpen } =
+    useContext(ControllerContext)
+  const onClick = () => {
+    setIsStopMenuOpen(!isStopMenuOpen)
+  }
   return (
-    <FancyButtonComponent
-      textSize={"lg"}
-      className="font-bold"
-      onClick={() => {
-        onClick?.()
-      }}
-      intent={variant}
-    >
-      P
-    </FancyButtonComponent>
+    <>
+      <div className="hidden lg:block">
+        <FancyButtonComponent
+          className="font-bold"
+          size={"sm"}
+          padding={"xs"}
+          onClick={() => {
+            onClick()
+          }}
+          intent={variant}
+        >
+          <div className="text-[3rem] px-3">P</div>
+        </FancyButtonComponent>
+      </div>
+      <div className="lg:hidden">
+        <FancyButtonComponent
+          className="font-bold"
+          size={"xs"}
+          padding={"xs"}
+          onClick={() => {
+            onClick()
+          }}
+          intent={variant}
+        >
+          <div className="text-[2rem] px-2">P</div>
+        </FancyButtonComponent>
+      </div>
+    </>
   )
 }

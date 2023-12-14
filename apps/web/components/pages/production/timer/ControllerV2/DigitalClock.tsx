@@ -53,7 +53,7 @@ export default function DigitalClockComponent() {
   const cycleClockSecondsArray = hourMinuteSecondMilli(cycleClockSeconds)
 
   return (
-    <div className="relative flex flex-col items-center">
+    <div className="relative flex flex-col items-center mx-auto w-fit">
       <div
         className={`border-4 transition-colors border-${color} bg-${color} bg-opacity-10 rounded-lg px-6 ${lato.className}`}
       >
@@ -144,12 +144,8 @@ export default function DigitalClockComponent() {
         <div className="flex justify-center lg:hidden">
           <StartButtonComponent />
         </div>
-        <div className="absolute top-0 right-0">
-          <div className="relative">
-            <div className="scale-[0.7]">
-              <PauseButtonComponent />
-            </div>
-          </div>
+        <div className="absolute top-0 right-0 translate-y-[30%]">
+          <PauseButtonComponent />
         </div>
       </div>
     </div>
