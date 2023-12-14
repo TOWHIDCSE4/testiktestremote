@@ -24,6 +24,7 @@ import {
   T_ControllerTimer,
   T_CycleTimer,
   T_JobTimer,
+  T_TimerLog,
   T_TimerStopReason,
 } from "custom-validator"
 import useGetCycleTimer from "../../../../../hooks/timers/useGetCycleTimer"
@@ -340,23 +341,12 @@ export const ControllerContextProvider = ({
     }
     timeLogCall(getObjectId(jobTimer?.item))
     setClockMilliSeconds(0)
-    if (socket) {
-      socket.emit(`stop-press`, {
-        timerId,
-        action: "stop-press",
-        currentUnit: unitCreated + 1,
-      })
-    }
+
     setUnitCreated((c) => {
       return c + 1
     })
     startCycleClockInterval()
-    if (socket) {
-      socket.emit(`start-press`, {
-        timerId,
-        action: "start-press",
-      })
-    }
+
     if (!hasControllerTimer) {
       const controllerTimerValue: T_ControllerTimer = {
         timerId: timerId,
@@ -399,12 +389,6 @@ export const ControllerContextProvider = ({
   }
 
   const onStartCycle = () => {
-    if (socket) {
-      socket.emit(`start-press`, {
-        timerId,
-        action: "start-press",
-      })
-    }
     setClockMilliSeconds(0)
     startCycleClockInterval()
     setIsCycleClockRunning(true)
@@ -427,12 +411,6 @@ export const ControllerContextProvider = ({
       if (!getObjectId(operator)) {
         toast.error("Cannot start a controller without operator assigned")
         return
-      }
-      if (socket) {
-        socket.emit(`start-press`, {
-          timerId,
-          action: "start-press",
-        })
       }
       startControllerClockInterval()
       addCycleTimer(cycleTimerValue)
@@ -582,7 +560,7 @@ export const ControllerContextProvider = ({
         return query
       }
     )
-    addTimerLog({
+    const savedLog: T_TimerLog = {
       timerId,
       machineId: timerDetailData?.item?.machineId._id as string,
       machineClassId: timerDetailData?.item?.machineClassId._id as string,
@@ -601,6 +579,14 @@ export const ControllerContextProvider = ({
         ? stopReasons
         : (defaultStopReasons as T_TimerStopReason[]),
       cycle: unitCreated + 1,
+    }
+    addTimerLog(savedLog, {
+      onSuccess: () => {
+        socket?.emit(`stop-press`, {
+          timerId,
+          action: "stop-press",
+        })
+      },
     })
   }
 

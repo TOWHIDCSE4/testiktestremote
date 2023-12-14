@@ -393,9 +393,22 @@ const Timer = ({
         resyncClock(data)
       }
     }
+
+    const controllerStopPress = (data: { timerId: string }) => {
+      if (data.timerId === timer._id) {
+        queryClient.invalidateQueries([
+          "timer-logs",
+          timer.locationId,
+          timer._id,
+        ])
+      }
+    }
+
+    socket?.on("stop-press", controllerStopPress)
     socket?.on("controller-timer-tick", timerTick)
     socket?.on("controller-reconnect", controllerReconnect)
     return () => {
+      socket?.off("stop-press", controllerStopPress)
       socket?.off("controller-timer-tick", timerTick)
       socket?.off("controller-reconnect", controllerReconnect)
     }
