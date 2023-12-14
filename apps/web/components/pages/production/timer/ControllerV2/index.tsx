@@ -22,6 +22,7 @@ const lato = Lato({
 })
 import OperatorSelectComponent from "./OperatorSelector"
 import JobSelectComponent from "./JobSelector"
+import PauseButtonComponent from "./PauseButton"
 
 export interface ControllerDetailData {
   locationName: string
@@ -59,7 +60,7 @@ const ControllerV2 = ({
   return (
     <div
       className={cn(
-        "flex flex-col w-full h-full justify-between overflow-hidden",
+        "flex flex-col w-full h-full justify-between overflow-x-hidden overflow-y-auto",
         lato.className
       )}
     >
@@ -70,37 +71,33 @@ const ControllerV2 = ({
         onClose={onClose}
       />
       <div className="relative w-full">
-        <div className="container max-w-2xl mx-auto">
-          <div className="relative flex justify-center gap-8 px-12 py-0 mt-8">
+        <div className="mx-auto lg:container lg:max-w-2xl">
+          <div className="relative flex justify-center gap-8 px-0 py-0 mt-8 lg:px-12">
             <div className="flex-1 py-0">
               <DigitalClockComponent />
-              <div className="flex justify-between mt-6">
-                <DetailContextComponent />
+              <div className="flex justify-between px-4 mt-6 lg:px-0">
                 <div>
-                  <FancyButtonComponent
-                    textSize={"lg"}
-                    className="font-bold"
-                    onClick={() => {
-                      toggleIsStopMenuOpen()
-                    }}
-                    intent={variant}
-                  >
-                    P
-                  </FancyButtonComponent>
+                  <DetailContextComponent />
+                  <div className="flex flex-col items-start gap-4 pl-4 mt-6 mb-24 lg:hidden">
+                    <OperatorSelectComponent />
+                    <JobSelectComponent />
+                  </div>
+                </div>
+                <div className="hidden lg:block">
+                  <PauseButtonComponent onClick={toggleIsStopMenuOpen} />
+                </div>
+                <div className="block lg:hidden">
+                  <ResultsBoardComponent />
                 </div>
               </div>
-              <div className="flex items-center gap-10 pl-4 mt-6 mb-24">
+              <div className="flex-row items-center hidden gap-10 pl-4 mt-6 mb-24 lg:flex">
                 <OperatorSelectComponent />
-                {/* <FancyButtonComponent className="gap-4 px-4 py-2">
-              <span className="text-[#7a828d] text-normal italic">
-                *Job Assigning
-              </span>
-              <HiChevronDoubleDown className="text-[#da8d00]" />
-            </FancyButtonComponent> */}
                 <JobSelectComponent />
               </div>
             </div>
-            <ResultsBoardComponent />
+            <div className="hidden lg:block">
+              <ResultsBoardComponent />
+            </div>
           </div>
         </div>
         <StopMenuComponent

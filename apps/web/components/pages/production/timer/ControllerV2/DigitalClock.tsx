@@ -8,6 +8,8 @@ import {
   hourMinuteSecondInNumber,
   hourMinuteSecondMilli,
 } from "../../../../../helpers/timeConverter"
+import StartButtonComponent from "./StartButton"
+import PauseButtonComponent from "./PauseButton"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -51,89 +53,103 @@ export default function DigitalClockComponent() {
   const cycleClockSecondsArray = hourMinuteSecondMilli(cycleClockSeconds)
 
   return (
-    <div
-      className={`border-4 transition-colors border-${color} bg-${color} bg-opacity-10 rounded-lg px-6 ${lato.className}`}
-    >
-      <div className="flex items-center justify-center gap-3 h-[6rem]">
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[0] < 10 ? "zero" : "primary",
-          })}
-        >
-          {Math.floor(controllerClockArray[0] / 10)}
+    <div className="relative flex flex-col items-center">
+      <div
+        className={`border-4 transition-colors border-${color} bg-${color} bg-opacity-10 rounded-lg px-6 ${lato.className}`}
+      >
+        <div className="flex items-center justify-center gap-3 h-[6rem]">
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[0] < 10 ? "zero" : "primary",
+            })}
+          >
+            {Math.floor(controllerClockArray[0] / 10)}
+          </div>
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[0] > 0 ? "primary" : "zero",
+            })}
+          >
+            {controllerClockArray[0] % 10}
+          </div>
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[0] > 0 ? "primary" : "zero",
+              type: "divider",
+            })}
+          >
+            :
+          </div>
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[1] < 10 ? "zero" : "primary",
+            })}
+          >
+            {Math.floor(controllerClockArray[1] / 10)}
+          </div>
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[1] > 0 ? "primary" : "zero",
+            })}
+          >
+            {controllerClockArray[1] % 10}
+          </div>
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[1] > 0 ? "primary" : "zero",
+              type: "divider",
+            })}
+          >
+            :
+          </div>
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[2] < 10 ? "zero" : "primary",
+            })}
+          >
+            {Math.floor(controllerClockArray[2] / 10)}
+          </div>
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[2] > 0 ? "primary" : "zero",
+            })}
+          >
+            {controllerClockArray[2] % 10}
+          </div>
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[2] > 0 ? "primary" : "zero",
+              type: "divider",
+            })}
+          >
+            :
+          </div>
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[3] < 10 ? "zero" : "primary",
+            })}
+          >
+            {Math.floor(controllerClockArray[3] / 10)}
+          </div>
+          <div
+            className={clockDigitCV({
+              intent: controllerClockArray[3] > 0 ? "primary" : "zero",
+            })}
+          >
+            {controllerClockArray[3] % 10}
+          </div>
         </div>
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[0] > 0 ? "primary" : "zero",
-          })}
-        >
-          {controllerClockArray[0] % 10}
+      </div>
+      <div className="relative w-full mt-4 lg:hidden">
+        <div className="flex justify-center lg:hidden">
+          <StartButtonComponent />
         </div>
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[0] > 0 ? "primary" : "zero",
-            type: "divider",
-          })}
-        >
-          :
-        </div>
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[1] < 10 ? "zero" : "primary",
-          })}
-        >
-          {Math.floor(controllerClockArray[1] / 10)}
-        </div>
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[1] > 0 ? "primary" : "zero",
-          })}
-        >
-          {controllerClockArray[1] % 10}
-        </div>
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[1] > 0 ? "primary" : "zero",
-            type: "divider",
-          })}
-        >
-          :
-        </div>
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[2] < 10 ? "zero" : "primary",
-          })}
-        >
-          {Math.floor(controllerClockArray[2] / 10)}
-        </div>
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[2] > 0 ? "primary" : "zero",
-          })}
-        >
-          {controllerClockArray[2] % 10}
-        </div>
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[2] > 0 ? "primary" : "zero",
-            type: "divider",
-          })}
-        >
-          :
-        </div>
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[3] < 10 ? "zero" : "primary",
-          })}
-        >
-          {Math.floor(controllerClockArray[3] / 10)}
-        </div>
-        <div
-          className={clockDigitCV({
-            intent: controllerClockArray[3] > 0 ? "primary" : "zero",
-          })}
-        >
-          {controllerClockArray[3] % 10}
+        <div className="absolute top-0 right-0">
+          <div className="relative">
+            <div className="scale-[0.7]">
+              <PauseButtonComponent />
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { Lato } from "next/font/google"
 import FancyButtonComponent from "./FancyButton"
 import { useContext } from "react"
 import { ControllerContext } from "./ControllerContext"
+import StartButtonComponent from "./StartButton"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -11,45 +12,16 @@ const lato = Lato({
 })
 
 export default function ResultsBoardComponent() {
-  const isCycleClockStarting = false
-  const isAbleToStart = true
-  const {
-    variant,
-    onToggleStart,
-    totals,
-    isCycleClockRunning,
-    isJobsLoading,
-    isControllerJobLoading,
-    isChangingJob,
-    unitCreated,
-    isStopDisabled,
-  } = useContext(ControllerContext)
+  const { totals, unitCreated } = useContext(ControllerContext)
 
   return (
-    <div className={`flex flex-col justify-between pt-4 ${lato.className}`}>
-      <div className="flex justify-center">
-        <FancyButtonComponent
-          padding={"md"}
-          textSize={"lg"}
-          className="font-bold uppercase"
-          onClick={onToggleStart}
-          disabled={isJobsLoading || isControllerJobLoading || isStopDisabled}
-          trigger={"on"}
-          intent={variant}
-        >
-          {isChangingJob
-            ? // "Changing controller job"
-              "..."
-            : isControllerJobLoading
-            ? // "Assigning Job to Controller"
-              "..."
-            : isJobsLoading
-            ? // `Loading Controller Jobs`
-              "..."
-            : isCycleClockRunning
-            ? `Stop`
-            : `Start`}
-        </FancyButtonComponent>
+    <div
+      className={`flex flex-col justify-between h-full pt-4 ${lato.className}`}
+    >
+      <div className="justify-center flex-1 hidden lg:flex">
+        <div>
+          <StartButtonComponent />
+        </div>
       </div>
       <div className="">
         <div className="grid grid-cols-12 gap-1 font-medium leading-tight text-normal">
