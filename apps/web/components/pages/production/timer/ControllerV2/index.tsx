@@ -23,6 +23,7 @@ const lato = Lato({
 import OperatorSelectComponent from "./OperatorSelector"
 import JobSelectComponent from "./JobSelector"
 import PauseButtonComponent from "./PauseButton"
+import ResultsUnitCountComponent from "./Results.UnitCount"
 
 export interface ControllerDetailData {
   locationName: string
@@ -70,13 +71,13 @@ const ControllerV2 = ({
       />
       <div className="relative w-full">
         <div className="mx-auto lg:container lg:max-w-2xl">
-          <div className="relative flex justify-center gap-8 px-4 py-0 mt-1 lg:mt-8 lg:px-12">
-            <div className="flex-1 py-0">
+          <div className="relative flex justify-center gap-8 px-4 py-0 mt-2 sm:mt-1 lg:mt-8 lg:px-12">
+            <div className="flex-1 py-0 pb-12 sm:pb-0">
               <DigitalClockComponent />
-              <div className="flex justify-between px-4 lg:mt-6 lg:px-0">
-                <div>
+              <div className="flex justify-between sm:px-4 lg:mt-6 lg:px-0">
+                <div className="sm:pb-16 lg:pb-0">
                   <DetailContextComponent />
-                  <div className="relative flex flex-col items-start gap-4 pb-16 pl-4 mt-3 lg:hidden">
+                  <div className="relative flex-col items-start hidden gap-4 pl-4 mt-3 sm:flex lg:hidden">
                     <OperatorSelectComponent />
                     <JobSelectComponent />
                   </div>
@@ -84,13 +85,25 @@ const ControllerV2 = ({
                 <div className="hidden lg:block">
                   <PauseButtonComponent />
                 </div>
-                <div className="self-end lg:hidden">
+                <div className="flex-shrink-0 pt-3 sm:pt-0 sm:self-end lg:hidden">
                   <ResultsBoardComponent />
                 </div>
               </div>
               <div className="flex-row items-center hidden gap-10 pl-4 mt-6 mb-24 lg:flex">
                 <OperatorSelectComponent />
                 <JobSelectComponent />
+              </div>
+              <div className="flex flex-wrap items-center justify-between w-full pt-1 sm:hidden">
+                <div className="pt-5">
+                  <PauseButtonComponent />
+                </div>
+                <div className="flex-1">
+                  <ResultsUnitCountComponent />
+                </div>
+                <div className="relative flex flex-col items-center w-full gap-1">
+                  <OperatorSelectComponent />
+                  <JobSelectComponent />
+                </div>
               </div>
             </div>
             <div className="hidden lg:block">

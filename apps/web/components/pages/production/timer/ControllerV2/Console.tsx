@@ -66,7 +66,7 @@ export default function ConsoleComponent({
           </div>
         )}
       </div>
-      <div className="flex items-center gap-4 justify-between px-[90px] text-sm font-light">
+      <div className="flex items-center gap-4 justify-between px-3 sm:px-[5rem] text-sm font-light">
         <p>DEVELOPED BY IEKOMEDIA</p>
         <p>{dayjs().format("MMMM YYYY-DD HH:mm:ss")}</p>
       </div>

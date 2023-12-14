@@ -45,9 +45,9 @@ const Header = ({
   }
 
   return (
-    <div className="relative flex flex-wrap items-center justify-between w-full px-3 py-2 pb-10 text-white lg:pb-2 lg:py-5 lg:px-9 bg-dark-blue ">
+    <div className="relative flex flex-wrap items-center justify-between w-full px-3 py-2 pb-16 text-white sm:pb-10 lg:pb-2 lg:py-5 lg:px-9 bg-dark-blue ">
       {/* IMAGE */}
-      <div className="flex-1 ">
+      <div className="flex-1 hidden sm:block">
         <Image
           src={
             variant == "idle"
@@ -66,7 +66,7 @@ const Header = ({
         <div className="flex items-center justify-center gap-5">
           <button
             onClick={() => setOpenTimerLogs(true)}
-            className="items-center justify-center hidden text-xl text-black bg-white lg:flex rounded-xl w-9 h-9"
+            className="flex items-center justify-center text-xl text-black bg-white rounded-xl w-9 h-9"
           >
             <LuMenu />
           </button>
@@ -87,7 +87,7 @@ const Header = ({
         </div>
       </div>
       {/* TITLE */}
-      <div className="flex items-center justify-end flex-1">
+      <div className="flex items-center justify-center flex-1 sm:justify-end">
         <div className="flex flex-col items-center justify-center ">
           <div className="text-6xl font-bold uppercase">
             {isLoading ? (

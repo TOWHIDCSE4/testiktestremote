@@ -21,25 +21,27 @@ export default function StartButtonComponent({
   return (
     <FancyButtonComponent
       padding={"md"}
-      textSize={"lg"}
+      textSize={"none"}
       className="font-bold uppercase"
       onClick={onClick ?? onToggleStart}
       disabled={isJobsLoading || isControllerJobLoading || isStopDisabled}
       trigger={"on"}
       intent={variant}
     >
-      {isChangingJob
-        ? // "Changing controller job"
-          "..."
-        : isControllerJobLoading
-        ? // "Assigning Job to Controller"
-          "..."
-        : isJobsLoading
-        ? // `Loading Controller Jobs`
-          "..."
-        : isCycleClockRunning
-        ? `Stop`
-        : `Start`}
+      <div className="text-[2rem] sm:text-[3rem]">
+        {isChangingJob
+          ? // "Changing controller job"
+            "..."
+          : isControllerJobLoading
+          ? // "Assigning Job to Controller"
+            "..."
+          : isJobsLoading
+          ? // `Loading Controller Jobs`
+            "..."
+          : isCycleClockRunning
+          ? `Stop`
+          : `Start`}
+      </div>
     </FancyButtonComponent>
   )
 }

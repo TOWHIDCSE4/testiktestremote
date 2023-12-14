@@ -10,6 +10,19 @@ export default function PauseButtonComponent() {
   }
   return (
     <>
+      <div className="sm:hidden">
+        <FancyButtonComponent
+          className="font-bold"
+          size={"sm"}
+          padding={"xs"}
+          onClick={() => {
+            onClick()
+          }}
+          intent={variant}
+        >
+          <div className="text-[3rem] px-2">P</div>
+        </FancyButtonComponent>
+      </div>
       <div className="hidden lg:block">
         <FancyButtonComponent
           className="font-bold"
@@ -23,7 +36,7 @@ export default function PauseButtonComponent() {
           <div className="text-[3rem] px-3">P</div>
         </FancyButtonComponent>
       </div>
-      <div className="lg:hidden">
+      <div className="hidden sm:block lg:hidden">
         <FancyButtonComponent
           className="font-bold"
           size={"xs"}

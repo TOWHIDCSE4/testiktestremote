@@ -14,7 +14,7 @@ import PauseButtonComponent from "./PauseButton"
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
   style: ["normal", "italic"],
-  display: "block",
+  display: "swap",
   subsets: ["latin", "latin-ext"],
 })
 
@@ -25,10 +25,10 @@ const clockDigitCV = cva("transition-colors", {
       primary: ["text-[#0F2034]", "text-center", "font-bold"],
     },
     type: {
-      digit: ["w-[2.5rem]"],
-      divider: ["w-[1.5rem]", "mb-3"],
+      digit: ["w-[1.5rem]", "sm:w-[2.5rem]"],
+      divider: ["w-[1.3rem]", "sm:w-[1.5rem]", "mb-3"],
     },
-    size: { primary: ["text-[5rem]"] },
+    size: { primary: ["text-[3.3rem]", , "sm:text-[5rem]"] },
     font: { lato: ["!font-lato"] },
   },
   compoundVariants: [{ intent: "primary", size: "primary", className: "" }],
@@ -41,23 +41,17 @@ const clockDigitCV = cva("transition-colors", {
 })
 
 export default function DigitalClockComponent() {
-  const {
-    variant,
-    controllerDetailData,
-    controllerClockSeconds,
-    cycleClockSeconds,
-  } = useContext(ControllerContext)
+  const { variant, cycleClockSeconds } = useContext(ControllerContext)
   const color = useColor({ variant })
 
   const controllerClockArray = hourMinuteSecondInNumber(cycleClockSeconds)
-  const cycleClockSecondsArray = hourMinuteSecondMilli(cycleClockSeconds)
 
   return (
-    <div className="relative flex flex-col items-center mx-auto w-fit">
+    <div className="relative flex flex-col items-center mx-auto font-lato w-fit">
       <div
-        className={`border-4 transition-colors border-${color} bg-${color} bg-opacity-10 rounded-lg px-6 ${lato.className}`}
+        className={`border-4 transition-colors border-${color} bg-${color} bg-opacity-10 rounded-lg px-3 sm:px-6 ${lato.className}`}
       >
-        <div className="flex items-center justify-center gap-3 h-[6rem]">
+        <div className="flex items-center justify-center gap-2 sm:gap-3 h-[4rem] sm:h-[6rem]">
           <div
             className={clockDigitCV({
               intent: controllerClockArray[0] < 10 ? "zero" : "primary",
@@ -140,11 +134,11 @@ export default function DigitalClockComponent() {
           </div>
         </div>
       </div>
-      <div className="relative w-full mt-4 lg:hidden">
+      <div className="relative w-full mt-3 sm:mt-4 lg:hidden">
         <div className="flex justify-center lg:hidden">
           <StartButtonComponent />
         </div>
-        <div className="absolute top-0 right-0 translate-y-[30%]">
+        <div className="hidden sm:block absolute top-0 right-0 translate-y-[30%]">
           <PauseButtonComponent />
         </div>
       </div>

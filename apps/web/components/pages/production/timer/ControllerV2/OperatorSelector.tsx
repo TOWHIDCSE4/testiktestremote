@@ -91,7 +91,7 @@ const OperatorSelectComponent = () => {
         })
       }
     >
-      <div className={`relative mt-1 `}>
+      <div className={`relative`}>
         <div className="w-6 h-full bg-[#DA8D00] absolute -right-4 rounded-r-md border-2 border-gray-700" />
         <div className="relative flex w-full cursor-default overflow-hidden rounded-lg border-2 border-gray-700 bg-[#E8EBF0] text-left  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
           <Combobox.Input
@@ -118,7 +118,7 @@ const OperatorSelectComponent = () => {
             )}
             <Combobox.Button
               onClick={() => inputRef.current?.focus()}
-              className="absolute z-20 inset-y-0 right-0 flex items-center pr-2"
+              className="absolute inset-y-0 right-0 z-20 flex items-center pr-2"
             >
               <HiChevronDoubleDown className={`text-${color}`} />
             </Combobox.Button>
@@ -131,9 +131,9 @@ const OperatorSelectComponent = () => {
           leaveTo="opacity-0"
           afterLeave={() => setQuery("")}
         >
-          <Combobox.Options className="absolute mt-1 z-50 max-h-40 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+          <Combobox.Options className="absolute z-50 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-40 ring-1 ring-black/5 focus:outline-none sm:text-sm">
             {filteredOperator?.length === 0 && query !== "" ? (
-              <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
+              <div className="relative px-4 py-2 text-gray-700 cursor-default select-none">
                 Nothing found.
               </div>
             ) : (
@@ -162,7 +162,7 @@ const OperatorSelectComponent = () => {
                             active ? "text-white" : "text-teal-600"
                           }`}
                         >
-                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          <CheckIcon className="w-5 h-5" aria-hidden="true" />
                         </span>
                       ) : null}
                     </>
