@@ -4,7 +4,6 @@ import MainNav from "../../components/MainNav"
 import "../globals.css"
 import { Exo_2 } from "next/font/google"
 import { Toaster } from "react-hot-toast"
-import ControllerModal from "../../components/shared/ControllerModal"
 // import {clarity} from 'clarity-js';
 
 const exo = Exo_2({ subsets: ["latin"] })

@@ -42,6 +42,7 @@ export default function StopMenuComponent({
             toggleOpen()
           }}
           className="w-10 overflow-hidden"
+          tabIndex={-1}
         >
           <div className="relative flex flex-col items-center justify-center h-full px-1 text-center -rotate-90">
             <div className="text-sm font-semibold text-white left-7">
@@ -73,6 +74,7 @@ export default function StopMenuComponent({
                     //   setStopReasons((prev: any[]) => [...prev, item])
                     // }
                   }}
+                  tabIndex={-1}
                   className="w-3 h-3 bg-white border border-[#0f2034] rounded-full"
                 />
                 <label className="uppercase text-[#0f2034] font-bold">
@@ -88,6 +90,7 @@ export default function StopMenuComponent({
                 onStopCycleWithReasons()
                 toggleOpen()
               }}
+              tabIndex={-1}
               className="border-2 border-[#90959b] bg-[#e8ebf0] leading-none rounded-lg text-[#0f2034] text-2xl px-3 font-semibold"
             >
               OK

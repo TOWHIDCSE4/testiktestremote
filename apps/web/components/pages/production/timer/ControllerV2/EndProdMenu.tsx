@@ -21,6 +21,7 @@ export default function EndProdMenuComponent({
             onClick={() => setIsOpen(!isOpen)}
             className={`py-1 flex items-center justify-center w-[15px]`}
             style={{ writingMode: "vertical-lr" }}
+            tabIndex={-1}
           >
             <HiChevronDoubleLeft
               className={`w-3 h-3  transition-all ${
@@ -30,6 +31,7 @@ export default function EndProdMenuComponent({
           </button>
           <button
             onClick={onClick}
+            tabIndex={-1}
             className={`transition-colors border-${color} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1`}
           >
             <div className="px-4 py-2 font-bold uppercase">END PRODUCTION</div>

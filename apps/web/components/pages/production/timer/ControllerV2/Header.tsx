@@ -4,7 +4,7 @@ import LogoGreen from "../../../../../assets/logo/logo-green.png"
 import LogoRed from "../../../../../assets/logo/logo-red.png"
 import LogoGold from "../../../../../assets/logo/logo-gold.png"
 import { MdClose } from "react-icons/md"
-import { BiFullscreen } from "react-icons/bi"
+import { BiFullscreen, BiExitFullscreen } from "react-icons/bi"
 import useControllerModal from "../../../../../store/useControllerModal"
 import { QueueListIcon } from "@heroicons/react/20/solid"
 import { ControllerContext } from "./ControllerContext"
@@ -18,16 +18,16 @@ const Header = ({
   locationName,
   setOpenTimerLogs,
   onClose,
-  onFullScreen,
 }: {
   isLoading: boolean
   locationName: string
   setOpenTimerLogs: (val: boolean) => void
   onClose: () => void
-  onFullScreen: () => void
 }) => {
   const { timerLogs, controllerClockSeconds, variant, progress } =
     useContext(ControllerContext)
+
+  const { isMaximized, setIsMaximized } = useControllerModal()
 
   const color = useColor({ variant })
 
@@ -45,8 +45,9 @@ const Header = ({
   }
 
   return (
-    <div className="relative flex flex-wrap items-center justify-between w-full py-5 text-white px-9 bg-dark-blue ">
-      <div>
+    <div className="relative flex flex-wrap items-center justify-between w-full px-3 py-2 text-white lg:py-5 lg:px-9 bg-dark-blue ">
+      {/* IMAGE */}
+      <div className="flex-1 ">
         <Image
           src={
             variant == "idle"
@@ -57,50 +58,56 @@ const Header = ({
           }
           alt="logo-gold"
           height={75}
-          className="h-[72px]"
+          className="h-[60px] lg:h-[72px] object-contain"
         />
       </div>
-      <div className="flex items-center justify-center flex-1 gap-5">
+      {/* BUTTONS */}
+      <div className="flex items-center justify-center gap-5 flex-2">
         <button
           onClick={() => setOpenTimerLogs(true)}
-          className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9"
+          className="items-center justify-center hidden text-xl text-black bg-white lg:flex rounded-xl w-9 h-9"
         >
           <LuMenu />
         </button>
         <button
           onClick={toggleTheme}
-          className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9"
+          className="flex items-center justify-center text-xl text-black bg-white rounded-xl w-9 h-9"
         >
           <LuMoon />
         </button>
         <button
-          onClick={onFullScreen}
-          className="flex items-center justify-center text-xl text-black bg-white rounded-lg w-9 h-9"
+          onClick={() => {
+            setIsMaximized(!isMaximized)
+          }}
+          className="flex items-center justify-center text-xl text-black bg-white rounded-xl w-9 h-9"
         >
-          <BiFullscreen />
+          {isMaximized ? <BiExitFullscreen /> : <BiFullscreen />}
         </button>
       </div>
-      <div className="flex flex-col items-center justify-center">
-        <div className="text-6xl font-bold uppercase">
-          {isLoading ? (
-            <div className="flex space-x-4 animate-pulse">
-              <div className="rounded h-7 w-36 bg-slate-200"></div>
-            </div>
-          ) : (
-            <>{locationName}</>
-          )}
-        </div>
-        <div className="text-lg">
-          PRODUCTION TIME: {controllerClockArray[0]}: {controllerClockArray[1]}:
-          {controllerClockArray[2]}
+      {/* TITLE */}
+      <div className="flex items-center justify-end flex-1">
+        <div className="flex flex-col items-center justify-center ">
+          <div className="text-6xl font-bold uppercase">
+            {isLoading ? (
+              <div className="flex space-x-4 animate-pulse">
+                <div className="rounded h-7 w-36 bg-slate-200"></div>
+              </div>
+            ) : (
+              <>{locationName}</>
+            )}
+          </div>
+          <div className="text-lg">
+            PRODUCTION TIME: {controllerClockArray[0]}:{" "}
+            {controllerClockArray[1]}:{controllerClockArray[2]}
+          </div>
         </div>
       </div>
       <button className="absolute right-2 top-2" onClick={() => onClose()}>
         <MdClose onClick={() => onClose()} size={24} color="white" />
       </button>
-      <div className="absolute bottom-0 left-0 w-full h-4 overflow-hidden">
+      <div className="absolute bottom-0 left-0 w-full h-2 overflow-hidden">
         <div
-          className={`h-4 top-0 left-0 bg-${color}`}
+          className={`h-2 top-0 left-0 bg-${color}`}
           style={{ width: `${progress}%` }}
         ></div>
       </div>

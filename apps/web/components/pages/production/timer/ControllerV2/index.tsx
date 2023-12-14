@@ -60,8 +60,7 @@ const ControllerV2 = ({
     <div
       className={cn(
         "flex flex-col w-full h-full justify-between overflow-hidden",
-        lato.className,
-        { "pr-5": isMaximized }
+        lato.className
       )}
     >
       <Header
@@ -69,39 +68,41 @@ const ControllerV2 = ({
         locationName={controllerDetailData.locationName ?? ""}
         setOpenTimerLogs={() => setIsLogsOpen(true)}
         onClose={onClose}
-        onFullScreen={onFullScreen}
       />
-      <div className="relative flex gap-8 px-12 py-0 mt-8">
-        <div className="flex-1 py-0">
-          <DigitalClockComponent />
-          <div className="flex justify-between mt-6">
-            <DetailContextComponent />
-            <div>
-              <FancyButtonComponent
-                textSize={"lg"}
-                className="font-bold"
-                onClick={() => {
-                  toggleIsStopMenuOpen()
-                }}
-                intent={variant}
-              >
-                P
-              </FancyButtonComponent>
-            </div>
-          </div>
-          <div className="flex items-center gap-10 pl-4 mt-6 mb-24">
-            <OperatorSelectComponent />
-            {/* <FancyButtonComponent className="gap-4 px-4 py-2">
+      <div className="relative w-full">
+        <div className="container max-w-2xl mx-auto">
+          <div className="relative flex justify-center gap-8 px-12 py-0 mt-8">
+            <div className="flex-1 py-0">
+              <DigitalClockComponent />
+              <div className="flex justify-between mt-6">
+                <DetailContextComponent />
+                <div>
+                  <FancyButtonComponent
+                    textSize={"lg"}
+                    className="font-bold"
+                    onClick={() => {
+                      toggleIsStopMenuOpen()
+                    }}
+                    intent={variant}
+                  >
+                    P
+                  </FancyButtonComponent>
+                </div>
+              </div>
+              <div className="flex items-center gap-10 pl-4 mt-6 mb-24">
+                <OperatorSelectComponent />
+                {/* <FancyButtonComponent className="gap-4 px-4 py-2">
               <span className="text-[#7a828d] text-normal italic">
                 *Job Assigning
               </span>
               <HiChevronDoubleDown className="text-[#da8d00]" />
             </FancyButtonComponent> */}
-            <JobSelectComponent />
+                <JobSelectComponent />
+              </div>
+            </div>
+            <ResultsBoardComponent />
           </div>
         </div>
-        <ResultsBoardComponent />
-
         <StopMenuComponent
           isOpen={isStopMenuOpen}
           toggleOpen={toggleIsStopMenuOpen}
