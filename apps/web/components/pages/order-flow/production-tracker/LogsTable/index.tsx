@@ -1246,37 +1246,35 @@ const LogsTable = ({
                                 {isAccordionOpen ? (
                                   <ChevronDownIcon
                                     className={`${
-                                      item.stopReason.join(", ") ===
-                                      "Unit Created"
+                                      item.status === "Gain"
                                         ? "text-green-500"
-                                        : item.stopReason.join(", ") ===
-                                            "Machine Cleaning" ||
-                                          item.stopReason.join(", ") ===
-                                            "Maintenance" ||
-                                          item.stopReason.join(", ") ===
-                                            "Change Part" ||
-                                          item.stopReason.join(", ") ===
-                                            "Personal Injury"
-                                        ? "text-yellow-500"
                                         : "text-red-500"
+                                      // item.stopReason.join(", ") ===
+                                      //     "Machine Cleaning" ||
+                                      //   item.stopReason.join(", ") ===
+                                      //     "Maintenance" ||
+                                      //   item.stopReason.join(", ") ===
+                                      //     "Change Part"
+                                      // ? "text-yellow-500"
+                                      // : "text-red-500"
                                     } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
                                   />
                                 ) : (
                                   <ChevronRightIcon
                                     className={`${
-                                      item.stopReason.join(", ") ===
-                                      "Unit Created"
+                                      item.status === "Gain"
                                         ? "text-green-500"
-                                        : item.stopReason.join(", ") ===
-                                            "Machine Cleaning" ||
-                                          item.stopReason.join(", ") ===
-                                            "Maintenance" ||
-                                          item.stopReason.join(", ") ===
-                                            "Change Part" ||
-                                          item.stopReason.join(", ") ===
-                                            "Personal Injury"
-                                        ? "text-yellow-500"
                                         : "text-red-500"
+                                      // item.stopReason.join(", ") ===
+                                      //     "Machine Cleaning" ||
+                                      //   item.stopReason.join(", ") ===
+                                      //     "Maintenance" ||
+                                      //   item.stopReason.join(", ") ===
+                                      //     "Change Part" ||
+                                      //   item.stopReason.join(", ") ===
+                                      //     "Personal Injury"
+                                      // ? "text-yellow-500"
+                                      // : "text-red-500"
                                     } "w-4 ml-2 mr-4 h-6 stroke-8 stroke-blue-950"`}
                                   />
                                 )}
@@ -1458,10 +1456,7 @@ const LogsTable = ({
                                                     ) === "Maintenance" ||
                                                     item.stopReason.join(
                                                       ", "
-                                                    ) === "Change Part" ||
-                                                    item.stopReason.join(
-                                                      ", "
-                                                    ) === "Personal Injury"
+                                                    ) === "Change Part"
                                                   ? "text-yellow-600"
                                                   : "text-red-500"
                                               }`}

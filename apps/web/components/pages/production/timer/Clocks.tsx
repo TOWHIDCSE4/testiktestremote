@@ -83,6 +83,25 @@ const Clocks = ({
     setCheckAll(!checkAll)
   }, [])
 
+  const handleMachineClassClick = (e: any) => {
+    if (openFilter) {
+      if (
+        !e.target.closest(".your-menu-class") &&
+        !e.target.classList.contains("h-4")
+      ) {
+        setOpenFilter(false)
+      }
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("click", handleMachineClassClick)
+
+    return () => {
+      document.removeEventListener("click", handleMachineClassClick)
+    }
+  }, [openFilter])
+
   return (
     <>
       <div className="flex justify-between pt-4 pb-3 items-center">
