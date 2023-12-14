@@ -37,17 +37,18 @@ export default function ResultsBoardComponent() {
           trigger={"on"}
           intent={variant}
         >
-          {isChangingJob ? (
-            <>Changing controller job</>
-          ) : isControllerJobLoading ? (
-            "Assigning Job to Controller"
-          ) : isJobsLoading ? (
-            `Loading Controller Jobs`
-          ) : isCycleClockRunning ? (
-            `Stop`
-          ) : (
-            `Start`
-          )}
+          {isChangingJob
+            ? // "Changing controller job"
+              "..."
+            : isControllerJobLoading
+            ? // "Assigning Job to Controller"
+              "..."
+            : isJobsLoading
+            ? // `Loading Controller Jobs`
+              "..."
+            : isCycleClockRunning
+            ? `Stop`
+            : `Start`}
         </FancyButtonComponent>
       </div>
       <div className="">
