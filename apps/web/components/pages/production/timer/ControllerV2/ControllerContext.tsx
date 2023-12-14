@@ -673,6 +673,19 @@ export const ControllerContextProvider = ({
         cycleClockSeconds: clockMilliSeconds,
       })
     }
+    const subscriber = useSocket.subscribe(({ isConnected }) => {
+      if (isConnected) {
+        socket?.emit("controller-reconnect", {
+          timerId,
+          unitCreated,
+          isCycleClockRunning,
+          cycleClockSeconds: clockMilliSeconds,
+        })
+      }
+    })
+    return () => {
+      subscriber()
+    }
   }, [
     socket,
     timerId,

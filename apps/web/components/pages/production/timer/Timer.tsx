@@ -350,6 +350,20 @@ const Timer = ({
 
   useEffect(() => {
     if (!timer._id) return
+    const resyncClock = (data: {
+      timerId: string
+      isCycleClockRunning: boolean
+      unitCreated: number
+      cycleClockSeconds: number
+    }) => {
+      setCycleClockInSeconds(data.cycleClockSeconds)
+      if (data.isCycleClockRunning) {
+        runCycle()
+      } else {
+        setCycleClockInSeconds(0)
+        stopInterval()
+      }
+    }
     const timerTick = (data: {
       timerId: string
       isCycleClockRunning: boolean
@@ -357,24 +371,33 @@ const Timer = ({
       cycleClockSeconds: number
     }) => {
       if (data.timerId === timer._id) {
+        console.log("controller-timer-tick", data)
         setUnitCreated((current) => {
           if (data.unitCreated > unitCreated) {
             return data.unitCreated
           }
           return current
         })
-        setCycleClockInSeconds(data.cycleClockSeconds)
-        if (data.isCycleClockRunning) {
-          runCycle()
-        } else {
-          setCycleClockInSeconds(0)
-          stopInterval()
-        }
+        resyncClock(data)
+      }
+    }
+
+    const controllerReconnect = (data: {
+      timerId: string
+      isCycleClockRunning: boolean
+      unitCreated: number
+      cycleClockSeconds: number
+    }) => {
+      if (data.timerId === timer._id) {
+        setUnitCreated(data.unitCreated)
+        resyncClock(data)
       }
     }
     socket?.on("controller-timer-tick", timerTick)
+    socket?.on("controller-reconnect", controllerReconnect)
     return () => {
       socket?.off("controller-timer-tick", timerTick)
+      socket?.off("controller-reconnect", controllerReconnect)
     }
   }, [socket, timer._id])
 

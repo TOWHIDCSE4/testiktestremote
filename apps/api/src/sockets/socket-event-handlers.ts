@@ -43,6 +43,11 @@ export default function chatSocket(io: Server) {
         .to(timerId)
         .emit("controller-timer-tick", { timerId, ...otherData })
     })
+    socket.on("controller-reconnect", ({ timerId, ...otherData }) => {
+      socket
+        .to(timerId)
+        .emit("controller-timer-tick", { timerId, ...otherData })
+    })
 
     socket.on("event", (message: any) => {
       // Handle chat message logic here (e.g., save to a database)
