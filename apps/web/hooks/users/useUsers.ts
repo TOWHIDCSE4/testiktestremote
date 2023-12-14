@@ -23,11 +23,17 @@ export async function getUsers() {
   return (await res.json()) as T_DBReturn
 }
 
-function useUsers() {
+interface QueryProps {
+  onSuccess?: any
+  onSettled?: any
+}
+
+function useUsers(queryProps: QueryProps) {
   const query = useQuery(["users"], () => getUsers(), {
     cacheTime: SIXTEEN_HOURS,
     staleTime: TWELVE_HOURS,
     refetchOnWindowFocus: false,
+    ...queryProps,
   })
   return query
 }
