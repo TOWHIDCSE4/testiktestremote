@@ -31,7 +31,7 @@ export default function DetailContextComponent() {
         <div>
           <span className="text-[#0f2034] font-semibold">Average Time : </span>
           <span className="text-[#858585]">
-            {controllerDetailData.averageTime} Seconds
+            {Math.floor(controllerDetailData.averageTime ?? 0)} Seconds
           </span>
         </div>
         <div>
@@ -39,7 +39,7 @@ export default function DetailContextComponent() {
             Average Weight :{" "}
           </span>
           <span className="text-[#858585]">
-            {controllerDetailData.weight?.toFixed(3)}Tons
+            {controllerDetailData.weight?.toFixed(2)} Tons
           </span>
         </div>
       </div>
