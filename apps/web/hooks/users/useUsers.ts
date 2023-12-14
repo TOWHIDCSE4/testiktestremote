@@ -28,7 +28,7 @@ interface QueryProps {
   onSettled?: any
 }
 
-function useUsers(queryProps: QueryProps) {
+function useUsers(queryProps: QueryProps = {}) {
   const query = useQuery(["users"], () => getUsers(), {
     cacheTime: SIXTEEN_HOURS,
     staleTime: TWELVE_HOURS,
