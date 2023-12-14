@@ -601,15 +601,14 @@ export const ControllerContextProvider = ({
 
   useEffect(() => {
     if (timerDetailData?.item?.createdAt) {
-      const noOfHours = dayjs(new Date()).diff(
-        new Date(timerDetailData?.item?.createdAt),
-        "hours"
-      )
+      const hours = new Date(
+        controllerTimerData?.items[0]?.createdAt as Date
+      ).getHours()
       setTotals((current) => ({
         ...current,
         totalTons: unitCreated * controllerDetailData.weight,
-        unitsPerHour: noOfHours / unitCreated,
-        tonsPerHour: (noOfHours / unitCreated) * controllerDetailData.weight,
+        unitsPerHour: unitCreated / hours,
+        tonsPerHour: (unitCreated * controllerDetailData.weight) / hours,
       }))
     }
   }, [unitCreated])
