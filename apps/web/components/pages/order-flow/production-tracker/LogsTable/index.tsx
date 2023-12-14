@@ -80,7 +80,9 @@ const LogsTable = ({
   const [endDate, setEndDate] = useState("")
   const [minWidth, setMinWidth] = useState<number>(window.innerWidth)
   const [openAccordion, setOpenAccordion] = useState<string | null>(null)
-  // const [city, setCity] = useState<string[]>(locationId)
+  const [cityNames, setCityNames] = useState<string[]>([])
+  const [selectedMachineClassesNames, setSelectedMachineClassesNames] =
+    useState<string[]>([])
   const [city, setCity] = useState<string[]>([])
   const [checkedProduction, setCheckedProduction] = useState<{ id: string }[]>(
     []
@@ -311,6 +313,11 @@ const LogsTable = ({
 
   useEffect(() => {
     setMachineClassIds(machineClass)
+
+    const selectedMachineNames = machineClasses?.items
+      ?.filter((machine: any) => machineClass?.includes(machine._id as string))
+      .map((machine: any) => machine?.name)
+    setSelectedMachineClassesNames(selectedMachineNames as string[])
   }, [machineClass, setMachineClassIds])
 
   useEffect(() => {
@@ -499,7 +506,13 @@ const LogsTable = ({
 
   useEffect(() => {
     setCityCounter(city.length)
-  })
+
+    // Set Selected Cities
+    const selectedLocation = locations?.items
+      ?.filter((loc) => city.includes(loc._id as string))
+      .map((name) => name?.name)
+    setCityNames(selectedLocation as string[])
+  }, [city])
 
   const handleMachineClassChange = (event: SelectChangeEvent) => {
     const selectedMachineClasses: string = event.target.value
@@ -801,7 +814,11 @@ const LogsTable = ({
                       }}
                       value={city}
                       onChange={(event) => handleLocationChange(event)}
-                      renderValue={() => `${cityCounter} selected`}
+                      renderValue={() =>
+                        cityNames?.length > 2
+                          ? `${cityCounter} selected`
+                          : `${cityNames?.join(", ").toString()}`
+                      }
                       MenuProps={MenuProps}
                     >
                       {locations?.items?.map(
@@ -847,7 +864,13 @@ const LogsTable = ({
                       }}
                       value={machineClass}
                       onChange={(event: any) => handleMachineClassChange(event)}
-                      renderValue={() => `${machineClassCounter} selected`}
+                      renderValue={() =>
+                        selectedMachineClassesNames?.length > 2
+                          ? `${machineClassCounter} selected`
+                          : `${selectedMachineClassesNames
+                              ?.join(", ")
+                              .toString()}`
+                      }
                       MenuProps={MenuProps}
                     >
                       {machineClasses &&
