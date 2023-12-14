@@ -5,7 +5,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 // import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister"
 import React from "react"
 
-const GIT_HASH = (process.env as any).CONFIG_GIT_HASH
+const GIT_HASH = (process.env as any).GIT_HASH
 const BUILD_ID = (process.env as any).CONFIG_BUILD_ID
 console.log("Current BUILD_ID:", BUILD_ID)
 console.log("Current GIT_HASH:", GIT_HASH)
