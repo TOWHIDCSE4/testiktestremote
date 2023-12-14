@@ -19,7 +19,7 @@ import useColor from "./useColor"
 const OperatorSelectComponent = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   // Context
-  const { timerId, variant, onOperatorChange, operator } =
+  const { timerId, variant, onOperatorChange, operator, isCycleClockRunning } =
     useContext(ControllerContext)
   const color = useColor({ variant })
 
@@ -35,8 +35,9 @@ const OperatorSelectComponent = () => {
   const [selected, setSelected] = useState({
     id: timerDetailsQuery?.data?.item?.operator._id,
     name:
-      operator?.firstName ??
-      `${timerDetailsQuery?.data?.item?.operator?.firstName} ${timerDetailsQuery?.data?.item?.operator?.lastName}`,
+      operator?.firstName === undefined
+        ? `${timerDetailsQuery?.data?.item?.operator?.firstName} ${timerDetailsQuery?.data?.item?.operator?.lastName}`
+        : `${operator?.firstName} ${operator?.lastName}`,
   })
   const [query, setQuery] = useState("")
 
@@ -74,9 +75,14 @@ const OperatorSelectComponent = () => {
           })
           ?.slice(0, 30)
 
+  const isDisableInput =
+    usersQuery?.isLoading || usersQuery?.isFetching || isCycleClockRunning
+
   return (
     <Combobox
-      disabled={usersQuery?.isLoading || usersQuery?.isFetching}
+      disabled={
+        usersQuery?.isLoading || usersQuery?.isFetching || isCycleClockRunning
+      }
       value={selected}
       onChange={(selected: any) =>
         setSelected({
@@ -85,11 +91,13 @@ const OperatorSelectComponent = () => {
         })
       }
     >
-      <div className="relative mt-1">
+      <div className={`relative mt-1 `}>
         <div className="w-6 h-full bg-[#DA8D00] absolute -right-4 rounded-r-md border-2 border-gray-700" />
         <div className="relative flex w-full cursor-default overflow-hidden rounded-lg border-2 border-gray-700 bg-[#E8EBF0] text-left  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
           <Combobox.Input
-            className="w-full border-none py-1.5 pl-3 font-semibold  pr-10 text-sm leading-5 text-[#5D5D5D] focus:ring-0 bg-[#E8EBF0] italic"
+            className={`w-full border-none py-1.5 pl-3 font-semibold  pr-10 text-sm leading-5 text-[#5D5D5D] focus:ring-0 bg-[#E8EBF0] italic ${
+              isDisableInput ? "cursor-not-allowed" : ""
+            }`}
             displayValue={(selected: any) =>
               timerDetailsQuery?.data?.item?.operator?.firstName &&
               timerDetailsQuery?.data?.item?.operator?.lastName
@@ -134,7 +142,7 @@ const OperatorSelectComponent = () => {
                   key={person._id}
                   className={({ active }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                      active ? "bg-teal-600 text-white" : "text-gray-900"
+                      active ? "bg-[#E8EBF0] text-black" : "text-black-900"
                     }`
                   }
                   value={person}
