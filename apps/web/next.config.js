@@ -3,6 +3,11 @@ require("dotenv").config({
   path: existsSync("../../.env") ? "../../.env" : "../../../.env",
 })
 
+const gitRevision = require("child_process")
+  .execSync("git rev-parse HEAD")
+  .toString()
+  .trim()
+
 module.exports = {
   async rewrites() {
     return [
@@ -34,6 +39,7 @@ module.exports = {
     config.plugins.push(
       new webpack.DefinePlugin({
         "process.env.CONFIG_BUILD_ID": JSON.stringify(buildId),
+        "process.env.GIT_HASH": JSON.stringify(gitRevision),
       })
     )
     config.externals.push({
