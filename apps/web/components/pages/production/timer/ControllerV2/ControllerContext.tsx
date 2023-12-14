@@ -664,6 +664,36 @@ export const ControllerContextProvider = ({
   }, [controllerDetailData.averageTime, clockMilliSeconds])
 
   useEffect(() => {
+    if (isControllerModalOpenRef.current) {
+      socket?.emit("controller-timer-tick", {
+        timerId,
+        unitCreated,
+        isCycleClockRunning,
+        cycleClockSeconds: clockMilliSeconds,
+      })
+    }
+    const subscriber = useSocket.subscribe(({ isConnected }) => {
+      if (isConnected) {
+        socket?.emit("controller-reconnect", {
+          timerId,
+          unitCreated,
+          isCycleClockRunning,
+          cycleClockSeconds: clockMilliSeconds,
+        })
+      }
+    })
+    return () => {
+      subscriber()
+    }
+  }, [
+    socket,
+    timerId,
+    unitCreated,
+    isCycleClockRunning,
+    parseInt(String(clockMilliSeconds)),
+  ])
+
+  useEffect(() => {
     setVariant(
       !isCycleClockRunning
         ? "idle"

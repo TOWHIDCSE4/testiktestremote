@@ -6,7 +6,7 @@ import {
   ChevronDownIcon,
   HeartIcon,
 } from "@heroicons/react/20/solid"
-import { useQueryClient } from "@tanstack/react-query"
+import { onlineManager, useQueryClient } from "@tanstack/react-query"
 import {
   Bars3Icon,
   BellIcon,
@@ -28,6 +28,8 @@ import useLogout from "../hooks/users/useLogout"
 import useProfile from "../hooks/users/useProfile"
 import dayjs from "dayjs"
 import { T_BackendResponse } from "custom-validator"
+import { useSocket } from "../store/useSocket"
+import cn from "classnames"
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ")
@@ -41,6 +43,11 @@ const MainNav = () => {
 
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const { mutate } = useLogout()
+  const isSocketConnected = useSocket((state) => state.isConnected)
+  const [isOnline, setIsOnline] = useState(onlineManager.isOnline())
+  onlineManager.subscribe(() => {
+    setIsOnline(onlineManager.isOnline())
+  })
 
   const logoutUser = () => {
     const callBackReq = {
@@ -291,7 +298,12 @@ const MainNav = () => {
                       <ClockIcon className="h-6 w-6 text-indigo-blue mr-2 md:mr-0" />
                     </Link>
                     <span className="border-x h-full border-gray-300 hidden md:flex items-center">
-                      <ChartBarIcon className="h-6 w-6 text-green-700 mx-2" />
+                      <ChartBarIcon
+                        className={cn("h-6 w-6 mx-2 ", {
+                          "text-green-700": isOnline && isSocketConnected,
+                          "text-slate-300": !isOnline || !isSocketConnected,
+                        })}
+                      />
                     </span>
                     <Link href="#">
                       <CircleStackIcon className="h-6 w-6 text-indigo-blue hidden md:block" />

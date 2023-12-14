@@ -149,94 +149,93 @@ const Timer = ({
     }
   }
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const runSocket = (data: any) => {
-      console.log("socket got event", data)
-      if (data.action === "pre-add") {
-        runCycle()
-      }
-      if (data.action === "add") {
-        runCycle()
-      }
-      if (data.action === "endAndAdd") {
-        if (!isControllerModalOpen) {
-          queryClient.invalidateQueries([
-            "timer-logs",
-            timer.locationId,
-            getObjectId(timer),
-          ])
-        }
-        setCycleClockInSeconds(0)
-        runCycle()
-      }
-      if (data.action === "end") {
-        if (!isControllerModalOpen) {
-          queryClient.invalidateQueries([
-            "timer-logs",
-            timer.locationId,
-            getObjectId(timer),
-          ])
-        }
-        setCycleClockInSeconds(0)
-        stopInterval()
-      }
-      if (data.action === "update-cycle" && data.timers.length > 0) {
-        if (!isControllerModalOpen && !isCycleClockRunning) {
-          runCycle()
-        }
-        const timeZone = timer?.location?.timeZone
-        const timerStart = dayjs.tz(
-          dayjs(data.timers[0].createdAt),
-          timeZone ? timeZone : ""
-        )
-        const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
-        const secondsLapse = currentDate.diff(timerStart, "seconds", true)
-        setCycleClockInSeconds((current: number) => {
-          if (secondsLapse > current) {
-            return secondsLapse
-          }
-          return current
-        })
-      }
+  // useEffect(() => {
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   const runSocket = (data: any) => {
+  //     if (data.action === "pre-add") {
+  //       runCycle()
+  //     }
+  //     if (data.action === "add") {
+  //       runCycle()
+  //     }
+  //     if (data.action === "endAndAdd") {
+  //       if (!isControllerModalOpen) {
+  //         queryClient.invalidateQueries([
+  //           "timer-logs",
+  //           timer.locationId,
+  //           getObjectId(timer),
+  //         ])
+  //       }
+  //       setCycleClockInSeconds(0)
+  //       runCycle()
+  //     }
+  //     if (data.action === "end") {
+  //       if (!isControllerModalOpen) {
+  //         queryClient.invalidateQueries([
+  //           "timer-logs",
+  //           timer.locationId,
+  //           getObjectId(timer),
+  //         ])
+  //       }
+  //       setCycleClockInSeconds(0)
+  //       stopInterval()
+  //     }
+  //     if (data.action === "update-cycle" && data.timers.length > 0) {
+  //       if (!isControllerModalOpen && !isCycleClockRunning) {
+  //         runCycle()
+  //       }
+  //       const timeZone = timer?.location?.timeZone
+  //       const timerStart = dayjs.tz(
+  //         dayjs(data.timers[0].createdAt),
+  //         timeZone ? timeZone : ""
+  //       )
+  //       const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
+  //       const secondsLapse = currentDate.diff(timerStart, "seconds", true)
+  //       setCycleClockInSeconds((current: number) => {
+  //         if (secondsLapse > current) {
+  //           return secondsLapse
+  //         }
+  //         return current
+  //       })
+  //     }
 
-      if (
-        data.action.includes("end-controller") ||
-        data.action.includes("end-production")
-      ) {
-        stopInterval()
-        setCycleClockInSeconds(0)
-      }
-      if (data.action === "start-press") {
-        runCycle()
-      }
-      if (data.action === "stop-press") {
-        stopInterval()
-        setCycleClockInSeconds(0)
-        runCycle()
-        setUnitCreated((current) => {
-          if (data.currentUnit > current) {
-            return data.currentUnit
-          }
-          return current
-        })
-      }
-      if (data.action === "pre-end") {
-        stopInterval()
-        setCycleClockInSeconds(0)
-      }
-      if (data.action === "end") {
-        stopInterval()
-        setCycleClockInSeconds(0)
-      }
-    }
-    socket?.on(`timer-${timer._id}`, runSocket)
+  //     if (
+  //       data.action.includes("end-controller") ||
+  //       data.action.includes("end-production")
+  //     ) {
+  //       stopInterval()
+  //       setCycleClockInSeconds(0)
+  //     }
+  //     if (data.action === "start-press") {
+  //       runCycle()
+  //     }
+  //     if (data.action === "stop-press") {
+  //       stopInterval()
+  //       setCycleClockInSeconds(0)
+  //       runCycle()
+  //       setUnitCreated((current) => {
+  //         if (data.currentUnit > current) {
+  //           return data.currentUnit
+  //         }
+  //         return current
+  //       })
+  //     }
+  //     if (data.action === "pre-end") {
+  //       stopInterval()
+  //       setCycleClockInSeconds(0)
+  //     }
+  //     if (data.action === "end") {
+  //       stopInterval()
+  //       setCycleClockInSeconds(0)
+  //     }
+  //   }
+  //   socket?.on(`timer-${timer._id}`, runSocket)
 
-    return () => {
-      socket?.off(`timer-${timer._id}`, runSocket)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket, timer._id])
+  //   return () => {
+  //     socket?.off(`timer-${timer._id}`, runSocket)
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [socket, timer._id])
 
   const intervalRef = useRef<any>()
   useEffect(() => {
@@ -348,6 +347,67 @@ const Timer = ({
     clearInterval(intervalRef.current)
     setIsCycleClockRunning(false)
   }
+
+  useEffect(() => {
+    if (!timer._id) return
+    const resyncClock = (data: {
+      timerId: string
+      isCycleClockRunning: boolean
+      unitCreated: number
+      cycleClockSeconds: number
+    }) => {
+      setCycleClockInSeconds(data.cycleClockSeconds)
+      if (data.isCycleClockRunning) {
+        runCycle()
+      } else {
+        setCycleClockInSeconds(0)
+        stopInterval()
+      }
+    }
+    const timerTick = (data: {
+      timerId: string
+      isCycleClockRunning: boolean
+      unitCreated: number
+      cycleClockSeconds: number
+    }) => {
+      if (data.timerId === timer._id) {
+        console.log("controller-timer-tick", data)
+        setUnitCreated((current) => {
+          if (data.unitCreated > unitCreated) {
+            return data.unitCreated
+          }
+          return current
+        })
+        resyncClock(data)
+      }
+    }
+
+    const controllerReconnect = (data: {
+      timerId: string
+      isCycleClockRunning: boolean
+      unitCreated: number
+      cycleClockSeconds: number
+    }) => {
+      if (data.timerId === timer._id) {
+        setUnitCreated(data.unitCreated)
+        resyncClock(data)
+      }
+    }
+    socket?.on("controller-timer-tick", timerTick)
+    socket?.on("controller-reconnect", controllerReconnect)
+    return () => {
+      socket?.off("controller-timer-tick", timerTick)
+      socket?.off("controller-reconnect", controllerReconnect)
+    }
+  }, [socket, timer._id])
+
+  useEffect(() => {
+    socket?.emit("join-timer", { timerId: timer._id })
+
+    return () => {
+      socket?.emit("leave-timer", { timerId: timer._id })
+    }
+  }, [socket, timer._id])
 
   return (
     <>
