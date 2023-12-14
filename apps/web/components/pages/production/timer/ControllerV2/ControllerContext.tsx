@@ -89,7 +89,7 @@ export interface ControllerContextProps {
   setReadingMessages: (messages?: Array<string>) => void
   addReadingMessage: (message: string) => void
   onJobChange: (jobId: string) => void
-  onOperatorChange: (operatorId: string) => void
+  onOperatorChange: (operatorId: string, operatorName: string) => void
 }
 
 export const ControllerContext = createContext<ControllerContextProps>({
@@ -157,11 +157,11 @@ export const ControllerContextProvider = ({
 }: ControllerProviderProps) => {
   const { data: profileData } = useProfile()
   const operatorId = getObjectId(operator)
-  const currentOperator = operatorId ? operator : profileData?.item
   const { data: controllerTimerData, isLoading: controllerTimerDataLoading } =
     useGetControllerTimer(timerId)
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(timerId)
+  const currentOperator = timerDetailData?.item?.operator ?? profileData?.item
   const { mutate: addTimerLog } = useAddTimerLog()
   const {
     data: timerJobs,
@@ -465,10 +465,14 @@ export const ControllerContextProvider = ({
     })
   }
 
-  const onOperatorChange = (operator: string) => {
+  const onOperatorChange = (operator: string, operatorName: string) => {
     // setIsChangingJob(true)
     updateTimerOperator(
-      { ...timerDetailData?.item, operator },
+      {
+        ...timerDetailData?.item,
+        operator: operatorName ? "" : operator,
+        operatorName: operatorName ? operatorName : "",
+      },
       {
         onError: (e) => {
           console.log(
@@ -485,6 +489,7 @@ export const ControllerContextProvider = ({
         onSettled: () => {
           // setIsChangingJob(false)
           queryClient.invalidateQueries(["timer", timerId])
+          if (operatorName) queryClient.invalidateQueries(["users"])
         },
       }
     )
