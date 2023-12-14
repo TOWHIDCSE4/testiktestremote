@@ -351,6 +351,12 @@ export const ControllerContextProvider = ({
       return c + 1
     })
     startCycleClockInterval()
+    if (socket) {
+      socket.emit(`start-press`, {
+        timerId,
+        action: "start-press",
+      })
+    }
     if (!hasControllerTimer) {
       const controllerTimerValue: T_ControllerTimer = {
         timerId: timerId,
