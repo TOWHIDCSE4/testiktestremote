@@ -26,7 +26,7 @@ export default function DetailContextComponent() {
       </div>
       <div
         className={`pl-4 transition-all ${
-          isOpen ? "h-fit" : "sm:h-0"
+          isOpen ? "h-fit" : "h-0 sm:h-fit"
         } overflow-hidden`}
       >
         <div className=" line-clamp-1">
