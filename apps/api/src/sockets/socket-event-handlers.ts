@@ -22,14 +22,26 @@ export default function chatSocket(io: Server) {
     socket["user"] = user
 
     console.log("User connected")
-    socket.on("join-timer", (data: any) => {
-      console.log(data)
-      if (data.action == "emit-operator") {
-        const { action, timerId, ...rest } = data
-        if (timerId) {
-          ioEmit(`timer-${timerId}`, { action: "update-operator", user: user })
-        }
-      }
+    socket.on("join-timer", ({ timerId }) => {
+      // console.log(data)
+      // if (data.action == "emit-operator") {
+      //   const { action, timerId, ...rest } = data
+      //   if (timerId) {
+      //     ioEmit(`timer-${timerId}`, { action: "update-operator", user: user })
+      //   }
+      // }
+
+      socket.join(timerId)
+    })
+
+    socket.on("leave-timer", ({ timerId }) => {
+      socket.leave(timerId)
+    })
+
+    socket.on("controller-timer-tick", ({ timerId, ...otherData }) => {
+      socket
+        .to(timerId)
+        .emit("controller-timer-tick", { timerId, ...otherData })
     })
 
     socket.on("event", (message: any) => {
