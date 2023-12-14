@@ -44,15 +44,13 @@ const ControllerV2 = ({
   onClose,
   onFullScreen,
 }: ControllerV2Props) => {
-  const { variant, controllerDetailData } = useContext(ControllerContext)
+  const { variant, controllerDetailData, setIsStopMenuOpen, isStopMenuOpen } =
+    useContext(ControllerContext)
   const [isLogsOpen, setIsLogsOpen] = useState(false)
 
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
     useState(false)
 
-  const { isMaximized } = useControllerModal()
-
-  const [isStopMenuOpen, setIsStopMenuOpen] = useState<boolean>()
   const toggleIsStopMenuOpen = useCallback(() => {
     setIsStopMenuOpen(!isStopMenuOpen)
   }, [isStopMenuOpen, setIsStopMenuOpen])
@@ -72,21 +70,21 @@ const ControllerV2 = ({
       />
       <div className="relative w-full">
         <div className="mx-auto lg:container lg:max-w-2xl">
-          <div className="relative flex justify-center gap-8 px-0 py-0 mt-8 lg:px-12">
+          <div className="relative flex justify-center gap-8 px-4 py-0 mt-1 lg:mt-8 lg:px-12">
             <div className="flex-1 py-0">
               <DigitalClockComponent />
-              <div className="flex justify-between px-4 mt-6 lg:px-0">
+              <div className="flex justify-between px-4 lg:mt-6 lg:px-0">
                 <div>
                   <DetailContextComponent />
-                  <div className="flex flex-col items-start gap-4 pl-4 mt-6 mb-24 lg:hidden">
+                  <div className="relative flex flex-col items-start gap-4 pb-16 pl-4 mt-3 lg:hidden">
                     <OperatorSelectComponent />
                     <JobSelectComponent />
                   </div>
                 </div>
                 <div className="hidden lg:block">
-                  <PauseButtonComponent onClick={toggleIsStopMenuOpen} />
+                  <PauseButtonComponent />
                 </div>
-                <div className="block lg:hidden">
+                <div className="self-end lg:hidden">
                   <ResultsBoardComponent />
                 </div>
               </div>

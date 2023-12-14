@@ -23,26 +23,25 @@ export default function ResultsBoardComponent() {
           <StartButtonComponent />
         </div>
       </div>
-      <div className="">
-        <div className="grid grid-cols-12 gap-1 font-medium leading-tight text-normal">
-          <div className="col-span-6 text-[#858585] text-right">
+      <div className="relative">
+        <div className="grid grid-cols-2 gap-1 ml-auto font-medium leading-tight w-fit text-normal">
+          <div className="col-span-1 text-[#858585] text-right">
             {totals.unitsPerHour.toFixed(3)} :{" "}
           </div>
-          <div className="col-span-6 text-[#0f2034] font-semibold">UNIT PH</div>
-          <div className="col-span-6 text-[#858585] text-right">
+          <div className="col-span-1 text-[#0f2034] font-semibold">UNIT PH</div>
+          <div className="col-span-1 text-[#858585] text-right">
             {totals.totalTons.toFixed(3)} :{" "}
           </div>
-          <div className="col-span-6 text-[#0f2034] font-semibold">
+          <div className="col-span-1 text-[#0f2034] font-semibold">
             TOTAL TONS
           </div>
-          <div className="col-span-6 text-[#858585] text-right">
+          <div className="col-span-1 text-[#858585] text-right">
             {totals.tonsPerHour.toFixed(3)} :{" "}
           </div>
-          <div className="col-span-6 text-[#0f2034] font-semibold">TONS PH</div>
+          <div className="col-span-1 text-[#0f2034] font-semibold">TONS PH</div>
         </div>
-        <div className="grid w-full grid-cols-12">
-          <div className="col-span-4"></div>
-          <div className="col-span-8 text-xl text-[#0f2034] uppercase font-extrabold">
+        <div className="flex justify-end w-full pr-8">
+          <div className="text-xl text-[#0f2034] uppercase font-extrabold">
             TOTAL UNITS
           </div>
         </div>

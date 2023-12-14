@@ -104,10 +104,12 @@ const Header = ({
           </div>
         </div>
       </div>
+      {/* CLOSE BUTTON */}
       <button className="absolute right-2 top-2" onClick={() => onClose()}>
         <MdClose onClick={() => onClose()} size={24} color="white" />
       </button>
-      <div className="absolute bottom-0 left-0 w-full h-2 overflow-hidden">
+      {/* PROGRESS */}
+      <div className="absolute bottom-0 left-0 w-full h-2 overflow-hidden bg-white">
         <div
           className={`h-2 top-0 left-0 bg-${color}`}
           style={{ width: `${progress}%` }}

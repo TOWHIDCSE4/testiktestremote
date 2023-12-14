@@ -36,7 +36,8 @@ const buttonCV = cva("transition-all", {
       on: "",
     },
     size: {
-      sm: ["pr-4"],
+      xs: ["pr-2"],
+      sm: ["pr-3"],
       md: ["pr-10"],
       lg: ["pr-15"],
     },
@@ -49,10 +50,16 @@ const buttonCV = cva("transition-all", {
   },
   compoundVariants: [
     {
+      size: "xs",
+      trigger: "on",
+      className:
+        "active:pr-0 active:pl-2 disabled:active:pl-1 disabled:active:pr-1",
+    },
+    {
       size: "sm",
       trigger: "on",
       className:
-        "active:pr-0 active:pl-4 disabled:active:pl-1 disabled:active:pr-3",
+        "active:pr-0 active:pl-3 disabled:active:pl-1 disabled:active:pr-2",
     },
     {
       size: "md",
@@ -78,9 +85,10 @@ const buttonCV = cva("transition-all", {
 const internalCV = cva("div", {
   variants: {
     padding: {
-      sm: ["px-3"],
-      md: ["px-10"],
-      lg: ["px-15"],
+      xs: ["p-0"],
+      sm: ["px-3 py-1"],
+      md: ["px-10 py-1"],
+      lg: ["px-15 py-1"],
     },
   },
   defaultVariants: {
@@ -118,7 +126,7 @@ export default function FancyButtonComponent({
       <div
         className={`rounded-md outline outline-2 outline-[#5d5d5d] ${className} ${internalCV(
           { padding }
-        )} shadow-lg py-1 leading-none flex items-center text-center bg-[#E8EBF0] text-[#0f2034] disabled:text-[#425366]`}
+        )} shadow-lg leading-none flex items-center text-center bg-[#E8EBF0] text-[#0f2034] disabled:text-[#425366]`}
       >
         {children}
       </div>

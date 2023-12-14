@@ -29,7 +29,7 @@ export default function ConsoleComponent({
             onClick={() => {
               setIsLogsOpen(true)
             }}
-            className={`flex items-center flex-shrink-0 px-5 py-3 space-x-2 rounded-t-lg ${
+            className={`flex items-center flex-shrink-0 px-5 py-2 space-x-2 rounded-t-lg ${
               !isLogsOpen
                 ? `bg-${color} border-b`
                 : `bg-transparent border border-b-0`
@@ -41,7 +41,7 @@ export default function ConsoleComponent({
             onClick={() => {
               setIsLogsOpen(false)
             }}
-            className={`flex items-center flex-shrink-0 px-5 py-3 space-x-2 rounded-t-lg ${
+            className={`flex items-center flex-shrink-0 px-5 py-2 space-x-2 rounded-t-lg ${
               isLogsOpen
                 ? `bg-${color} border-b`
                 : `bg-transparent border border-b-0`
