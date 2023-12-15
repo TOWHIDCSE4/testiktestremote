@@ -38,11 +38,21 @@ export default function chatSocket(io: Server) {
     })
 
     socket.on("controller-timer-tick", ({ timerId, ...otherData }) => {
+      console.log(
+        "controller-timer-tick",
+        otherData?.cycleClockSeconds,
+        otherData?.detail
+      )
       socket
         .to(timerId)
         .emit("controller-timer-tick", { timerId, ...otherData })
     })
     socket.on("controller-reconnect", ({ timerId, ...otherData }) => {
+      console.log(
+        "controller-timer-tick",
+        otherData?.cycleClockSeconds,
+        otherData?.detail
+      )
       socket
         .to(timerId)
         .emit("controller-timer-tick", { timerId, ...otherData })
