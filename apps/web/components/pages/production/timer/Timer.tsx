@@ -418,11 +418,6 @@ const Timer = ({
     socket?.on("stop-press", controllerStopPress)
     socket?.on("controller-timer-tick", timerTick)
     socket?.on("controller-reconnect", controllerReconnect)
-    return () => {
-      socket?.off("stop-press", controllerStopPress)
-      socket?.off("controller-timer-tick", timerTick)
-      socket?.off("controller-reconnect", controllerReconnect)
-    }
   }, [socket, timer._id])
 
   useEffect(() => {
