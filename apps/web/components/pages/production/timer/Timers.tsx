@@ -91,7 +91,7 @@ const Timers = ({
           ) => {
             if (timerByMachineClass.isSelected === false) return null
             return (
-              <div key={index}>
+              <div key={timerByMachineClass.id}>
                 <TimerCards
                   timerByMachineClass={timerByMachineClass}
                   isLoading={isTimersByLocationLoading}

@@ -57,7 +57,8 @@ function useGetAllTimerLogs({
     {
       refetchOnWindowFocus: false,
       enabled: !!locationId && !!timerId,
-      refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
+      refetchInterval: 2000,
+      keepPreviousData: true,
     }
   )
   // useEffect(() => {
