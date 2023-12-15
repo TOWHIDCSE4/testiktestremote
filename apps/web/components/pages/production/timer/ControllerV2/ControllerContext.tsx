@@ -659,26 +659,20 @@ export const ControllerContextProvider = ({
   }, [controllerDetailData.averageTime, clockMilliSeconds])
 
   useEffect(() => {
+    console.log("controller tick effect called")
     async function controllerTimerTick(
       eventName: string = "controller-timer-tick"
     ) {
-      if (isControllerModalOpen) {
-        try {
-          const data = {
-            timerId,
-            unitCreated,
-            isCycleClockRunning,
-            cycleClockSeconds: Math.trunc(clockMilliSeconds),
-            detail: controllerDetailData,
-          }
-          await socket?.emitWithAck(eventName, data)
-          console.log("Controller timer success tick ", eventName)
-        } catch (err) {
-          if (err) {
-            console.error("Controller timer error tick", err)
-          }
-        }
+      const data = {
+        timerId,
+        unitCreated,
+        isCycleClockRunning,
+        cycleClockSeconds: Math.trunc(clockMilliSeconds),
+        detail: controllerDetailData,
+        isControllerModalOpen,
       }
+      await socket?.emit(eventName, data)
+      console.log("Controller timer success tick ", eventName)
     }
     controllerTimerTick()
 
@@ -692,6 +686,7 @@ export const ControllerContextProvider = ({
     }
   }, [
     isControllerModalOpen,
+    controllerDetailData,
     socket,
     timerId,
     unitCreated,

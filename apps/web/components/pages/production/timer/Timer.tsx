@@ -355,7 +355,9 @@ const Timer = ({
       isCycleClockRunning: boolean
       unitCreated: number
       cycleClockSeconds: number
+      isControllerModalOpen: boolean
     }) => {
+      if (!data.isControllerModalOpen) return
       setCycleClockInSeconds(data.cycleClockSeconds)
       if (data.isCycleClockRunning) {
         runCycle()
@@ -369,6 +371,7 @@ const Timer = ({
       isCycleClockRunning: boolean
       unitCreated: number
       cycleClockSeconds: number
+      isControllerModalOpen: boolean
     }) => {
       if (data.timerId === timer._id) {
         console.log("controller-timer-tick", data)
@@ -387,6 +390,7 @@ const Timer = ({
       isCycleClockRunning: boolean
       unitCreated: number
       cycleClockSeconds: number
+      isControllerModalOpen: boolean
     }) => {
       if (data.timerId === timer._id) {
         setUnitCreated(data.unitCreated)
