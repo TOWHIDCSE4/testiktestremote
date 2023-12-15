@@ -435,20 +435,20 @@ const Timer = ({
   //   })
   // }, [socket, timer._id, isControllerModalOpen])
 
-  useEffect(() => {
-    const syncInterval = setInterval(() => {
-      queryClient.invalidateQueries(["cycle-timer-real-time", timer._id])
-      queryClient.invalidateQueries([
-        "timer-logs-count",
-        timer.locationId,
-        timer._id,
-      ])
-    }, 2000)
+  // useEffect(() => {
+  //   const syncInterval = setInterval(() => {
+  //     queryClient.invalidateQueries(["cycle-timer-real-time", timer._id])
+  //     queryClient.invalidateQueries([
+  //       "timer-logs-count",
+  //       timer.locationId,
+  //       timer._id,
+  //     ])
+  //   }, 2000)
 
-    return () => {
-      clearInterval(syncInterval)
-    }
-  }, [])
+  //   return () => {
+  //     clearInterval(syncInterval)
+  //   }
+  // }, [timer._id, timer.locationId])
 
   return (
     <>
