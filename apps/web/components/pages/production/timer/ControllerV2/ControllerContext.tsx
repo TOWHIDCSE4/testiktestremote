@@ -223,7 +223,7 @@ export const ControllerContextProvider = ({
     tonsPerHour: 0,
     totalTons: 0,
   })
-  const socket = useSocket((state) => state.instance)
+  // const socket = useSocket((state) => state.instance)
   // setTotals({
   //   unitsPerHour: count / Math.round(hoursLapse),
   //   tonsPerHour:
@@ -303,12 +303,12 @@ export const ControllerContextProvider = ({
     if (onEndProductionProps) {
       onEndProductionProps(unitCreated)
     }
-    if (socket) {
-      socket.emit(`end-production-pressed`, {
-        timerId,
-        action: "end-production-pressed",
-      })
-    }
+    // if (socket) {
+    //   socket.emit(`end-production-pressed`, {
+    //     timerId,
+    //     action: "end-production-pressed",
+    //   })
+    // }
   }
 
   const stopControllerClockInterval = () => {
@@ -384,12 +384,12 @@ export const ControllerContextProvider = ({
     if (onStopCycleWithReasonsProps) {
       onStopCycleWithReasonsProps(unitCreated)
     }
-    if (socket) {
-      socket.emit(`end-controller-pressed`, {
-        timerId,
-        action: "end-controller-pressed",
-      })
-    }
+    // if (socket) {
+    //   socket.emit(`end-controller-pressed`, {
+    //     timerId,
+    //     action: "end-controller-pressed",
+    //   })
+    // }
   }
 
   const onStartCycle = () => {
@@ -513,57 +513,65 @@ export const ControllerContextProvider = ({
     }
   }, [timerDetailData])
   // function of add time log call+
-  const timeLogCall = (jobId: any) => {
-    if (!stopReasons.length) {
-      queryClient.setQueriesData(
-        ["timer-logs-count", timerDetailData?.item?.locationId._id, timerId],
-        (query: any) => {
-          if (query && typeof query?.item?.count === "number") {
-            const current = query?.item?.count
+  const timeLogCall = (
+    jobId: any,
+    byPassLocal: boolean = false,
+    attempt: number = 0
+  ) => {
+    if (attempt > 5) return
+    if (!byPassLocal) {
+      if (!stopReasons.length) {
+        queryClient.setQueriesData(
+          ["timer-logs-count", timerDetailData?.item?.locationId._id, timerId],
+          (query: any) => {
+            if (query && typeof query?.item?.count === "number") {
+              const current = query?.item?.count
 
-            const increasedCount = set(query, ["item", "count"], current + 1)
-            const increasedItemCount = set(
-              increasedCount,
-              ["itemCount"],
-              current + 1
-            )
-            return increasedItemCount
+              const increasedCount = set(query, ["item", "count"], current + 1)
+              const increasedItemCount = set(
+                increasedCount,
+                ["itemCount"],
+                current + 1
+              )
+              return increasedItemCount
+            }
+            return query
+          }
+        )
+      }
+      queryClient.setQueriesData(
+        ["timer-logs", timerDetailData?.item?.locationId._id, timerId],
+        (query: any) => {
+          const newData = {
+            createdAt: new Date(),
+            timerId,
+            machineId: timerDetailData?.item?.machineId,
+            machineClassId: timerDetailData?.item?.machineClassId,
+            locationId: timerDetailData?.item?.locationId,
+            factoryId: timerDetailData?.item?.factoryId,
+            jobId: jobId,
+            partId: timerDetailData?.item?.partId,
+            time: clockMilliSeconds,
+            operator: timerDetailData?.item?.operator || null,
+            operatorName: timerDetailData?.item?.operator?.firstName as string,
+            status:
+              (timerDetailData?.item?.partId.time as number) > clockMilliSeconds
+                ? "Gain"
+                : "Loss",
+            stopReason: stopReasons.length
+              ? stopReasons
+              : (defaultStopReasons as T_TimerStopReason[]),
+            cycle: unitCreated + 1,
+          }
+          if (query?.items) {
+            query.items.unshift(newData)
+            query.itemCount += 1
           }
           return query
         }
       )
     }
-    queryClient.setQueriesData(
-      ["timer-logs", timerDetailData?.item?.locationId._id, timerId],
-      (query: any) => {
-        const newData = {
-          createdAt: new Date(),
-          timerId,
-          machineId: timerDetailData?.item?.machineId,
-          machineClassId: timerDetailData?.item?.machineClassId,
-          locationId: timerDetailData?.item?.locationId,
-          factoryId: timerDetailData?.item?.factoryId,
-          jobId: jobId,
-          partId: timerDetailData?.item?.partId,
-          time: clockMilliSeconds,
-          operator: timerDetailData?.item?.operator || null,
-          operatorName: timerDetailData?.item?.operator?.firstName as string,
-          status:
-            (timerDetailData?.item?.partId.time as number) > clockMilliSeconds
-              ? "Gain"
-              : "Loss",
-          stopReason: stopReasons.length
-            ? stopReasons
-            : (defaultStopReasons as T_TimerStopReason[]),
-          cycle: unitCreated + 1,
-        }
-        if (query?.items) {
-          query.items.unshift(newData)
-          query.itemCount += 1
-        }
-        return query
-      }
-    )
+
     const savedLog: T_TimerLog = {
       timerId,
       machineId: timerDetailData?.item?.machineId._id as string,
@@ -585,11 +593,9 @@ export const ControllerContextProvider = ({
       cycle: unitCreated + 1,
     }
     addTimerLog(savedLog, {
-      onSuccess: () => {
-        socket?.emit(`stop-press`, {
-          timerId,
-          action: "stop-press",
-        })
+      onSuccess: () => {},
+      onError: () => {
+        timeLogCall(jobId, true, attempt + 1)
       },
     })
   }
@@ -658,39 +664,39 @@ export const ControllerContextProvider = ({
       )
   }, [controllerDetailData.averageTime, clockMilliSeconds])
 
-  useEffect(() => {
-    async function controllerTimerTick(
-      eventName: string = "controller-timer-tick"
-    ) {
-      const data = {
-        timerId,
-        unitCreated,
-        isCycleClockRunning,
-        cycleClockSeconds: Math.trunc(clockMilliSeconds),
-        detail: controllerDetailData,
-        isControllerModalOpen: isControllerModalOpenRef.current,
-      }
-      socket?.emit(eventName, data)
-    }
-    if (isControllerModalOpenRef.current) {
-      controllerTimerTick()
-    }
+  // useEffect(() => {
+  //   async function controllerTimerTick(
+  //     eventName: string = "controller-timer-tick"
+  //   ) {
+  //     const data = {
+  //       timerId,
+  //       unitCreated,
+  //       isCycleClockRunning,
+  //       cycleClockSeconds: Math.trunc(clockMilliSeconds),
+  //       detail: controllerDetailData,
+  //       isControllerModalOpen: isControllerModalOpenRef.current,
+  //     }
+  //     socket?.emit(eventName, data)
+  //   }
+  //   if (isControllerModalOpenRef.current) {
+  //     controllerTimerTick()
+  //   }
 
-    const subscriber = useSocket.subscribe(({ isConnected }) => {
-      if (isConnected) {
-        controllerTimerTick("controller-reconnect")
-      }
-    })
-    return () => {
-      subscriber()
-    }
-  }, [
-    socket,
-    timerId,
-    unitCreated,
-    isCycleClockRunning,
-    Math.trunc(clockMilliSeconds),
-  ])
+  //   const subscriber = useSocket.subscribe(({ isConnected }) => {
+  //     if (isConnected) {
+  //       controllerTimerTick("controller-reconnect")
+  //     }
+  //   })
+  //   return () => {
+  //     subscriber()
+  //   }
+  // }, [
+  //   socket,
+  //   timerId,
+  //   unitCreated,
+  //   isCycleClockRunning,
+  //   Math.trunc(clockMilliSeconds),
+  // ])
 
   useEffect(() => {
     setVariant(

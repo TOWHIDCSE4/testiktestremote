@@ -301,6 +301,8 @@ const Timer = ({
         setIsCycleClockRunning(true)
       }
     } else {
+      stopInterval()
+      setCycleClockInSeconds(0)
       setIsCycleClockRunning(false)
     }
   }, [cycleTimer])
@@ -348,90 +350,101 @@ const Timer = ({
     setIsCycleClockRunning(false)
   }
 
+  // useEffect(() => {
+  //   const resyncClock = (data: {
+  //     timerId: string
+  //     isCycleClockRunning: boolean
+  //     unitCreated: number
+  //     cycleClockSeconds: number
+  //     isControllerModalOpen: boolean
+  //   }) => {
+  //     if (data.timerId === timer._id) {
+  //       if (data.isCycleClockRunning) {
+  //         setCycleClockInSeconds(data.cycleClockSeconds)
+  //         runCycle()
+  //       } else {
+  //         setCycleClockInSeconds(0)
+  //         stopInterval()
+  //       }
+  //     }
+  //   }
+  //   const timerTick = (data: {
+  //     timerId: string
+  //     isCycleClockRunning: boolean
+  //     unitCreated: number
+  //     cycleClockSeconds: number
+  //     isControllerModalOpen: boolean
+  //   }) => {
+  //     // if data come from closed modal
+  //     // or controller modal opened on current web/device
+  //     // dont do anything
+  //     // if (!data.isControllerModalOpen || isControllerModalOpen) return
+  //     if (data.timerId === timer._id) {
+  //       setUnitCreated((current) => {
+  //         if (data.unitCreated > unitCreated) {
+  //           return data.unitCreated
+  //         }
+  //         return current
+  //       })
+  //       resyncClock(data)
+  //     }
+  //   }
+
+  //   const controllerReconnect = (data: {
+  //     timerId: string
+  //     isCycleClockRunning: boolean
+  //     unitCreated: number
+  //     cycleClockSeconds: number
+  //     isControllerModalOpen: boolean
+  //   }) => {
+  //     // if data come from closed modal
+  //     // or controller modal opened on current web/device
+  //     // dont do anything
+  //     // if (!data.isControllerModalOpen || isControllerModalOpen) return
+  //     if (data.timerId === timer._id) {
+  //       setUnitCreated(data.unitCreated)
+  //       resyncClock(data)
+  //     }
+  //   }
+
+  //   const controllerStopPress = (data: { timerId: string }) => {
+  //     if (data.timerId === timer._id) {
+  //       queryClient.invalidateQueries([
+  //         "timer-logs",
+  //         timer.locationId,
+  //         timer._id,
+  //       ])
+  //     }
+  //   }
+
+  //   socket?.on("stop-press", controllerStopPress)
+  //   socket?.on("controller-timer-tick", timerTick)
+  //   socket?.on("controller-reconnect", controllerReconnect)
+  // }, [socket, timer._id])
+
+  // useEffect(() => {
+  //   if (!isControllerModalOpen) {
+  //     socket?.emit("join-timer", { timerId: timer._id })
+  //   } else {
+  //     socket?.emit("leave-timer", { timerId: timer._id })
+  //   }
+  //   useSocket.subscribe(({ isConnected }) => {
+  //     if (isConnected) {
+  //       socket?.emit("join-timer", { timerId: timer._id })
+  //     }
+  //   })
+  // }, [socket, timer._id, isControllerModalOpen])
+
   useEffect(() => {
-    const resyncClock = (data: {
-      timerId: string
-      isCycleClockRunning: boolean
-      unitCreated: number
-      cycleClockSeconds: number
-      isControllerModalOpen: boolean
-    }) => {
-      if (data.timerId === timer._id) {
-        if (data.isCycleClockRunning) {
-          setCycleClockInSeconds(data.cycleClockSeconds)
-          runCycle()
-        } else {
-          setCycleClockInSeconds(0)
-          stopInterval()
-        }
-      }
-    }
-    const timerTick = (data: {
-      timerId: string
-      isCycleClockRunning: boolean
-      unitCreated: number
-      cycleClockSeconds: number
-      isControllerModalOpen: boolean
-    }) => {
-      // if data come from closed modal
-      // or controller modal opened on current web/device
-      // dont do anything
-      // if (!data.isControllerModalOpen || isControllerModalOpen) return
-      if (data.timerId === timer._id) {
-        setUnitCreated((current) => {
-          if (data.unitCreated > unitCreated) {
-            return data.unitCreated
-          }
-          return current
-        })
-        resyncClock(data)
-      }
-    }
+    const syncInterval = setInterval(() => {
+      refetchTimerLogs()
+      cycleRefetch()
+    }, 2000)
 
-    const controllerReconnect = (data: {
-      timerId: string
-      isCycleClockRunning: boolean
-      unitCreated: number
-      cycleClockSeconds: number
-      isControllerModalOpen: boolean
-    }) => {
-      // if data come from closed modal
-      // or controller modal opened on current web/device
-      // dont do anything
-      // if (!data.isControllerModalOpen || isControllerModalOpen) return
-      if (data.timerId === timer._id) {
-        setUnitCreated(data.unitCreated)
-        resyncClock(data)
-      }
+    return () => {
+      clearInterval(syncInterval)
     }
-
-    const controllerStopPress = (data: { timerId: string }) => {
-      if (data.timerId === timer._id) {
-        queryClient.invalidateQueries([
-          "timer-logs",
-          timer.locationId,
-          timer._id,
-        ])
-      }
-    }
-
-    socket?.on("stop-press", controllerStopPress)
-    socket?.on("controller-timer-tick", timerTick)
-    socket?.on("controller-reconnect", controllerReconnect)
-  }, [socket, timer._id])
-
-  useEffect(() => {
-    if (!isControllerModalOpen) {
-      socket?.emit("join-timer", { timerId: timer._id })
-    } else {
-      socket?.emit("leave-timer", { timerId: timer._id })
-    }
-    useSocket.subscribe(({ isConnected }) => {
-      if (isConnected) {
-        socket?.emit("join-timer", { timerId: timer._id })
-      }
-    })
-  }, [socket, timer._id, isControllerModalOpen])
+  }, [])
 
   return (
     <>
