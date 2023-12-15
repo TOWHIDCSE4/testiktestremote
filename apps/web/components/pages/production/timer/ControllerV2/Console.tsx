@@ -52,7 +52,7 @@ export default function ConsoleComponent({
           <div className="flex-1 border-b border-dark-blue"></div>
         </div>
       </div>
-      <div className="relative border-b-[1px] flex-1 border-[#0f2034] overflow-hidden">
+      <div className="relative border-b-[1px] min-h-[6rem] flex-1 border-[#0f2034] overflow-hidden">
         {isLogsOpen ? (
           <TimerLogsModal isOpen={isLogsOpen} setIsOpen={setIsLogsOpen} />
         ) : (
