@@ -787,9 +787,9 @@ const LogsTable = ({
                   onChange={(e) => setFilterBy(e.target.value)}
                 >
                   <option value="BatchAction">Batch action</option>
-                  <option value="Factories">Factory</option>
-                  <option value="Machine Classes">Machine Class</option>
-                  <option value="Machines">Machine</option>
+                  <option value="Part">Part</option>
+                  <option value="PauseReason">Pause Reason</option>
+                  <option value="Operator">Operator</option>
                 </select>
               </div>
             </div>
@@ -3417,29 +3417,29 @@ const LogsTable = ({
               <div className="h-12 text-end flex items-center ">
                 <div className="">
                   <p className="text-sm text-gray-700">
-                    Global Total Units :
+                    Global Total Units:
                     {
                       //@ts-expect-error
                       globalMetrics?.items?.totalUnits !== undefined && (
                         <span>
-                          {
+                          {" " +
                             //@ts-expect-error
-                            globalMetrics?.items?.totalUnits
-                          }
+                            globalMetrics?.items?.totalUnits}
                         </span>
                       )
                     }
                   </p>
                   <p className="text-sm text-gray-700">
-                    Global Total Tons :
+                    Global Total Tons:
                     {
                       //@ts-expect-error
                       globalMetrics?.items?.totalTons !== undefined && (
                         <span>
-                          {
+                          {" " +
                             //@ts-expect-error
-                            globalMetrics?.items?.totalTons.toFixed(4)
-                          }
+                            globalMetrics?.items?.totalTons
+                              .toFixed(2)
+                              .replace(/\.?0+$/, "")}
                         </span>
                       )
                     }
