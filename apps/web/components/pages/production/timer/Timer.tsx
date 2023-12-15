@@ -437,8 +437,12 @@ const Timer = ({
 
   useEffect(() => {
     const syncInterval = setInterval(() => {
-      refetchTimerLogs()
-      cycleRefetch()
+      queryClient.invalidateQueries(["cycle-timer-real-time", timer._id])
+      queryClient.invalidateQueries([
+        "timer-logs-count",
+        timer.locationId,
+        timer._id,
+      ])
     }, 2000)
 
     return () => {
