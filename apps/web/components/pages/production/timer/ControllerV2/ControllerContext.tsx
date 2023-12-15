@@ -671,7 +671,6 @@ export const ControllerContextProvider = ({
         isControllerModalOpen: isControllerModalOpenRef.current,
       }
       socket?.emit(eventName, data)
-      console.log("Controller timer success tick ", data)
     }
     if (isControllerModalOpenRef.current) {
       controllerTimerTick()

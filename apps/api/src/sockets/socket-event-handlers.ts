@@ -40,10 +40,14 @@ export default function chatSocket(io: Server) {
     })
 
     socket.on("controller-timer-tick", ({ timerId, ...otherData }) => {
-      socket.emit("controller-timer-tick", { timerId, ...otherData })
+      socket
+        .to(timerId)
+        .emit("controller-timer-tick", { timerId, ...otherData })
     })
     socket.on("controller-reconnect", ({ timerId, ...otherData }) => {
-      socket.emit("controller-timer-tick", { timerId, ...otherData })
+      socket
+        .to(timerId)
+        .emit("controller-timer-tick", { timerId, ...otherData })
     })
 
     socket.on("event", (message: any) => {

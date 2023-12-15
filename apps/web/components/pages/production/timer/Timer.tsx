@@ -373,18 +373,11 @@ const Timer = ({
       cycleClockSeconds: number
       isControllerModalOpen: boolean
     }) => {
-      console.log(
-        "debug-timer-tick",
-        timer._id === data.timerId,
-        isControllerModalOpen,
-        data
-      )
       // if data come from closed modal
       // or controller modal opened on current web/device
       // dont do anything
-      if (!data.isControllerModalOpen || isControllerModalOpen) return
+      // if (!data.isControllerModalOpen || isControllerModalOpen) return
       if (data.timerId === timer._id) {
-        console.log("controller-timer-tick", data)
         setUnitCreated((current) => {
           if (data.unitCreated > unitCreated) {
             return data.unitCreated
@@ -405,7 +398,7 @@ const Timer = ({
       // if data come from closed modal
       // or controller modal opened on current web/device
       // dont do anything
-      if (!data.isControllerModalOpen || isControllerModalOpen) return
+      // if (!data.isControllerModalOpen || isControllerModalOpen) return
       if (data.timerId === timer._id) {
         setUnitCreated(data.unitCreated)
         resyncClock(data)
@@ -430,7 +423,7 @@ const Timer = ({
       socket?.off("controller-timer-tick", timerTick)
       socket?.off("controller-reconnect", controllerReconnect)
     }
-  }, [socket, timer._id, isControllerModalOpen])
+  }, [socket, timer._id])
 
   useEffect(() => {
     socket?.emit("join-timer", { timerId: timer._id })
@@ -606,24 +599,26 @@ const Timer = ({
           </button>
         </div>
       </div>
-      <ControllerContextProvider
-        controllerDetailData={controllerDetailData as ControllerDetailData}
-        operator={timerDetailData?.item?.operator}
-        timerId={getObjectId(timer)}
-        initialCycleClockSeconds={cycleClockInSeconds}
-        initialUnitCreated={timerLogsCount?.item?.count as number}
-        isControllerModalOpen={isControllerModalOpen}
-        onStopCycle={onControllerStopCycle}
-        onControllerModalClosed={onControllerModalClosed}
-        onStopCycleWithReasons={onControllerStopCycleWithReasons}
-        onEndProduction={onControllerStopCycleWithReasons}
-      >
-        <ControllerModal
-          isOpen={isControllerModalOpen}
-          onClose={() => setIsControllerModalOpen(false)}
-          timerId={timer._id}
-        />
-      </ControllerContextProvider>
+      {isControllerModalOpen && (
+        <ControllerContextProvider
+          controllerDetailData={controllerDetailData as ControllerDetailData}
+          operator={timerDetailData?.item?.operator}
+          timerId={getObjectId(timer)}
+          initialCycleClockSeconds={cycleClockInSeconds}
+          initialUnitCreated={timerLogsCount?.item?.count as number}
+          isControllerModalOpen={isControllerModalOpen}
+          onStopCycle={onControllerStopCycle}
+          onControllerModalClosed={onControllerModalClosed}
+          onStopCycleWithReasons={onControllerStopCycleWithReasons}
+          onEndProduction={onControllerStopCycleWithReasons}
+        >
+          <ControllerModal
+            isOpen={isControllerModalOpen}
+            onClose={() => setIsControllerModalOpen(false)}
+            timerId={timer._id}
+          />
+        </ControllerContextProvider>
+      )}
     </>
   )
 }
