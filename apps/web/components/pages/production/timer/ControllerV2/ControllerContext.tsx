@@ -266,7 +266,7 @@ export const ControllerContextProvider = ({
         const div = readingsDivRef.current
         setTimeout(
           (div) => {
-            div.scrollTop = 999999999999999999999
+            div.scrollTop = 0
           },
           500,
           div
