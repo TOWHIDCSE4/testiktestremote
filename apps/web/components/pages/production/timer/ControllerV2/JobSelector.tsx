@@ -1,9 +1,12 @@
-import { useContext, useRef, useState } from "react"
+import { Fragment, useContext, useMemo, useRef, useState } from "react"
 import { ControllerContext } from "./ControllerContext"
 import { getObjectId } from "../../../../../helpers/ids"
 import FancyButtonComponent from "./FancyButton"
 import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
+import { Combobox, Transition } from "@headlessui/react"
+import { HiChevronDoubleDown } from "react-icons/hi"
+import { textCV } from "./classVariants"
 
 const JobSelectComponent = () => {
   const {
@@ -35,8 +38,94 @@ const JobSelectComponent = () => {
       ? timerDetails?.item?.locationId._id
       : ""
 
+  const jobId = useMemo(() => {
+    return getObjectId(controllerJob)
+  }, [controllerJob])
+
+  const jobValue = useMemo(() => {
+    const job = jobOptions.find((item) => {
+      return item.value == jobId
+    })
+    return job
+  }, [jobId, jobOptions])
+
+  const onChange = (selected: any) => {
+    const job = jobs.find((job) => getObjectId(job) === selected.value)
+    if (selected === "select_job") {
+      return
+    }
+    if (selected === "add_job") {
+      if (dropdownRef.current) {
+        dropdownRef.current.value = "select_job"
+      }
+      setOpenNewJobModal(true)
+    } else {
+      onJobChange(job)
+    }
+  }
+
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const textColors = textCV
+
   return (
-    <FancyButtonComponent trigger={"off"} intent={variant}>
+    <Combobox
+      value={jobValue}
+      disabled={isJobsLoading || isControllerJobLoading || isChangingJob}
+      ref={dropdownRef as any}
+      onChange={onChange}
+    >
+      <div>
+        <FancyButtonComponent intent={variant} trigger={"off"}>
+          <div className="relative flex items-center">
+            <Combobox.Input
+              className={`flex-1 p-0 pr-6 border-none font-semibold text-sm leading-5 text-[#5D5D5D] focus:ring-0 bg-[#E8EBF0] italic`}
+              ref={inputRef}
+              displayValue={(job: any) => job?.label}
+            />
+            <div className="absolute right-0 flex items-center pr-1">
+              <Combobox.Button
+                onClick={() => inputRef.current?.focus()}
+                className="inset-y-0 flex items-center"
+              >
+                <HiChevronDoubleDown className={textColors[variant]} />
+              </Combobox.Button>
+            </div>
+          </div>
+        </FancyButtonComponent>
+        <Transition
+          as={Fragment}
+          leave="transition ease-in duration-100"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+          afterLeave={() => {}}
+        >
+          <Combobox.Options className="absolute z-50 w-64 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-40 ring-1 ring-black/5 focus:outline-none sm:text-sm">
+            {jobOptions.map((option) => (
+              <Combobox.Option
+                key={option.value}
+                value={option}
+                className={({ active }) =>
+                  `relative cursor-default select-none py-2 px-2 ${
+                    active ? "bg-[#E8EBF0] text-black" : "text-black-900"
+                  }`
+                }
+              >
+                {({ selected, active }) => (
+                  <div className={selected ? `bg-primary` : ``}>
+                    {option.label}
+                  </div>
+                )}
+              </Combobox.Option>
+            ))}
+          </Combobox.Options>
+        </Transition>
+      </div>
+    </Combobox>
+  )
+
+  return (
+    <>
       <select
         disabled={isJobsLoading || isControllerJobLoading || isChangingJob}
         ref={dropdownRef as any}
@@ -87,7 +176,7 @@ const JobSelectComponent = () => {
         timerDetails={timerDetails?.item}
         timer={true}
       />
-    </FancyButtonComponent>
+    </>
   )
 }
 

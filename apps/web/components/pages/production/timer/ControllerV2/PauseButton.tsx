@@ -46,7 +46,7 @@ export default function PauseButtonComponent() {
           }}
           intent={variant}
         >
-          <div className="text-[2rem] px-2">P</div>
+          <div className="text-[2.2rem] px-2">P</div>
         </FancyButtonComponent>
       </div>
     </>

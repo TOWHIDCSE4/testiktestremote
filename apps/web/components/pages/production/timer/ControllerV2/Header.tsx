@@ -11,7 +11,6 @@ import { ControllerContext } from "./ControllerContext"
 
 import { LuMaximize, LuMenu, LuMoon } from "react-icons/lu"
 import { hourMinuteSecond } from "../../../../../helpers/timeConverter"
-import useColor from "./useColor"
 
 const Header = ({
   isLoading,
@@ -29,8 +28,6 @@ const Header = ({
 
   const { isMaximized, setIsMaximized } = useControllerModal()
 
-  const color = useColor({ variant })
-
   const controllerClockArray = hourMinuteSecond(controllerClockSeconds)
 
   const [mode, setMode] = React.useState("")
@@ -45,7 +42,7 @@ const Header = ({
   }
 
   return (
-    <div className="relative flex flex-wrap items-center justify-between w-full px-3 py-2 pb-16 text-white sm:pb-10 lg:pb-2 lg:py-5 lg:px-9 bg-dark-blue ">
+    <div className="relative flex flex-wrap items-center justify-between w-full px-3 py-2 pb-16 text-white sm:pb-10 lg:pb-6 lg:py-5 lg:px-9 bg-dark-blue ">
       {/* IMAGE */}
       <div className="flex-1 hidden sm:block">
         <Image
@@ -57,8 +54,8 @@ const Header = ({
               : LogoRed
           }
           alt="logo-gold"
-          height={75}
-          className="h-[60px] lg:h-[68px] object-contain"
+          height={72}
+          className="h-[60px] lg:h-[72px] object-contain"
         />
       </div>
       {/* BUTTONS */}
@@ -108,13 +105,6 @@ const Header = ({
       <button className="absolute right-2 top-2" onClick={() => onClose()}>
         <MdClose onClick={() => onClose()} size={24} color="white" />
       </button>
-      {/* PROGRESS */}
-      <div className="absolute bottom-0 left-0 w-full h-2 overflow-hidden bg-white">
-        <div
-          className={`h-2 top-0 left-0 bg-${color}`}
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
     </div>
   )
 }

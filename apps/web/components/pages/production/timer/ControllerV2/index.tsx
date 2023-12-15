@@ -24,6 +24,7 @@ import OperatorSelectComponent from "./OperatorSelector"
 import JobSelectComponent from "./JobSelector"
 import PauseButtonComponent from "./PauseButton"
 import ResultsUnitCountComponent from "./Results.UnitCount"
+import ProgressComponent from "./Progress"
 
 export interface ControllerDetailData {
   locationName: string
@@ -45,7 +46,7 @@ const ControllerV2 = ({
   onClose,
   onFullScreen,
 }: ControllerV2Props) => {
-  const { variant, controllerDetailData, setIsStopMenuOpen, isStopMenuOpen } =
+  const { controllerDetailData, setIsStopMenuOpen, isStopMenuOpen } =
     useContext(ControllerContext)
   const [isLogsOpen, setIsLogsOpen] = useState(false)
 
@@ -69,6 +70,8 @@ const ControllerV2 = ({
         setOpenTimerLogs={() => setIsLogsOpen(true)}
         onClose={onClose}
       />
+      {/* PROGRESS */}
+      <ProgressComponent />
       <div className="relative w-full">
         <div className="mx-auto lg:container lg:max-w-2xl">
           <div className="relative flex justify-center gap-8 px-4 py-0 mt-2 sm:mt-1 lg:mt-8 lg:px-12">
@@ -89,20 +92,22 @@ const ControllerV2 = ({
                   <ResultsBoardComponent />
                 </div>
               </div>
-              <div className="flex-row items-center hidden gap-10 pl-4 mt-6 mb-24 lg:flex">
+              <div className="flex-row items-center hidden gap-10 pl-4 mt-6 mb-20 lg:flex">
                 <OperatorSelectComponent />
                 <JobSelectComponent />
               </div>
-              <div className="flex flex-wrap items-center justify-between w-full pt-1 sm:hidden">
-                <div className="pt-5">
+              <div className="flex flex-wrap items-start justify-between w-full gap-4 pt-1 sm:hidden">
+                <div className="pt-16">
                   <PauseButtonComponent />
                 </div>
-                <div className="flex-1">
-                  <ResultsUnitCountComponent />
-                </div>
-                <div className="relative flex flex-col items-center w-full gap-1">
-                  <OperatorSelectComponent />
-                  <JobSelectComponent />
+                <div className="relative flex-1">
+                  <div className="flex flex-col items-center w-fit">
+                    <ResultsUnitCountComponent />
+                    <div className="relative flex flex-col items-center w-full gap-1">
+                      <OperatorSelectComponent />
+                      <JobSelectComponent />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

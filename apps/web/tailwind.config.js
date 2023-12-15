@@ -28,6 +28,9 @@ module.exports = {
           },
         },
       },
+      borderColors: {
+        gold: "#DA8D00",
+      },
       colors: {
         "light-cyan-blue": "#F5F7FA",
         "dark-cyan-blue": "#2E3C4F",
@@ -36,6 +39,7 @@ module.exports = {
         "indigo-blue": "#575F80",
         "dark-blue": "#102136",
         "light-blue": "#E9ECEF",
+        gold: "#DA8D00",
       },
       screens: {
         ipadair: "820px",

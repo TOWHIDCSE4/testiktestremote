@@ -1,15 +1,11 @@
 import { cva, type VariantProps } from "class-variance-authority"
 import { Lato } from "next/font/google"
 import { useContext, useMemo } from "react"
-import useColor from "./useColor"
 import { ControllerContext } from "./ControllerContext"
-import {
-  hourMinuteSecond,
-  hourMinuteSecondInNumber,
-  hourMinuteSecondMilli,
-} from "../../../../../helpers/timeConverter"
+import { hourMinuteSecondInNumber } from "../../../../../helpers/timeConverter"
 import StartButtonComponent from "./StartButton"
 import PauseButtonComponent from "./PauseButton"
+import { bgCV, borderCV } from "./classVariants"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -42,14 +38,15 @@ const clockDigitCV = cva("transition-colors", {
 
 export default function DigitalClockComponent() {
   const { variant, cycleClockSeconds } = useContext(ControllerContext)
-  const color = useColor({ variant })
+  const bgColors = bgCV
+  const borderColors = borderCV
 
   const controllerClockArray = hourMinuteSecondInNumber(cycleClockSeconds)
 
   return (
     <div className="relative flex flex-col items-center mx-auto font-lato w-fit">
       <div
-        className={`border-4 transition-colors border-${color} bg-${color} bg-opacity-10 rounded-lg px-3 sm:px-6 ${lato.className}`}
+        className={`border-4 transition-colors ${bgColors[variant]} bg-opacity-10 rounded-lg px-3 sm:px-6 ${lato.className} ${borderColors[variant]}`}
       >
         <div className="flex items-center justify-center gap-2 sm:gap-3 h-[4rem] sm:h-[6rem]">
           <div
