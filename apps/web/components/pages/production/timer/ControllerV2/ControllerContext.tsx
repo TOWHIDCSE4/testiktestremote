@@ -659,28 +659,38 @@ export const ControllerContextProvider = ({
   }, [controllerDetailData.averageTime, clockMilliSeconds])
 
   useEffect(() => {
-    if (isControllerModalOpenRef.current) {
-      socket?.emit("controller-timer-tick", {
-        timerId,
-        unitCreated,
-        isCycleClockRunning,
-        cycleClockSeconds: clockMilliSeconds,
-      })
+    async function controllerTimerTick(
+      eventName: string = "controller-timer-tick"
+    ) {
+      if (isControllerModalOpen) {
+        try {
+          const data = {
+            timerId,
+            unitCreated,
+            isCycleClockRunning,
+            cycleClockSeconds: clockMilliSeconds,
+          }
+          await socket?.emitWithAck(eventName, data)
+          console.log("Controller timer success tick ", eventName)
+        } catch (err) {
+          if (err) {
+            console.error("Controller timer error tick", err)
+          }
+        }
+      }
     }
+    controllerTimerTick()
+
     const subscriber = useSocket.subscribe(({ isConnected }) => {
       if (isConnected) {
-        socket?.emit("controller-reconnect", {
-          timerId,
-          unitCreated,
-          isCycleClockRunning,
-          cycleClockSeconds: clockMilliSeconds,
-        })
+        controllerTimerTick("controller-reconnect")
       }
     })
     return () => {
       subscriber()
     }
   }, [
+    isControllerModalOpen,
     socket,
     timerId,
     unitCreated,
