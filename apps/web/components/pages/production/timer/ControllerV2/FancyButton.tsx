@@ -13,7 +13,7 @@ const buttonCV = cva("transition-all", {
   variants: {
     intent: {
       idle: [
-        "bg-[#DA8D00]",
+        "bg-gold",
         "active:scale-95",
         "active:bg-[#8d4c14]",
         "disabled:active:scale-100",

@@ -1,14 +1,14 @@
 import React, { useContext, useState } from "react"
 import { HiChevronDoubleLeft } from "react-icons/hi"
 import { ControllerContext } from "./ControllerContext"
-import useColor from "./useColor"
+import { borderCV as borderColors, textCV as textColors } from "./classVariants"
 
 export default function EndProdMenuComponent({
   onClick,
 }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const [isOpen, setIsOpen] = useState<boolean>()
   const { variant, controllerDetailData } = useContext(ControllerContext)
-  const color = useColor({ variant })
+
   return (
     <div
       className={`absolute right-0 w-56 bottom-10 transition-all ${
@@ -26,13 +26,13 @@ export default function EndProdMenuComponent({
             <HiChevronDoubleLeft
               className={`w-3 h-3  transition-all ${
                 !isOpen ? "rotate-0" : "rotate-180"
-              } mx-auto mt-1 text-${color} font-bold`}
+              } mx-auto mt-1 ${textColors[variant]} font-bold`}
             />
           </button>
           <button
             onClick={onClick}
             tabIndex={-1}
-            className={`transition-colors border-${color} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1`}
+            className={`transition-colors ${borderColors[variant]} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1`}
           >
             <div className="px-4 py-2 font-bold uppercase">END PRODUCTION</div>
           </button>

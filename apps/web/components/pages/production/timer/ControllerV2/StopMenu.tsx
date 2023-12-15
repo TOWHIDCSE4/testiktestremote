@@ -1,7 +1,7 @@
 import { useContext, useState } from "react"
 import { HiChevronDoubleDown, HiChevronDoubleLeft } from "react-icons/hi"
 import { ControllerContext } from "./ControllerContext"
-import useColor from "./useColor"
+import { borderCV, textCV } from "./classVariants"
 
 export default function StopMenuComponent({
   isOpen,
@@ -12,7 +12,8 @@ export default function StopMenuComponent({
 }) {
   const { variant, setStopReasons, onStopCycleWithReasons, stopReasons } =
     useContext(ControllerContext)
-  const color = useColor({ variant })
+  const textColors = textCV
+  const borderColors = borderCV
 
   const stopReasonsArr = (
     [
@@ -49,12 +50,12 @@ export default function StopMenuComponent({
               <div className="w-40 break-keep">PAUSE PRODUCTION</div>
             </div>
             <HiChevronDoubleDown
-              className={`transition-colors w-3 h-3 mx-auto mt-1 text-${color} font-bold`}
+              className={`transition-colors w-3 h-3 mx-auto mt-1 ${textColors[variant]} font-bold`}
             />
           </div>
         </button>
         <div
-          className={`transition-colors border-${color} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1 !flex-shrink-0 py-1`}
+          className={`transition-colors ${borderColors[variant]} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1 !flex-shrink-0 py-1`}
         >
           <div className="px-4 py-0">
             {stopReasonsArr.map((item, key) => (

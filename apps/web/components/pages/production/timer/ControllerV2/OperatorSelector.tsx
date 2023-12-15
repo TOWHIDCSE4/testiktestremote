@@ -14,15 +14,15 @@ import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
 import { PiUserPlus } from "react-icons/pi"
 import toast from "react-hot-toast"
 import { HiChevronDoubleDown } from "react-icons/hi"
-import useColor from "./useColor"
 import FancyButtonComponent from "./FancyButton"
+import { textCV } from "./classVariants"
 
 const OperatorSelectComponent = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   // Context
   const { timerId, variant, onOperatorChange, operator, isCycleClockRunning } =
     useContext(ControllerContext)
-  const color = useColor({ variant })
+  const textColors = textCV
 
   // Queries
   const timerDetailsQuery = useGetTimerDetails(timerId)
@@ -112,16 +112,16 @@ const OperatorSelectComponent = () => {
               <Combobox.Button
                 className={`${
                   query ? "" : "opacity-0"
-                } z-10 inset-y-0 flex items-center`}
+                } inset-y-0 flex items-center`}
                 onClick={() => (query ? handleInputOperator() : undefined)}
               >
                 <PiUserPlus />
               </Combobox.Button>
               <Combobox.Button
                 onClick={() => inputRef.current?.focus()}
-                className="inset-y-0 z-20 flex items-center"
+                className="inset-y-0 flex items-center"
               >
-                <HiChevronDoubleDown className={`text-${color}`} />
+                <HiChevronDoubleDown className={textCV[variant]} />
               </Combobox.Button>
             </div>
           </div>

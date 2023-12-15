@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef } from "react"
 import { ControllerContext } from "./ControllerContext"
-import useColor from "./useColor"
 import dayjs from "dayjs"
 import TimerLogsModal from "../modals/TimerLogsModalV2"
+import { bgCV } from "./classVariants"
 
 export default function ConsoleComponent({
   isLogsOpen,
@@ -13,7 +13,7 @@ export default function ConsoleComponent({
 }) {
   const { variant, setReadingsDivRef, readingMessages } =
     useContext(ControllerContext)
-  const color = useColor({ variant })
+  const bgColors = bgCV
 
   const messagesRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function ConsoleComponent({
             }}
             className={`flex items-center flex-shrink-0 px-5 py-2 space-x-2 rounded-t-lg ${
               !isLogsOpen
-                ? `bg-${color} border-b`
+                ? `${bgColors[variant]} border-b`
                 : `bg-transparent border border-b-0`
             } border-dark-blue`}
           >
@@ -43,7 +43,7 @@ export default function ConsoleComponent({
             }}
             className={`flex items-center flex-shrink-0 px-5 py-2 space-x-2 rounded-t-lg ${
               isLogsOpen
-                ? `bg-${color} border-b`
+                ? `${bgColors[variant]} border-b`
                 : `bg-transparent border border-b-0`
             } border-dark-blue`}
           >

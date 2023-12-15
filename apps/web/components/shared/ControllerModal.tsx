@@ -44,7 +44,7 @@ const ControllerModal = ({
             className={`bg-white fixed !max-w-full !max-h-full  transition-all z-50 top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] ${
               isMaximized
                 ? "top-0 left-0 w-screen h-screen"
-                : "w-[1024px] h-[800px] rounded-3xl border-2 border-stone-200 overflow-hidden"
+                : "w-[1024px] h-[800px] rounded-3xl border-2 overflow-hidden"
             }`}
           >
             <Controller

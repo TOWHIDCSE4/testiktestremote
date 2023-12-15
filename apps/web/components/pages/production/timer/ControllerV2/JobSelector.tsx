@@ -6,7 +6,7 @@ import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
 import NewJobModal from "../../../order-flow/production-tracker/modals/NewModal"
 import { Combobox, Transition } from "@headlessui/react"
 import { HiChevronDoubleDown } from "react-icons/hi"
-import useColor from "./useColor"
+import { textCV } from "./classVariants"
 
 const JobSelectComponent = () => {
   const {
@@ -19,7 +19,6 @@ const JobSelectComponent = () => {
     isChangingJob,
     variant,
   } = useContext(ControllerContext)
-  const color = useColor({ variant })
   const jobOptions = jobs.map((job) => ({
     label: job.name,
     value: getObjectId(job),
@@ -67,6 +66,8 @@ const JobSelectComponent = () => {
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const textColors = textCV
+
   return (
     <Combobox
       value={jobValue}
@@ -85,9 +86,9 @@ const JobSelectComponent = () => {
             <div className="absolute right-0 flex items-center pr-1">
               <Combobox.Button
                 onClick={() => inputRef.current?.focus()}
-                className="inset-y-0 z-20 flex items-center"
+                className="inset-y-0 flex items-center"
               >
-                <HiChevronDoubleDown className={`text-${color}`} />
+                <HiChevronDoubleDown className={textColors[variant]} />
               </Combobox.Button>
             </div>
           </div>

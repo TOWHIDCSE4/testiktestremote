@@ -1,11 +1,10 @@
 import { useContext, useState } from "react"
 import { ControllerContext } from "./ControllerContext"
 import { HiChevronDoubleDown } from "react-icons/hi"
-import useColor from "./useColor"
+import { textCV as textColors } from "./classVariants"
 
 export default function DetailContextComponent() {
   const { variant, controllerDetailData } = useContext(ControllerContext)
-  const color = useColor({ variant })
   const [isOpen, setIsOpen] = useState<boolean>(true)
   return (
     <div className="text-xs sm:text-lg">
@@ -14,7 +13,7 @@ export default function DetailContextComponent() {
           CYCLE DETAILS
         </h4>
         <button
-          className={`text-${color} text-xl sm:hidden`}
+          className={`${textColors[variant]} text-xl sm:hidden`}
           onClick={() => {
             setIsOpen(!isOpen)
           }}
