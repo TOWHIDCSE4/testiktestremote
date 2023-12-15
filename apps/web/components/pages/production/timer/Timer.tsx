@@ -426,13 +426,17 @@ const Timer = ({
   }, [socket, timer._id])
 
   useEffect(() => {
-    socket?.emit("join-timer", { timerId: timer._id })
+    if (!isControllerModalOpen) {
+      socket?.emit("join-timer", { timerId: timer._id })
+    } else {
+      socket?.emit("leave-timer", { timerId: timer._id })
+    }
     useSocket.subscribe(({ isConnected }) => {
       if (isConnected) {
         socket?.emit("join-timer", { timerId: timer._id })
       }
     })
-  }, [socket, timer._id])
+  }, [socket, timer._id, isControllerModalOpen])
 
   return (
     <>
