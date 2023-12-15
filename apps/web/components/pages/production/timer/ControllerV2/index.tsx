@@ -96,15 +96,17 @@ const ControllerV2 = ({
                 <OperatorSelectComponent />
                 <JobSelectComponent />
               </div>
-              <div className="flex flex-wrap items-start justify-between w-full pt-1 sm:hidden">
+              <div className="flex flex-wrap items-start justify-between w-full gap-4 pt-1 sm:hidden">
                 <div className="pt-16">
                   <PauseButtonComponent />
                 </div>
-                <div className="flex flex-col items-center flex-1">
-                  <ResultsUnitCountComponent />
-                  <div className="relative flex flex-col items-center w-full gap-1">
-                    <OperatorSelectComponent />
-                    <JobSelectComponent />
+                <div className="relative flex-1">
+                  <div className="flex flex-col items-center w-fit">
+                    <ResultsUnitCountComponent />
+                    <div className="relative flex flex-col items-center w-full gap-1">
+                      <OperatorSelectComponent />
+                      <JobSelectComponent />
+                    </div>
                   </div>
                 </div>
               </div>
