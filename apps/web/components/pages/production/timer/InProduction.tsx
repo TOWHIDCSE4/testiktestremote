@@ -52,7 +52,7 @@ const InProduction = ({
       clearInterval(intervalId)
       setIntervalId(0)
     }
-  }, [productionTime])
+  }, [productionTime, locationId])
 
   useEffect(() => {
     setLocalTimeArray(hourMinuteSecond(timeInSeconds))
