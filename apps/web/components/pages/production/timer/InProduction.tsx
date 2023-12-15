@@ -44,8 +44,15 @@ const InProduction = ({
       setTimeInSeconds(0)
       clearInterval(intervalId)
       setIntervalId(0)
+    } else if (
+      typeof productionTime?.item === "number" &&
+      productionTime?.item === 0
+    ) {
+      setTimeInSeconds(0)
+      clearInterval(intervalId)
+      setIntervalId(0)
     }
-  }, [productionTime])
+  }, [productionTime, locationId])
 
   useEffect(() => {
     setLocalTimeArray(hourMinuteSecond(timeInSeconds))

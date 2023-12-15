@@ -169,7 +169,7 @@ const Clocks = ({
                 )}
                 {machineClasses?.map((machineClass, index) => {
                   return (
-                    <Menu.Item key={index}>
+                    <Menu.Item key={machineClass._id}>
                       {({ active }) => (
                         <FilterCheckbox
                           filterCheck={setFilterCheck}

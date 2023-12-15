@@ -153,7 +153,7 @@ const Content = () => {
         {/* Location */}
         <div className="grid grid-cols-3 gap-x-6 md:gap-x-8 2xl:gap-x-24 mt-5">
           {locationTabs.map((tab) => (
-            <div key={tab.name}>
+            <div key={tab._id}>
               <button
                 type="button"
                 className={combineClasses(
