@@ -416,10 +416,11 @@ const Timer = ({
 
   useEffect(() => {
     socket?.emit("join-timer", { timerId: timer._id })
-
-    return () => {
-      socket?.emit("leave-timer", { timerId: timer._id })
-    }
+    useSocket.subscribe(({ isConnected }) => {
+      if (isConnected) {
+        socket?.emit("join-timer", { timerId: timer._id })
+      }
+    })
   }, [socket, timer._id])
 
   return (
