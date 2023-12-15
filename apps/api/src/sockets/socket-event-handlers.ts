@@ -40,14 +40,10 @@ export default function chatSocket(io: Server) {
     })
 
     socket.on("controller-timer-tick", ({ timerId, ...otherData }) => {
-      socket
-        .to(timerId)
-        .emit("controller-timer-tick", { timerId, ...otherData })
+      io.to(timerId).emit("controller-timer-tick", { timerId, ...otherData })
     })
     socket.on("controller-reconnect", ({ timerId, ...otherData }) => {
-      socket
-        .to(timerId)
-        .emit("controller-timer-tick", { timerId, ...otherData })
+      io.to(timerId).emit("controller-timer-tick", { timerId, ...otherData })
     })
 
     socket.on("event", (message: any) => {
@@ -64,7 +60,7 @@ export default function chatSocket(io: Server) {
         currentUnit: number
       }) => {
         // Handle chat message logic here (e.g., save to a database)
-        socket.to(data.timerId).emit("stop-press", data)
+        io.to(data.timerId).emit("stop-press", data)
       }
     )
 
