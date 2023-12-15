@@ -668,7 +668,8 @@ export const ControllerContextProvider = ({
             timerId,
             unitCreated,
             isCycleClockRunning,
-            cycleClockSeconds: clockMilliSeconds,
+            cycleClockSeconds: Math.trunc(clockMilliSeconds),
+            detail: controllerDetailData,
           }
           await socket?.emitWithAck(eventName, data)
           console.log("Controller timer success tick ", eventName)
@@ -695,7 +696,7 @@ export const ControllerContextProvider = ({
     timerId,
     unitCreated,
     isCycleClockRunning,
-    parseInt(String(clockMilliSeconds)),
+    Math.trunc(clockMilliSeconds),
   ])
 
   useEffect(() => {
