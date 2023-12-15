@@ -34,7 +34,6 @@ const TimerLogsModal = ({
       })
       ?.map((log: any, i: number) => ({
         ...log,
-        sortedCycle: timerLogs?.items?.length - i,
       }))
       ?.slice(startIndex, endIndex) || []
   return (
@@ -74,7 +73,7 @@ const TimerLogsModal = ({
                   {log.status}
                 </td>
                 <td>{formatTime(log.time.toFixed(2))}</td>
-                <td>{log.sortedCycle}</td>
+                <td>{log.cycle}</td>
               </tr>
             ))}
           </tbody>

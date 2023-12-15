@@ -60,7 +60,7 @@ export default function ConsoleComponent({
             ref={messagesRef}
             className="absolute w-full h-full p-5 overflow-auto text-xs"
           >
-            {readingMessages?.map((message, key) => (
+            {readingMessages?.toReversed()?.map((message, key) => (
               <p key={key}>{message}</p>
             ))}
           </div>
