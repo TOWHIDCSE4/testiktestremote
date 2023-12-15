@@ -349,7 +349,6 @@ const Timer = ({
   }
 
   useEffect(() => {
-    if (!timer._id) return
     const resyncClock = (data: {
       timerId: string
       isCycleClockRunning: boolean
