@@ -2,19 +2,12 @@ import { T_TimerLog } from "custom-validator"
 import React, { Dispatch, useEffect, useState } from "react"
 import { hourMinuteSecond } from "../../../../../helpers/timeConverter"
 import { usePathname } from "next/navigation"
-import useGetOverallTotal from "../../../../../hooks/timerLogs/useGetOverallTotal"
 import useGetAllTimerLogs from "../../../../../hooks/timerLogs/useGetAllTimerLogs"
 
 const Details = ({
-  page,
-  setPage,
-  logs,
-  logCount,
   timerMachine,
-  maxPage,
   locationId,
   timerId,
-  machineClassId,
 }: {
   page: number
   setPage: Dispatch<number>
@@ -44,35 +37,67 @@ const Details = ({
     "00",
     "00",
   ])
+  const [floatTimeArray, setFloatTimeArray] = useState<Array<number | string>>([
+    "00",
+    "00",
+    "00",
+  ])
 
   useEffect(() => {
     if (data?.items && data?.items.length > 0) {
-      setGainTimeArray(
-        hourMinuteSecond(
-          data?.items.reduce(
-            (acc, log) =>
-              acc +
-              (log.status === "Gain" && log.stopReason.includes("Unit Created")
-                ? Number(log.time)
-                : 0),
-            0
-          )
-        )
+      const totalGainTime = data?.items.reduce(
+        (acc, log) =>
+          acc +
+          (log.status === "Gain" && log.stopReason.includes("Unit Created")
+            ? Number(log.time)
+            : 0),
+        0
       )
-      setLossTimeArray(
-        hourMinuteSecond(
-          data?.items.reduce(
-            (acc, log) =>
-              acc +
-              (log.status === "Loss" && log.stopReason.includes("Unit Created")
-                ? Number(log.time)
-                : 0),
-            0
-          )
-        )
+
+      setGainTimeArray(hourMinuteSecond(totalGainTime))
+      const totalLossTime = data?.items.reduce(
+        (acc, log) =>
+          acc +
+          (log.status === "Loss" && log.stopReason.includes("Unit Created")
+            ? Number(log.time)
+            : 0),
+        0
       )
+
+      const averageTime = calculateAverageTime(data.items)
+      setLossTimeArray(hourMinuteSecond(totalLossTime))
+
+      const fullGainTime = calculateFullGainTime(averageTime)
+      const fullLossTime = calculateFullLossTime(averageTime)
+      const floatTime = calculateFloatTime(fullGainTime, fullLossTime)
+
+      setFloatTimeArray(hourMinuteSecond(Math.abs(floatTime)))
+    } else {
+      setGainTimeArray(hourMinuteSecond(0))
+      setLossTimeArray(hourMinuteSecond(0))
+      setFloatTimeArray(hourMinuteSecond(0))
     }
   }, [data])
+
+  const calculateAverageTime = (items: any[]) => {
+    const totalSeconds = items.reduce((acc, log) => acc + Number(log.time), 0)
+    return totalSeconds / items.length
+  }
+
+  // Function to calculate full gain time
+  const calculateFullGainTime = (averageTime: number) => {
+    return averageTime * (data?.items?.length ?? 0)
+  }
+
+  // Function to calculate full loss time
+  const calculateFullLossTime = (averageTime: number) => {
+    return averageTime * (data?.items?.length ?? 0)
+  }
+
+  // Function to calculate float time
+  const calculateFloatTime = (fullGainTime: number, fullLossTime: number) => {
+    return fullGainTime + fullLossTime - 60 * 60 // Subtracting 60 minutes
+  }
 
   const pathName = usePathname()
   const path = pathName.substring(0, 25)
@@ -136,7 +161,10 @@ const Details = ({
                 </div>
               ) : (
                 <>
-                  Total Float: <span className="text-amber-600">00:00:00</span>
+                  Total Float:{" "}
+                  <span className="text-green-500">
+                    {floatTimeArray[0]}:{floatTimeArray[1]}:{floatTimeArray[2]}
+                  </span>
                 </>
               )}
             </h6>
