@@ -669,7 +669,7 @@ export const ControllerContextProvider = ({
         isCycleClockRunning,
         cycleClockSeconds: Math.trunc(clockMilliSeconds),
         detail: controllerDetailData,
-        isControllerModalOpen,
+        isControllerModalOpen: isControllerModalOpenRef.current,
       }
       await socket?.emit(eventName, data)
       console.log("Controller timer success tick ", eventName)
@@ -685,7 +685,6 @@ export const ControllerContextProvider = ({
       subscriber()
     }
   }, [
-    isControllerModalOpen,
     controllerDetailData,
     socket,
     timerId,

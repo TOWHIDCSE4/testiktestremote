@@ -357,13 +357,14 @@ const Timer = ({
       cycleClockSeconds: number
       isControllerModalOpen: boolean
     }) => {
-      if (!data.isControllerModalOpen) return
-      setCycleClockInSeconds(data.cycleClockSeconds)
-      if (data.isCycleClockRunning) {
-        runCycle()
-      } else {
-        setCycleClockInSeconds(0)
-        stopInterval()
+      if (data.timerId === timer._id) {
+        if (data.isCycleClockRunning) {
+          setCycleClockInSeconds(data.cycleClockSeconds)
+          runCycle()
+        } else {
+          setCycleClockInSeconds(0)
+          stopInterval()
+        }
       }
     }
     const timerTick = (data: {
@@ -373,6 +374,10 @@ const Timer = ({
       cycleClockSeconds: number
       isControllerModalOpen: boolean
     }) => {
+      // if data come from closed modal
+      // or controller modal opened on current web/device
+      // dont do anything
+      if (!data.isControllerModalOpen || isControllerModalOpen) return
       if (data.timerId === timer._id) {
         console.log("controller-timer-tick", data)
         setUnitCreated((current) => {
@@ -392,6 +397,10 @@ const Timer = ({
       cycleClockSeconds: number
       isControllerModalOpen: boolean
     }) => {
+      // if data come from closed modal
+      // or controller modal opened on current web/device
+      // dont do anything
+      if (!data.isControllerModalOpen || isControllerModalOpen) return
       if (data.timerId === timer._id) {
         setUnitCreated(data.unitCreated)
         resyncClock(data)
@@ -416,7 +425,7 @@ const Timer = ({
       socket?.off("controller-timer-tick", timerTick)
       socket?.off("controller-reconnect", controllerReconnect)
     }
-  }, [socket, timer._id])
+  }, [socket, timer._id, isControllerModalOpen])
 
   useEffect(() => {
     socket?.emit("join-timer", { timerId: timer._id })
