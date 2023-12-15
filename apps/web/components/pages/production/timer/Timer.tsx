@@ -373,6 +373,12 @@ const Timer = ({
       cycleClockSeconds: number
       isControllerModalOpen: boolean
     }) => {
+      console.log(
+        "debug-timer-tick",
+        timer._id === data.timerId,
+        isControllerModalOpen,
+        data
+      )
       // if data come from closed modal
       // or controller modal opened on current web/device
       // dont do anything
