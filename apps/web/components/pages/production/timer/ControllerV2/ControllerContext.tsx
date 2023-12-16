@@ -395,26 +395,22 @@ export const ControllerContextProvider = ({
         timerId: timerId,
         locationId: getObjectId(timerDetailData?.item?.locationId),
       }
+      queryClient.setQueriesData(
+        ["in-production", getObjectId(timerDetailData?.item?.locationId)],
+        (query: any) => {
+          return {
+            ...query,
+            item: {
+              started: true,
+              seconds: 1,
+              createdAt: new Date(),
+            },
+          }
+        }
+      )
       addControllerTimer(controllerTimerValue, {
         onSuccess: () => {
           queryClient.invalidateQueries(["controller-timer", timerId])
-          queryClient.setQueriesData(
-            ["in-production", getObjectId(timerDetailData?.item?.locationId)],
-            (query: any) => {
-              return {
-                ...query,
-                item: {
-                  started: true,
-                  seconds: 1,
-                  createdAt: new Date(),
-                },
-              }
-            }
-          )
-          queryClient.invalidateQueries([
-            "in-production",
-            timerDetailData?.item?.locationId,
-          ])
         },
       })
     }
