@@ -22,10 +22,10 @@ export default function ConsoleComponent({
   }, [setReadingsDivRef])
 
   return (
-    <div className="relative flex flex-col justify-between flex-1">
+    <div className="relative flex flex-col justify-between flex-1 dark:text-white">
       <div className="absolute top-0 w-full -translate-y-full">
         <div className="flex items-end justify-between w-full overflow-x-auto overflow-y-hidden flex-nowrap">
-          <div className="w-16 border-b border-dark-blue"></div>
+          <div className="w-16 border-b border-dark-blue dark:border-white"></div>
           <button
             onClick={() => {
               setIsLogsOpen(true)
@@ -34,7 +34,7 @@ export default function ConsoleComponent({
               !isLogsOpen
                 ? `${bgColors[variant]} border-b`
                 : `bg-transparent border border-b-0`
-            } border-dark-blue`}
+            } border-dark-blue dark:border-white`}
           >
             <span>Logs</span>
           </button>
@@ -46,14 +46,14 @@ export default function ConsoleComponent({
               isLogsOpen
                 ? `${bgColors[variant]} border-b`
                 : `bg-transparent border border-b-0`
-            } border-dark-blue`}
+            } border-dark-blue dark:border-white`}
           >
             <span>Readings</span>
           </button>
-          <div className="flex-1 border-b border-dark-blue"></div>
+          <div className="flex-1 border-b border-dark-blue dark:border-white"></div>
         </div>
       </div>
-      <div className="relative border-b-[1px] min-h-[6rem] flex-1 border-[#0f2034] overflow-hidden">
+      <div className="relative border-b-[1px] min-h-[6rem] flex-1 border-[#0f2034] dark:border-white overflow-hidden">
         {isLogsOpen ? (
           <TimerLogsModal isOpen={isLogsOpen} setIsOpen={setIsLogsOpen} />
         ) : (

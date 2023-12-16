@@ -115,7 +115,7 @@ export default function FancyButtonComponent({
       {...buttonProps}
       disabled={disabled}
       onClick={onClick}
-      className={`rounded-lg overflow-hidden border-2 border-[#5D5D5D] ${buttonCV(
+      className={`rounded-lg overflow-hidden border-2 border-[#5D5D5D] dark:border-gray-600 ${buttonCV(
         {
           size,
           textSize,
@@ -125,9 +125,9 @@ export default function FancyButtonComponent({
       )} disabled:bg-stone-400`}
     >
       <div
-        className={`rounded-md outline outline-2 outline-[#5d5d5d] ${className} ${internalCV(
+        className={`rounded-md outline outline-2 outline-[#5d5d5d] dark:outline-gray-600 ${className} ${internalCV(
           { padding }
-        )} shadow-lg leading-none flex items-center text-center bg-[#E8EBF0] text-[#0f2034] disabled:text-[#425366]`}
+        )} shadow-lg leading-none flex items-center text-center bg-[#E8EBF0] dark:bg-blue-950 text-[#0f2034] dark:text-white disabled:text-[#425366]`}
       >
         {children}
       </div>

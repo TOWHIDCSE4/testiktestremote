@@ -26,20 +26,24 @@ export default function ResultsBoardComponent() {
       </div>
       <div className="relative text-xs sm:text-xl">
         <div className="grid grid-cols-2 gap-1 ml-auto font-medium leading-tight w-fit text-normal">
-          <div className="col-span-1 text-[#858585] text-right">
+          <div className="col-span-1 text-[#858585] dark:text-white dark:opacity-80 text-right">
             {totals.unitsPerHour.toFixed(3)} :{" "}
           </div>
-          <div className="col-span-1 text-[#0f2034] font-semibold">UNIT PH</div>
-          <div className="col-span-1 text-[#858585] text-right">
+          <div className="col-span-1 text-[#0f2034] dark:text-white font-semibold">
+            UNIT PH
+          </div>
+          <div className="col-span-1 text-[#858585] dark:text-white dark:opacity-80 text-right">
             {totals.totalTons.toFixed(3)} :{" "}
           </div>
-          <div className="col-span-1 text-[#0f2034] font-semibold">
+          <div className="col-span-1 text-[#0f2034] dark:text-white font-semibold">
             TOTAL TONS
           </div>
-          <div className="col-span-1 text-[#858585] text-right">
+          <div className="col-span-1 text-[#858585] dark:text-white dark:opacity-80 text-right">
             {totals.tonsPerHour.toFixed(3)} :{" "}
           </div>
-          <div className="col-span-1 text-[#0f2034] font-semibold">TONS PH</div>
+          <div className="col-span-1 text-[#0f2034] dark:text-white font-semibold">
+            TONS PH
+          </div>
         </div>
         <div className="hidden sm:block">
           <ResultsUnitCountComponent />
