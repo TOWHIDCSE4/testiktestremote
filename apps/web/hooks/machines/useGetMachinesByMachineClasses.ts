@@ -2,6 +2,7 @@ import { API_URL_MACHINE, THREE_MINUTES } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 import { T_BackendResponse, T_Machine } from "custom-validator"
+import { useEffect, useState } from "react"
 
 type T_DBReturn = Omit<T_BackendResponse, "items"> & {
   items: T_Machine[]
@@ -25,20 +26,28 @@ export async function getMachinesByMachineClasses(machineClassIds: string[]) {
     }
   )
 
-  return (await res.json()) as T_DBReturn
+  return await res.json()
 }
 
-function useGetMachinesByMachineClasses(machineClassIds: string[]) {
+function useGetMachinesByMachineClasses() {
+  const [machineClassIds, setMachineClassIds] = useState<Array<string>>()
+
   const query = useQuery(
     ["machines-by-classes", machineClassIds],
-    () => getMachinesByMachineClasses(machineClassIds),
+    () => getMachinesByMachineClasses(machineClassIds ?? []),
     {
       staleTime: THREE_MINUTES,
       refetchOnWindowFocus: false,
     }
   )
 
-  return query
+  useEffect(() => {
+    if (machineClassIds) {
+      query.refetch()
+    }
+  }, [machineClassIds])
+
+  return { ...query, setMachineClassIds }
 }
 
 export default useGetMachinesByMachineClasses
