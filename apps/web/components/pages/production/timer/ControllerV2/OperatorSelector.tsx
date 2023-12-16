@@ -143,7 +143,7 @@ const OperatorSelectComponent = () => {
                 <Combobox.Option
                   key={person._id}
                   className={({ active }) =>
-                    `relative cursor-default select-none py-2 px-2 ${
+                    `relative cursor-default select-none py-2 px-2 dark:text-white dark:bg-dark-cyan-blue ${
                       active ? "bg-[#E8EBF0] text-black" : "text-black-900"
                     }`
                   }

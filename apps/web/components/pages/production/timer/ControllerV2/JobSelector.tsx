@@ -99,17 +99,21 @@ const JobSelectComponent = () => {
                   key={option.value}
                   value={option}
                   className={({ active }) =>
-                    `relative opacity-60 bg-transparent cursor-default select-none py-2 px-2 ${
-                      active
-                        ? "bg-[#E8EBF0] text-black dark:text-white dark:opacity-100"
-                        : "text-black-900 dark:text-white"
+                    `relative cursor-default select-none py-2 px-2 dark:text-white dark:bg-dark-cyan-blue ${
+                      active ? "bg-[#E8EBF0] text-black" : "text-black-900"
                     }`
                   }
                 >
                   {({ selected, active }) => (
-                    <div className={selected ? `bg-primary` : ``}>
-                      {option.label}
-                    </div>
+                    <>
+                      <span
+                        className={`block truncate ${
+                          selected ? "font-medium" : "font-normal"
+                        }`}
+                      >
+                        {option.label}
+                      </span>
+                    </>
                   )}
                 </Combobox.Option>
               ))}
