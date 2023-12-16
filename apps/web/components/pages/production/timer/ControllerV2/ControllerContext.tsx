@@ -70,6 +70,7 @@ export interface ControllerContextProps {
   isStopDisabled: boolean
   hasControllerTimer: boolean
   stopReasons: any[]
+  isChangingOperator: boolean
   controllerJob: any
   isControllerJobLoading: boolean
   isStartControllerError: boolean
@@ -112,6 +113,7 @@ export const ControllerContext = createContext<ControllerContextProps>({
   jobs: [],
   isJobsLoading: false,
   isChangingJob: false,
+  isChangingOperator: false,
   isControllerJobLoading: false,
   isStartControllerError: false,
   isProductionEnded: false,
@@ -211,7 +213,8 @@ export const ControllerContextProvider = ({
   const { mutate: endAddCycleTimer } = useEndAddCycleTimer()
   const { mutate: endCycleTimer } = useEndCycleTimer()
   const { mutate: assignJobToTimer } = useAssignJobToTimer()
-  const { mutate: updateTimerOperator } = useUpdateTimer()
+  const { mutate: updateTimerOperator, isLoading: isChangingOperator } =
+    useUpdateTimer()
   const { mutate: updateJobTimer, isLoading: isChangingJob } =
     useUpdateJobTimer()
 
@@ -498,6 +501,13 @@ export const ControllerContextProvider = ({
 
   const onOperatorChange = (operator: string, operatorName: string) => {
     // setIsChangingJob(true)
+    queryClient.setQueriesData(["timer", timerId], (query: any) => {
+      return set(query, "item", {
+        ...timerDetailData?.item,
+        operator: operatorName ? "" : operator,
+        operatorName: operatorName ? operatorName : "",
+      })
+    })
     updateTimerOperator(
       {
         ...timerDetailData?.item,
@@ -761,6 +771,7 @@ export const ControllerContextProvider = ({
         variant,
         progress,
         isStopMenuOpen,
+        isChangingOperator,
         setIsStopMenuOpen,
         controllerDetailData,
         operator: currentOperator,
