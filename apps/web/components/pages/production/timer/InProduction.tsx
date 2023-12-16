@@ -37,7 +37,9 @@ const InProduction = ({
     if (productionTime?.item?.started) {
       clearInterval(intervalId)
       runLocalTime()
-      setTimeInSeconds(getSecondsDifferent(productionTime?.item?.createdAt) + 1)
+      setTimeInSeconds(
+        getSecondsDifferent(productionTime?.item?.createdAt) + 0.5
+      )
     } else {
       setTimeInSeconds(0)
       clearInterval(intervalId)
