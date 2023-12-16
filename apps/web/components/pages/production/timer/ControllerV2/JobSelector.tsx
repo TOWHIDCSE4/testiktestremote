@@ -71,7 +71,7 @@ const JobSelectComponent = () => {
           <FancyButtonComponent intent={variant} trigger={"off"}>
             <div className="relative flex items-center">
               <Combobox.Input
-                className={`flex-1 p-0 pr-6 border-none font-semibold text-sm leading-5 text-[#5D5D5D] focus:ring-0 bg-[#E8EBF0] italic`}
+                className={`flex-1 bg-transparent p-0 pr-6 border-none font-semibold text-sm leading-5 text-[#5D5D5D] dark:text-white focus:ring-0 italic`}
                 ref={inputRef}
                 placeholder="Select Job"
                 displayValue={(job: any) => job?.label}
@@ -93,14 +93,16 @@ const JobSelectComponent = () => {
             leaveTo="opacity-0"
             afterLeave={() => {}}
           >
-            <Combobox.Options className="absolute z-50 w-64 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-40 ring-1 ring-black/5 focus:outline-none sm:text-sm">
+            <Combobox.Options className="absolute z-50 w-64 py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg dark:text-white dark:bg-dark-cyan-blue max-h-40 ring-1 ring-black/5 focus:outline-none sm:text-sm">
               {jobOptions.map((option) => (
                 <Combobox.Option
                   key={option.value}
                   value={option}
                   className={({ active }) =>
-                    `relative cursor-default select-none py-2 px-2 ${
-                      active ? "bg-[#E8EBF0] text-black" : "text-black-900"
+                    `relative opacity-60 bg-transparent cursor-default select-none py-2 px-2 ${
+                      active
+                        ? "bg-[#E8EBF0] text-black dark:text-white dark:opacity-100"
+                        : "text-black-900 dark:text-white"
                     }`
                   }
                 >
@@ -114,8 +116,10 @@ const JobSelectComponent = () => {
               <Combobox.Option
                 value="add_job"
                 className={({ active }) =>
-                  `relative cursor-default select-none py-2 px-2 ${
-                    active ? "bg-[#E8EBF0] text-black" : "text-black-900"
+                  `relative opacity-60 bg-transparent cursor-default select-none py-2 px-2 ${
+                    active
+                      ? "bg-[#E8EBF0] text-black dark:text-white dark:opacity-100"
+                      : "text-black-900 dark:text-white"
                   }`
                 }
               >

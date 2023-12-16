@@ -55,7 +55,7 @@ export default function StopMenuComponent({
           </div>
         </button>
         <div
-          className={`transition-colors ${borderColors[variant]} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1 !flex-shrink-0 py-1`}
+          className={`transition-colors ${borderColors[variant]} bg-[#bdbdbd] dark:bg-transparent dark:text-white border-2 border-r-0 rounded-l-lg flex-1 !flex-shrink-0 py-1`}
         >
           <div className="px-4 py-0">
             {stopReasonsArr.map((item, key) => (
@@ -78,7 +78,7 @@ export default function StopMenuComponent({
                   tabIndex={-1}
                   className="w-3 h-3 bg-white border border-[#0f2034] rounded-full"
                 />
-                <label className="uppercase text-[#0f2034] font-bold">
+                <label className="uppercase text-[#0f2034] dark:text-white font-bold">
                   {item}
                 </label>
               </div>

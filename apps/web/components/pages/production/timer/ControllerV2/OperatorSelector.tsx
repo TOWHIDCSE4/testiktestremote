@@ -96,7 +96,7 @@ const OperatorSelectComponent = () => {
         <FancyButtonComponent trigger={"off"} intent={variant}>
           <div className="relative flex items-center">
             <Combobox.Input
-              className={`flex-1 p-0 pr-6 border-none font-semibold text-sm leading-5 text-[#5D5D5D] focus:ring-0 bg-[#E8EBF0] italic ${
+              className={`flex-1 p-0 pr-6 border-none font-semibold text-sm leading-5 text-[#5D5D5D] dark:text-white focus:ring-0 bg-transparent italic ${
                 isDisableInput ? "cursor-not-allowed" : ""
               }`}
               displayValue={(selected: any) =>

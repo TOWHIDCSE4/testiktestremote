@@ -9,7 +9,7 @@ export default function DetailContextComponent() {
   return (
     <div className="text-xs sm:text-lg">
       <div className="flex items-center gap-2 mt-2">
-        <h4 className="text-lg sm:text-2xl text-[#0f2034] uppercase font-bold">
+        <h4 className="text-lg sm:text-2xl text-[#0f2034] dark:text-white uppercase font-bold">
           CYCLE DETAILS
         </h4>
         <button
@@ -29,34 +29,42 @@ export default function DetailContextComponent() {
         } overflow-hidden`}
       >
         <div className=" line-clamp-1">
-          <span className="text-[#0f2034] font-semibold">Factory : </span>
-          <span className="text-[#858585]">
+          <span className="text-[#0f2034] dark:text-white font-semibold">
+            Factory :{" "}
+          </span>
+          <span className="text-[#858585] dark:text-white dark:opacity-80">
             {controllerDetailData.factoryName}
           </span>
         </div>
         <div className=" line-clamp-1">
-          <span className="text-[#0f2034] font-semibold">Machine : </span>
-          <span className="text-[#858585]">
+          <span className="text-[#0f2034] dark:text-white font-semibold">
+            Machine :{" "}
+          </span>
+          <span className="text-[#858585] dark:text-white dark:opacity-80">
             {controllerDetailData.machineName}
           </span>
         </div>
         <div className=" line-clamp-1">
-          <span className="text-[#0f2034] font-semibold">Product : </span>
-          <span className="text-[#858585]">
+          <span className="text-[#0f2034] dark:text-white font-semibold">
+            Product :{" "}
+          </span>
+          <span className="text-[#858585] dark:text-white dark:opacity-80">
             {controllerDetailData.partName}
           </span>
         </div>
         <div className=" line-clamp-1">
-          <span className="text-[#0f2034] font-semibold">Average Time : </span>
-          <span className="text-[#858585]">
+          <span className="text-[#0f2034] dark:text-white font-semibold">
+            Average Time :{" "}
+          </span>
+          <span className="text-[#858585] dark:text-white dark:opacity-80">
             {Math.floor(controllerDetailData.averageTime ?? 0)} Seconds
           </span>
         </div>
         <div className=" line-clamp-1">
-          <span className="text-[#0f2034] font-semibold">
+          <span className="text-[#0f2034] dark:text-white font-semibold">
             Average Weight :{" "}
           </span>
-          <span className="text-[#858585]">
+          <span className="text-[#858585] dark:text-white dark:opacity-80">
             {controllerDetailData.weight?.toFixed(2)} Tons
           </span>
         </div>

@@ -32,9 +32,11 @@ export default function EndProdMenuComponent({
           <button
             onClick={onClick}
             tabIndex={-1}
-            className={`transition-colors ${borderColors[variant]} bg-[#bdbdbd] border-2 border-r-0 rounded-l-lg flex-1`}
+            className={`transition-colors ${borderColors[variant]} bg-[#bdbdbd] dark:bg-transparent border-2 border-r-0 rounded-l-lg flex-1`}
           >
-            <div className="px-4 py-2 font-bold uppercase">END PRODUCTION</div>
+            <div className="px-4 py-2 font-bold uppercase dark:text-white">
+              END PRODUCTION
+            </div>
           </button>
         </div>
       </div>

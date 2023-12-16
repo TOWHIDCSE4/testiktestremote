@@ -17,8 +17,20 @@ const lato = Lato({
 const clockDigitCV = cva("transition-colors", {
   variants: {
     intent: {
-      zero: ["text-[#BEBEBE]", "text-center", "font-bold"],
-      primary: ["text-[#0F2034]", "text-center", "font-bold"],
+      zero: [
+        "text-[#BEBEBE]",
+        "dark:text-white",
+        "dark:opacity-30",
+        "text-center",
+        "font-bold",
+      ],
+      primary: [
+        "text-[#0F2034]",
+        "dark:text-white",
+        "dark:opacity-100",
+        "text-center",
+        "font-bold",
+      ],
     },
     type: {
       digit: ["w-[1.5rem]", "sm:w-[2.5rem]"],

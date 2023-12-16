@@ -42,7 +42,7 @@ const TimerLogsModal = ({
         hidden: !isOpen,
       })}
     >
-      <div className="relative flex flex-col items-center justify-between w-full h-full mx-auto overflow-auto bg-white rounded shadow-lg">
+      <div className="relative flex flex-col items-center justify-between w-full h-full mx-auto overflow-auto text-black bg-white rounded shadow-lg">
         <table className="justify-between flex-1 w-full h-full overflow-auto">
           <thead className="sticky top-0 w-full h-5 font-bold bg-white border-b-4 border-blue-800">
             <th>Date / Time</th>
