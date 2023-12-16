@@ -33,7 +33,7 @@ export default function ConsoleComponent({
             className={`flex items-center flex-shrink-0 px-5 py-2 space-x-2 rounded-t-lg ${
               !isLogsOpen
                 ? `${bgColors[variant]} border-b`
-                : `bg-transparent border border-b-0`
+                : `bg-white dark:bg-dark-blue border border-b-0`
             } border-dark-blue dark:border-white`}
           >
             <span>Logs</span>
@@ -45,7 +45,7 @@ export default function ConsoleComponent({
             className={`flex items-center flex-shrink-0 px-5 py-2 space-x-2 rounded-t-lg ${
               isLogsOpen
                 ? `${bgColors[variant]} border-b`
-                : `bg-transparent border border-b-0`
+                : `bg-white dark:bg-dark-blue border border-b-0`
             } border-dark-blue dark:border-white`}
           >
             <span>Readings</span>
