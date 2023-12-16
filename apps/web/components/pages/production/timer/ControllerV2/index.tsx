@@ -25,6 +25,10 @@ import JobSelectComponent from "./JobSelector"
 import PauseButtonComponent from "./PauseButton"
 import ResultsUnitCountComponent from "./Results.UnitCount"
 import ProgressComponent from "./Progress"
+import { USER_ROLES } from "../../../../../helpers/constants"
+import useProfile from "../../../../../hooks/users/useProfile"
+import { Button } from "@mui/material"
+import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
 
 export interface ControllerDetailData {
   locationName: string
@@ -46,8 +50,15 @@ const ControllerV2 = ({
   onClose,
   onFullScreen,
 }: ControllerV2Props) => {
-  const { controllerDetailData, setIsStopMenuOpen, isStopMenuOpen } =
-    useContext(ControllerContext)
+  const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const {
+    variant,
+    controllerDetailData,
+    setIsStopMenuOpen,
+    isStopMenuOpen,
+    isProductionEnded,
+  } = useContext(ControllerContext)
+  const { data: timerDetailData } = useGetTimerDetails(timerId)
   const [isLogsOpen, setIsLogsOpen] = useState(false)
 
   const [isEndProductionModalOpen, setIsEndProductionModalOpen] =
@@ -123,6 +134,30 @@ const ControllerV2 = ({
             setIsEndProductionModalOpen(true)
           }}
         />
+        {isProductionEnded && (
+          <div className="absolute top-0 left-0 flex flex-col items-center justify-center w-full h-full pt-12 bg-black/80 backdrop-blur-sm">
+            <div className="mb-10 text-6xl font-semibold text-white uppercase">
+              OFFLINE
+            </div>
+
+            {[
+              USER_ROLES.Super,
+              USER_ROLES.Administrator,
+              USER_ROLES.Production,
+            ].includes(userProfile?.item.role ?? "") && (
+              <Button
+                variant="contained"
+                className="text-normal"
+                onClick={() => {}}
+              >
+                RESET
+                <span className="ml-4 font-bold">
+                  {timerDetailData?.item?.machineId?.name}
+                </span>
+              </Button>
+            )}
+          </div>
+        )}
       </div>
       <ConsoleComponent isLogsOpen={isLogsOpen} setIsLogsOpen={setIsLogsOpen} />
       <EndProductionModal
