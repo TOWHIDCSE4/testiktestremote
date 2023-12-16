@@ -25,8 +25,8 @@ const InProduction = ({
 
   const runLocalTime = () => {
     const interval: any = setInterval(() => {
-      setTimeInSeconds((previousState: number) => previousState + 1)
-    }, 1000)
+      setTimeInSeconds((previousState: number) => previousState + 0.1)
+    }, 100)
     setIntervalId(interval)
     setIsClockRunning(true)
   }
