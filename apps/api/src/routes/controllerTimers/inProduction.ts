@@ -37,14 +37,22 @@ export const inProduction = async (req: Request, res: Response) => {
         const diffSeconds = currentDateTZ.diff(createdAtTZ, "second")
         res.json({
           error: false,
-          item: diffSeconds,
+          item: {
+            seconds: diffSeconds,
+            started: true,
+            createdAt: getDayFirstTimer?.createdAt,
+          },
           itemCount: null,
           message: null,
         })
       } else {
         res.json({
           error: false,
-          item: 0,
+          item: {
+            seconds: 0,
+            started: false,
+            createdAt: getDayFirstTimer?.createdAt,
+          },
           itemCount: null,
           message: null,
         })
@@ -52,7 +60,10 @@ export const inProduction = async (req: Request, res: Response) => {
     } else {
       res.json({
         error: false,
-        item: 0,
+        item: {
+          seconds: 0,
+          started: false,
+        },
         itemCount: null,
         message: null,
       })

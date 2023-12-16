@@ -33,8 +33,8 @@ export function formatTime(seconds: string) {
 }
 
 export const getSecondsDifferent = (
-  timeZone: string = "",
   createdAt?: Date,
+  timeZone: string = "",
   endAt?: Date | null
 ) => {
   const timerStart = dayjs.tz(dayjs(createdAt), timeZone ? timeZone : "")

@@ -31,7 +31,6 @@ import useGetCycleTimer from "../../../../../hooks/timers/useGetCycleTimer"
 import useAddCycleTimer from "../../../../../hooks/timers/useAddCycleTimer"
 import useEndAddCycleTimer from "../../../../../hooks/timers/useEndAddCycleTimer"
 import useEndCycleTimer from "../../../../../hooks/timers/useEndCycleTimer"
-import { getSecondsDifferent } from "../../../../../helpers/date"
 import useGetTimerJobs from "../../../../../hooks/timers/useGetTimerJobs"
 import { set } from "lodash"
 import { useQueryClient } from "@tanstack/react-query"
@@ -398,11 +397,9 @@ export const ControllerContextProvider = ({
       }
       addControllerTimer(controllerTimerValue, {
         onSuccess: () => {
+          console.log("in-production-time success")
           queryClient.invalidateQueries(["controller-timer", timerId])
-          queryClient.invalidateQueries([
-            "in-production",
-            timerDetailData?.item?.locationId,
-          ])
+          queryClient.invalidateQueries(["in-production"])
         },
       })
     }
