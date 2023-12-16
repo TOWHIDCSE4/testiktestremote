@@ -113,7 +113,7 @@ export const byMachineClass = async (req: Request, res: Response) => {
         //@ts-expect-error
         .split(",")
         //@ts-expect-error
-        .map((e) => new Types.ObjectId(e))
+        .map((e) => new mongoose.Types.ObjectId(e))
       const distinctMachineIds = await timerLogs.distinct("machineId")
       const machinesCountByClass = await Machines.distinct("_id", {
         machineClassId: { $in: machineClassesToSearch },
