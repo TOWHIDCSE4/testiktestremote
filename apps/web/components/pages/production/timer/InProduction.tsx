@@ -20,15 +20,13 @@ const InProduction = ({
   } = useGetLocationProductionTime(locationId)
   const [isClockRunning, setIsClockRunning] = useState(false)
   const [timeInSeconds, setTimeInSeconds] = useState(0)
-  const [localTimeArray, setLocalTimeArray] = useState<Array<number | string>>(
-    []
-  )
+  const localTimeArray = hourMinuteSecond(timeInSeconds)
   const [intervalId, setIntervalId] = useState<number>(0)
 
   const runLocalTime = () => {
     const interval: any = setInterval(() => {
-      setTimeInSeconds((previousState: number) => previousState + 1)
-    }, 1000)
+      setTimeInSeconds((previousState: number) => previousState + 0.1)
+    }, 100)
     setIntervalId(interval)
     setIsClockRunning(true)
   }
@@ -37,17 +35,13 @@ const InProduction = ({
     if (productionTime?.item?.started) {
       clearInterval(intervalId)
       runLocalTime()
-      setTimeInSeconds(getSecondsDifferent(productionTime?.item?.createdAt) + 1)
+      setTimeInSeconds(getSecondsDifferent(productionTime?.item?.createdAt))
     } else {
       setTimeInSeconds(0)
       clearInterval(intervalId)
       setIntervalId(0)
     }
   }, [productionTime, locationId])
-
-  useEffect(() => {
-    setLocalTimeArray(hourMinuteSecond(timeInSeconds))
-  }, [timeInSeconds])
 
   return (
     <div className="rounded-md bg-white shadow p-2 text-center">
