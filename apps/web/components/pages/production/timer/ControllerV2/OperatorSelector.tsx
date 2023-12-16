@@ -26,12 +26,7 @@ const OperatorSelectComponent = () => {
 
   // Queries
   const timerDetailsQuery = useGetTimerDetails(timerId)
-  const usersQuery = useUsers({
-    onSuccess: (data: any) =>
-      toast.success(
-        `${timerDetailsQuery?.data?.item?.operator?.firstName} ${timerDetailsQuery?.data?.item?.operator?.lastName} is assigned alredy.`
-      ),
-  })
+  const usersQuery = useUsers({})
 
   const [selected, setSelected] = useState({
     id: timerDetailsQuery?.data?.item?.operator._id,
