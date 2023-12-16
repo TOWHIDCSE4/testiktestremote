@@ -72,6 +72,8 @@ export interface ControllerContextProps {
   stopReasons: any[]
   controllerJob: any
   isControllerJobLoading: boolean
+  isStartControllerError: boolean
+  isProductionEnded: boolean
   timerLogs: any
   jobs: any[]
   isJobsLoading: boolean
@@ -111,6 +113,8 @@ export const ControllerContext = createContext<ControllerContextProps>({
   isJobsLoading: false,
   isChangingJob: false,
   isControllerJobLoading: false,
+  isStartControllerError: false,
+  isProductionEnded: false,
   isStopDisabled: false,
   totals: {
     unitsPerHour: 0,
@@ -201,7 +205,8 @@ export const ControllerContextProvider = ({
     refetch: cycleRefetch,
     isLoading: isCycleTimerLoading,
   } = useGetCycleTimer(timerId)
-  const { mutate: addControllerTimer } = useAddControllerTimer()
+  const { mutate: addControllerTimer, isError: isStartControllerError } =
+    useAddControllerTimer()
   const { mutate: addCycleTimer } = useAddCycleTimer()
   const { mutate: endAddCycleTimer } = useEndAddCycleTimer()
   const { mutate: endCycleTimer } = useEndCycleTimer()
@@ -239,7 +244,9 @@ export const ControllerContextProvider = ({
   const hasControllerTimer =
     Array.isArray(controllerTimerData?.items) &&
     controllerTimerData!.items.length > 0
-  const productionTime = () => {}
+
+  const isProductionEnded =
+    hasControllerTimer && !!controllerTimerData?.items[0]?.endAt
 
   const [readingsDivRef, setReadingsDivRefState] =
     useState<RefObject<HTMLDivElement>>()
@@ -290,12 +297,7 @@ export const ControllerContextProvider = ({
   /* end of check */
 
   const onEndProduction = () => {
-    stopControllerClockInterval()
-    stopCycleClockInterval()
-    setClockSeconds(0)
-    setClockMilliSeconds(0)
-    setIsControllerClockRunning(false)
-    setIsCycleClockRunning(false)
+    resetControllerState()
     endControllerTimer(timerId)
 
     if (onEndProductionProps) {
@@ -383,6 +385,21 @@ export const ControllerContextProvider = ({
     // }
   }
 
+  const resetControllerState = () => {
+    setIsControllerClockRunning(false)
+    setIsCycleClockRunning(false)
+    stopControllerClockInterval()
+    stopCycleClockInterval()
+    setClockMilliSeconds(0)
+    setClockSeconds(0)
+    setUnitCreated(0)
+    setTotals({
+      tonsPerHour: 0,
+      unitsPerHour: 0,
+      totalTons: 0,
+    })
+  }
+
   const onStartCycle = () => {
     setClockMilliSeconds(0)
     startCycleClockInterval()
@@ -412,6 +429,9 @@ export const ControllerContextProvider = ({
         onSuccess: () => {
           queryClient.invalidateQueries(["controller-timer", timerId])
         },
+        onError: () => {
+          resetControllerState()
+        },
       })
     }
   }
@@ -429,6 +449,14 @@ export const ControllerContextProvider = ({
       }
       if (!getObjectId(operator)) {
         toast.error("Cannot start a controller without operator assigned")
+        return
+      }
+      if (isProductionEnded) {
+        toast.error("Production is ended !")
+        return
+      }
+      if (isStartControllerError) {
+        toast.error("There is error when starting the controller")
         return
       }
       startControllerClockInterval()
@@ -762,6 +790,8 @@ export const ControllerContextProvider = ({
         readingMessages,
         setReadingMessages,
         addReadingMessage,
+        isProductionEnded,
+        isStartControllerError,
       }}
     >
       {children}
