@@ -615,26 +615,24 @@ const Timer = ({
           </button>
         </div>
       </div>
-      {isControllerModalOpen && (
-        <ControllerContextProvider
-          controllerDetailData={controllerDetailData as ControllerDetailData}
-          operator={timerDetailData?.item?.operator}
-          timerId={getObjectId(timer)}
-          initialCycleClockSeconds={cycleClockInSeconds}
-          initialUnitCreated={timerLogsCount?.item?.count as number}
-          isControllerModalOpen={isControllerModalOpen}
-          onStopCycle={onControllerStopCycle}
-          onControllerModalClosed={onControllerModalClosed}
-          onStopCycleWithReasons={onControllerStopCycleWithReasons}
-          onEndProduction={onControllerStopCycleWithReasons}
-        >
-          <ControllerModal
-            isOpen={isControllerModalOpen}
-            onClose={() => setIsControllerModalOpen(false)}
-            timerId={timer._id}
-          />
-        </ControllerContextProvider>
-      )}
+      <ControllerContextProvider
+        controllerDetailData={controllerDetailData as ControllerDetailData}
+        operator={timerDetailData?.item?.operator}
+        timerId={getObjectId(timer)}
+        initialCycleClockSeconds={cycleClockInSeconds}
+        initialUnitCreated={timerLogsCount?.item?.count as number}
+        isControllerModalOpen={isControllerModalOpen}
+        onStopCycle={onControllerStopCycle}
+        onControllerModalClosed={onControllerModalClosed}
+        onStopCycleWithReasons={onControllerStopCycleWithReasons}
+        onEndProduction={onControllerStopCycleWithReasons}
+      >
+        <ControllerModal
+          isOpen={isControllerModalOpen}
+          onClose={() => setIsControllerModalOpen(false)}
+          timerId={timer._id}
+        />
+      </ControllerContextProvider>
     </>
   )
 }
