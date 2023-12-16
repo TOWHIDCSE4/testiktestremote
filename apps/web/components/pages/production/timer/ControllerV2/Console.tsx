@@ -3,6 +3,7 @@ import { ControllerContext } from "./ControllerContext"
 import dayjs from "dayjs"
 import TimerLogsModal from "../modals/TimerLogsModalV2"
 import { bgCV } from "./classVariants"
+import { reverse } from "lodash"
 
 export default function ConsoleComponent({
   isLogsOpen,
@@ -60,7 +61,7 @@ export default function ConsoleComponent({
             ref={messagesRef}
             className="absolute w-full h-full p-5 overflow-auto text-xs"
           >
-            {readingMessages?.toReversed()?.map((message, key) => (
+            {reverse(readingMessages ?? []).map((message, key) => (
               <p key={key}>{message}</p>
             ))}
           </div>
