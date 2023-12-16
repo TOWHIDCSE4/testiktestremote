@@ -240,7 +240,6 @@ export const ControllerContextProvider = ({
   const hasControllerTimer =
     Array.isArray(controllerTimerData?.items) &&
     controllerTimerData!.items.length > 0
-
   const productionTime = () => {}
 
   const [readingsDivRef, setReadingsDivRefState] =
@@ -351,13 +350,6 @@ export const ControllerContextProvider = ({
     })
     startCycleClockInterval()
 
-    if (!hasControllerTimer) {
-      const controllerTimerValue: T_ControllerTimer = {
-        timerId: timerId,
-        locationId: getObjectId(timerDetailData?.item?.locationId),
-      }
-      addControllerTimer(controllerTimerValue)
-    }
     endAddCycleTimer(timerId)
     // TODO:/JAMES should confirm its context
     addReadingMessage("Stopping Timer")
@@ -399,6 +391,21 @@ export const ControllerContextProvider = ({
     // TODO:/JAMES should confirm its context
     addReadingMessage("StartingTimer")
     addReadingMessage("Timer started")
+    if (!hasControllerTimer) {
+      const controllerTimerValue: T_ControllerTimer = {
+        timerId: timerId,
+        locationId: getObjectId(timerDetailData?.item?.locationId),
+      }
+      addControllerTimer(controllerTimerValue, {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["controller-timer", timerId])
+          queryClient.invalidateQueries([
+            "in-production",
+            timerDetailData?.item?.locationId,
+          ])
+        },
+      })
+    }
   }
 
   const onToggleStart = () => {
