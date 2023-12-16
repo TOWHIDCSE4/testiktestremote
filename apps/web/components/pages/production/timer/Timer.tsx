@@ -297,6 +297,7 @@ const Timer = ({
       const secondsLapse = currentDate.diff(timerStart, "seconds", true)
       setCycleClockInSeconds(secondsLapse)
       if (!cycleTimer?.items[0].endAt && !isCycleClockRunning) {
+        queryClient.invalidateQueries(["in-production", timer.locationId])
         runCycle()
         setIsCycleClockRunning(true)
       }
