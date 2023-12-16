@@ -4,6 +4,7 @@ import dayjs from "dayjs"
 import { hourMinuteSecond } from "../../../../helpers/timeConverter"
 import useGetLocationProductionTime from "../../../../hooks/timers/useGetLocationProductionTime"
 import { clear } from "console"
+import { getSecondsDifferent } from "../../../../helpers/date"
 
 const InProduction = ({
   locationId,
@@ -33,21 +34,11 @@ const InProduction = ({
   }
 
   useEffect(() => {
-    if (
-      typeof productionTime?.item === "number" &&
-      productionTime?.item > 0 &&
-      timeInSeconds === 0
-    ) {
-      runLocalTime()
-      setTimeInSeconds(productionTime.item)
-    } else if (typeof productionTime?.item !== "number" && timeInSeconds > 0) {
-      setTimeInSeconds(0)
+    if (productionTime?.item?.started) {
       clearInterval(intervalId)
-      setIntervalId(0)
-    } else if (
-      typeof productionTime?.item === "number" &&
-      productionTime?.item === 0
-    ) {
+      runLocalTime()
+      setTimeInSeconds(getSecondsDifferent(productionTime?.item?.createdAt) + 1)
+    } else {
       setTimeInSeconds(0)
       clearInterval(intervalId)
       setIntervalId(0)
