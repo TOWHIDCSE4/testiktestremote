@@ -1,10 +1,8 @@
 import express from "express"
 const router = express.Router()
 import {
-  addPersonnel,
   addUser,
   deleteUser,
-  getAllPersonnel,
   getAllUsers,
   getUser,
   getUserByEmail,
@@ -39,7 +37,5 @@ router.delete("/:id", isUserLoggedIn, deleteUser)
 router.post("/login", auth)
 router.post("/logout", logout)
 router.get("/verify/:token", verify)
-router.get("/personnel", isUserLoggedIn, getAllPersonnel)
-router.post("/personnel", isUserLoggedIn, addPersonnel)
 
 export default router
