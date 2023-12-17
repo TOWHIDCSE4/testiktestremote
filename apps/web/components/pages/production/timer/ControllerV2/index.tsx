@@ -69,8 +69,7 @@ const ControllerV2 = ({
     setIsStopMenuOpen(!isStopMenuOpen)
   }, [isStopMenuOpen, setIsStopMenuOpen])
 
-  // const isShowOverlay = isProductionEnded
-  const isShowOverlay = false
+  const isShowOverlay = isProductionEnded
 
   return (
     <div

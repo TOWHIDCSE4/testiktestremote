@@ -96,6 +96,7 @@ export interface ControllerContextProps {
   addReadingMessage: (message: string) => void
   onJobChange: (jobId: string) => void
   onOperatorChange: (operatorId: string, operatorName: string) => void
+  startNewControllerSession: () => void
 }
 
 export const ControllerContext = createContext<ControllerContextProps>({
@@ -138,6 +139,7 @@ export const ControllerContext = createContext<ControllerContextProps>({
   addReadingMessage(message) {},
   onJobChange: () => {},
   onOperatorChange: () => {},
+  startNewControllerSession: () => {},
 })
 
 type ControllerProviderProps = PropsWithChildren & {
@@ -189,7 +191,8 @@ export const ControllerContextProvider = ({
       timerId,
     })
 
-  const { mutate: endControllerTimer } = useEndControllerTimer()
+  const { mutate: endControllerTimer, isLoading: isEndingProduction } =
+    useEndControllerTimer()
   // const { data: timerLogsCount, refetch: refetchTimerLogs } =
   //   useGetAllTimerLogsCount({
   //     locationId: timerDetailData?.item?.locationId._id,
@@ -302,17 +305,19 @@ export const ControllerContextProvider = ({
 
   const onEndProduction = () => {
     resetControllerState()
-    endControllerTimer(timerId)
+    queryClient.setQueriesData(["controller-timer", timerId], (query: any) => {
+      if (!query?.items?.length) return query
+      return set(query, "items.0.endAt", new Date())
+    })
+    endControllerTimer(timerId, {
+      onSettled: () => {
+        queryClient.invalidateQueries(["controller-timer", timerId])
+      },
+    })
 
     if (onEndProductionProps) {
       onEndProductionProps(unitCreated)
     }
-    // if (socket) {
-    //   socket.emit(`end-production-pressed`, {
-    //     timerId,
-    //     action: "end-production-pressed",
-    //   })
-    // }
   }
 
   const stopControllerClockInterval = () => {
@@ -390,10 +395,10 @@ export const ControllerContextProvider = ({
   }
 
   const resetControllerState = () => {
-    setIsControllerClockRunning(false)
-    setIsCycleClockRunning(false)
     stopControllerClockInterval()
     stopCycleClockInterval()
+    setIsControllerClockRunning(false)
+    setIsCycleClockRunning(false)
     setClockMilliSeconds(0)
     setClockSeconds(0)
     setUnitCreated(0)
@@ -440,35 +445,78 @@ export const ControllerContextProvider = ({
     }
   }
 
+  const startNewControllerSession = () => {
+    const controllerTimerValue = {
+      timerId: timerId,
+      locationId: getObjectId(timerDetailData?.item?.locationId),
+      newSession: true,
+    }
+    queryClient.setQueriesData(
+      ["timer-logs-count", timerDetailData?.item?.locationId._id, timerId],
+      (query: any) => {
+        if (query && typeof query?.item?.count === "number") {
+          const increasedCount = set(query, ["item", "count"], 0)
+          const increasedItemCount = set(increasedCount, ["itemCount"], 0)
+          return increasedItemCount
+        }
+        return query
+      }
+    )
+    addControllerTimer(controllerTimerValue, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["controller-timer", timerId])
+        queryClient.invalidateQueries([
+          "timer-logs-count",
+          timerDetailData?.item?.locationId._id,
+          timerId,
+        ])
+        queryClient.invalidateQueries([
+          "timer-logs",
+          timerDetailData?.item?.locationId._id,
+          timerId,
+        ])
+      },
+    })
+  }
+
+  const validateAbleToStart = () => {
+    if (!getObjectId(jobTimer?.item)) {
+      toast.error("Cannot start a controller without job assigned")
+      return false
+    }
+    if (!operator?.firstName) {
+      toast.error("Cannot start a controller without operator assigned")
+      return false
+    }
+    if (isTimerDetailDataLoading) {
+      toast.error("Please wait controller still loading data")
+      return false
+    }
+    if (isChangingOperator) {
+      toast.error("Cannot start controller while changing operator")
+      return false
+    }
+    if (isProductionEnded) {
+      toast.error("Production is ended !")
+      return false
+    }
+    if (isStartControllerError) {
+      toast.error("There is error when starting the controller")
+      return false
+    }
+    if (isEndingProduction) {
+      toast.error("Currently in process of ending production")
+      return false
+    }
+    return true
+  }
+
   const onToggleStart = () => {
     const cycleTimerValue: T_CycleTimer = {
       timerId,
     }
     if (!isControllerClockRunning) {
-      // Job & operator validation
-      if (!getObjectId(jobTimer?.item)) {
-        toast.error("Cannot start a controller without job assigned")
-        console.error("job timer is", jobTimer)
-        return
-      }
-      if (!operator?.firstName) {
-        toast.error("Cannot start a controller without operator assigned")
-        return
-      }
-      if (isTimerDetailDataLoading) {
-        toast.error("Please wait controller still loading data")
-        return
-      }
-      if (isChangingOperator) {
-        toast.error("Cannot start controller while changing operator")
-        return
-      }
-      if (isProductionEnded) {
-        toast.error("Production is ended !")
-        return
-      }
-      if (isStartControllerError) {
-        toast.error("There is error when starting the controller")
+      if (!validateAbleToStart()) {
         return
       }
       startControllerClockInterval()
@@ -815,6 +863,7 @@ export const ControllerContextProvider = ({
         timerLogs: timerLogsData,
         readingsDivRef,
         setReadingsDivRef,
+        startNewControllerSession,
         readingMessages,
         setReadingMessages,
         addReadingMessage,
