@@ -7,7 +7,7 @@ export default function ProgressComponent() {
   const bgColors = bgCV
 
   return (
-    <div className="w-full h-2 overflow-hidden">
+    <div className="w-full h-2 overflow-hidden !flex-shrink-0">
       <div
         className={`h-2 top-0 left-0 ${bgCV[variant]}`}
         style={{ width: `${variant == "idle" ? 100 : progress}%` }}
