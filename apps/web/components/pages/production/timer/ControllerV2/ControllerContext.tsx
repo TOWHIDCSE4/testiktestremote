@@ -45,6 +45,7 @@ import toast from "react-hot-toast"
 import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
 import { useSocket } from "../../../../../store/useSocket"
+import { getHoursDifferent } from "../../../../../helpers/date"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -450,8 +451,16 @@ export const ControllerContextProvider = ({
         console.error("job timer is", jobTimer)
         return
       }
-      if (!getObjectId(operator)) {
+      if (!operator?.firstName) {
         toast.error("Cannot start a controller without operator assigned")
+        return
+      }
+      if (isTimerDetailDataLoading) {
+        toast.error("Please wait controller still loading data")
+        return
+      }
+      if (isChangingOperator) {
+        toast.error("Cannot start controller while changing operator")
         return
       }
       if (isProductionEnded) {
@@ -654,18 +663,26 @@ export const ControllerContextProvider = ({
   }
 
   useEffect(() => {
-    if (timerDetailData?.item?.createdAt) {
-      const hours = new Date(
-        controllerTimerData?.items[0]?.createdAt as Date
-      ).getHours()
+    if (
+      timerDetailData?.item?.createdAt &&
+      controllerTimerData?.items[0]?.createdAt
+    ) {
+      const hours = getHoursDifferent(controllerTimerData?.items[0]?.createdAt)
       setTotals((current) => ({
         ...current,
         totalTons: unitCreated * controllerDetailData.weight,
-        unitsPerHour: unitCreated / hours,
-        tonsPerHour: (unitCreated * controllerDetailData.weight) / hours,
+        unitsPerHour: hours > 1 ? unitCreated / hours : unitCreated,
+        tonsPerHour:
+          hours > 1
+            ? (unitCreated * controllerDetailData.weight) / hours
+            : unitCreated * controllerDetailData.weight,
       }))
     }
-  }, [unitCreated])
+  }, [
+    unitCreated,
+    timerDetailData?.item?.createdAt,
+    controllerTimerData?.items[0]?.createdAt,
+  ])
 
   useEffect(() => {
     // on open
