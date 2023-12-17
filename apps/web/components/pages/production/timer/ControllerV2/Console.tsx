@@ -3,7 +3,7 @@ import { ControllerContext } from "./ControllerContext"
 import dayjs from "dayjs"
 import TimerLogsModal from "../modals/TimerLogsModalV2"
 import { bgCV } from "./classVariants"
-import { reverse } from "lodash"
+import { reverse } from "lodash/fp"
 
 export default function ConsoleComponent({
   isLogsOpen,

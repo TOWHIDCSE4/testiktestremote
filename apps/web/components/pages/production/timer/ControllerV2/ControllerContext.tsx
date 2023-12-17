@@ -462,6 +462,16 @@ export const ControllerContextProvider = ({
         return query
       }
     )
+    queryClient.setQueriesData(
+      ["timer-logs", timerDetailData?.item?.locationId._id, timerId],
+      (query: any) => {
+        if (query?.items) {
+          query.items = []
+          query.itemCount = 0
+        }
+        return query
+      }
+    )
     addControllerTimer(controllerTimerValue, {
       onSuccess: () => {
         queryClient.invalidateQueries(["controller-timer", timerId])
