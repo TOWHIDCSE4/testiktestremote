@@ -472,6 +472,7 @@ export const ControllerContextProvider = ({
         return query
       }
     )
+    setUnitCreated(0)
     addControllerTimer(controllerTimerValue, {
       onSuccess: () => {
         queryClient.invalidateQueries(["controller-timer", timerId])
