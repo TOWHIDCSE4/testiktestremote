@@ -366,7 +366,6 @@ export const ControllerContextProvider = ({
     addReadingMessage("Timer stopped")
     addReadingMessage("Timer cycle reset")
     addReadingMessage("Timer One unit created")
-    setIsStopDisabled(true)
     setTimeout(() => {
       setIsStopDisabled(false)
     }, 5000)
@@ -526,6 +525,7 @@ export const ControllerContextProvider = ({
     const cycleTimerValue: T_CycleTimer = {
       timerId,
     }
+    setIsStopDisabled(true)
     if (!isControllerClockRunning) {
       if (!validateAbleToStart()) {
         return
