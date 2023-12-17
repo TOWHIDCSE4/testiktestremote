@@ -16,39 +16,47 @@ import toast from "react-hot-toast"
 import { HiChevronDoubleDown } from "react-icons/hi"
 import FancyButtonComponent from "./FancyButton"
 import { textCV } from "./classVariants"
+import { getObjectId } from "../../../../../helpers/ids"
 
 const OperatorSelectComponent = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   // Context
-  const { timerId, variant, onOperatorChange, operator, isCycleClockRunning } =
-    useContext(ControllerContext)
+  const {
+    timerId,
+    variant,
+    onOperatorChange,
+    operator,
+    isCycleClockRunning,
+    isChangingOperator,
+  } = useContext(ControllerContext)
   const textColors = textCV
+  console.log("ope ope no mi", operator)
 
   // Queries
   const timerDetailsQuery = useGetTimerDetails(timerId)
   const usersQuery = useUsers({})
 
-  const [selected, setSelected] = useState({
-    id: timerDetailsQuery?.data?.item?.operator._id,
-    name:
-      operator?.firstName === undefined
-        ? `${timerDetailsQuery?.data?.item?.operator?.firstName} ${timerDetailsQuery?.data?.item?.operator?.lastName}`
-        : `${operator?.firstName} ${operator?.lastName}`,
-  })
+  // const [selected, setSelected] = useState({
+  //   id: timerDetailsQuery?.data?.item?.operator._id,
+  //   name:
+  //     operator?.firstName === undefined
+  //       ? `${timerDetailsQuery?.data?.item?.operator?.firstName} ${timerDetailsQuery?.data?.item?.operator?.lastName}`
+  //       : `${operator?.firstName} ${operator?.lastName}`,
+  // })
   const [query, setQuery] = useState("")
 
   // This useEffect will run when Operator is Changed
-  useEffect(() => {
-    if (
-      (selected?.id && !timerDetailsQuery?.data?.operator) ||
-      (selected?.id &&
-        typeof timerDetailsQuery?.data?.operator === "object" &&
-        selected?.id !== timerDetailsQuery?.data?.operator._id)
-    ) {
-      if (timerDetailsQuery?.data) onOperatorChange(selected?.id, "")
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selected])
+  // useEffect(() => {
+  //   if (
+  //     (selected?.id && !timerDetailsQuery?.data?.operator) ||
+  //     (selected?.id &&
+  //       typeof timerDetailsQuery?.data?.operator === "object" &&
+  //       selected?.id !== timerDetailsQuery?.data?.operator._id)
+  //   ) {
+  //     if (timerDetailsQuery?.data) onOperatorChange(selected?.id, "")
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [selected])
 
   const handleInputOperator = () => {
     inputRef.current?.focus()
@@ -77,14 +85,17 @@ const OperatorSelectComponent = () => {
   return (
     <Combobox
       disabled={
-        usersQuery?.isLoading || usersQuery?.isFetching || isCycleClockRunning
+        usersQuery?.isLoading ||
+        usersQuery?.isFetching ||
+        isCycleClockRunning ||
+        isChangingOperator
       }
-      value={selected}
+      value={operator}
       onChange={(selected: any) =>
-        setSelected({
-          id: selected?._id,
-          name: `${selected?.firstName} ${selected?.lastName}`,
-        })
+        onOperatorChange(
+          getObjectId(selected),
+          `${selected.firstName} ${selected.lastName}`
+        )
       }
     >
       <div className={`relative`}>
@@ -95,10 +106,9 @@ const OperatorSelectComponent = () => {
                 isDisableInput ? "cursor-not-allowed" : ""
               }`}
               displayValue={(selected: any) =>
-                timerDetailsQuery?.data?.item?.operator?.firstName &&
-                timerDetailsQuery?.data?.item?.operator?.lastName
-                  ? selected.name
-                  : operator?.firstName
+                selected._id
+                  ? `${selected.firstName} ${selected.lastName}`
+                  : selected.firstName
               }
               onChange={(event) => setQuery(event.target.value)}
               ref={inputRef}

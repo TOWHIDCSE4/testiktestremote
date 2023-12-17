@@ -45,3 +45,17 @@ export const getSecondsDifferent = (
       .diff(timerStart, "seconds", true) ?? ""
   )
 }
+
+export const getHoursDifferent = (
+  createdAt?: Date,
+  timeZone: string = "",
+  endAt?: Date | null
+) => {
+  const timerStart = dayjs.tz(dayjs(createdAt), timeZone ? timeZone : "")
+
+  return (
+    dayjs
+      .tz(endAt ? dayjs(endAt) : dayjs(), timeZone ? timeZone : "")
+      .diff(timerStart, "hours", true) ?? ""
+  )
+}
