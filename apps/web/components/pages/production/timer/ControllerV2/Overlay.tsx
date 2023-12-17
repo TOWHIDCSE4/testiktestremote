@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { HiChevronDoubleRight, HiPlay } from "react-icons/hi"
 import { RiRefreshFill } from "react-icons/ri"
 import useProfile from "../../../../../hooks/users/useProfile"
 import { USER_ROLES } from "../../../../../helpers/constants"
+import { ControllerContext } from "./ControllerContext"
 
 const buttonCV = {
   active:
@@ -16,6 +17,7 @@ export default function OverlayActionComponent({
   machineName: string
 }) {
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
+  const { startNewControllerSession } = useContext(ControllerContext)
 
   const isAdmin = useMemo(() => {
     return [
@@ -32,9 +34,10 @@ export default function OverlayActionComponent({
   const onResetClick = () => {
     setIsResetConfirmShow(true)
   }
-  const onConfirm = (event: "resume" | "reset", action: boolean) => {
+  const onConfirm = (event: "resume" | "reset", isConfirm: boolean) => {
     if (event == "reset") {
-      if (action) {
+      if (isConfirm) {
+        startNewControllerSession()
         setIsResetConfirmShow(false)
       } else {
         setIsResetConfirmShow(false)

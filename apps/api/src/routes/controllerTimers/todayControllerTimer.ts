@@ -45,11 +45,9 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
           ...(id && { _id: id }),
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
         })
-        ioEmit(`timer-${timerId}`, {
-          action: `update-operator`,
-          user: user,
-          timers: getAllActiveControllerTimerToday,
-        })
+          .sort({ $natural: -1 })
+          .limit(1)
+
         res.json({
           error: false,
           items: getAllActiveControllerTimerToday,
@@ -62,14 +60,12 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
           ...(id && { _id: id }),
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
         })
-        ioEmit(`timer-${timerId}`, {
-          action: `update-operator`,
-          user: user,
-          timers: getAllActiveControllerTimerToday,
-        })
-        res.json({
+          .sort({ $natural: -1 })
+          .limit(1)
+
+        res.status(401).json({
           error: false,
-          items: [],
+          items: getAllActiveControllerTimerToday,
           itemCount: null,
           message:
             "Production has ended for this machine, please notify a supervisor or proceed on next working day.",
@@ -78,7 +74,7 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       Sentry.captureException(err)
-      res.json({
+      res.status(500).json({
         error: true,
         message: message,
         items: null,
@@ -86,7 +82,7 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.json({
+    res.status(500).json({
       error: true,
       message: REQUIRED_VALUES_MISSING,
       items: null,

@@ -66,7 +66,7 @@ export const getControllerTimer = async (req: Request, res: Response) => {
 export const addControllerTimer = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
-  const { timerId, locationId } = req.body
+  const { timerId, locationId, newSession } = req.body
   if (timerId && locationId) {
     const parseControllerTimer = ZControllerTimer.safeParse(req.body)
     if (parseControllerTimer.success) {
@@ -85,7 +85,7 @@ export const addControllerTimer = async (req: Request, res: Response) => {
           timerId,
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
         })
-        if (!isControllerExistToday) {
+        if (!isControllerExistToday || newSession) {
           const newControllerTimer = new ControllerTimer({
             timerId,
             locationId,

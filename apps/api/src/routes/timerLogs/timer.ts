@@ -27,22 +27,27 @@ export const timer = async (req: Request, res: Response) => {
       const currentDateEnd = dayjs
         .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
         .toISOString()
-      const getDayFirstTimer = await ControllerTimers.findOne({
+      const getLastDayTimer = await ControllerTimers.findOne({
         locationId: locationId,
+        timerId,
         createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-      })
-      if (getDayFirstTimer) {
+      }).sort({ $natural: -1 })
+      if (getLastDayTimer) {
         let timerLogsCount = null
         let getTimerLogs = null
         if (page && page !== "undefined") {
           timerLogsCount = await TimerLogs.find({
             timerId,
-            createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+            createdAt: {
+              $gte: getLastDayTimer.createdAt,
+            },
             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
           }).countDocuments()
           getTimerLogs = await TimerLogs.find({
             timerId,
-            createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+            createdAt: {
+              $gte: getLastDayTimer.createdAt,
+            },
             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
           })
             .populate("partId")
@@ -58,12 +63,16 @@ export const timer = async (req: Request, res: Response) => {
         } else {
           timerLogsCount = await TimerLogs.find({
             timerId,
-            createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+            createdAt: {
+              $gte: getLastDayTimer.createdAt,
+            },
             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
           }).countDocuments()
           getTimerLogs = await TimerLogs.find({
             timerId,
-            createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+            createdAt: {
+              $gte: getLastDayTimer.createdAt,
+            },
             $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
           })
             .populate("partId")
@@ -127,13 +136,14 @@ export const timerUnitsCreatedCount = async (req: Request, res: Response) => {
     const currentDateEnd = dayjs
       .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
       .toISOString()
-    const getDayFirstTimer = await ControllerTimers.findOne({
+    const getLastDayTimer = await ControllerTimers.findOne({
       locationId: locationId,
+      timerId,
       createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-    })
-    if (!getDayFirstTimer) {
+    }).sort({ $natural: -1 })
+    if (!getLastDayTimer) {
       console.log(
-        `getDayfirst timer not found ${location} ${req.method} ${req.url}`
+        `getLastDayTimer timer not found ${location} ${req.method} ${req.url}`
       )
       return res.json({
         error: false,
@@ -144,7 +154,9 @@ export const timerUnitsCreatedCount = async (req: Request, res: Response) => {
     }
     const timerLogsCount = await TimerLogs.find({
       timerId,
-      createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+      createdAt: {
+        $gte: getLastDayTimer.createdAt,
+      },
       $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
       stopReason: { $in: ["Unit Created"] },
     }).countDocuments()
@@ -187,11 +199,12 @@ export const timerCount = async (req: Request, res: Response) => {
     const currentDateEnd = dayjs
       .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
       .toISOString()
-    const getDayFirstTimer = await ControllerTimers.findOne({
+    const getLastDayTimer = await ControllerTimers.findOne({
       locationId: locationId,
+      timerId,
       createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-    })
-    if (!getDayFirstTimer) {
+    }).sort({ $natural: -1 })
+    if (!getLastDayTimer) {
       return res.json({
         error: false,
         item: {},
@@ -201,7 +214,7 @@ export const timerCount = async (req: Request, res: Response) => {
     }
     const timerLogsCount = await TimerLogs.find({
       timerId,
-      createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+      createdAt: { $gte: getLastDayTimer.createdAt },
       $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
     }).countDocuments()
     res.json({
