@@ -607,7 +607,9 @@ export const ControllerContextProvider = ({
               //   toast.error(res.message)
               //   return
               // }
-              toast.success("Successfully assigning job to controller")
+              if (!res.error) {
+                toast.success("Successfully assigning job to controller")
+              }
             }
           },
           onError: (err: any) => {
