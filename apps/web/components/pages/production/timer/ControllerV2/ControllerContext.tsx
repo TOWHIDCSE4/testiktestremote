@@ -603,10 +603,10 @@ export const ControllerContextProvider = ({
         {
           onSuccess: (res) => {
             if (isControllerModalOpen) {
-              if (res.error) {
-                toast.error(res.message)
-                return
-              }
+              // if (res.error) {
+              //   toast.error(res.message)
+              //   return
+              // }
               toast.success("Successfully assigning job to controller")
             }
           },
