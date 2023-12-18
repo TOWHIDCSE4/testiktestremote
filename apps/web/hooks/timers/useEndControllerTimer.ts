@@ -20,7 +20,10 @@ export async function endControllerTimer(timerId: string) {
 }
 
 function useEndControllerTimer() {
-  const query = useMutation((timerId: string) => endControllerTimer(timerId))
+  const query = useMutation((timerId: string) => endControllerTimer(timerId), {
+    retry: Number.MAX_SAFE_INTEGER,
+    retryDelay: 250,
+  })
   return query
 }
 

@@ -532,11 +532,11 @@ export const ControllerContextProvider = ({
         return
       }
       startControllerClockInterval()
-      addCycleTimer(cycleTimerValue)
     }
     if (isCycleClockRunning) {
       onStopCycle()
     } else {
+      addCycleTimer(cycleTimerValue)
       onStartCycle()
     }
   }

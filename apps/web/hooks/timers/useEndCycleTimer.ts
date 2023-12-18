@@ -17,7 +17,10 @@ export async function endCycleTimer(timerId: string) {
 }
 
 function useEndCycleTimer() {
-  const query = useMutation((timerId: string) => endCycleTimer(timerId))
+  const query = useMutation((timerId: string) => endCycleTimer(timerId), {
+    retry: Number.MAX_SAFE_INTEGER,
+    retryDelay: 250,
+  })
   return query
 }
 

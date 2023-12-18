@@ -21,7 +21,11 @@ export async function addControllerTimer(
 function useAddControllerTimer() {
   const query = useMutation(
     (props: T_ControllerTimer & { newSession?: boolean }) =>
-      addControllerTimer(props)
+      addControllerTimer(props),
+    {
+      retry: Number.MAX_SAFE_INTEGER,
+      retryDelay: 250,
+    }
   )
   return query
 }
