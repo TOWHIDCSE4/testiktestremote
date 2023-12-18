@@ -39,10 +39,10 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
   const handleSelectMachineClass = (e: any, id: any) => {
     if (id === "all") {
       const isChecked = e.target.checked
-      const allMachineClassIds = machineClasses?.items.map(
-        (machineClass: T_MachineClass) => machineClass._id || ""
-      )
-      setMachineClassArray(isChecked ? allMachineClassIds : [])
+      // const allMachineClassIds = machineClasses?.items.map(
+      //   (machineClass: T_MachineClass) => machineClass._id || ""
+      // )
+      setMachineClassArray(isChecked ? ["all"] : [])
     } else {
       e.stopPropagation()
       setMachineClassArray((prevIds) => {
@@ -56,13 +56,15 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
   }
 
   useEffect(() => {
-    if (machineClasses?.items) {
-      const allMachineClassIds = machineClasses.items.map(
-        (machineClass: T_MachineClass) => machineClass._id || ""
-      )
-      setMachineClassArray(allMachineClassIds)
-      setCheckAll(true)
-    }
+    // if (machineClasses?.items) {
+    //   const allMachineClassIds = machineClasses.items.map(
+    //     (machineClass: T_MachineClass) => machineClass._id || ""
+    //   )
+    //   setMachineClassArray(allMachineClassIds)
+    //   setCheckAll(true)
+    // }
+    setMachineClassArray(["all"])
+    setCheckAll(true)
   }, [machineClasses])
 
   useEffect(() => {
@@ -164,7 +166,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                   <select
                     id="tabs"
                     name="tabs"
-                    className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-blue-950"
+                    className="block w-full border-gray-300 rounded-md focus:border-indigo-500 focus:ring-1 focus:ring-blue-950"
                     defaultValue={
                       // @ts-expect-error
                       tabs.find((tab) => tab.current).name
@@ -182,7 +184,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                 </div>
                 <div className="hidden sm:block">
                   <nav
-                    className="isolate flex divide-x divide-gray-200"
+                    className="flex divide-x divide-gray-200 isolate"
                     aria-label="Tabs"
                   >
                     {tabs.map((tab, tabIdx) => (
@@ -259,7 +261,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                     >
                       Machine Class
                       <ChevronDownIcon
-                        className="-mr-1 h-5 w-5 text-gray-400"
+                        className="w-5 h-5 -mr-1 text-gray-400"
                         aria-hidden="true"
                       />
                     </Menu.Button>
@@ -277,20 +279,20 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                   >
                     <Menu.Items
                       static
-                      className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                      className="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                     >
                       <div className="py-1">
                         <Menu.Item>
                           {({ active }) => (
                             <div className="relative px-4 py-0.5 flex items-start">
                               {userProfile?.item.role !== "Personnel" && (
-                                <div className="flex h-6 items-center">
+                                <div className="flex items-center h-6">
                                   <input
                                     id="all"
                                     aria-describedby="all-description"
                                     name="all"
                                     type="checkbox"
-                                    className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                    className="w-4 h-4 border-gray-300 rounded text-blue-950 focus:ring-1 focus:ring-blue-950"
                                     checked={checkAll}
                                     onChange={(e) => {
                                       handleSelectMachineClass(e, "all")
@@ -299,7 +301,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                                 </div>
                               )}
                               {userProfile?.item.role !== "Personnel" && (
-                                <div className="ml-3 text-sm leading-6 flex flex-col">
+                                <div className="flex flex-col ml-3 text-sm leading-6">
                                   <label
                                     htmlFor="all"
                                     className="text-gray-700"
@@ -316,13 +318,13 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                             {userProfile?.item.role === "Personnel" ? (
                               personnelMachineClass ? (
                                 <div className="flex items-start">
-                                  <div className="flex h-6 items-center">
+                                  <div className="flex items-center h-6">
                                     <input
                                       id={personnelMachineClass._id}
                                       aria-describedby={`${personnelMachineClass._id}-description`}
                                       name={personnelMachineClass._id}
                                       type="checkbox"
-                                      className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                      className="w-4 h-4 border-gray-300 rounded text-blue-950 focus:ring-1 focus:ring-blue-950"
                                       checked={machineClassArray.includes(
                                         personnelMachineClass._id
                                       )}
@@ -351,13 +353,13 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                                     key={machineClassId._id}
                                     className="flex items-start"
                                   >
-                                    <div className="flex h-6 items-center">
+                                    <div className="flex items-center h-6">
                                       <input
                                         id={machineClassId._id || ""}
                                         aria-describedby={`${machineClassId._id}-description`}
                                         name={machineClassId._id || ""}
                                         type="checkbox"
-                                        className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                        className="w-4 h-4 border-gray-300 rounded text-blue-950 focus:ring-1 focus:ring-blue-950"
                                         checked={machineClassArray.includes(
                                           machineClassId._id || ""
                                         )}
@@ -398,7 +400,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                     >
                       Machine Class
                       <ChevronDownIcon
-                        className="-mr-1 h-5 w-5 text-gray-400"
+                        className="w-5 h-5 -mr-1 text-gray-400"
                         aria-hidden="true"
                       />
                     </Menu.Button>
@@ -416,26 +418,26 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                   >
                     <Menu.Items
                       static
-                      className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                      className="absolute right-0 z-10 w-56 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                     >
                       <div className="py-1">
                         <Menu.Item>
                           {({ active }) => (
                             <div className="relative px-4 py-0.5 flex items-start">
-                              <div className="flex h-6 items-center">
+                              <div className="flex items-center h-6">
                                 <input
                                   id="all"
                                   aria-describedby="all-description"
                                   name="all"
                                   type="checkbox"
-                                  className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                  className="w-4 h-4 border-gray-300 rounded text-blue-950 focus:ring-1 focus:ring-blue-950"
                                   checked={checkAll}
                                   onChange={(e) => {
                                     handleSelectMachineClass(e, "all")
                                   }}
                                 />
                               </div>
-                              <div className="ml-3 text-sm leading-6 flex flex-col">
+                              <div className="flex flex-col ml-3 text-sm leading-6">
                                 <label htmlFor="all" className="text-gray-700">
                                   All
                                 </label>
@@ -451,13 +453,13 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                                   key={machineClassId._id}
                                   className="flex items-start"
                                 >
-                                  <div className="flex h-6 items-center">
+                                  <div className="flex items-center h-6">
                                     <input
                                       id={machineClassId._id || ""}
                                       aria-describedby={`${machineClassId._id}-description`}
                                       name={machineClassId._id || ""}
                                       type="checkbox"
-                                      className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                                      className="w-4 h-4 border-gray-300 rounded text-blue-950 focus:ring-1 focus:ring-blue-950"
                                       checked={machineClassArray.includes(
                                         machineClassId._id || ""
                                       )}
@@ -489,11 +491,11 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
               </div>
               <div className={`mt-2 mr-5 flex`}>
                 <div className="flex">
-                  <button className="px-3 py-1 rounded-md  text-gray-800 font-semibold text-lg">
+                  <button className="px-3 py-1 text-lg font-semibold text-gray-800 rounded-md">
                     SEARCH
                   </button>
                   <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"></div>
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"></div>
                     <input
                       id="search"
                       name="search"
@@ -508,7 +510,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
               </div>
             </div>
             {/* Table */}
-            <div className="w-full overflow-x-auto relative">
+            <div className="relative w-full overflow-x-auto">
               <TabTable
                 pageRender={clickRender}
                 tab={currentTab}
