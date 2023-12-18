@@ -26,7 +26,11 @@ export const paginated = async (req: Request, res: Response) => {
       machineClassIds = machineClassIds as string
       const machineClassidz =
         machineClassIds &&
-        machineClassIds.split(",").map((e) => new mongoose.Types.ObjectId(e))
+        (machineClassIds == "all"
+          ? undefined
+          : machineClassIds
+              .split(",")
+              .map((e) => new mongoose.Types.ObjectId(e)))
       const jobsCount = await Jobs.find({
         locationId: locationId,
         ...(status && { status: status }),
@@ -35,6 +39,7 @@ export const paginated = async (req: Request, res: Response) => {
             isStock: selectedjob === "STOCK" ? true : false,
           }),
         ...(machineClassIds &&
+          machineClassidz &&
           machineClassidz.length > 0 && {
             machineClassId: { $in: machineClassidz },
           }),
@@ -67,6 +72,7 @@ export const paginated = async (req: Request, res: Response) => {
               },
               {
                 ...(machineClassIds &&
+                  machineClassidz &&
                   machineClassidz.length > 0 && {
                     machineClassId: { $in: machineClassidz },
                   }),

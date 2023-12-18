@@ -33,6 +33,8 @@ interface NewModalProps {
   partId?: string
   timerDetails?: T_Timer
   timer: boolean
+  // when submit is succeeded
+  callback?: (data?: any) => void
 }
 
 const NewModal = ({
@@ -44,6 +46,7 @@ const NewModal = ({
   partId,
   timerDetails,
   timer,
+  callback,
 }: NewModalProps) => {
   const queryClient = useQueryClient()
   const cancelButtonRef = useRef(null)
@@ -116,9 +119,11 @@ const NewModal = ({
           } else {
             toast.error(String(data.message))
           }
+          callback?.()
         },
         onError: (err: any) => {
           toast.error(String(err))
+          callback?.()
         },
       }
       updateJobTimer({ ...jobTimer, jobId }, callBackReq)
@@ -154,9 +159,11 @@ const NewModal = ({
         } else {
           toast.error(String(data.message))
         }
+        callback?.()
       },
       onError: (err: any) => {
         toast.error(String(err))
+        callback?.()
       },
     }
     addNewJob(
