@@ -304,15 +304,17 @@ export const ControllerContextProvider = ({
   /* end of check */
 
   const onEndProduction = () => {
-    resetControllerState()
+    stopControllerClockInterval()
+    stopCycleClockInterval()
+    setIsControllerClockRunning(false)
+    setIsCycleClockRunning(false)
+    setClockMilliSeconds(0)
     queryClient.setQueriesData(["controller-timer", timerId], (query: any) => {
       if (!query?.items?.length) return query
       return set(query, "items.0.endAt", new Date())
     })
     endControllerTimer(timerId, {
-      onSettled: () => {
-        queryClient.invalidateQueries(["controller-timer", timerId])
-      },
+      onSettled: () => {},
     })
 
     if (onEndProductionProps) {
@@ -391,21 +393,6 @@ export const ControllerContextProvider = ({
     // }
   }
 
-  const resetControllerState = () => {
-    stopControllerClockInterval()
-    stopCycleClockInterval()
-    setIsControllerClockRunning(false)
-    setIsCycleClockRunning(false)
-    setClockMilliSeconds(0)
-    setClockSeconds(0)
-    setUnitCreated(0)
-    setTotals({
-      tonsPerHour: 0,
-      unitsPerHour: 0,
-      totalTons: 0,
-    })
-  }
-
   const onStartCycle = () => {
     setClockMilliSeconds(0)
     startCycleClockInterval()
@@ -435,9 +422,7 @@ export const ControllerContextProvider = ({
         onSuccess: () => {
           queryClient.invalidateQueries(["controller-timer", timerId])
         },
-        onError: () => {
-          resetControllerState()
-        },
+        onError: () => {},
       })
     }
   }
@@ -727,14 +712,18 @@ export const ControllerContextProvider = ({
       timerDetailData?.item?.createdAt &&
       controllerTimerData?.items[0]?.createdAt
     ) {
-      const hours = getHoursDifferent(controllerTimerData?.items[0]?.createdAt)
+      const hours = getHoursDifferent(
+        controllerTimerData?.items[0]?.createdAt,
+        timerDetailData?.item?.locationId.timezone
+      )
+      console.log("hours", Math.round(hours))
       setTotals((current) => ({
         ...current,
         totalTons: unitCreated * controllerDetailData.weight,
-        unitsPerHour: hours > 1 ? unitCreated / hours : unitCreated,
+        unitsPerHour: hours > 1 ? unitCreated / Math.trunc(hours) : unitCreated,
         tonsPerHour:
           hours > 1
-            ? (unitCreated * controllerDetailData.weight) / hours
+            ? (unitCreated * controllerDetailData.weight) / Math.trunc(hours)
             : unitCreated * controllerDetailData.weight,
       }))
     }
