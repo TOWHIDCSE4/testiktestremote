@@ -48,7 +48,6 @@ type T_Props = {
   setOpenDetailsModal: Dispatch<boolean>
   setOpenDeleteModal: Dispatch<boolean>
   machine: T_Machine
-  operator: T_User | string
 }
 
 const Timer = ({
@@ -59,7 +58,6 @@ const Timer = ({
   setOpenDetailsModal,
   setOpenDeleteModal,
   machine,
-  operator,
 }: T_Props) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
@@ -96,6 +94,7 @@ const Timer = ({
   const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimerRealTime(
     timer._id as string
   )
+  const operator = timerDetailData?.item?.operator
   const { data: userProfile } = useProfile()
   const [isControllerModalOpen, setIsControllerModalOpen] = useState(false)
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)

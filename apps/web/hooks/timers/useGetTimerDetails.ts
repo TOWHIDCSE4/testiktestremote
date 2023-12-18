@@ -20,8 +20,6 @@ function useGetTimerDetails(
   onTimerDetailLoad?: (t: T_Timer) => void
 ) {
   const query = useQuery(["timer", id], () => getTimerDetails(id), {
-    cacheTime: ONE_DAY,
-    staleTime: ONE_DAY,
     onSettled: (data) => {
       if (onTimerDetailLoad) {
         onTimerDetailLoad(data.item)
