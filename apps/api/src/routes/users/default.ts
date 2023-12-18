@@ -13,13 +13,17 @@ import CryptoJS from "crypto-js"
 import { keys } from "../../config/keys"
 import isEmpty from "lodash/isEmpty"
 import { ZUser } from "custom-validator"
+import { pickBy } from "lodash/fp"
 import * as Sentry from "@sentry/node"
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const query = { status: "Approved" }
-    const usersCounts = await Users.find(query).countDocuments()
-    const getAllUsers = await Users.find(query).sort({ createdAt: -1 })
+    const { role, machineClassId, factoryId } = req.query
+    const query = { status: "Approved", role, machineClassId, factoryId }
+    const filteredQuery = pickBy((v) => !isEmpty(v), query)
+    console.log("query", filteredQuery)
+    const usersCounts = await Users.find(filteredQuery).countDocuments()
+    const getAllUsers = await Users.find(filteredQuery).sort({ createdAt: -1 })
     res.json({
       error: false,
       items: getAllUsers,

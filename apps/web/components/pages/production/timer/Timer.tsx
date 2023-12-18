@@ -79,7 +79,7 @@ const Timer = ({
   const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
     useGetTimerDetails(getObjectId(timer._id))
   const { isLoading: isJobTimerLoading } = useGetJobTimerByTimerId({
-    locationId: timerDetailData?.item?.locationId._id,
+    locationId: timer.locationId as string,
     timerId: getObjectId(timer),
   })
   const { isLoading: isJobsLoading } = useGetTimerJobs(

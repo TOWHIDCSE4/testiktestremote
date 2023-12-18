@@ -17,6 +17,7 @@ import { HiChevronDoubleDown } from "react-icons/hi"
 import FancyButtonComponent from "./FancyButton"
 import { textCV } from "./classVariants"
 import { getObjectId } from "../../../../../helpers/ids"
+import { USER_ROLES } from "../../../../../helpers/constants"
 
 const OperatorSelectComponent = () => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -32,8 +33,12 @@ const OperatorSelectComponent = () => {
   const textColors = textCV
 
   // Queries
-  const timerDetailsQuery = useGetTimerDetails(timerId)
-  const usersQuery = useUsers({})
+  const { data: timerDetailData } = useGetTimerDetails(timerId)
+  const usersQuery = useUsers({
+    role: USER_ROLES.Personnel,
+    machineClassId: getObjectId(timerDetailData?.item?.machineClassId),
+    factoryId: getObjectId(timerDetailData?.item?.factoryId),
+  })
 
   // const [selected, setSelected] = useState({
   //   id: timerDetailsQuery?.data?.item?.operator._id,
