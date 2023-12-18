@@ -110,6 +110,7 @@ const Timer = ({
     name: timer?.part ? timer?.part?.name : "",
   })
   const socket = useSocket((store) => store.instance)
+  const [isUsed, setIsUsed] = useState(false)
   // const { isTimerStop } = useStoreTimer((store) => store)
 
   const isControllerLoading =
@@ -305,12 +306,25 @@ const Timer = ({
         runCycle()
         setIsCycleClockRunning(true)
       }
+      setIsUsed(true)
     } else {
+      setIsUsed(false)
       stopInterval()
       setCycleClockInSeconds(0)
       setIsCycleClockRunning(false)
     }
   }, [cycleTimer])
+
+  useEffect(() => {
+    if (
+      controllerTimerData?.items?.length &&
+      controllerTimerData?.items?.length > 0
+    ) {
+      if (controllerTimerData?.items[0].endAt) {
+        setIsUsed(false)
+      }
+    }
+  }, [controllerTimerData])
 
   useEffect(() => {
     if (
@@ -615,7 +629,7 @@ const Timer = ({
               ["cursor-not-allowed"]: isJobsLoading,
             })}
             onClick={openController}
-            disabled={isControllerLoading}
+            disabled={isControllerLoading || isUsed}
           >
             {isControllerLoading ? "Loading Controller.." : "Controller"}
           </button>
