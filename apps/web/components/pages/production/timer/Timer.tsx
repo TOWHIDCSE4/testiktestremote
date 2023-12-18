@@ -37,6 +37,8 @@ import { ControllerDetailData } from "./ControllerV2"
 import { ControllerContextProvider } from "./ControllerV2/ControllerContext"
 import useGetJobTimerByTimerId from "../../../../hooks/jobTimer/useGetJobTimerByTimerId"
 import useGetAllTimerLogs from "../../../../hooks/timerLogs/useGetAllTimerLogs"
+import { USER_ROLES } from "../../../../helpers/constants"
+import useProfile from "../../../../hooks/users/useProfile"
 
 type T_Props = {
   timer: T_Timer
@@ -93,6 +95,7 @@ const Timer = ({
     timer._id as string
   )
   const operator = timerDetailData?.item?.operator
+  const { data: userProfile } = useProfile()
   const [isControllerModalOpen, setIsControllerModalOpen] = useState(false)
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
   const [cycleClockInSeconds, setCycleClockInSeconds] = useState(0)
@@ -449,6 +452,9 @@ const Timer = ({
   //     clearInterval(syncInterval)
   //   }
   // }, [timer._id, timer.locationId])
+  const isNotAllowedChangePart = [USER_ROLES.Personnel].some(
+    (role) => userProfile?.item?.role === role
+  )
 
   return (
     <>
@@ -461,7 +467,11 @@ const Timer = ({
             as="div"
             value={selectedPart}
             onChange={updateTimerPart}
-            disabled={isCycleClockRunning ? true : isUpdateTimerLoading}
+            disabled={
+              isCycleClockRunning || isNotAllowedChangePart
+                ? true
+                : isUpdateTimerLoading
+            }
           >
             <div className="relative">
               <Combobox.Input

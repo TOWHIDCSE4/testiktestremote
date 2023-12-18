@@ -38,7 +38,7 @@ const JobSelectComponent = () => {
       ? timerDetails?.item?.locationId._id
       : ""
 
-  const jobId = getObjectId(controllerJob.jobId)
+  const jobId = controllerJob?.jobId
   const jobValue = jobOptions.find((item) => {
     return item.value == jobId
   })

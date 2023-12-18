@@ -304,10 +304,7 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
                                   as="div"
                                   value={selectedOperator}
                                   onChange={setSelectedOperator}
-                                  disabled={
-                                    isTimerDetailDataLoading ||
-                                    userProfile?.item.role === "Personnel"
-                                  }
+                                  disabled={isTimerDetailDataLoading}
                                 >
                                   <div className="relative">
                                     <Combobox.Input
