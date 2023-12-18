@@ -110,6 +110,7 @@ const Timer = ({
     name: timer?.part ? timer?.part?.name : "",
   })
   const socket = useSocket((store) => store.instance)
+  const [isUsed, setIsUsed] = useState(false)
   // const { isTimerStop } = useStoreTimer((store) => store)
 
   const isControllerLoading =
@@ -305,12 +306,25 @@ const Timer = ({
         runCycle()
         setIsCycleClockRunning(true)
       }
+      setIsUsed(true)
     } else {
+      setIsUsed(false)
       stopInterval()
       setCycleClockInSeconds(0)
       setIsCycleClockRunning(false)
     }
   }, [cycleTimer])
+
+  useEffect(() => {
+    if (
+      controllerTimerData?.items?.length &&
+      controllerTimerData?.items?.length > 0
+    ) {
+      if (controllerTimerData?.items[0].endAt) {
+        setIsUsed(false)
+      }
+    }
+  }, [controllerTimerData])
 
   useEffect(() => {
     if (
@@ -610,14 +624,18 @@ const Timer = ({
         <div className="grid grid-cols-2 px-4 my-4 gap-x-5 gap-y-3">
           <button
             className={cn("uppercase text-sm text-white  p-1 rounded-md", {
-              ["bg-stone-300"]: isJobsLoading,
+              ["bg-stone-300"]: isJobsLoading || isUsed,
               ["bg-green-800"]: !isJobsLoading,
-              ["cursor-not-allowed"]: isJobsLoading,
+              ["cursor-not-allowed"]: isJobsLoading || isUsed,
             })}
             onClick={openController}
-            disabled={isControllerLoading}
+            disabled={isControllerLoading || isUsed}
           >
-            {isControllerLoading ? "Loading Controller.." : "Controller"}
+            {isUsed
+              ? "Controller used"
+              : isControllerLoading
+              ? "Loading Controller.."
+              : "Controller"}
           </button>
           <button
             className="p-1 text-sm text-white uppercase rounded-md bg-stone-300"
