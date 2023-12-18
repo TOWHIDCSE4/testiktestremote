@@ -30,7 +30,7 @@ export const totalTonsUnit = async (req: Request, res: Response) => {
       const getDayController = await ControllerTimers.findOne({
         timerId: req.query.timerId,
         createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-      })
+      }).sort({ $natural: -1 })
       if (getDayController) {
         const getDayControllerLogs = await TimerLogs.find({
           timerId: req.query.timerId,
@@ -65,11 +65,9 @@ export const totalTonsUnit = async (req: Request, res: Response) => {
             item: {
               tons: partsTotalTons,
               tonsPerHour:
-                partsTotalTons /
-                (totalHoursPass === 0 ? 1 : Math.round(totalHoursPass)),
+                partsTotalTons / (hoursPass === 0 ? 1 : Math.trunc(hoursPass)),
               unitPerHour:
-                logTotalCount /
-                (totalHoursPass === 0 ? 1 : Math.round(totalHoursPass)),
+                logTotalCount / (hoursPass === 0 ? 1 : Math.trunc(hoursPass)),
               dailyUnits: logTotalCount,
             },
             itemCount: null,

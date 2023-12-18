@@ -56,6 +56,6 @@ export const getHoursDifferent = (
   return (
     dayjs
       .tz(endAt ? dayjs(endAt) : dayjs(), timeZone ? timeZone : "")
-      .diff(timerStart, "hours", true) ?? ""
+      .diff(timerStart, "hour", true) ?? ""
   )
 }
