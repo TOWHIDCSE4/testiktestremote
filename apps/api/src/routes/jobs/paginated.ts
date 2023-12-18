@@ -142,7 +142,10 @@ export const paginated = async (req: Request, res: Response) => {
                 },
               },
               {
-                $unwind: "$operator",
+                $unwind: {
+                  path: "$operator",
+                  preserveNullAndEmptyArrays: true,
+                },
               },
             ],
           },
