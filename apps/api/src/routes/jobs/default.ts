@@ -62,34 +62,77 @@ export const getJob = async (req: Request, res: Response) => {
 }
 
 export const addJob = async (req: Request, res: Response) => {
-  const parsedJob = ZJob.safeParse(req.body)
-  if (parsedJob.success) {
-    const part = await Parts.findOne({
-      _id: req.body.partId,
-    })
-    const { status, drawingNumber, ...rest } = req.body
-    const newJob = new Jobs({
-      ...rest,
-      status: req.body.isStock ? "Active" : req.body.status,
-      drawingNumber: req.body.isStock ? undefined : req.body.drawingNumber,
-      factoryId: part?.factoryId,
-    })
-    try {
-      if (req.body.isStock) {
-        const getStockJob = await Jobs.findOne({
-          locationId: req.body.locationId,
-          partId: req.body.partId,
-          factoryId: part?.factoryId,
-          isStock: true,
-          $and: [
-            { status: { $ne: "Deleted" } },
-            { status: { $ne: "Archived" } },
-            { status: { $ne: "Testing" } }, //TODO: discuss with jamiel
-          ],
-          $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-        })
-        if (!getStockJob) {
-          newJob.name = `(Stock) ${part?.name}`
+  try {
+    const parsedJob = ZJob.safeParse(req.body)
+    if (parsedJob.success) {
+      const part = await Parts.findOne({
+        _id: req.body.partId,
+      })
+      const { status, drawingNumber, ...rest } = req.body
+      const newJob = new Jobs({
+        ...rest,
+        status: req.body.isStock ? "Active" : req.body.status,
+        drawingNumber: req.body.isStock ? undefined : req.body.drawingNumber,
+        factoryId: part?.factoryId,
+      })
+      try {
+        if (req.body.isStock) {
+          const getStockJob = await Jobs.findOne({
+            locationId: req.body.locationId,
+            partId: req.body.partId,
+            factoryId: part?.factoryId,
+            isStock: true,
+            $and: [
+              { status: { $ne: "Deleted" } },
+              { status: { $ne: "Archived" } },
+              { status: { $ne: "Testing" } }, //TODO: discuss with jamiel
+            ],
+            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+          })
+          if (!getStockJob) {
+            newJob.name = `(Stock) ${part?.name}`
+            const createJob = await newJob.save()
+            res.json({
+              error: false,
+              message: ADD_SUCCESS_MESSAGE,
+              item: createJob,
+              itemCount: 1,
+            })
+          } else {
+            res.json({
+              error: true,
+              message: "Stock job already exists",
+              items: null,
+              itemCount: null,
+            })
+          }
+        } else {
+          const getStockJob = await Jobs.findOne({
+            locationId: req.body.locationId,
+            partId: req.body.partId,
+            factoryId: part?.factoryId,
+            isStock: true,
+            $and: [
+              { status: { $ne: "Deleted" } },
+              { status: { $ne: "Archived" } },
+              { status: { $ne: "Testing" } }, //TODO: discuss with jamiel
+            ],
+            $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+          })
+          if (!getStockJob) {
+            const newStockJob = new Jobs({
+              machineClassId: part?.machineClassId,
+              locationId: req.body.locationId,
+              partId: req.body.partId,
+              factoryId: part?.factoryId,
+              name: `(Stock) ${part?.name}`,
+              drawingNumber: req.body.drawingNumber,
+              userId: req.body.userId,
+              status: "Active",
+              isStock: true,
+            })
+            await newStockJob.save()
+          }
           const createJob = await newJob.save()
           res.json({
             error: false,
@@ -97,63 +140,27 @@ export const addJob = async (req: Request, res: Response) => {
             item: createJob,
             itemCount: 1,
           })
-        } else {
-          res.json({
-            error: true,
-            message: "Stock job already exists",
-            items: null,
-            itemCount: null,
-          })
         }
-      } else {
-        const getStockJob = await Jobs.findOne({
-          locationId: req.body.locationId,
-          partId: req.body.partId,
-          factoryId: part?.factoryId,
-          isStock: true,
-          $and: [
-            { status: { $ne: "Deleted" } },
-            { status: { $ne: "Archived" } },
-            { status: { $ne: "Testing" } }, //TODO: discuss with jamiel
-          ],
-          $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-        })
-        if (!getStockJob) {
-          const newStockJob = new Jobs({
-            machineClassId: part?.machineClassId,
-            locationId: req.body.locationId,
-            partId: req.body.partId,
-            factoryId: part?.factoryId,
-            name: `(Stock) ${part?.name}`,
-            drawingNumber: req.body.drawingNumber,
-            userId: req.body.userId,
-            status: "Active",
-            isStock: true,
-          })
-          await newStockJob.save()
-        }
-        const createJob = await newJob.save()
+      } catch (err: any) {
+        const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+        Sentry.captureException(err)
         res.json({
-          error: false,
-          message: ADD_SUCCESS_MESSAGE,
-          item: createJob,
-          itemCount: 1,
+          error: true,
+          message: message,
+          items: null,
+          itemCount: null,
         })
       }
-    } catch (err: any) {
-      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
-      Sentry.captureException(err)
+    } else {
       res.json({
         error: true,
-        message: message,
-        items: null,
-        itemCount: null,
+        message: JSON.parse(parsedJob.error.message),
       })
     }
-  } else {
-    res.json({
+  } catch (error: any) {
+    return res.status(500).json({
       error: true,
-      message: JSON.parse(parsedJob.error.message),
+      message: error.message,
     })
   }
 }

@@ -1,5 +1,5 @@
 import { ChevronDownIcon } from "@heroicons/react/24/solid"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Fragment } from "react"
 import { Menu, Transition } from "@headlessui/react"
 import { T_MachineClass } from "custom-validator"
@@ -8,10 +8,15 @@ import combineClasses from "../../../../helpers/combineClasses"
 import TabTable from "./TabTable"
 import { T_JobStatus } from "custom-validator"
 import useProfile from "../../../../hooks/users/useProfile"
-import useCountStatus from "../../../../hooks/jobs/useCountStatus"
 import useStoreSession from "../../../../store/useStoreSession"
 
-const ParentTable = ({ locationId }: { locationId: string }) => {
+const ParentTable = ({
+  locationId,
+  allTabs,
+}: {
+  locationId: string
+  allTabs: Array<any>
+}) => {
   const [currentTab, setCurrentTab] = useState<T_JobStatus>("Pending")
   const [selectedValue, setSelectedValue] = useState<string>("client")
   const [inputValue, setInputValue] = useState<string>("")
@@ -26,15 +31,14 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
   const [editModal, setEditModal] = useState(false)
   const [clickRender, setClickRender] = useState(false)
 
-  const { data, isLoading, setJobStatuses, setJobLocation } = useCountStatus()
-
-  const tabs = [
-    { name: "Pending", count: 0, current: currentTab === "Pending" },
-    { name: "Active", count: 2, current: currentTab === "Active" },
-    { name: "Testing", count: 1, current: currentTab === "Testing" },
-    { name: "Archived", count: 0, current: currentTab === "Archived" },
-    { name: "Deleted", count: 0, current: currentTab === "Deleted" },
-  ]
+  const tabs = useMemo(() => {
+    return allTabs.map((tab) => ({
+      name: tab.name,
+      count: tab.count,
+      loading: tab.loading,
+      current: currentTab === tab.name,
+    }))
+  }, [allTabs, currentTab])
 
   const handleSelectMachineClass = (e: any, id: any) => {
     if (id === "all") {
@@ -69,6 +73,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
     }
   }, [machineClassArray, machineClasses?.items])
 
+  // initial rendering
   useEffect(() => {
     // if (machineClasses?.items) {
     //   const allMachineClassIds = machineClasses.items.map(
@@ -80,6 +85,7 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
     setCheckAll(true)
   }, [])
 
+  // ! not sure if it is needed
   useEffect(() => {
     if (
       !isMachineClassesLoading &&
@@ -112,22 +118,6 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
   const pageFuncRender = () => {
     setClickRender(!clickRender)
   }
-
-  useEffect(() => {
-    if (locationId) {
-      setJobLocation(locationId)
-    }
-    setJobStatuses(tabs.map((tab) => tab.name) as string[])
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locationId])
-
-  const jobStatusCount = data
-    ? data?.map((jobCount) => {
-        if (!jobCount.error) {
-          return jobCount.item
-        }
-      })
-    : []
 
   const personnelMachineClass = machineClasses?.items?.find(
     (MachineName: any) => MachineName._id === userProfile?.item.machineClassId
@@ -210,9 +200,9 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
                         }}
                       >
                         <span>
-                          {isLoading
-                            ? "Loading..."
-                            : `${tab.name} (${jobStatusCount[tabIdx]})`}
+                          {`${tab.name} (${
+                            tab.loading ? "loading..." : tab.count
+                          })`}
                         </span>
                         <span
                           aria-hidden="true"

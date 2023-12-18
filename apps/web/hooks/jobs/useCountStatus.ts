@@ -7,7 +7,7 @@ import {
 import { useQuery } from "@tanstack/react-query"
 import { T_BackendResponse, T_Part } from "custom-validator"
 import Cookies from "js-cookie"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 type T_DBReturn = Omit<T_BackendResponse, "item"> & {
   item: number
@@ -30,12 +30,12 @@ export async function getStatusCount(locationId: string, status: string) {
 
 function useCountStatus() {
   const [statuses, setStatuses] = useState<string[]>([])
-  const [jobLocationId, setJobLocationid] = useState("")
+  const [jobLocationId, setJobLocationid] = useState<string>()
   const query = useQuery(
     ["job-status-counts", statuses],
     () =>
       Promise.all(
-        statuses.map((status) => getStatusCount(jobLocationId, status))
+        statuses.map((status) => getStatusCount(jobLocationId ?? "", status))
       ),
     {
       refetchOnWindowFocus: false,
@@ -43,6 +43,11 @@ function useCountStatus() {
       refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
     }
   )
+
+  const reloadCountStatus = useCallback(() => {
+    console.log("refetch", statuses, jobLocationId)
+    query.refetch()
+  }, [statuses, jobLocationId])
 
   useEffect(() => {
     if (statuses.length > 0 && jobLocationId !== "") {
@@ -52,6 +57,7 @@ function useCountStatus() {
 
   return {
     ...query,
+    reloadCountStatus,
     setJobStatuses: setStatuses,
     setJobLocation: setJobLocationid,
   }
