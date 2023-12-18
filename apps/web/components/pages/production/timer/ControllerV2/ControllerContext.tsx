@@ -611,9 +611,9 @@ export const ControllerContextProvider = ({
             }
           },
           onError: (err: any) => {
-            if (isControllerModalOpen) {
-              toast.error(err.message)
-            }
+            // if (isControllerModalOpen) {
+            //   toast.error(err.message)
+            // }
           },
         }
       )
@@ -716,7 +716,6 @@ export const ControllerContextProvider = ({
         controllerTimerData?.items[0]?.createdAt,
         timerDetailData?.item?.locationId.timezone
       )
-      console.log("hours", Math.round(hours))
       setTotals((current) => ({
         ...current,
         totalTons: unitCreated * controllerDetailData.weight,
