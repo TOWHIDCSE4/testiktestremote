@@ -17,7 +17,10 @@ export async function addCycleTimer(props: T_CycleTimer) {
 }
 
 function useAddCycleTimer() {
-  const query = useMutation((props: T_CycleTimer) => addCycleTimer(props))
+  const query = useMutation((props: T_CycleTimer) => addCycleTimer(props), {
+    retry: Number.MAX_SAFE_INTEGER,
+    retryDelay: 250,
+  })
   return query
 }
 

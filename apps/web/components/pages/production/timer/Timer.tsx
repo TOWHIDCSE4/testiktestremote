@@ -90,6 +90,7 @@ const Timer = ({
   const {
     isLoading: isControllerTimerLoading,
     refetch: controllerTimerRefetch,
+    data: controllerTimerData,
   } = useGetControllerTimer(getObjectId(timer))
   const { data: cycleTimer, refetch: cycleRefetch } = useGetCycleTimerRealTime(
     timer._id as string
@@ -287,8 +288,9 @@ const Timer = ({
   useEffect(() => {
     setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
   }, [cycleClockInSeconds])
-
+  console.log(controllerTimerData, "controller")
   useEffect(() => {
+    queryClient.invalidateQueries(["in-production", timer.locationId])
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
       const timeZone = timer?.location?.timeZone
       const timerStart = dayjs.tz(
@@ -299,7 +301,6 @@ const Timer = ({
       const secondsLapse = currentDate.diff(timerStart, "seconds", true)
       setCycleClockInSeconds(secondsLapse)
       if (!cycleTimer?.items[0].endAt && !isCycleClockRunning) {
-        queryClient.invalidateQueries(["in-production", timer.locationId])
         runCycle()
         setIsCycleClockRunning(true)
       }
@@ -308,7 +309,7 @@ const Timer = ({
       setCycleClockInSeconds(0)
       setIsCycleClockRunning(false)
     }
-  }, [cycleTimer])
+  }, [cycleTimer, controllerTimerData])
 
   useEffect(() => {
     if (
