@@ -288,9 +288,10 @@ const Timer = ({
   useEffect(() => {
     setCycleCockTimeArray(hourMinuteSecondMilli(cycleClockInSeconds))
   }, [cycleClockInSeconds])
-  console.log(controllerTimerData, "controller")
   useEffect(() => {
     queryClient.invalidateQueries(["in-production", timer.locationId])
+    queryClient.invalidateQueries(["controller-timer", timer._id])
+    queryClient.invalidateQueries(["jobs"])
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
       const timeZone = timer?.location?.timeZone
       const timerStart = dayjs.tz(
@@ -309,7 +310,7 @@ const Timer = ({
       setCycleClockInSeconds(0)
       setIsCycleClockRunning(false)
     }
-  }, [cycleTimer, controllerTimerData])
+  }, [cycleTimer])
 
   useEffect(() => {
     if (

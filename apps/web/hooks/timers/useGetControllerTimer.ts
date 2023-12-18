@@ -31,8 +31,7 @@ function useGetControllerTimer(timerId: string) {
     ["controller-timer", timerId],
     () => getTodayControllerTimer(timerId),
     {
-      cacheTime: ONE_DAY,
-      staleTime: ONE_DAY,
+      refetchInterval: 2000,
       refetchOnWindowFocus: false,
       enabled: !!timerId,
     }
