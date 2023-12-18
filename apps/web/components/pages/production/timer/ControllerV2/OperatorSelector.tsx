@@ -30,7 +30,6 @@ const OperatorSelectComponent = () => {
     isChangingOperator,
   } = useContext(ControllerContext)
   const textColors = textCV
-  console.log("ope ope no mi", operator)
 
   // Queries
   const timerDetailsQuery = useGetTimerDetails(timerId)

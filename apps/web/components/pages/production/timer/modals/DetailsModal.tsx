@@ -14,6 +14,7 @@ import PartDetailsModal from "../../product-list/modals/PartDetailsModal"
 import { USER_ROLES } from "../../../../../helpers/constants"
 import useStoreSession from "../../../../../store/useStoreSession"
 import { useSocket } from "../../../../../store/useSocket"
+import { set } from "lodash/fp"
 import useProfile from "../../../../../hooks/users/useProfile"
 
 interface DetailsModalProps {
@@ -53,13 +54,20 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
   const change =
     timerDetailData?.item?.operator?._id === selectedOperator.id ||
     (!timerDetailData?.item?.operator?._id && !selectedOperator.id)
-  const onSubmit = (data: T_Timer) => {
+  const onSubmit = (formData: T_Timer) => {
+    queryClient.setQueriesData(
+      ["timer", timerDetailData?.item?._id],
+      (query: any) => {
+        return set(query, "item", formData)
+      }
+    )
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
           queryClient.invalidateQueries({
-            queryKey: ["timer", id],
+            queryKey: ["timer", timerDetailData?.item?._id],
           })
+
           toast.success("Timer details has been updated")
           reset()
           onClose()
@@ -73,27 +81,27 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
     }
     mutate(
       {
-        ...data,
+        ...formData,
         factoryId:
-          typeof data.factoryId === "object"
-            ? (data.factoryId?._id as string)
-            : data.factoryId,
+          typeof formData.factoryId === "object"
+            ? (formData.factoryId?._id as string)
+            : formData.factoryId,
         locationId:
-          typeof data.locationId === "object"
-            ? (data.locationId?._id as string)
-            : data.locationId,
+          typeof formData.locationId === "object"
+            ? (formData.locationId?._id as string)
+            : formData.locationId,
         partId:
-          typeof data.partId === "object"
-            ? (data.partId?._id as string)
-            : data.partId,
+          typeof formData.partId === "object"
+            ? (formData.partId?._id as string)
+            : formData.partId,
         machineId:
-          typeof data.machineId === "object"
-            ? (data.machineId?._id as string)
-            : data.machineId,
+          typeof formData.machineId === "object"
+            ? (formData.machineId?._id as string)
+            : formData.machineId,
         createdBy:
-          typeof data.createdBy === "object"
-            ? (data.createdBy?._id as string)
-            : data.createdBy,
+          typeof formData.createdBy === "object"
+            ? (formData.createdBy?._id as string)
+            : formData.createdBy,
       },
       callBackReq
     )
@@ -152,17 +160,8 @@ const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
   const callBackReq: any = {
     onSuccess: (data: T_BackendResponse) => {
       if (!data.error) {
-        queryClient.invalidateQueries({
-          queryKey: ["timer", timerDetailData?.item?._id],
-        })
-        queryClient.invalidateQueries({
-          queryKey: ["job-timer-timer"],
-        })
-        socket?.emit("change-job", {
-          action: "change-job",
-          timerId: timerDetailData?.item._id,
-          jobInfo: data?.item,
-        })
+        queryClient.invalidateQueries(["timer", timerDetailData?.item?._id])
+        queryClient.invalidateQueries(["job-timer-timer"])
       } else {
         toast.error(String(data.message))
       }
