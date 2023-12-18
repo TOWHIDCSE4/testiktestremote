@@ -624,14 +624,18 @@ const Timer = ({
         <div className="grid grid-cols-2 px-4 my-4 gap-x-5 gap-y-3">
           <button
             className={cn("uppercase text-sm text-white  p-1 rounded-md", {
-              ["bg-stone-300"]: isJobsLoading,
+              ["bg-stone-300"]: isJobsLoading || isUsed,
               ["bg-green-800"]: !isJobsLoading,
-              ["cursor-not-allowed"]: isJobsLoading,
+              ["cursor-not-allowed"]: isJobsLoading || isUsed,
             })}
             onClick={openController}
             disabled={isControllerLoading || isUsed}
           >
-            {isControllerLoading ? "Loading Controller.." : "Controller"}
+            {isUsed
+              ? "Controller used"
+              : isControllerLoading
+              ? "Loading Controller.."
+              : "Controller"}
           </button>
           <button
             className="p-1 text-sm text-white uppercase rounded-md bg-stone-300"
