@@ -732,6 +732,9 @@ export const ControllerContextProvider = ({
     timerDetailData?.item?.createdAt,
     controllerTimerData?.items[0]?.createdAt,
   ])
+  useEffect(() => {
+    setUnitCreated(0)
+  }, [controllerTimerData?.items[0]?.createdAt])
 
   useEffect(() => {
     // on open

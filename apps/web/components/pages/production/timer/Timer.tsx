@@ -293,6 +293,11 @@ const Timer = ({
     queryClient.invalidateQueries(["in-production", timer.locationId])
     queryClient.invalidateQueries(["controller-timer", timer._id])
     queryClient.invalidateQueries(["jobs"])
+    queryClient.invalidateQueries([
+      "total-tons-unit",
+      timer.locationId,
+      timer._id,
+    ])
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
       const timeZone = timer?.location?.timeZone
       const timerStart = dayjs.tz(
