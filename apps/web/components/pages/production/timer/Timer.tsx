@@ -311,9 +311,7 @@ const Timer = ({
         runCycle()
         setIsCycleClockRunning(true)
       }
-      setIsUsed(true)
     } else {
-      setIsUsed(false)
       stopInterval()
       setCycleClockInSeconds(0)
       setIsCycleClockRunning(false)
@@ -629,18 +627,14 @@ const Timer = ({
         <div className="grid grid-cols-2 px-4 my-4 gap-x-5 gap-y-3">
           <button
             className={cn("uppercase text-sm text-white  p-1 rounded-md", {
-              ["bg-stone-300"]: isJobsLoading || isUsed,
+              ["bg-stone-300"]: isJobsLoading,
               ["bg-green-800"]: !isJobsLoading,
-              ["cursor-not-allowed"]: isJobsLoading || isUsed,
+              ["cursor-not-allowed"]: isJobsLoading,
             })}
             onClick={openController}
-            disabled={isControllerLoading || isUsed}
+            disabled={isControllerLoading}
           >
-            {isUsed
-              ? "Controller used"
-              : isControllerLoading
-              ? "Loading Controller.."
-              : "Controller"}
+            {isControllerLoading ? "Loading Controller.." : "Controller"}
           </button>
           <button
             className="p-1 text-sm text-white uppercase rounded-md bg-stone-300"
