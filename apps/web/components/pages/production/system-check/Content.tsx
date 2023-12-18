@@ -1,12 +1,5 @@
 "use client"
 
-import useLocations from "../../../../hooks/locations/useLocations"
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { T_Factory, T_Machine, T_MachineClass } from "custom-validator"
-import { HiRefresh, HiXCircle } from "react-icons/hi"
-import CustomSelectComponent, { T_SelectItem } from "./CustomSelect"
-import useFactories from "../../../../hooks/factories/useFactories"
-import _ from "lodash"
 import {
   Button,
   Checkbox,
@@ -15,55 +8,65 @@ import {
   FormControlLabel,
   IconButton,
 } from "@mui/material"
-import useMachineClasses from "../../../../hooks/machineClasses/useMachineClasses"
-import useMachines from "../../../../hooks/machines/useMachines"
+import { T_Factory, T_Machine, T_MachineClass, T_Part } from "custom-validator"
+import Cookies from "js-cookie"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { BiSolidPin } from "react-icons/bi"
+import { HiRefresh, HiXCircle } from "react-icons/hi"
+import { API_URL_PARTS } from "../../../../helpers/constants"
+import useFactories from "../../../../hooks/factories/useFactories"
+import useLocations from "../../../../hooks/locations/useLocations"
+import useMachineClasses from "../../../../hooks/machineClasses/useMachineClassesByLocation"
+import useMachines from "../../../../hooks/machines/useMachines"
+import CustomSelectComponent, { T_SelectItem } from "./CustomSelect"
+
+type T_Dispaly_Part_Types = {
+  key: string
+  label: string
+}
 
 const Content = () => {
-  const { data: locations, isLoading: isLocationsLoading } = useLocations()
-  const { data: machineClasses, isRefetching: isMachineClassesRefetching } =
-    useMachineClasses()
-  const { data: machines, isLoading: isMachinesLoading } = useMachines()
+  const [parts, setParts] = useState<T_Part[]>()
+  const [part, onPartChange] = useState()
+  const [selectedCity, setSelectedCity] = useState<T_SelectItem | undefined>()
+  const [selectedFactories, setSelectedFactories] = useState<T_SelectItem[]>()
+  const [selectedMachineClasses, setSelectedMachineClasses] = useState<
+    T_SelectItem[] | undefined
+  >()
+  const [selectedMachines, setSelectedMachines] = useState<
+    T_SelectItem[] | undefined
+  >()
+  const [selectedParts, setSelectedParts] = useState<T_SelectItem[]>()
+  const [isIncludeCycle, setIsIncludeCycle] = useState<boolean>()
+  const [isPinned, setIsPinned] = useState<boolean>()
 
+  const { data: locations, isLoading: isLocationsLoading } = useLocations()
+  const { data: machines, isLoading: isMachinesLoading } = useMachines()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
+  const { data: machineClasses, isLoading: isMachineClassesLoading } =
+    useMachineClasses([selectedCity?.key] as string[])
 
   // CITY
   const filteredCities = useMemo<Array<T_SelectItem>>(() => {
-    if (isLocationsLoading || !locations?.items) return []
-    else
+    if (isLocationsLoading || !locations?.items) {
+      return []
+    } else {
       return locations.items.map((item) => ({
         key: item._id ?? "",
         label: item.name,
       }))
+    }
   }, [locations, isLocationsLoading])
 
-  const [selectedCity, setSelectedCity] = useState<T_SelectItem>()
-
-  const onCityChange = useCallback(
-    (val?: T_SelectItem) => {
-      setSelectedCity(val)
-    },
-    [setSelectedCity]
-  )
-
-  // FACTORY
-  const [selectedFactories, setSelectedFactories] = useState<T_SelectItem[]>()
-
-  const onFactoryChange = useCallback(
-    (val?: T_SelectItem[]) => {
-      // console.log (val)
-      setSelectedFactories(val)
-    },
-    [setSelectedFactories]
-  )
-
   const filteredFactories = useMemo<Array<T_SelectItem>>(() => {
-    if (isFactoriesLoading || !factories?.items || !selectedCity) return []
-    else
+    if (isFactoriesLoading || !factories?.items || !selectedCity) {
+      return []
+    } else {
       return factories.items.map((item: T_Factory) => ({
         key: item._id ?? "",
         label: item.name,
       }))
+    }
   }, [factories, isFactoriesLoading, selectedCity])
 
   useEffect(() => {
@@ -77,24 +80,13 @@ const Content = () => {
   // MACHINE CLASS
   const filteredMachineClasses = useMemo<Array<T_SelectItem>>(() => {
     return machineClasses?.items
-      ?.filter((item: T_MachineClass) =>
-        selectedFactories?.some((factory) => factory.key == item.factoryId)
-      )
+      ?.filter((item: T_MachineClass) => selectedCity?.key === item.factoryId)
       ?.map((item: T_MachineClass) => ({
         key: item._id,
         label: item.name,
       }))
-  }, [machineClasses, selectedFactories])
+  }, [machineClasses, selectedCity])
 
-  const [selectedMachineClasses, setSelectedMachineClasses] =
-    useState<T_SelectItem[]>()
-
-  const onMachineClassChange = useCallback(
-    (val?: T_SelectItem[]) => {
-      setSelectedMachineClasses(val)
-    },
-    [setSelectedMachineClasses]
-  )
   useEffect(() => {
     setSelectedMachineClasses((prev) =>
       prev?.filter((prevItem) =>
@@ -105,21 +97,15 @@ const Content = () => {
 
   // MACHINES
 
-  const [selectedMachines, setSelectedMachines] =
-    useState<Array<T_SelectItem>>()
-
   const filteredMachines = useMemo(() => {
+    const keysToMachine = selectedMachineClasses?.map((item: any) => item.key)
     return machines?.items
-      ?.filter(
-        (item: T_Machine) =>
-          selectedMachineClasses?.some((mc) => mc.key == item.machineClassId) &&
-          selectedFactories?.some((f) => f.key == item.factoryId) &&
-          item.locationId == selectedCity?.key
-      )
+      ?.filter((item: any) => keysToMachine?.includes(item.machineClassId))
       .map((item: T_Machine) => ({
         key: item._id,
         label: item.name,
       }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [machines, selectedCity, selectedFactories, selectedMachineClasses])
 
   useEffect(() => {
@@ -130,15 +116,63 @@ const Content = () => {
     )
   }, [filteredMachines, setSelectedMachines])
 
+  useEffect(() => {
+    setSelectedParts((prev) =>
+      prev?.filter((prevItem) =>
+        selectedParts?.some((m: T_SelectItem) => m.key == prevItem.key)
+      )
+    )
+  }, [selectedParts, setSelectedParts])
+
+  useEffect(() => {
+    const token = Cookies.get("tfl")
+    const locationsQuery = new URLSearchParams({
+      locations: selectedCity?.key as string,
+    }).toString()
+
+    const machineClassesQuery = new URLSearchParams({
+      machineClasses: machineClasses?.items.map((machine: any) => machine._id),
+    }).toString()
+
+    const fetchData = async () => {
+      if (!selectedCity) return
+      let page = 1
+
+      const res = await fetch(
+        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}`,
+        // &search=${search}&startDate=${startDate}&endDate=${endDate},
+        {
+          method: "GET",
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      const responseJSON = await res.json()
+      setParts(responseJSON.items)
+    }
+
+    fetchData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locations, filteredMachineClasses, machines])
+
+  const onCityChange = useCallback(
+    (val?: T_SelectItem) => setSelectedCity(val),
+    [setSelectedCity]
+  )
+  const onMachineClassChange = useCallback(
+    (val?: T_SelectItem[]) => setSelectedMachineClasses(val),
+    [setSelectedMachineClasses]
+  )
+  const onChangePart = useCallback(
+    (val?: T_SelectItem[]) => setSelectedParts(val),
+    [setSelectedParts]
+  )
   const onMachinesChange = useCallback(
-    (val?: T_SelectItem[]) => {
-      setSelectedMachines(val)
-    },
+    (val?: T_SelectItem[]) => setSelectedMachines(val),
     [setSelectedMachines]
   )
-
-  const [isIncludeCycle, setIsIncludeCycle] = useState<boolean>()
-  const [isPinned, setIsPinned] = useState<boolean>()
 
   return (
     <>
@@ -169,19 +203,13 @@ const Content = () => {
                       />
                     </div>
                     <div className="relative col-span-1">
-                      <div className="text-sm">Factory</div>
-                      <CustomSelectComponent
-                        multiple
-                        items={filteredFactories}
-                        value={selectedFactories}
-                        onChange={onFactoryChange}
-                      />
-                    </div>
-                    <div className="relative col-span-1">
                       <div className="text-sm">Machine Class</div>
                       <CustomSelectComponent
                         multiple
-                        items={filteredMachineClasses}
+                        items={machineClasses?.items.map((machine: any) => ({
+                          key: machine._id,
+                          label: machine.name,
+                        }))}
                         value={selectedMachineClasses}
                         onChange={onMachineClassChange}
                       />
@@ -193,6 +221,20 @@ const Content = () => {
                         items={filteredMachines}
                         value={selectedMachines}
                         onChange={onMachinesChange}
+                      />
+                    </div>
+                    <div className="relative col-span-1">
+                      <div className="text-sm">Part</div>
+                      <CustomSelectComponent
+                        multiple
+                        items={
+                          parts?.map((p) => ({
+                            key: p._id,
+                            label: p.name,
+                          })) as T_Dispaly_Part_Types[]
+                        }
+                        value={selectedParts}
+                        onChange={onChangePart}
                       />
                     </div>
                     <div className="relative col-span-1">
@@ -246,27 +288,6 @@ const Content = () => {
                         </div>
                       )}
                     </div>
-                    {/* FACTORY */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
-                      {selectedFactories?.map((item) => (
-                        <div key={item.key} className="p-1">
-                          <Chip
-                            label={item.label}
-                            className="text-left 1"
-                            variant="outlined"
-                            size="small"
-                            onDelete={() => {
-                              setSelectedFactories((prev) => {
-                                return prev?.filter(
-                                  (previtem) => previtem.key != item.key
-                                )
-                              })
-                            }}
-                            deleteIcon={<HiXCircle />}
-                          />
-                        </div>
-                      ))}
-                    </div>
                     {/* MACHINE CLASS */}
                     <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
                       {selectedMachineClasses?.map((item) => (
@@ -299,6 +320,27 @@ const Content = () => {
                             size="small"
                             onDelete={() => {
                               setSelectedMachineClasses((prev) => {
+                                return prev?.filter(
+                                  (previtem) => previtem.key != item.key
+                                )
+                              })
+                            }}
+                            deleteIcon={<HiXCircle />}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    {/* PART */}
+                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
+                      {selectedParts?.map((item) => (
+                        <div key={item.key} className="p-1">
+                          <Chip
+                            label={item.label}
+                            className="text-left 1"
+                            variant="outlined"
+                            size="small"
+                            onDelete={() => {
+                              setSelectedParts((prev) => {
                                 return prev?.filter(
                                   (previtem) => previtem.key != item.key
                                 )
