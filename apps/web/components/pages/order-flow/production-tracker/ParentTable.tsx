@@ -56,16 +56,10 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
   }
 
   useEffect(() => {
-    // if (machineClasses?.items) {
-    //   const allMachineClassIds = machineClasses.items.map(
-    //     (machineClass: T_MachineClass) => machineClass._id || ""
-    //   )
-    //   setMachineClassArray(allMachineClassIds)
-    //   setCheckAll(true)
-    // }
-    setMachineClassArray(["all"])
-    setCheckAll(true)
-  }, [machineClasses])
+    if (checkAll) {
+      setMachineClassArray(["all"])
+    }
+  }, [checkAll])
 
   useEffect(() => {
     if (machineClasses?.items.length === machineClassArray.length) {
@@ -73,7 +67,18 @@ const ParentTable = ({ locationId }: { locationId: string }) => {
     } else {
       setCheckAll(false)
     }
-  })
+  }, [machineClassArray, machineClasses?.items])
+
+  useEffect(() => {
+    // if (machineClasses?.items) {
+    //   const allMachineClassIds = machineClasses.items.map(
+    //     (machineClass: T_MachineClass) => machineClass._id || ""
+    //   )
+    //   setMachineClassArray(allMachineClassIds)
+    //   setCheckAll(true)
+    // }
+    setCheckAll(true)
+  }, [])
 
   useEffect(() => {
     if (
