@@ -30,6 +30,9 @@ const DeleteModal = ({ isOpen, onClose, jobId }: DeleteModalProps) => {
           queryClient.invalidateQueries({
             queryKey: ["jobs"],
           })
+          queryClient.invalidateQueries({
+            queryKey: ["job-status-counts"],
+          })
           onClose()
           toast.success("Job was deleted")
         }
