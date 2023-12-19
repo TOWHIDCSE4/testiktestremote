@@ -14,6 +14,7 @@ import dayjs from "dayjs"
 import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import * as Sentry from "@sentry/node"
+import { ioEmit } from "../../config/setup-socket"
 
 export const getAllControllerTimers = async (req: Request, res: Response) => {
   try {
@@ -92,6 +93,9 @@ export const addControllerTimer = async (req: Request, res: Response) => {
             endAt: null,
             updatedAt: null,
             createdAt: Date.now(),
+          })
+          ioEmit(`timer-${timerId}`, {
+            action: "add-controller",
           })
           const createControllerTimer = await newControllerTimer.save()
           res.json({

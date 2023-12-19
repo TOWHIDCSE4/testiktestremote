@@ -10,6 +10,12 @@ const cycleTimers = new Schema({
     type: Date,
     default: Date.now,
   },
+  clientStartedAt: {
+    type: Date,
+  },
+  sessionId: {
+    type: String,
+  },
   endAt: Date,
 })
 

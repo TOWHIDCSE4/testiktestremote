@@ -57,7 +57,7 @@ function useGetAllTimerLogs({
     {
       refetchOnWindowFocus: false,
       enabled: !!locationId && !!timerId,
-      refetchInterval: 2000,
+      // refetchInterval: 2000,
       keepPreviousData: true,
     }
   )

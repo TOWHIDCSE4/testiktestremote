@@ -12,7 +12,7 @@ import { getIo, ioEmit } from "../../config/setup-socket"
 
 export const endAndAdd = async (req: Request, res: Response) => {
   const io = getIo()
-  const { timerId } = req.body
+  const { timerId, clientStartedAt, sessionId } = req.body
   try {
     ioEmit(`timer-${timerId}`, {
       action: "pre-endAndAdd",
@@ -27,6 +27,8 @@ export const endAndAdd = async (req: Request, res: Response) => {
       const newCycleTimer = new CycleTimers({
         timerId,
         endAt: null,
+        clientStartedAt: new Date(clientStartedAt),
+        sessionId,
         createdAt: Date.now(),
       })
       const parseCycleTimer = ZCycleTimer.safeParse(req.body)

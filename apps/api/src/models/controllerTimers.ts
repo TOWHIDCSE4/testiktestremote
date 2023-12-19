@@ -14,6 +14,9 @@ const controllerTimers = new Schema({
     type: Date,
     default: Date.now,
   },
+  clientStartedAt: {
+    type: Date,
+  },
   endAt: Date,
 })
 

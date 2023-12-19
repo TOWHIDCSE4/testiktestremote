@@ -152,6 +152,26 @@ const Timer = ({
       runCycle()
     }
   }
+  useEffect(() => {
+    console.log("data", socket)
+    if (!timer._id) return
+    const runSocket = (data: any) => {
+      console.log("Get Socket Data", data)
+      queryClient.invalidateQueries(["controller-timer", timer._id])
+      queryClient.invalidateQueries(["cycle-timer-real-time", timer._id])
+      queryClient.invalidateQueries([
+        "timer-logs-count",
+        timer._id,
+        timer.locationId,
+      ])
+      queryClient.invalidateQueries(["timer-logs", timer._id, timer.locationId])
+    }
+    socket?.on(`timer-${timer._id}`, runSocket)
+
+    return () => {
+      socket?.off(`timer-${timer._id}`, runSocket)
+    }
+  }, [socket, timer._id])
 
   // useEffect(() => {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -300,10 +320,9 @@ const Timer = ({
     ])
     if (cycleTimer?.items && cycleTimer?.items.length > 0) {
       const timeZone = timer?.location?.timeZone
-      const timerStart = dayjs.tz(
-        dayjs(cycleTimer?.items[0].createdAt),
-        timeZone ? timeZone : ""
-      )
+      const createdAt =
+        cycleTimer?.items[0].clientStartedAt || cycleTimer?.items[0].createdAt
+      const timerStart = dayjs.tz(dayjs(createdAt), timeZone ? timeZone : "")
       const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
       const secondsLapse = currentDate.diff(timerStart, "seconds", true)
       setCycleClockInSeconds(secondsLapse)

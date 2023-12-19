@@ -6,6 +6,8 @@ export const ZCycleTimer = z.object({
   timerId: z.union([z.string(), ZTimer]),
   createdAt: z.date().optional(),
   endAt: z.date().nullable().optional(),
+  clientStartedAt: z.any().optional(),
+  sessionId: z.string().optional(),
 })
 
 export type T_CycleTimer = z.infer<typeof ZCycleTimer>

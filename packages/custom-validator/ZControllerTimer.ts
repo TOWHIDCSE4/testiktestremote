@@ -8,6 +8,7 @@ export const ZControllerTimer = z.object({
   locationId: z.union([z.string(), ZLocation]),
   createdAt: z.date().optional(),
   endAt: z.date().nullable().optional(),
+  clientStartedAt: z.any().optional(),
 })
 
 export type T_ControllerTimer = z.infer<typeof ZControllerTimer>
