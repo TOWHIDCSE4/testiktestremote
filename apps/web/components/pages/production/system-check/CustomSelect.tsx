@@ -43,15 +43,25 @@ export default function CustomSelectComponent({
       multiple={multiple}
       options={items ?? []}
       getOptionLabel={(option) => option.label || ""}
-      renderTags={(value, getTagProps) => (
-        <div className="flex overflow-hidden text-ellipsis">{value.length}</div>
-      )}
+      renderTags={
+        (value, getTagProps) => null
+        //   (
+        //   value.length ? <div className="flex overflow-hidden text-ellipsis">{value.length} Selected</div> : <div>Select</div>
+        // )
+      }
       limitTags={1}
       renderInput={(params) => (
         <TextField
           {...params}
-          aria-label="tag"
-          placeholder="Selected"
+          placeholder={
+            Array.isArray(value) && value.length
+              ? `${value?.length} Selected`
+              : ""
+          }
+          inputProps={{
+            ...params.inputProps,
+            className: "placeholder-black placeholder:opacity-100",
+          }}
           sx={{
             fontSize: "1rem",
           }}
