@@ -343,7 +343,7 @@ const Timer = ({
       setCycleClockInSeconds(0)
       setIsCycleClockRunning(false)
     }
-  }, [cycleTimer])
+  }, [cycleTimer, isControllerLoading])
 
   useEffect(() => {
     if (
