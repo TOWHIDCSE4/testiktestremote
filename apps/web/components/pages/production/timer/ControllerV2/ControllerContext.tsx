@@ -771,6 +771,15 @@ export const ControllerContextProvider = ({
 
   useEffect(() => {
     const cycleTimer = cycleTimerData?.items[0]
+    if (cycleTimer) {
+      if (cycleTimer.sessionId !== sessionId) {
+        setUnitCreated(initialUnitCreated)
+      }
+    }
+  }, [initialUnitCreated, cycleTimerData?.items[0]])
+
+  useEffect(() => {
+    const cycleTimer = cycleTimerData?.items[0]
     const createdAt = cycleTimer?.clientStartedAt || cycleTimer?.createdAt
 
     if (createdAt && !cycleTimer.endAt) {
@@ -778,9 +787,6 @@ export const ControllerContextProvider = ({
         createdAt,
         timerDetailData?.item?.locationId.timezone
       )
-      if (cycleTimer.sessionId !== sessionId && isCycleClockRunning) {
-        setUnitCreated((c) => c + 1)
-      }
       setClockMilliSeconds(seconds)
       startCycleClockInterval()
     } else if (createdAt && cycleTimer?.endAt) {

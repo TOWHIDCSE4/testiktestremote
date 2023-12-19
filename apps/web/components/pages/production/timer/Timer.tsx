@@ -161,10 +161,10 @@ const Timer = ({
       queryClient.invalidateQueries(["cycle-timer-real-time", timer._id])
       queryClient.invalidateQueries([
         "timer-logs-count",
-        timer._id,
         timer.locationId,
+        timer._id,
       ])
-      queryClient.invalidateQueries(["timer-logs", timer._id, timer.locationId])
+      queryClient.invalidateQueries(["timer-logs", timer.locationId, timer._id])
     }
     socket?.on(`timer-${timer._id}`, runSocket)
 
