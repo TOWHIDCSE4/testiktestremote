@@ -39,7 +39,7 @@ function useGetJobTimerByTimerId({
     ["job-timer-timer", locationId, timerId],
     () => getJobTimerId({ locationId, timerId }),
     {
-      staleTime: THREE_MINUTES,
+      enabled: !!locationId && !!timerId,
       refetchOnWindowFocus: false,
     }
   )
