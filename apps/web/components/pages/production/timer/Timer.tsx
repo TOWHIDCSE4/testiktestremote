@@ -498,6 +498,42 @@ const Timer = ({
   //     clearInterval(syncInterval)
   //   }
   // }, [timer._id, timer.locationId])
+
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      queryClient.invalidateQueries(["in-production", timer.locationId])
+      queryClient.invalidateQueries(["controller-timer", timer._id])
+      queryClient.invalidateQueries(["jobs"])
+      queryClient.invalidateQueries([
+        "total-tons-unit",
+        timer.locationId,
+        timer._id,
+      ])
+      if (cycleTimer?.items && cycleTimer?.items.length > 0) {
+        const timeZone = timer?.location?.timeZone
+        const createdAt =
+          cycleTimer?.items[0].clientStartedAt || cycleTimer?.items[0].createdAt
+        const timerStart = dayjs.tz(dayjs(createdAt), timeZone ? timeZone : "")
+        const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
+        const secondsLapse = currentDate.diff(timerStart, "seconds", true)
+        setCycleClockInSeconds(secondsLapse)
+        if (!cycleTimer?.items[0].endAt && !isCycleClockRunning) {
+          runCycle()
+          setIsCycleClockRunning(true)
+        }
+      } else {
+        stopInterval()
+        setCycleClockInSeconds(0)
+        setIsCycleClockRunning(false)
+      }
+    }
+
+    document.addEventListener("visibilitychange", onVisibilityChange)
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange)
+    }
+  }, [cycleTimer])
   const isNotAllowedChangePart = [USER_ROLES.Personnel].some(
     (role) => userProfile?.item?.role === role
   )
