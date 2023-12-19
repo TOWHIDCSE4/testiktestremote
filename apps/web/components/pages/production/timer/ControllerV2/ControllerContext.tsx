@@ -771,40 +771,6 @@ export const ControllerContextProvider = ({
   ])
 
   useEffect(() => {
-    const cycleTimer = cycleTimerData?.items[0]
-    if (cycleTimer) {
-      if (cycleTimer.sessionId !== sessionId) {
-        setUnitCreated(initialUnitCreated)
-      }
-    }
-  }, [initialUnitCreated, cycleTimerData?.items[0]])
-
-  useEffect(() => {
-    const cycleTimer = cycleTimerData?.items[0]
-    const createdAt = cycleTimer?.clientStartedAt || cycleTimer?.createdAt
-
-    if (createdAt && !cycleTimer.endAt) {
-      const seconds = getSecondsDifferent(
-        createdAt,
-        timerDetailData?.item?.locationId.timezone
-      )
-      setClockMilliSeconds(seconds)
-      startCycleClockInterval()
-    } else if (createdAt && cycleTimer?.endAt) {
-      const seconds = getSecondsDifferent(
-        createdAt,
-        timerDetailData?.item?.locationId.timezone,
-        cycleTimer?.endAt
-      )
-      setClockMilliSeconds(0)
-      stopCycleClockInterval()
-    } else if (!cycleTimer) {
-      setClockMilliSeconds(0)
-      stopCycleClockInterval()
-    }
-  }, [cycleTimerData?.items[0]?.createdAt, cycleTimerData?.items[0]?.endAt])
-
-  useEffect(() => {
     // on open
     if (
       !isControllerModalOpenRef.current &&
