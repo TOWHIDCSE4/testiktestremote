@@ -865,6 +865,48 @@ export const ControllerContextProvider = ({
         : "active"
     )
   }, [progress, isCycleClockRunning])
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      queryClient.invalidateQueries([
+        "in-production",
+        getObjectId(timerDetailData?.item?.locationId),
+      ])
+      queryClient.invalidateQueries([
+        "controller-timer",
+        timerDetailData?.item?._id,
+      ])
+      queryClient.invalidateQueries(["jobs"])
+      queryClient.invalidateQueries([
+        "total-tons-unit",
+        getObjectId(timerDetailData?.item?.locationId),
+        timerDetailData?.item?._id,
+      ])
+      if (cycleTimerData?.items && cycleTimerData?.items.length > 0) {
+        const timeZone = timerDetailData?.item?.locationId?.timeZone
+        const createdAt =
+          cycleTimerData?.items[0].clientStartedAt ||
+          cycleTimerData?.items[0].createdAt
+        const timerStart = dayjs.tz(dayjs(createdAt), timeZone ? timeZone : "")
+        const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
+        const secondsLapse = currentDate.diff(timerStart, "seconds", true)
+        setClockMilliSeconds(secondsLapse)
+        if (!cycleTimerData?.items[0].endAt && !isCycleClockRunning) {
+          startCycleClockInterval()
+          setIsCycleClockRunning(true)
+        }
+      } else {
+        stopCycleClockInterval()
+        setClockMilliSeconds(0)
+        setIsCycleClockRunning(false)
+      }
+    }
+
+    document.addEventListener("visibilitychange", onVisibilityChange)
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange)
+    }
+  }, [cycleTimerData?.items[0]])
 
   const [isStopMenuOpen, setIsStopMenuOpen] = useState<boolean>(false)
 
