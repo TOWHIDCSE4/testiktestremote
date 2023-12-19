@@ -148,6 +148,14 @@ const Timer = ({
     setCycleClockInSeconds(seconds)
     setCycleCockTimeArray(hourMinuteSecond(seconds))
     setUnitCreated(unit)
+    queryClient.invalidateQueries(["controller-timer", timer._id])
+    queryClient.invalidateQueries(["cycle-timer-real-time", timer._id])
+    queryClient.invalidateQueries([
+      "timer-logs-count",
+      timer.locationId,
+      timer._id,
+    ])
+    queryClient.invalidateQueries(["timer-logs", timer.locationId, timer._id])
     if (seconds > 0 && !isCycleClockRunning) {
       runCycle()
     }
