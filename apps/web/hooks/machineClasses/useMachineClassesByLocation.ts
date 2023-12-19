@@ -6,7 +6,7 @@ import {
 } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import Cookies from "js-cookie"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 export async function getAllMachineClassesByLocations({
   locations,
@@ -39,14 +39,16 @@ function useMachineClasses(locations: string[]) {
     useState<string>("")
   const [endDateForMachineClass, setEndDateForMachineClass] =
     useState<string>("")
-  const queryKey = [
-    "machine-classes-filter",
-    locations,
-    startDateForMachineClass,
-    endDateForMachineClass,
-  ] // Include locations in the query key
+
+  const LocationsString = locations.join(",")
+
   const query = useQuery(
-    queryKey,
+    [
+      "machine-classes-filter",
+      LocationsString,
+      startDateForMachineClass,
+      endDateForMachineClass,
+    ],
     () =>
       getAllMachineClassesByLocations({
         locations: locations,
@@ -61,14 +63,10 @@ function useMachineClasses(locations: string[]) {
   )
 
   useEffect(() => {
-    if (
-      locations !== undefined &&
-      startDateForMachineClass !== undefined &&
-      endDateForMachineClass !== undefined
-    ) {
+    if (locations && startDateForMachineClass && endDateForMachineClass) {
       query.refetch()
     }
-  }, [locations, startDateForMachineClass, endDateForMachineClass])
+  }, [LocationsString, startDateForMachineClass, endDateForMachineClass])
   return { ...query, setStartDateForMachineClass, setEndDateForMachineClass }
 }
 
