@@ -25,7 +25,8 @@ const isProductionTimeActive = async ({
     .toISOString()
   const firstControllerTimerToday = await ControllerTimers.findOne({
     createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-  })
+    endAt: null,
+  }).sort({ $natural: -1 })
   const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
   const firstTimerTodayDate = firstControllerTimerToday?.createdAt
     ? dayjs.tz(firstControllerTimerToday?.createdAt, timeZone ? timeZone : "")
