@@ -31,7 +31,7 @@ function useGetControllerTimer(timerId: string) {
     ["controller-timer", timerId],
     () => getTodayControllerTimer(timerId),
     {
-      // refetchInterval: 2000,
+      refetchInterval: 2000,
       refetchOnWindowFocus: false,
       enabled: !!timerId,
     }

@@ -40,7 +40,7 @@ function useGetAllTimerLogsCount({
     () => getAllTimerLogsCount({ locationId, timerId }),
     {
       enabled: !!locationId && !!timerId,
-      // refetchInterval: 2000,
+      refetchInterval: 2000,
     }
   )
 

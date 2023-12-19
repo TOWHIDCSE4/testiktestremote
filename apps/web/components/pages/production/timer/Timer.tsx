@@ -152,26 +152,26 @@ const Timer = ({
       runCycle()
     }
   }
-  useEffect(() => {
-    console.log("data", socket)
-    if (!timer._id) return
-    const runSocket = (data: any) => {
-      console.log("Get Socket Data", data)
-      queryClient.invalidateQueries(["controller-timer", timer._id])
-      queryClient.invalidateQueries(["cycle-timer-real-time", timer._id])
-      queryClient.invalidateQueries([
-        "timer-logs-count",
-        timer.locationId,
-        timer._id,
-      ])
-      queryClient.invalidateQueries(["timer-logs", timer.locationId, timer._id])
-    }
-    socket?.on(`timer-${timer._id}`, runSocket)
+  // useEffect(() => {
+  //   console.log("data", socket)
+  //   if (!timer._id) return
+  //   const runSocket = (data: any) => {
+  //     console.log("Get Socket Data", data)
+  //     queryClient.invalidateQueries(["controller-timer", timer._id])
+  //     queryClient.invalidateQueries(["cycle-timer-real-time", timer._id])
+  //     queryClient.invalidateQueries([
+  //       "timer-logs-count",
+  //       timer.locationId,
+  //       timer._id,
+  //     ])
+  //     queryClient.invalidateQueries(["timer-logs", timer.locationId, timer._id])
+  //   }
+  //   socket?.on(`timer-${timer._id}`, runSocket)
 
-    return () => {
-      socket?.off(`timer-${timer._id}`, runSocket)
-    }
-  }, [socket, timer._id])
+  //   return () => {
+  //     socket?.off(`timer-${timer._id}`, runSocket)
+  //   }
+  // }, [socket, timer._id])
 
   // useEffect(() => {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
