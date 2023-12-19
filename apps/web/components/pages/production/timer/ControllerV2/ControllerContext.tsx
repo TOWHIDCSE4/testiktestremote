@@ -45,7 +45,12 @@ import toast from "react-hot-toast"
 import useUpdateJobTimer from "../../../../../hooks/jobTimer/useUpdateJobTimer"
 import useUpdateTimer from "../../../../../hooks/timers/useUpdateTimer"
 import { useSocket } from "../../../../../store/useSocket"
-import { getHoursDifferent } from "../../../../../helpers/date"
+import {
+  getHoursDifferent,
+  getSecondsDifferent,
+} from "../../../../../helpers/date"
+import useGetCycleTimerRealTime from "../../../../../hooks/timers/useGetCycleTimerRealTime"
+import { nanoid } from "nanoid"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -210,7 +215,7 @@ export const ControllerContextProvider = ({
     data: cycleTimerData,
     refetch: cycleRefetch,
     isLoading: isCycleTimerLoading,
-  } = useGetCycleTimer(timerId)
+  } = useGetCycleTimerRealTime(timerId)
   const { mutate: addControllerTimer, isError: isStartControllerError } =
     useAddControllerTimer()
   const { mutate: addCycleTimer } = useAddCycleTimer()
@@ -234,6 +239,7 @@ export const ControllerContextProvider = ({
     tonsPerHour: 0,
     totalTons: 0,
   })
+  const [sessionId] = useState(nanoid())
   // const socket = useSocket((state) => state.instance)
   // setTotals({
   //   unitsPerHour: count / Math.round(hoursLapse),
@@ -362,7 +368,7 @@ export const ControllerContextProvider = ({
     })
     startCycleClockInterval()
 
-    endAddCycleTimer(timerId)
+    endAddCycleTimer({ timerId, clientStartedAt: Date.now(), sessionId })
     // TODO:/JAMES should confirm its context
     addReadingMessage("Stopping Timer")
     addReadingMessage("Timer stopped")
@@ -403,6 +409,7 @@ export const ControllerContextProvider = ({
     if (!hasControllerTimer) {
       const controllerTimerValue: T_ControllerTimer = {
         timerId: timerId,
+        clientStartedAt: Date.now(),
         locationId: getObjectId(timerDetailData?.item?.locationId),
       }
       queryClient.setQueriesData(
@@ -507,6 +514,8 @@ export const ControllerContextProvider = ({
   const onToggleStart = () => {
     const cycleTimerValue: T_CycleTimer = {
       timerId,
+      clientStartedAt: Date.now(),
+      sessionId,
     }
     setIsStopDisabled(true)
     setTimeout(() => {
@@ -735,7 +744,58 @@ export const ControllerContextProvider = ({
   ])
   useEffect(() => {
     setUnitCreated(0)
-  }, [controllerTimerData?.items[0]?.createdAt])
+    const controllerTimer = controllerTimerData?.items[0]
+    const createdAt =
+      controllerTimer?.clientStartedAt || controllerTimer?.createdAt
+
+    if (createdAt && !controllerTimer.endAt) {
+      const seconds = getSecondsDifferent(
+        createdAt,
+        timerDetailData?.item?.locationId.timezone
+      )
+      setClockSeconds(seconds)
+      startControllerClockInterval()
+    } else if (createdAt && controllerTimer?.endAt) {
+      const seconds = getSecondsDifferent(
+        createdAt,
+        timerDetailData?.item?.locationId.timezone,
+        controllerTimer?.endAt
+      )
+      setClockSeconds(seconds)
+      stopControllerClockInterval()
+    }
+  }, [
+    controllerTimerData?.items[0]?.createdAt,
+    controllerTimerData?.items[0]?.endAt,
+  ])
+
+  useEffect(() => {
+    const cycleTimer = cycleTimerData?.items[0]
+    const createdAt = cycleTimer?.clientStartedAt || cycleTimer?.createdAt
+
+    if (createdAt && !cycleTimer.endAt) {
+      const seconds = getSecondsDifferent(
+        createdAt,
+        timerDetailData?.item?.locationId.timezone
+      )
+      if (cycleTimer.sessionId !== sessionId && isCycleClockRunning) {
+        setUnitCreated((c) => c + 1)
+      }
+      setClockMilliSeconds(seconds)
+      startCycleClockInterval()
+    } else if (createdAt && cycleTimer?.endAt) {
+      const seconds = getSecondsDifferent(
+        createdAt,
+        timerDetailData?.item?.locationId.timezone,
+        cycleTimer?.endAt
+      )
+      setClockMilliSeconds(0)
+      stopCycleClockInterval()
+    } else if (!cycleTimer) {
+      setClockMilliSeconds(0)
+      stopCycleClockInterval()
+    }
+  }, [cycleTimerData?.items[0]?.createdAt, cycleTimerData?.items[0]?.endAt])
 
   useEffect(() => {
     // on open

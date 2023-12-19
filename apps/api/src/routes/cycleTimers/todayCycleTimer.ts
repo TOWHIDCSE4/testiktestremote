@@ -48,11 +48,11 @@ export const todayCycleTimer = async (req: Request, res: Response) => {
             endAt: null,
             createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
           }).sort({ createdAt: -1 })
-          ioEmit(`timer-${timerId}`, {
-            action: `update-cycle`,
-            user: user,
-            timers: getAllActiveControllerTimerToday,
-          })
+          // ioEmit(`timer-${timerId}`, {
+          //   action: `update-cycle`,
+          //   user: user,
+          //   timers: getAllActiveControllerTimerToday,
+          // })
           res.json({
             error: false,
             items: getAllActiveControllerTimerToday,
@@ -66,11 +66,11 @@ export const todayCycleTimer = async (req: Request, res: Response) => {
             endAt: null,
             createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
           }).sort({ createdAt: -1 })
-          ioEmit(`timer-${timerId}`, {
-            action: `update-cycle`,
-            user: user,
-            timers: getAllActiveControllerTimerToday,
-          })
+          // ioEmit(`timer-${timerId}`, {
+          //   action: `update-cycle`,
+          //   user: user,
+          //   timers: getAllActiveControllerTimerToday,
+          // })
           res.json({
             error: false,
             items: [],

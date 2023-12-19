@@ -62,13 +62,15 @@ export const getCycleTimer = async (req: Request, res: Response) => {
 
 export const addCycleTimer = async (req: Request, res: Response) => {
   const io = getIo()
-  const { timerId } = req.body
+  const { timerId, clientStartedAt, sessionId } = req.body
   ioEmit(`timer-${timerId}`, { action: "pre-add" })
   if (timerId) {
     const newCycleTimer = new CycleTimer({
       timerId,
       endAt: null,
       createdAt: Date.now(),
+      clientStartedAt: new Date(clientStartedAt),
+      sessionId,
     })
     const parseCycleTimer = ZCycleTimer.safeParse(req.body)
     if (parseCycleTimer.success) {
