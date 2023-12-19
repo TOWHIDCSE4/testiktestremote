@@ -10,7 +10,7 @@ import {
 } from "@mui/material"
 import { T_Factory, T_Machine, T_MachineClass, T_Part } from "custom-validator"
 import Cookies from "js-cookie"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import { BiSolidPin } from "react-icons/bi"
 import { HiRefresh, HiXCircle } from "react-icons/hi"
 import { API_URL_PARTS } from "../../../../helpers/constants"
@@ -19,6 +19,9 @@ import useLocations from "../../../../hooks/locations/useLocations"
 import useMachineClasses from "../../../../hooks/machineClasses/useMachineClassesByLocation"
 import useMachines from "../../../../hooks/machines/useMachines"
 import CustomSelectComponent, { T_SelectItem } from "./CustomSelect"
+import SystemReport from "./Report/SystemReport"
+import NewWindow from "react-new-window"
+import useGlobalTimerLogsMulti from "../../../../hooks/timerLogs/useGetGlobalTimerLogsMultiFilter"
 
 type T_Dispaly_Part_Types = {
   key: string
@@ -26,25 +29,60 @@ type T_Dispaly_Part_Types = {
 }
 
 const Content = () => {
+  const myRef = useRef<NewWindow | null>(null)
   const [parts, setParts] = useState<T_Part[]>()
   const [part, onPartChange] = useState()
   const [selectedCity, setSelectedCity] = useState<T_SelectItem | undefined>()
+  const [showReport, setShowReport] = useState(false)
   const [selectedFactories, setSelectedFactories] = useState<T_SelectItem[]>()
   const [selectedMachineClasses, setSelectedMachineClasses] = useState<
     T_SelectItem[] | undefined
   >()
+
   const [selectedMachines, setSelectedMachines] = useState<
     T_SelectItem[] | undefined
   >()
   const [selectedParts, setSelectedParts] = useState<T_SelectItem[]>()
   const [isIncludeCycle, setIsIncludeCycle] = useState<boolean>()
   const [isPinned, setIsPinned] = useState<boolean>()
+  const [keyword, setKeyword] = useState<string>("")
+  const [sortType, setSortType] = useState<string>("")
 
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: machines, isLoading: isMachinesLoading } = useMachines()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses([selectedCity?.key] as string[])
+
+  function objectToArray(obj: any) {
+    return obj ? [obj?.key] : []
+  }
+
+  const cityArray = objectToArray(selectedCity)
+
+  const machineClassSelectedIds = selectedMachineClasses?.map(
+    (selectedMachineClass) => selectedMachineClass.key
+  )
+
+  const machineSelectedIds = selectedMachines?.map((machineId) => machineId.key)
+  const partsSelectedIds = selectedParts?.map((partsId) => partsId.key)
+  // console.log("Machine Selected ======>>>>>", partsSelectedIds)
+
+  const process = true
+
+  const {
+    data: paginated,
+    isLoading: isPaginatedLoading,
+    isRefetching: isPaginatedRefetching,
+    page,
+    setPage,
+    setFactoryId,
+    setMachineClassId,
+    setMachineId,
+    setStartDateRange,
+    setEndDateRange,
+    setPartId,
+  } = useGlobalTimerLogsMulti(cityArray, sortType, keyword, process)
 
   // CITY
   const filteredCities = useMemo<Array<T_SelectItem>>(() => {
@@ -75,7 +113,7 @@ const Content = () => {
         filteredFactories?.some((f) => f.key == prevItem.key)
       )
     )
-  }, [filteredFactories, setSelectedFactories])
+  }, [filteredFactories])
 
   // MACHINE CLASS
   const filteredMachineClasses = useMemo<Array<T_SelectItem>>(() => {
@@ -88,12 +126,19 @@ const Content = () => {
   }, [machineClasses, selectedCity])
 
   useEffect(() => {
+    if (machineClassSelectedIds !== undefined) {
+      setMachineClassId(machineClassSelectedIds)
+    }
+    console.log("MACHINE CLASS IDS=====>>>", machineClassSelectedIds)
+  }, [machineClassSelectedIds])
+
+  useEffect(() => {
     setSelectedMachineClasses((prev) =>
       prev?.filter((prevItem) =>
         filteredMachineClasses?.some((mc) => mc.key == prevItem.key)
       )
     )
-  }, [filteredMachineClasses, setSelectedMachineClasses])
+  }, [filteredMachineClasses])
 
   // MACHINES
 
@@ -109,12 +154,24 @@ const Content = () => {
   }, [machines, selectedCity, selectedFactories, selectedMachineClasses])
 
   useEffect(() => {
+    if (machineSelectedIds !== undefined) {
+      setMachineId(machineSelectedIds)
+    }
+  }, [machineSelectedIds])
+
+  useEffect(() => {
     setSelectedMachines((prev) =>
       prev?.filter((prevItem) =>
         filteredMachines?.some((m: T_SelectItem) => m.key == prevItem.key)
       )
     )
-  }, [filteredMachines, setSelectedMachines])
+  }, [filteredMachines])
+
+  useEffect(() => {
+    if (partsSelectedIds !== undefined) {
+      setPartId(partsSelectedIds)
+    }
+  }, [partsSelectedIds])
 
   useEffect(() => {
     setSelectedParts((prev) =>
@@ -122,7 +179,7 @@ const Content = () => {
         selectedParts?.some((m: T_SelectItem) => m.key == prevItem.key)
       )
     )
-  }, [selectedParts, setSelectedParts])
+  }, [selectedParts])
 
   useEffect(() => {
     const token = Cookies.get("tfl")
@@ -162,7 +219,9 @@ const Content = () => {
     [setSelectedCity]
   )
   const onMachineClassChange = useCallback(
-    (val?: T_SelectItem[]) => setSelectedMachineClasses(val),
+    (val?: T_SelectItem[]) => {
+      setSelectedMachineClasses(val)
+    },
     [setSelectedMachineClasses]
   )
   const onChangePart = useCallback(
@@ -173,6 +232,10 @@ const Content = () => {
     (val?: T_SelectItem[]) => setSelectedMachines(val),
     [setSelectedMachines]
   )
+
+  function handleClick() {
+    setShowReport(true)
+  }
 
   return (
     <>
@@ -255,18 +318,74 @@ const Content = () => {
                     </div>
                     <div className="relative col-span-1">
                       <div className="text-sm">Review Range</div>
-                      <div className="px-2">
-                        <Button variant="contained">Today</Button>
+                      <div className="px-2 text-[11px]">
+                        <button className="flex justify-center py-2 px-4 border rounded-lg border-1 border-black bg-red-900 text-slate-50">
+                          TODAY
+                        </button>
+                        {/* <Button variant="contained">Today</Button> */}
                       </div>
                     </div>
                   </div>
                   {/* END SELECT */}
                   <Divider />
-                  <div className="flex justify-end p-6">
-                    <Button size="small" color="primary" variant="contained">
-                      REPORT
-                    </Button>
+                  <div className="flex justify-end p-6 text-[11px]">
+                    <button
+                      className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-red-900 text-slate-50"
+                      onClick={handleClick}
+                    >
+                      GENERATE REPORT
+                    </button>
                   </div>
+                  {showReport && (
+                    <NewWindow
+                      copyStyles={true}
+                      features={{
+                        width: paginated?.items?.length! > 0 ? 1440 : 500,
+                        height: 1000,
+                      }}
+                      center="parent"
+                      onUnload={() => setShowReport(false)}
+                      title={"Report"}
+                      name="Report"
+                      ref={myRef}
+                    >
+                      <SystemReport
+                        data={paginated}
+                        // city={cityArray}
+                        keyword={keyword}
+                        sortType={sortType}
+                        factoryId={factories?.items?.map(
+                          (factory: { _id: string }) => factory._id
+                        )}
+                        process={process}
+                        machineId={machineSelectedIds}
+                        partId={partsSelectedIds}
+                        machineClassId={machineClassSelectedIds}
+                        locationId={cityArray}
+                        locationData={
+                          locations?.items?.filter((item) =>
+                            cityArray?.includes(item._id ?? "")
+                          ) ?? []
+                        }
+                        machineClassData={
+                          machineClasses?.items?.filter(
+                            (item: T_MachineClass) =>
+                              machineClassSelectedIds?.includes(item._id ?? "")
+                          ) ?? []
+                        }
+                        machineData={
+                          machines?.items?.filter((item: T_Machine) =>
+                            machineSelectedIds?.includes(
+                              (item._id as string) ?? ""
+                            )
+                          ) ?? []
+                        }
+                        startDateRange={""}
+                        endDateRange={""}
+                        newWindowRef={myRef}
+                      />
+                    </NewWindow>
+                  )}
                   <p className="text-xs">Confirm Selection</p>
                   <Divider />
                   {/* BEGIN CONFIRM */}
