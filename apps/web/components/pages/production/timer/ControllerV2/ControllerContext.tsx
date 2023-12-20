@@ -381,6 +381,10 @@ export const ControllerContextProvider = ({
   }
 
   const onStopCycleWithReasons = () => {
+    if (!stopReasons.length) {
+      toast.error("Please choose stop reason")
+      return
+    }
     timeLogCall(jobTimer?.item?.jobId)
     stopCycleClockInterval()
     setIsCycleClockRunning(false)
