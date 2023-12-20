@@ -142,9 +142,6 @@ export const timerUnitsCreatedCount = async (req: Request, res: Response) => {
       createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
     }).sort({ $natural: -1 })
     if (!getLastDayTimer) {
-      console.log(
-        `getLastDayTimer timer not found ${location} ${req.method} ${req.url}`
-      )
       return res.json({
         error: false,
         item: {},

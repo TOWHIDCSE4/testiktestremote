@@ -23,7 +23,7 @@ export async function getTodayControllerTimer(timerId: string | undefined) {
       },
     }
   )
-  return (await res.json()) as T_DBReturn
+  return (await res.json()) as any
 }
 
 function useGetControllerTimer(timerId: string) {
