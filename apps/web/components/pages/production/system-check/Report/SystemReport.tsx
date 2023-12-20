@@ -105,7 +105,6 @@ const SystemReport = ({
   useEffect(() => {
     const fetchpaginated = async () => {
       const token = Cookies.get("tfl")
-      console.log("id", locationId)
       const res = await fetch(
         `${API_URL_TIMER_LOGS}/global/multi/filter?${locationIdQueryString}&${factoryIdQueryString}&${partIdQueryString}&${machineIdQueryString}&${machineClassIdQueryString}&startDate=${startDateRange}&endDate=${endDateRange}&sort=${sortType}&key=${keyword}&page=${1}&limit=${
           paginated?.itemCount
@@ -208,14 +207,10 @@ const SystemReport = ({
                 {machineData.map((item) => item.name).join(", ")}
               </div>
             )}
-            {/* {startDateRange && endDateRange && ( */}
-            {/* <div className="text-sm">
-              <span className="text-gray-800 font-bold">Date Range:</span>{" "}
-              {[
-                  console.log(
-                    endDateRange,
-                    dayjs(endDateRange as string).format("MM/DD/YYYY")
-                  ),
+            {startDateRange && endDateRange && (
+              <div className="text-sm">
+                <span className="text-gray-800 font-bold">Date Range:</span>{" "}
+                {[
                   dayjs(startDateRange as string).format("MM/DD/YYYY"),
                   dayjs(endDateRange as string)
                     .subtract(1, "day")
@@ -223,18 +218,18 @@ const SystemReport = ({
                 ]
                   .map((item) => item)
                   .join(" - ")}
-            </div> */}
-            {/* )} */}
+              </div>
+            )}
             <div className="text-sm">
               <span className="text-gray-800 font-bold">Report:</span>{" "}
-              {/* {dayjs
+              {dayjs
                 .tz(
                   dayjs(),
                   paginated?.item?.locationId.timeZone
                     ? paginated?.item?.locationId.timeZone
                     : ""
                 )
-                .format("MM/DD/YYYY")} */}
+                .format("MM/DD/YYYY")}
             </div>
           </div>
         </div>

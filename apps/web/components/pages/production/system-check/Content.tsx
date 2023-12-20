@@ -9,6 +9,7 @@ import {
   IconButton,
 } from "@mui/material"
 import { T_Factory, T_Machine, T_MachineClass, T_Part } from "custom-validator"
+import { DatePicker, Space } from "antd"
 import Cookies from "js-cookie"
 import { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import { BiSolidPin } from "react-icons/bi"
@@ -22,6 +23,7 @@ import CustomSelectComponent, { T_SelectItem } from "./CustomSelect"
 import SystemReport from "./Report/SystemReport"
 import NewWindow from "react-new-window"
 import useGlobalTimerLogsMulti from "../../../../hooks/timerLogs/useGetGlobalTimerLogsMultiFilter"
+import dayjs from "dayjs"
 // import DeleteIcon from "@mui/icons-material/Delete"
 
 type T_Dispaly_Part_Types = {
@@ -52,12 +54,17 @@ const Content = () => {
   const [isPinned, setIsPinned] = useState<boolean>()
   const [keyword, setKeyword] = useState<string>("")
   const [sortType, setSortType] = useState<string>("")
-
+  const [startDate, setStartDate] = useState<string>("")
+  const [endDate, setEndDate] = useState<string>("")
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState<
+    boolean | undefined
+  >(false)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: machines, isLoading: isMachinesLoading } = useMachines()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses([selectedCity?.key] as string[])
+  const [dateRange, setDateRange] = useState<Date[] | string[]>([])
 
   const cityArray = useMemo(() => objectToArray(selectedCity), [selectedCity])
 
@@ -72,6 +79,8 @@ const Content = () => {
 
   const machineSelectedIds = selectedMachines?.map((machineId) => machineId.key)
   const partsSelectedIds = selectedParts?.map((partsId) => partsId.key)
+
+  const { RangePicker } = DatePicker
 
   const process = true
 
@@ -156,6 +165,14 @@ const Content = () => {
   }, [machineSelectedIds?.join(",")])
 
   useEffect(() => {
+    if (startDate !== undefined) setStartDateRange(startDate)
+  }, [startDate])
+
+  useEffect(() => {
+    if (endDate !== undefined) setEndDateRange(endDate)
+  }, [endDate])
+
+  useEffect(() => {
     setSelectedMachines((prev) =>
       prev?.filter((prevItem) =>
         filteredMachines?.some((m: T_SelectItem) => m.key == prevItem.key)
@@ -194,7 +211,7 @@ const Content = () => {
       let page = 1
 
       const res = await fetch(
-        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}`,
+        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&startDate=${startDate}&endDate=${endDate}`,
         // &search=${search}&startDate=${startDate}&endDate=${endDate},
         {
           method: "GET",
@@ -234,6 +251,34 @@ const Content = () => {
   function handleClick() {
     setShowReport(true)
   }
+
+  function handleDate() {
+    setIsCheckboxChecked(!isCheckboxChecked)
+    if (!isCheckboxChecked) {
+      setEndDate(dayjs().endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
+      setStartDate(dayjs().startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
+    } else {
+      setStartDate("")
+      setEndDate("")
+    }
+  }
+
+  // const datePick = (inputValue: any) => {
+  //   console.log(inputValue)
+  //   setPage(1)
+  //   if (Array.isArray(inputValue)) {
+  //     if (inputValue && inputValue[0] && inputValue[1]) {
+  //       setStartDate(
+  //         dayjs(inputValue[0])
+  //           .startOf("day")
+  //           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+  //       )
+  //       setEndDate(
+  //         dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+  //       )
+  //     }
+  //   }
+  // }
 
   return (
     <>
@@ -315,11 +360,38 @@ const Content = () => {
                       </div>
                     </div>
                     <div className="w-[12%]">
-                      <div className="text-sm">Review Range</div>
-                      <div className="px-2 text-[11px]">
-                        <button className="flex justify-center py-2 px-4 border rounded-lg border-1 border-black bg-blue-950 text-slate-50">
-                          TODAY
-                        </button>
+                      <div className="text-sm whitespace-nowrap">
+                        Review Range
+                      </div>
+                      {/* <div className="flex text-[11px] items-center">
+                        <div className="w-2/3">
+                          <Space
+                            direction="vertical"
+                            className="w-full"
+                            size={12}
+                          >
+                            <RangePicker
+                              disabled={
+                                isCheckboxChecked || !process ? true : false
+                              }
+                              //@ts-expect-error
+                              value={isCheckboxChecked ? [null] : dateRange}
+                              // disabledDate={disabledDate}
+                              onChange={(e) => datePick(e)}
+                            />
+                          </Space>
+                        </div>
+                      </div> */}
+                      <div className="px-0 text-[11px] flex space-x-2 pt-3">
+                        <label htmlFor="checkbox-date">TODAY</label>
+                        <input
+                          id="checkbox-date"
+                          type="checkbox"
+                          checked={isCheckboxChecked}
+                          onChange={handleDate}
+                          className="flex justify-center py-1 px-1 rounded-full border border-1 border-black text-black"
+                        />
+
                         {/* <Button variant="contained">Today</Button> */}
                       </div>
                     </div>
@@ -371,8 +443,8 @@ const Content = () => {
                             )
                           ) ?? []
                         }
-                        startDateRange={""}
-                        endDateRange={""}
+                        startDateRange={startDate}
+                        endDateRange={endDate}
                         newWindowRef={myRef}
                       />
                     </NewWindow>
