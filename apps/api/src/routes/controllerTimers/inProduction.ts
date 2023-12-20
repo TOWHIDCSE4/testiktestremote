@@ -6,6 +6,7 @@ import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import Locations from "../../models/location"
 import * as Sentry from "@sentry/node"
+import CycleTimers from "../../models/cycleTimers"
 
 export const inProduction = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
@@ -25,10 +26,17 @@ export const inProduction = async (req: Request, res: Response) => {
     const getDayFirstTimer = await ControllerTimers.findOne({
       locationId: locationId,
       createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-    })
-    if (getDayFirstTimer) {
+      endAt: null,
+    }).sort({ $natural: 1 })
+    const firstCycle = getDayFirstTimer
+      ? await CycleTimers.findOne({
+          createdAt: { $gte: getDayFirstTimer.createdAt },
+        })
+      : null
+
+    if (firstCycle) {
       const createdAtTZ = dayjs.tz(
-        dayjs(getDayFirstTimer?.createdAt),
+        dayjs(firstCycle?.clientStartedAt),
         timeZone ? timeZone : ""
       )
       const currentDateTZ = dayjs.tz(dayjs(), timeZone ? timeZone : "")
@@ -40,7 +48,7 @@ export const inProduction = async (req: Request, res: Response) => {
           item: {
             seconds: diffSeconds,
             started: true,
-            createdAt: getDayFirstTimer?.createdAt,
+            createdAt: firstCycle?.clientStartedAt,
           },
           itemCount: null,
           message: null,
@@ -51,7 +59,7 @@ export const inProduction = async (req: Request, res: Response) => {
           item: {
             seconds: 0,
             started: false,
-            createdAt: getDayFirstTimer?.createdAt,
+            createdAt: firstCycle?.clientStartedAt,
           },
           itemCount: null,
           message: null,
