@@ -721,10 +721,10 @@ export const ControllerContextProvider = ({
   useEffect(() => {
     if (
       timerDetailData?.item?.createdAt &&
-      controllerTimerData?.items[0]?.createdAt
+      controllerTimerData?.controllerStartedAt
     ) {
       const hours = getHoursDifferent(
-        controllerTimerData?.items[0]?.createdAt,
+        controllerTimerData?.controllerStartedAt,
         timerDetailData?.item?.locationId.timezone
       )
       setTotals((current) => ({
@@ -741,13 +741,13 @@ export const ControllerContextProvider = ({
     unitCreated,
     timerDetailData?.item?.createdAt,
     controllerTimerData?.items[0]?.createdAt,
+    controllerTimerData?.controllerStartedAt,
   ])
 
   useEffect(() => {
     setUnitCreated(0)
     const controllerTimer = controllerTimerData?.items[0]
-    const createdAt =
-      controllerTimer?.clientStartedAt || controllerTimer?.createdAt
+    const createdAt = controllerTimerData?.controllerStartedAt
 
     if (createdAt && !controllerTimer.endAt) {
       const seconds = getSecondsDifferent(
@@ -756,18 +756,24 @@ export const ControllerContextProvider = ({
       )
       setClockSeconds(seconds)
       startControllerClockInterval()
-    } else if (createdAt && controllerTimer?.endAt) {
+    } else if (controllerTimer?.endAt) {
       const seconds = getSecondsDifferent(
-        createdAt,
+        createdAt ||
+          controllerTimerData?.items[0]?.clientStartedAt ||
+          controllerTimerData?.items[0]?.createdAt,
         timerDetailData?.item?.locationId.timezone,
         controllerTimer?.endAt
       )
       setClockSeconds(seconds)
       stopControllerClockInterval()
+    } else {
+      setClockSeconds(0)
+      stopControllerClockInterval()
     }
   }, [
-    controllerTimerData?.items[0]?.createdAt,
+    controllerTimerData?.items[0]?.clientStartedAt,
     controllerTimerData?.items[0]?.endAt,
+    controllerTimerData?.controllerStartedAt,
   ])
 
   useEffect(() => {

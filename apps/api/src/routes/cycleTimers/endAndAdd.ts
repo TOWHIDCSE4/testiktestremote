@@ -18,7 +18,7 @@ export const endAndAdd = async (req: Request, res: Response) => {
       action: "pre-endAndAdd",
     })
     if (timerId) {
-      await CycleTimers.findOneAndUpdate(
+      await CycleTimers.updateMany(
         { timerId, endAt: null },
         {
           endAt: Date.now(),

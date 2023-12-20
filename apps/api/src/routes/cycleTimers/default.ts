@@ -13,6 +13,12 @@ import { ZCycleTimer } from "custom-validator"
 import { date } from "zod"
 import * as Sentry from "@sentry/node"
 import { getIo, ioEmit } from "../../config/setup-socket"
+import dayjs from "dayjs"
+
+import * as timezone from "dayjs/plugin/timezone"
+import * as utc from "dayjs/plugin/utc"
+import Timers from "../../models/timers"
+import ControllerTimers from "../../models/controllerTimers"
 
 export const getAllCycleTimers = async (req: Request, res: Response) => {
   try {
@@ -64,7 +70,24 @@ export const addCycleTimer = async (req: Request, res: Response) => {
   const io = getIo()
   const { timerId, clientStartedAt, sessionId } = req.body
   ioEmit(`timer-${timerId}`, { action: "pre-add" })
+  dayjs.extend(utc.default)
+  dayjs.extend(timezone.default)
   if (timerId) {
+    const timer = await Timers.findById(timerId).populate<{ locationId: any }>(
+      "locationId"
+    )
+
+    const timeZone = timer?.locationId?.timeZone
+    const currentDateStart = dayjs
+      .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
+      .toISOString()
+    const currentDateEnd = dayjs
+      .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
+      .toISOString()
+    const currentControllerSession = await ControllerTimers.findOne({
+      createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+      endAt: null,
+    }).sort({ $natural: -1 })
     const newCycleTimer = new CycleTimer({
       timerId,
       endAt: null,
@@ -77,6 +100,7 @@ export const addCycleTimer = async (req: Request, res: Response) => {
       try {
         const getExistingCycleTimer = await CycleTimer.find({
           $or: [{ timerId }],
+          createdAt: { $gte: currentControllerSession?.createdAt },
           endAt: null,
         })
         if (getExistingCycleTimer.length === 0) {

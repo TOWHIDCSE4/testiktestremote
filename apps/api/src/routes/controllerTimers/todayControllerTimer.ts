@@ -47,10 +47,20 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
         })
           .sort({ $natural: -1 })
           .limit(1)
-
+        let firstCycle = null
+        if (getAllActiveControllerTimerToday.length) {
+          const [controllerTimer] = getAllActiveControllerTimerToday
+          firstCycle = await ControllerTimers.findOne({
+            createdAt: { $gte: controllerTimer.clientStartedAt },
+            endAt: null,
+          })
+            .sort({ $natural: 1 })
+            .limit(1)
+        }
         res.json({
           error: false,
           items: getAllActiveControllerTimerToday,
+          controllerStartedAt: firstCycle ? firstCycle.clientStartedAt : null,
           itemCount: null,
           message: null,
         })

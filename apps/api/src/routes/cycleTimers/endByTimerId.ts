@@ -18,7 +18,7 @@ export const endByTimerId = async (req: Request, res: Response) => {
         endAt: null,
       })
       if (getExistingCycleTimer.length > 0) {
-        const endCycle = await CycleTimers.findOneAndUpdate(
+        const endCycle = await CycleTimers.updateMany(
           { timerId, endAt: null },
           {
             endAt: Date.now(),
