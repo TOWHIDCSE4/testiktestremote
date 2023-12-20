@@ -198,11 +198,6 @@ export const ControllerContextProvider = ({
 
   const { mutate: endControllerTimer, isLoading: isEndingProduction } =
     useEndControllerTimer()
-  // const { data: timerLogsCount, refetch: refetchTimerLogs } =
-  //   useGetAllTimerLogsCount({
-  //     locationId: timerDetailData?.item?.locationId._id,
-  //     timerId,
-  //   })
 
   const { data: timerLogsData } = useGetAllTimerLogs({
     locationId: timerDetailData?.item?.locationId._id,
@@ -240,14 +235,6 @@ export const ControllerContextProvider = ({
     totalTons: 0,
   })
   const [sessionId] = useState(nanoid())
-  // const socket = useSocket((state) => state.instance)
-  // setTotals({
-  //   unitsPerHour: count / Math.round(hoursLapse),
-  //   tonsPerHour:
-  //     (count * (timerDetailData?.item?.partId.tons as number)) /
-  //     Math.round(hoursLapse),
-  //   totalTons: count * (timerDetailData?.item?.partId.tons as number),
-  // })
 
   const queryClient = useQueryClient()
 
@@ -274,7 +261,7 @@ export const ControllerContextProvider = ({
   const addReadingMessage = useCallback(
     (message: string) => {
       const currentTime = dayjs
-        .tz(dayjs(), timerDetailData?.item?.locationId.timezone ?? "")
+        .tz(dayjs(), timerDetailData?.item?.locationId.timeZone ?? "")
         .format("YYYY-MM-DD HH:mm:ss")
       setReadingMessages((prev) => [
         ...(prev ?? []),
@@ -291,7 +278,7 @@ export const ControllerContextProvider = ({
         )
       }
     },
-    [timerDetailData?.item?.locationId.timezone, readingsDivRef]
+    [timerDetailData?.item?.locationId.timeZone, readingsDivRef]
   )
 
   /* Check required data */
@@ -310,6 +297,23 @@ export const ControllerContextProvider = ({
   /* end of check */
 
   const onEndProduction = () => {
+    const endedAt = dayjs
+      .tz(dayjs(), timerDetailData?.item?.locationId.timeZone ?? "")
+      .format("HH:mm A")
+    const elapsedArray = hourMinuteSecond(clockSeconds)
+    addReadingMessage(
+      `In production for ${elapsedArray[0]} hours ${elapsedArray[1]} minutes ${elapsedArray[2]} seconds`
+    )
+    addReadingMessage(`Ended at ${endedAt}`)
+    addReadingMessage(`Tons per hour ${totals.tonsPerHour.toFixed(3)}`)
+    addReadingMessage(`Total tons ${totals.totalTons.toFixed(3)}`)
+    addReadingMessage(`Units per hour ${totals.unitsPerHour.toFixed(3)}`)
+    addReadingMessage(`Total units ${unitCreated}`)
+    addReadingMessage(
+      `${controllerDetailData.locationName} - ${controllerDetailData.machineName}`
+    )
+    addReadingMessage("Session complete")
+
     stopControllerClockInterval()
     stopCycleClockInterval()
     setIsControllerClockRunning(false)
@@ -729,7 +733,7 @@ export const ControllerContextProvider = ({
     ) {
       const hours = getHoursDifferent(
         controllerTimerData?.controllerStartedAt,
-        timerDetailData?.item?.locationId.timezone
+        timerDetailData?.item?.locationId.timeZone
       )
       setTotals((current) => ({
         ...current,
@@ -756,7 +760,7 @@ export const ControllerContextProvider = ({
     if (createdAt && !controllerTimer.endAt) {
       const seconds = getSecondsDifferent(
         createdAt,
-        timerDetailData?.item?.locationId.timezone
+        timerDetailData?.item?.locationId.timeZone
       )
       setClockSeconds(seconds)
       startControllerClockInterval()
@@ -765,7 +769,7 @@ export const ControllerContextProvider = ({
         createdAt ||
           controllerTimerData?.items[0]?.clientStartedAt ||
           controllerTimerData?.items[0]?.createdAt,
-        timerDetailData?.item?.locationId.timezone,
+        timerDetailData?.item?.locationId.timeZone,
         controllerTimer?.endAt
       )
       setClockSeconds(seconds)
@@ -829,40 +833,6 @@ export const ControllerContextProvider = ({
         Math.floor((clockMilliSeconds * 100) / controllerDetailData.averageTime)
       )
   }, [controllerDetailData.averageTime, clockMilliSeconds])
-
-  // useEffect(() => {
-  //   async function controllerTimerTick(
-  //     eventName: string = "controller-timer-tick"
-  //   ) {
-  //     const data = {
-  //       timerId,
-  //       unitCreated,
-  //       isCycleClockRunning,
-  //       cycleClockSeconds: Math.trunc(clockMilliSeconds),
-  //       detail: controllerDetailData,
-  //       isControllerModalOpen: isControllerModalOpenRef.current,
-  //     }
-  //     socket?.emit(eventName, data)
-  //   }
-  //   if (isControllerModalOpenRef.current) {
-  //     controllerTimerTick()
-  //   }
-
-  //   const subscriber = useSocket.subscribe(({ isConnected }) => {
-  //     if (isConnected) {
-  //       controllerTimerTick("controller-reconnect")
-  //     }
-  //   })
-  //   return () => {
-  //     subscriber()
-  //   }
-  // }, [
-  //   socket,
-  //   timerId,
-  //   unitCreated,
-  //   isCycleClockRunning,
-  //   Math.trunc(clockMilliSeconds),
-  // ])
 
   useEffect(() => {
     setVariant(
