@@ -10,7 +10,7 @@ import {
 } from "@mui/material"
 import { T_Factory, T_Machine, T_MachineClass, T_Part } from "custom-validator"
 import Cookies from "js-cookie"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import { BiSolidPin } from "react-icons/bi"
 import { HiRefresh, HiXCircle } from "react-icons/hi"
 import { API_URL_PARTS } from "../../../../helpers/constants"
@@ -19,26 +19,39 @@ import useLocations from "../../../../hooks/locations/useLocations"
 import useMachineClasses from "../../../../hooks/machineClasses/useMachineClassesByLocation"
 import useMachines from "../../../../hooks/machines/useMachines"
 import CustomSelectComponent, { T_SelectItem } from "./CustomSelect"
+import SystemReport from "./Report/SystemReport"
+import NewWindow from "react-new-window"
+import useGlobalTimerLogsMulti from "../../../../hooks/timerLogs/useGetGlobalTimerLogsMultiFilter"
+// import DeleteIcon from "@mui/icons-material/Delete"
 
 type T_Dispaly_Part_Types = {
   key: string
   label: string
 }
 
+function objectToArray(obj: any) {
+  return obj ? [obj?.key] : []
+}
+
 const Content = () => {
+  const myRef = useRef<NewWindow | null>(null)
   const [parts, setParts] = useState<T_Part[]>()
   const [part, onPartChange] = useState()
   const [selectedCity, setSelectedCity] = useState<T_SelectItem | undefined>()
+  const [showReport, setShowReport] = useState(false)
   const [selectedFactories, setSelectedFactories] = useState<T_SelectItem[]>()
   const [selectedMachineClasses, setSelectedMachineClasses] = useState<
     T_SelectItem[] | undefined
   >()
+
   const [selectedMachines, setSelectedMachines] = useState<
     T_SelectItem[] | undefined
   >()
   const [selectedParts, setSelectedParts] = useState<T_SelectItem[]>()
   const [isIncludeCycle, setIsIncludeCycle] = useState<boolean>()
   const [isPinned, setIsPinned] = useState<boolean>()
+  const [keyword, setKeyword] = useState<string>("")
+  const [sortType, setSortType] = useState<string>("")
 
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: machines, isLoading: isMachinesLoading } = useMachines()
@@ -46,36 +59,59 @@ const Content = () => {
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses([selectedCity?.key] as string[])
 
+  const cityArray = useMemo(() => objectToArray(selectedCity), [selectedCity])
+
+  const machineClassSelectedIds = useMemo(
+    () =>
+      selectedMachineClasses?.map(
+        (selectedMachineClass) => selectedMachineClass.key
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(selectedMachineClasses)]
+  )
+
+  const machineSelectedIds = selectedMachines?.map((machineId) => machineId.key)
+  const partsSelectedIds = selectedParts?.map((partsId) => partsId.key)
+
+  const process = true
+
+  const {
+    data,
+    isLoading,
+    isRefetching,
+    page,
+    setPage,
+    setFactoryId,
+    setMachineClassId,
+    setMachineId,
+    setStartDateRange,
+    setEndDateRange,
+    setPartId,
+  } = useGlobalTimerLogsMulti(cityArray, sortType, keyword, process)
+
   // CITY
   const filteredCities = useMemo<Array<T_SelectItem>>(() => {
-    if (isLocationsLoading || !locations?.items) {
-      return []
-    } else {
-      return locations.items.map((item) => ({
-        key: item._id ?? "",
-        label: item.name,
-      }))
-    }
+    if (isLocationsLoading || !locations?.items) return []
+
+    return locations?.items.map((item) => ({
+      key: item._id ?? "",
+      label: item.name,
+    }))
   }, [locations, isLocationsLoading])
 
   const filteredFactories = useMemo<Array<T_SelectItem>>(() => {
-    if (isFactoriesLoading || !factories?.items || !selectedCity) {
-      return []
-    } else {
-      return factories.items.map((item: T_Factory) => ({
-        key: item._id ?? "",
-        label: item.name,
-      }))
-    }
-  }, [factories, isFactoriesLoading, selectedCity])
+    if (isFactoriesLoading || !factories?.items || !selectedCity) return []
 
-  useEffect(() => {
+    const data = factories?.items.map((item: T_Factory) => ({
+      key: item._id ?? "",
+      label: item.name,
+    }))
+
     setSelectedFactories((prev) =>
-      prev?.filter((prevItem) =>
-        filteredFactories?.some((f) => f.key == prevItem.key)
-      )
+      prev?.filter((prevItem) => data?.some((f: any) => f.key == prevItem.key))
     )
-  }, [filteredFactories, setSelectedFactories])
+    return data
+  }, [factories, isFactoriesLoading, selectedCity])
 
   // MACHINE CLASS
   const filteredMachineClasses = useMemo<Array<T_SelectItem>>(() => {
@@ -88,12 +124,18 @@ const Content = () => {
   }, [machineClasses, selectedCity])
 
   useEffect(() => {
+    if (machineClassSelectedIds !== undefined) {
+      setMachineClassId(machineClassSelectedIds)
+    }
+  }, [machineClassSelectedIds])
+
+  useEffect(() => {
     setSelectedMachineClasses((prev) =>
       prev?.filter((prevItem) =>
         filteredMachineClasses?.some((mc) => mc.key == prevItem.key)
       )
     )
-  }, [filteredMachineClasses, setSelectedMachineClasses])
+  }, [filteredMachineClasses])
 
   // MACHINES
 
@@ -105,8 +147,13 @@ const Content = () => {
         key: item._id,
         label: item.name,
       }))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [machines, selectedCity, selectedFactories, selectedMachineClasses])
+  }, [machines, selectedMachineClasses])
+
+  useEffect(() => {
+    if (machineSelectedIds !== undefined) {
+      setMachineId(machineSelectedIds)
+    }
+  }, [machineSelectedIds?.join(",")])
 
   useEffect(() => {
     setSelectedMachines((prev) =>
@@ -114,7 +161,13 @@ const Content = () => {
         filteredMachines?.some((m: T_SelectItem) => m.key == prevItem.key)
       )
     )
-  }, [filteredMachines, setSelectedMachines])
+  }, [filteredMachines])
+
+  useEffect(() => {
+    if (partsSelectedIds !== undefined) {
+      setPartId(partsSelectedIds)
+    }
+  }, [partsSelectedIds?.join(",")])
 
   useEffect(() => {
     setSelectedParts((prev) =>
@@ -122,7 +175,7 @@ const Content = () => {
         selectedParts?.some((m: T_SelectItem) => m.key == prevItem.key)
       )
     )
-  }, [selectedParts, setSelectedParts])
+  }, [selectedParts?.join()])
 
   useEffect(() => {
     const token = Cookies.get("tfl")
@@ -131,7 +184,9 @@ const Content = () => {
     }).toString()
 
     const machineClassesQuery = new URLSearchParams({
-      machineClasses: machineClasses?.items.map((machine: any) => machine._id),
+      machineClasses: selectedMachineClasses?.map(
+        (machine) => machine.key
+      ) as unknown as string,
     }).toString()
 
     const fetchData = async () => {
@@ -155,14 +210,16 @@ const Content = () => {
 
     fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locations, filteredMachineClasses, machines])
+  }, [selectedMachines])
 
   const onCityChange = useCallback(
     (val?: T_SelectItem) => setSelectedCity(val),
     [setSelectedCity]
   )
   const onMachineClassChange = useCallback(
-    (val?: T_SelectItem[]) => setSelectedMachineClasses(val),
+    (val?: T_SelectItem[]) => {
+      setSelectedMachineClasses(val)
+    },
     [setSelectedMachineClasses]
   )
   const onChangePart = useCallback(
@@ -173,6 +230,10 @@ const Content = () => {
     (val?: T_SelectItem[]) => setSelectedMachines(val),
     [setSelectedMachines]
   )
+
+  function handleClick() {
+    setShowReport(true)
+  }
 
   return (
     <>
@@ -193,16 +254,16 @@ const Content = () => {
                 </div>
                 <div className="flex flex-col flex-1 py-4">
                   {/* BEGIN SELECT */}
-                  <div className="grid flex-1 grid-cols-6 mb-4 gap-x-3">
-                    <div className="relative col-span-1">
-                      <div className="text-sm">City</div>
+                  <div className="flex mb-4 gap-x-3">
+                    <div className="w-1/6">
+                      <div className="text-sm">Select City</div>
                       <CustomSelectComponent
                         items={filteredCities}
                         value={selectedCity}
                         onChange={onCityChange}
                       />
                     </div>
-                    <div className="relative col-span-1">
+                    <div className="w-1/5">
                       <div className="text-sm">Machine Class</div>
                       <CustomSelectComponent
                         multiple
@@ -214,7 +275,7 @@ const Content = () => {
                         onChange={onMachineClassChange}
                       />
                     </div>
-                    <div className="relative col-span-1">
+                    <div className="w-1/5">
                       <div className="text-sm">Machine</div>
                       <CustomSelectComponent
                         multiple
@@ -223,7 +284,7 @@ const Content = () => {
                         onChange={onMachinesChange}
                       />
                     </div>
-                    <div className="relative col-span-1">
+                    <div className="w-1/5">
                       <div className="text-sm">Part</div>
                       <CustomSelectComponent
                         multiple
@@ -237,7 +298,7 @@ const Content = () => {
                         onChange={onChangePart}
                       />
                     </div>
-                    <div className="relative col-span-1">
+                    <div className="w-1/6">
                       <div className="text-sm">Include Cycles</div>
                       <div className="px-2">
                         <FormControlLabel
@@ -253,21 +314,77 @@ const Content = () => {
                         />
                       </div>
                     </div>
-                    <div className="relative col-span-1">
+                    <div className="w-[12%]">
                       <div className="text-sm">Review Range</div>
-                      <div className="px-2">
-                        <Button variant="contained">Today</Button>
+                      <div className="px-2 text-[11px]">
+                        <button className="flex justify-center py-2 px-4 border rounded-lg border-1 border-black bg-blue-950 text-slate-50">
+                          TODAY
+                        </button>
+                        {/* <Button variant="contained">Today</Button> */}
                       </div>
                     </div>
                   </div>
                   {/* END SELECT */}
                   <Divider />
-                  <div className="flex justify-end p-6">
-                    <Button size="small" color="primary" variant="contained">
-                      REPORT
-                    </Button>
+                  <div className="flex justify-end p-6 text-[11px]">
+                    <button
+                      className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-blue-950 text-slate-50"
+                      onClick={handleClick}
+                    >
+                      GENERATE REPORT
+                    </button>
                   </div>
-                  <p className="text-xs">Confirm Selection</p>
+                  {showReport && (
+                    <NewWindow
+                      copyStyles={true}
+                      features={{
+                        width: 1440,
+                        height: 1000,
+                      }}
+                      center="parent"
+                      onUnload={() => setShowReport(false)}
+                      title={"Report"}
+                      name="Report"
+                      ref={myRef}
+                    >
+                      <SystemReport
+                        data={data}
+                        // city={cityArray}
+                        keyword={keyword}
+                        sortType={sortType}
+                        factoryId={factories?.items?.map(
+                          (factory: { _id: string }) => factory._id
+                        )}
+                        process={process}
+                        machineId={machineSelectedIds}
+                        partId={partsSelectedIds}
+                        machineClassId={machineClassSelectedIds}
+                        locationId={cityArray}
+                        locationData={
+                          locations?.items?.filter((item) =>
+                            cityArray?.includes(item._id ?? "")
+                          ) ?? []
+                        }
+                        machineClassData={
+                          machineClasses?.items?.filter(
+                            (item: T_MachineClass) =>
+                              machineClassSelectedIds?.includes(item._id ?? "")
+                          ) ?? []
+                        }
+                        machineData={
+                          machines?.items?.filter((item: T_Machine) =>
+                            machineSelectedIds?.includes(
+                              (item._id as string) ?? ""
+                            )
+                          ) ?? []
+                        }
+                        startDateRange={""}
+                        endDateRange={""}
+                        newWindowRef={myRef}
+                      />
+                    </NewWindow>
+                  )}
+                  <p className="text-md">Confirmation Selection</p>
                   <Divider />
                   {/* BEGIN CONFIRM */}
                   <div className="grid grid-cols-6 gap-x-3">
@@ -277,7 +394,7 @@ const Content = () => {
                         <div className="p-1">
                           <Chip
                             label={selectedCity.label}
-                            className="text-left 1"
+                            className="text-left"
                             variant="outlined"
                             size="small"
                             onDelete={() => {
@@ -294,7 +411,7 @@ const Content = () => {
                         <div key={item.key} className="p-1">
                           <Chip
                             label={item.label}
-                            className="text-left 1"
+                            className="text-left"
                             variant="outlined"
                             size="small"
                             onDelete={() => {
@@ -315,7 +432,7 @@ const Content = () => {
                         <div key={item.key} className="p-1">
                           <Chip
                             label={item.label}
-                            className="text-left 1"
+                            className="text-left"
                             variant="outlined"
                             size="small"
                             onDelete={() => {
@@ -336,7 +453,7 @@ const Content = () => {
                         <div key={item.key} className="p-1">
                           <Chip
                             label={item.label}
-                            className="text-left 1"
+                            className="text-left"
                             variant="outlined"
                             size="small"
                             onDelete={() => {
@@ -379,6 +496,7 @@ const Content = () => {
                 <IconButton
                   onClick={() => {
                     setSelectedCity(undefined)
+                    setSelectedParts(undefined)
                   }}
                   size="small"
                   color="primary"

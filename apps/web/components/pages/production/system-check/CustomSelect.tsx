@@ -2,7 +2,17 @@
 
 import { useState } from "react"
 import _ from "lodash"
-import { Autocomplete, TextField } from "@mui/material"
+import {
+  Autocomplete,
+  Checkbox,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
+  TextField,
+} from "@mui/material"
+import { IoCheckbox } from "react-icons/io5"
+import { MdCheckBoxOutlineBlank } from "react-icons/md"
 
 export type T_SelectItem = {
   key: string
@@ -50,6 +60,25 @@ export default function CustomSelectComponent({
         // )
       }
       limitTags={1}
+      renderOption={(props, option, { selected }) => (
+        <List component="nav" style={{ padding: 0 }}>
+          <ListItem
+            {...props}
+            style={{
+              padding: 0,
+            }}
+          >
+            <Checkbox
+              icon={<MdCheckBoxOutlineBlank />}
+              checkedIcon={<IoCheckbox />}
+              checked={selected}
+            />
+            {option.label}
+            {/* <ListItemText primary={getOptionLabel(option)} /> */}
+            <ListItemSecondaryAction />
+          </ListItem>
+        </List>
+      )}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -64,6 +93,9 @@ export default function CustomSelectComponent({
           }}
           sx={{
             fontSize: "1rem",
+            "& input": {
+              paddingLeft: "0 !important", // Add !important to force the override
+            },
           }}
         />
       )}
