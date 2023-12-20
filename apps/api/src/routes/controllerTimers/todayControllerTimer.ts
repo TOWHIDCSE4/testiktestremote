@@ -13,6 +13,7 @@ import Timers from "../../models/timers"
 import * as Sentry from "@sentry/node"
 import { getIo, ioEmit } from "../../config/setup-socket"
 import roleMatrix from "../../helpers/roleMatrix"
+import CycleTimers from "../../models/cycleTimers"
 
 export const todayControllerTimer = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
@@ -50,9 +51,9 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
         let firstCycle = null
         if (getAllActiveControllerTimerToday.length) {
           const [controllerTimer] = getAllActiveControllerTimerToday
-          firstCycle = await ControllerTimers.findOne({
-            createdAt: { $gte: controllerTimer.clientStartedAt },
-            endAt: null,
+          firstCycle = await CycleTimers.findOne({
+            timerId,
+            createdAt: { $gte: controllerTimer.createdAt },
           })
             .sort({ $natural: 1 })
             .limit(1)
