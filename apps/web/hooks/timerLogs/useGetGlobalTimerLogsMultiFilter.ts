@@ -132,7 +132,7 @@ function useGlobalTimerLogsMulti(
       }),
     {
       refetchOnWindowFocus: false,
-      enabled: !!locationId.length,
+      enabled: !!locationId?.length,
       refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
     }
   )

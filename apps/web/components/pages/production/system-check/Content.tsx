@@ -9,7 +9,6 @@ import {
   IconButton,
 } from "@mui/material"
 import { T_Factory, T_Machine, T_MachineClass, T_Part } from "custom-validator"
-import { DatePicker, Space } from "antd"
 import Cookies from "js-cookie"
 import { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import { BiSolidPin } from "react-icons/bi"
@@ -26,6 +25,8 @@ import useGlobalTimerLogsMulti from "../../../../hooks/timerLogs/useGetGlobalTim
 import dayjs from "dayjs"
 // import DeleteIcon from "@mui/icons-material/Delete"
 
+import { DatePicker } from "antd"
+
 type T_Dispaly_Part_Types = {
   key: string
   label: string
@@ -39,7 +40,7 @@ const Content = () => {
   const myRef = useRef<NewWindow | null>(null)
   const [parts, setParts] = useState<T_Part[]>()
   const [part, onPartChange] = useState()
-  const [selectedCity, setSelectedCity] = useState<T_SelectItem | undefined>()
+  const [selectedCity, setSelectedCity] = useState<T_SelectItem[]>()
   const [showReport, setShowReport] = useState(false)
   const [selectedFactories, setSelectedFactories] = useState<T_SelectItem[]>()
   const [selectedMachineClasses, setSelectedMachineClasses] = useState<
@@ -56,18 +57,21 @@ const Content = () => {
   const [sortType, setSortType] = useState<string>("")
   const [startDate, setStartDate] = useState<string>("")
   const [endDate, setEndDate] = useState<string>("")
+
   const [isCheckboxChecked, setIsCheckboxChecked] = useState<
     boolean | undefined
   >(false)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: machines, isLoading: isMachinesLoading } = useMachines()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const { data: machineClasses, isLoading: isMachineClassesLoading } =
-    useMachineClasses([selectedCity?.key] as string[])
+  const {
+    data: machineClasses,
+    isLoading: isMachineClassesLoading,
+    setStartDateForMachineClass,
+    setEndDateForMachineClass,
+  } = useMachineClasses(selectedCity?.map((city) => city.key) as string[])
+
   const [dateRange, setDateRange] = useState<Date[] | string[]>([])
-
-  const cityArray = useMemo(() => objectToArray(selectedCity), [selectedCity])
-
   const machineClassSelectedIds = useMemo(
     () =>
       selectedMachineClasses?.map(
@@ -79,8 +83,6 @@ const Content = () => {
 
   const machineSelectedIds = selectedMachines?.map((machineId) => machineId.key)
   const partsSelectedIds = selectedParts?.map((partsId) => partsId.key)
-
-  const { RangePicker } = DatePicker
 
   const process = true
 
@@ -96,7 +98,12 @@ const Content = () => {
     setStartDateRange,
     setEndDateRange,
     setPartId,
-  } = useGlobalTimerLogsMulti(cityArray, sortType, keyword, process)
+  } = useGlobalTimerLogsMulti(
+    selectedCity?.map((city) => city.key) as string[],
+    sortType,
+    keyword,
+    process
+  )
 
   // CITY
   const filteredCities = useMemo<Array<T_SelectItem>>(() => {
@@ -124,8 +131,11 @@ const Content = () => {
 
   // MACHINE CLASS
   const filteredMachineClasses = useMemo<Array<T_SelectItem>>(() => {
+    const selectedCitiesIds = selectedCity?.map((city) => city.key)
     return machineClasses?.items
-      ?.filter((item: T_MachineClass) => selectedCity?.key === item.factoryId)
+      ?.filter((item: T_MachineClass) =>
+        selectedCitiesIds?.includes(item.factoryId)
+      )
       ?.map((item: T_MachineClass) => ({
         key: item._id,
         label: item.name,
@@ -195,9 +205,16 @@ const Content = () => {
   }, [selectedParts?.join()])
 
   useEffect(() => {
+    setSelectedCity([])
+    setSelectedMachineClasses([])
+    setSelectedMachines([])
+    setSelectedParts([])
+  }, [startDate, endDate])
+
+  useEffect(() => {
     const token = Cookies.get("tfl")
     const locationsQuery = new URLSearchParams({
-      locations: selectedCity?.key as string,
+      locations: selectedCity?.map((city) => city.key) as unknown as string,
     }).toString()
 
     const machineClassesQuery = new URLSearchParams({
@@ -207,7 +224,7 @@ const Content = () => {
     }).toString()
 
     const fetchData = async () => {
-      if (!selectedCity) return
+      if (!selectedCity?.length) return
       let page = 1
 
       const res = await fetch(
@@ -227,10 +244,10 @@ const Content = () => {
 
     fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedMachines])
+  }, [selectedMachines, startDate, endDate])
 
   const onCityChange = useCallback(
-    (val?: T_SelectItem) => setSelectedCity(val),
+    (val?: T_SelectItem[]) => setSelectedCity(val),
     [setSelectedCity]
   )
   const onMachineClassChange = useCallback(
@@ -255,8 +272,8 @@ const Content = () => {
   function handleDate() {
     setIsCheckboxChecked(!isCheckboxChecked)
     if (!isCheckboxChecked) {
-      setEndDate(dayjs().endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
-      setStartDate(dayjs().startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
+      setEndDate(dayjs().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
+      setStartDate(dayjs().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
     } else {
       setStartDate("")
       setEndDate("")
@@ -303,6 +320,7 @@ const Content = () => {
                     <div className="w-1/6">
                       <div className="text-sm">Select City</div>
                       <CustomSelectComponent
+                        multiple
                         items={filteredCities}
                         value={selectedCity}
                         onChange={onCityChange}
@@ -312,7 +330,7 @@ const Content = () => {
                       <div className="text-sm">Machine Class</div>
                       <CustomSelectComponent
                         multiple
-                        items={machineClasses?.items.map((machine: any) => ({
+                        items={machineClasses?.items?.map((machine: any) => ({
                           key: machine._id,
                           label: machine.name,
                         }))}
@@ -382,6 +400,34 @@ const Content = () => {
                           </Space>
                         </div>
                       </div> */}
+                      <DatePicker.RangePicker
+                        disabledDate={(current: any) =>
+                          current.valueOf() >= Date.now()
+                        }
+                        onChange={(dateValues: any) => {
+                          if (!dateValues) return
+                          setStartDate(
+                            dayjs(dateValues[0]).format(
+                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                            )
+                          )
+                          setEndDate(
+                            dayjs(dateValues[1]).format(
+                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                            )
+                          )
+                          setStartDateForMachineClass(
+                            dayjs(dateValues[0]).format(
+                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                            )
+                          )
+                          setEndDateForMachineClass(
+                            dayjs(dateValues[1]).format(
+                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                            )
+                          )
+                        }}
+                      />
                       <div className="px-0 text-[11px] flex space-x-2 pt-3">
                         <label htmlFor="checkbox-date">TODAY</label>
                         <input
@@ -424,10 +470,14 @@ const Content = () => {
                         machineId={machineSelectedIds}
                         partId={partsSelectedIds}
                         machineClassId={machineClassSelectedIds}
-                        locationId={cityArray}
+                        locationId={
+                          selectedCity?.map((city) => city.key) as string[]
+                        }
                         locationData={
                           locations?.items?.filter((item) =>
-                            cityArray?.includes(item._id ?? "")
+                            selectedCity
+                              ?.map((city) => city.key)
+                              ?.includes(item._id ?? "")
                           ) ?? []
                         }
                         machineClassData={
@@ -455,15 +505,19 @@ const Content = () => {
                   <div className="grid grid-cols-6 gap-x-3">
                     {/* CITY */}
                     <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
-                      {selectedCity && (
-                        <div className="p-1">
+                      {selectedCity?.map((city) => (
+                        <div key={city.key} className="p-1">
                           <Chip
-                            label={selectedCity.label}
+                            label={city.label}
                             className="text-left"
                             variant="outlined"
                             size="small"
                             onDelete={() => {
-                              setSelectedCity(undefined)
+                              setSelectedCity((prev) => {
+                                return prev?.filter(
+                                  (previtem) => previtem.key != city.key
+                                )
+                              })
                               setSelectedParts(undefined)
                             }}
                             deleteIcon={
@@ -477,7 +531,7 @@ const Content = () => {
                             }}
                           />
                         </div>
-                      )}
+                      ))}
                     </div>
                     {/* MACHINE CLASS */}
                     <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
@@ -571,7 +625,11 @@ const Content = () => {
                       {isIncludeCycle ? "Yes" : "No"}
                     </div>
                     {/* DATE RANGE */}
-                    <div className="flex justify-end text-xs">Today</div>
+                    <div className="flex justify-end text-xs">
+                      {startDate === endDate
+                        ? "Today"
+                        : startDate + " - " + endDate}
+                    </div>
                   </div>
                   {/* END CONFIRM */}
                 </div>
