@@ -189,8 +189,6 @@ const Content = () => {
       ) as unknown as string,
     }).toString()
 
-    console.log(machineClassesQuery)
-
     const fetchData = async () => {
       if (!selectedCity) return
       let page = 1
@@ -212,7 +210,7 @@ const Content = () => {
 
     fetchData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locations, filteredMachineClasses, machines])
+  }, [selectedMachines])
 
   const onCityChange = useCallback(
     (val?: T_SelectItem) => setSelectedCity(val),
@@ -256,8 +254,8 @@ const Content = () => {
                 </div>
                 <div className="flex flex-col flex-1 py-4">
                   {/* BEGIN SELECT */}
-                  <div className="grid flex-1 grid-cols-6 mb-4 gap-x-3">
-                    <div className="relative col-span-1">
+                  <div className="flex mb-4 gap-x-3">
+                    <div className="w-1/6">
                       <div className="text-sm">Select City</div>
                       <CustomSelectComponent
                         items={filteredCities}
@@ -265,7 +263,7 @@ const Content = () => {
                         onChange={onCityChange}
                       />
                     </div>
-                    <div className="relative col-span-1">
+                    <div className="w-1/5">
                       <div className="text-sm">Machine Class</div>
                       <CustomSelectComponent
                         multiple
@@ -277,7 +275,7 @@ const Content = () => {
                         onChange={onMachineClassChange}
                       />
                     </div>
-                    <div className="relative col-span-1">
+                    <div className="w-1/5">
                       <div className="text-sm">Machine</div>
                       <CustomSelectComponent
                         multiple
@@ -286,7 +284,7 @@ const Content = () => {
                         onChange={onMachinesChange}
                       />
                     </div>
-                    <div className="relative col-span-1">
+                    <div className="w-1/5">
                       <div className="text-sm">Part</div>
                       <CustomSelectComponent
                         multiple
@@ -300,7 +298,7 @@ const Content = () => {
                         onChange={onChangePart}
                       />
                     </div>
-                    <div className="relative col-span-1">
+                    <div className="w-1/6">
                       <div className="text-sm">Include Cycles</div>
                       <div className="px-2">
                         <FormControlLabel
@@ -316,7 +314,7 @@ const Content = () => {
                         />
                       </div>
                     </div>
-                    <div className="relative col-span-1">
+                    <div className="w-[12%]">
                       <div className="text-sm">Review Range</div>
                       <div className="px-2 text-[11px]">
                         <button className="flex justify-center py-2 px-4 border rounded-lg border-1 border-black bg-blue-950 text-slate-50">
