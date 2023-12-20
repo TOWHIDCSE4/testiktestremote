@@ -101,8 +101,6 @@ function useGlobalTimerLogsMulti(
   const [startDateRange, setStartDateRange] = useState("")
   const [endDateRange, setEndDateRange] = useState("")
 
-  console.log("fetching data")
-
   const query = useQuery(
     [
       "global-timer-logs",

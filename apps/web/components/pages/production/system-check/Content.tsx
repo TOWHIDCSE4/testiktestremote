@@ -325,15 +325,7 @@ const Content = () => {
                     </div>
                   </div>
                   {/* END SELECT */}
-                  <Divider />
-                  <div className="flex justify-end p-6 text-[11px]">
-                    <button
-                      className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-blue-950 text-slate-50"
-                      onClick={handleClick}
-                    >
-                      GENERATE REPORT
-                    </button>
-                  </div>
+
                   {showReport && (
                     <NewWindow
                       copyStyles={true}
@@ -349,6 +341,7 @@ const Content = () => {
                     >
                       <SystemReport
                         data={data}
+                        isIncludeCycle={isIncludeCycle}
                         // city={cityArray}
                         keyword={keyword}
                         sortType={sortType}
@@ -384,7 +377,7 @@ const Content = () => {
                       />
                     </NewWindow>
                   )}
-                  <p className="text-md">Confirmation Selection</p>
+                  <p className="text-md pt-5">Confirmation Selection</p>
                   <Divider />
                   {/* BEGIN CONFIRM */}
                   <div className="grid grid-cols-6 gap-x-3">
@@ -399,8 +392,17 @@ const Content = () => {
                             size="small"
                             onDelete={() => {
                               setSelectedCity(undefined)
+                              setSelectedParts(undefined)
                             }}
-                            deleteIcon={<HiXCircle />}
+                            deleteIcon={
+                              <span className="text-end rounded-full text-xs px-[5px] py-[1px] bg-gray-500 text-white">
+                                X
+                              </span>
+                            }
+                            style={{
+                              width: "100px",
+                              justifyContent: "space-between",
+                            }}
                           />
                         </div>
                       )}
@@ -421,13 +423,21 @@ const Content = () => {
                                 )
                               })
                             }}
-                            deleteIcon={<HiXCircle />}
+                            deleteIcon={
+                              <span className="text-end rounded-full text-xs px-[5px] py-[1px] bg-gray-500 text-white">
+                                X
+                              </span>
+                            }
+                            style={{
+                              width: "100px",
+                              justifyContent: "space-between",
+                            }}
                           />
                         </div>
                       ))}
                     </div>
                     {/* MACHINE */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
+                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit pl-2">
                       {selectedMachines?.map((item) => (
                         <div key={item.key} className="p-1">
                           <Chip
@@ -436,19 +446,27 @@ const Content = () => {
                             variant="outlined"
                             size="small"
                             onDelete={() => {
-                              setSelectedMachineClasses((prev) => {
+                              setSelectedMachines((prev) => {
                                 return prev?.filter(
                                   (previtem) => previtem.key != item.key
                                 )
                               })
                             }}
-                            deleteIcon={<HiXCircle />}
+                            deleteIcon={
+                              <span className="text-end rounded-full text-xs px-[5px] py-[1px] bg-gray-500 text-white">
+                                X
+                              </span>
+                            }
+                            style={{
+                              width: "100px",
+                              justifyContent: "space-between",
+                            }}
                           />
                         </div>
                       ))}
                     </div>
                     {/* PART */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
+                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit pl-8">
                       {selectedParts?.map((item) => (
                         <div key={item.key} className="p-1">
                           <Chip
@@ -463,7 +481,15 @@ const Content = () => {
                                 )
                               })
                             }}
-                            deleteIcon={<HiXCircle />}
+                            deleteIcon={
+                              <span className="text-end rounded-full px-[5px] py-[1px] text-xs bg-gray-500 text-white">
+                                X
+                              </span>
+                            }
+                            style={{
+                              width: "100px",
+                              justifyContent: "space-between",
+                            }}
                           />
                         </div>
                       ))}
@@ -473,11 +499,17 @@ const Content = () => {
                       {isIncludeCycle ? "Yes" : "No"}
                     </div>
                     {/* DATE RANGE */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
-                      Today
-                    </div>
+                    <div className="flex justify-end text-xs">Today</div>
                   </div>
                   {/* END CONFIRM */}
+                </div>
+                <div className="flex justify-end text-[11px]">
+                  <button
+                    className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-blue-950 text-slate-50"
+                    onClick={handleClick}
+                  >
+                    GENERATE REPORT
+                  </button>
                 </div>
               </div>
 
