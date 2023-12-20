@@ -31,7 +31,7 @@ export const endControllerTimer = async (req: Request, res: Response) => {
         createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
       })
       if (getExistingCycleTimer.length > 0) {
-        await CycleTimers.findOneAndUpdate(
+        await CycleTimers.updateMany(
           {
             timerId,
             endAt: null,
@@ -46,7 +46,7 @@ export const endControllerTimer = async (req: Request, res: Response) => {
         timerId,
       })
       if (getExistingControllerTimer.length > 0) {
-        const endTimer = await ControllerTimers.findOneAndUpdate(
+        const endTimer = await ControllerTimers.updateMany(
           {
             timerId,
             endAt: null,
