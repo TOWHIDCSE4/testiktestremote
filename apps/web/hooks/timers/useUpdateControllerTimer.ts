@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import { T_BackendResponse, T_ControllerTimer } from "custom-validator"
 import Cookies from "js-cookie"
 
-export async function updateControllerTimer(props: T_ControllerTimer) {
+export async function updateControllerTimer(props: Partial<T_ControllerTimer>) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_CONTROLLER_TIMER}/${props._id}`, {
     method: "PATCH",
@@ -17,7 +17,7 @@ export async function updateControllerTimer(props: T_ControllerTimer) {
 }
 
 function useUpdateControllerTimer() {
-  const query = useMutation((props: T_ControllerTimer) =>
+  const query = useMutation((props: Partial<T_ControllerTimer>) =>
     updateControllerTimer(props)
   )
   return query

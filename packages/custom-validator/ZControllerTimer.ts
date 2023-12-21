@@ -9,6 +9,7 @@ export const ZControllerTimer = z.object({
   createdAt: z.date().optional(),
   endAt: z.date().nullable().optional(),
   clientStartedAt: z.any().optional(),
+  additionalTime: z.number().optional(),
 })
 
 export type T_ControllerTimer = z.infer<typeof ZControllerTimer>
