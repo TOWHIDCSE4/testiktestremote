@@ -15,6 +15,7 @@ import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import * as Sentry from "@sentry/node"
 import { ioEmit } from "../../config/setup-socket"
+import CycleTimers from "../../models/cycleTimers"
 
 export const getAllControllerTimers = async (req: Request, res: Response) => {
   try {
@@ -149,6 +150,26 @@ export const updateControllerTimer = async (req: Request, res: Response) => {
   if (getControllerTimer.length !== 0) {
     if (!isEmpty(condition)) {
       try {
+        const bodyCreatedAt = req.body.clientStartedAt || req.body.createdAt
+        if (bodyCreatedAt) {
+          const firstCycle = await CycleTimers.findOne({
+            timerId: getControllerTimer[0].timerId,
+            createdAt: { $gte: getControllerTimer[0].createdAt },
+          })
+            .sort({ $natural: 1 })
+            .limit(1)
+          if (firstCycle) {
+            await CycleTimers.findOneAndUpdate(
+              {
+                _id: firstCycle.id,
+              },
+              {
+                createdAt: bodyCreatedAt,
+                clientStartedAt: bodyCreatedAt,
+              }
+            )
+          }
+        }
         const updateControllerTimer = await ControllerTimer.findByIdAndUpdate(
           req.params.id,
           {

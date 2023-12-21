@@ -71,6 +71,7 @@ export interface ControllerContextProps {
   operator: any
   cycleClockSeconds: number
   controllerClockSeconds: number
+  isControllerOutOfTime: boolean
   isCycleClockRunning: boolean
   unitCreated: number
   timerId: string | undefined
@@ -110,6 +111,7 @@ export const ControllerContext = createContext<ControllerContextProps>({
   variant: "idle",
   progress: undefined,
   isStopMenuOpen: false,
+  isControllerOutOfTime: false,
   setIsStopMenuOpen: (val) => {},
   controllerDetailData: {},
   operator: {},
@@ -453,19 +455,40 @@ export const ControllerContextProvider = ({
   }
 
   const onAddControllerTimerHour = (hour: number) => {
-    updateControllerTimer(
-      {
-        _id: controllerTimerData?.items[0]?._id,
-        additionalTime:
-          (controllerTimerData?.items[0]?.additionalTime || 0) + hour,
-        endAt: null,
+    if (isControllerOutOfTime && !hour) {
+      toast.error("Controller already exceed production time, please add hour")
+      return
+    }
+    const controllerTimerParam: Partial<T_ControllerTimer> = {
+      _id: controllerTimerData?.items[0]?._id,
+      endAt: null,
+    }
+
+    if (isControllerOutOfTime) {
+      controllerTimerParam.additionalTime = hour
+      controllerTimerParam.clientStartedAt = dayjs
+        .utc(dayjs())
+        .subtract(timerDetailData?.item?.locationId?.productionTime, "hour")
+        .toDate()
+      controllerTimerParam.createdAt = dayjs
+        .utc(dayjs())
+        .subtract(timerDetailData?.item?.locationId?.productionTime, "hour")
+        .toDate()
+    } else {
+      controllerTimerParam.clientStartedAt = dayjs
+        .utc(dayjs())
+        .subtract(clockSeconds, "seconds")
+        .toDate()
+      controllerTimerParam.createdAt = dayjs
+        .utc(dayjs())
+        .subtract(clockSeconds, "seconds")
+        .toDate()
+    }
+    updateControllerTimer(controllerTimerParam, {
+      onSettled: () => {
+        invalidateQueries()
       },
-      {
-        onSettled: () => {
-          invalidateQueries()
-        },
-      }
-    )
+    })
   }
 
   const onStartCycle = () => {
@@ -813,6 +836,7 @@ export const ControllerContextProvider = ({
         timerDetailData?.item?.locationId.timeZone
       )
       setClockSeconds(seconds)
+      startControllerClockInterval()
     } else if (controllerTimer?.endAt) {
       const seconds = getSecondsDifferent(
         createdAt ||
@@ -936,6 +960,7 @@ export const ControllerContextProvider = ({
         isStopMenuOpen,
         isChangingOperator,
         setIsStopMenuOpen,
+        isControllerOutOfTime,
         controllerDetailData,
         operator: currentOperator,
         jobs: timerJobs?.items || [],

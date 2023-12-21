@@ -20,8 +20,11 @@ export default function OverlayActionComponent({
   machineName: string
 }) {
   const { data: userProfile, isLoading: isProfileLoading } = useProfile()
-  const { startNewControllerSession, onAddControllerTimerHour } =
-    useContext(ControllerContext)
+  const {
+    startNewControllerSession,
+    onAddControllerTimerHour,
+    isControllerOutOfTime,
+  } = useContext(ControllerContext)
 
   const isAdmin = useMemo(() => {
     return [
@@ -35,12 +38,8 @@ export default function OverlayActionComponent({
   const isDisabledResume = false
   const [isResetConfirmShow, setIsResetConfirmShow] = useState<boolean>()
   const [isResumeConfirmShow, setIsResumeConfirmShow] = useState<boolean>()
-  const [selectedHour, setSelectedHour] = useState<number>()
+  const [selectedHour, setSelectedHour] = useState<number>(0)
   const onResumeClick = () => {
-    if (!selectedHour) {
-      toast.error("Please select hour to add to controller time")
-      return
-    }
     setIsResumeConfirmShow(true)
   }
   const onResetClick = () => {
@@ -56,11 +55,6 @@ export default function OverlayActionComponent({
       }
     }
     if (event === "resume") {
-      if (!selectedHour) {
-        toast.error("Please select hour to add to controller time")
-        return
-        setIsResumeConfirmShow(false)
-      }
       if (isConfirm) {
         onAddControllerTimerHour(selectedHour)
         setIsResumeConfirmShow(false)
@@ -81,57 +75,60 @@ export default function OverlayActionComponent({
                   buttonCV[isDisabledResume ? "disabled" : "active"]
                 }`}
               >
-                <div className="flex flex-col items-start justify-start">
-                  <div className="text-xl text-center text-whit mb-2">
-                    Add Hour to Controller
-                  </div>
-                  <Combobox
-                    value={selectedHour}
-                    onChange={(v) => setSelectedHour(v)}
-                  >
-                    <div className="text-gray-900 relative">
-                      <Combobox.Input
-                        displayValue={(v) => (v ? `${v} hour` : "")}
-                        placeholder="Select hour"
-                      />
-                      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
-                        <ChevronUpDownIcon className={`h-5 w-5`} />
-                      </Combobox.Button>
-                      <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        <Combobox.Option
-                          className="relative cursor-pointer select-none py-1 z-50 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white"
-                          value={1}
-                        >
-                          1 Hour
-                        </Combobox.Option>
-                        <Combobox.Option
-                          className="relative cursor-pointer select-none py-1 z-50 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white"
-                          value={2}
-                        >
-                          2 Hour
-                        </Combobox.Option>
-                        <Combobox.Option
-                          className="relative cursor-pointer select-none py-1 z-50 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white"
-                          value={3}
-                        >
-                          3 Hour
-                        </Combobox.Option>
-                        <Combobox.Option
-                          className="relative cursor-pointer select-none py-1 z-50 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white"
-                          value={4}
-                        >
-                          4 Hour
-                        </Combobox.Option>
-                        <Combobox.Option
-                          className="relative cursor-pointer select-none py-1 z-50 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white"
-                          value={5}
-                        >
-                          5 Hour
-                        </Combobox.Option>
-                      </Combobox.Options>
+                {isControllerOutOfTime && (
+                  <div className="flex flex-col items-start justify-start">
+                    <div className="text-xl text-center text-whit mb-2">
+                      Add Hour to Controller
                     </div>
-                  </Combobox>
-                </div>
+                    <Combobox
+                      value={selectedHour}
+                      onChange={(v) => setSelectedHour(v)}
+                    >
+                      <div className="text-gray-900 relative">
+                        <Combobox.Input
+                          displayValue={(v) => (v ? `${v} hour` : "")}
+                          placeholder="Select hour"
+                        />
+                        <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2 rounded-r-md focus:outline-none">
+                          <ChevronUpDownIcon className={`h-5 w-5`} />
+                        </Combobox.Button>
+                        <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          <Combobox.Option
+                            className="relative cursor-pointer select-none py-1 z-50 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white"
+                            value={1}
+                          >
+                            1 Hour
+                          </Combobox.Option>
+                          <Combobox.Option
+                            className="relative cursor-pointer select-none py-1 z-50 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white"
+                            value={2}
+                          >
+                            2 Hour
+                          </Combobox.Option>
+                          <Combobox.Option
+                            className="relative cursor-pointer select-none py-1 z-50 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white"
+                            value={3}
+                          >
+                            3 Hour
+                          </Combobox.Option>
+                          <Combobox.Option
+                            className="relative cursor-pointer select-none py-1 z-50 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white"
+                            value={4}
+                          >
+                            4 Hour
+                          </Combobox.Option>
+                          <Combobox.Option
+                            className="relative cursor-pointer select-none py-1 z-50 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white"
+                            value={5}
+                          >
+                            5 Hour
+                          </Combobox.Option>
+                        </Combobox.Options>
+                      </div>
+                    </Combobox>
+                  </div>
+                )}
+
                 <div
                   onClick={onResumeClick}
                   className="flex flex-col items-center"
@@ -151,8 +148,7 @@ export default function OverlayActionComponent({
                     <div className="relative flex flex-col items-center justify-center gap-1 px-4 py-1 bg-gray-300 border-2 border-gray-500 rounded-md">
                       <div className="font-bold text-center uppercase">
                         To confirm resume of
-                        <br /> controller, with {selectedHour} hour added,
-                        Proceed?
+                        <br /> controller, Proceed?
                       </div>
                       <div className="flex items-center gap-4 transition-all group-hover:dialog/gap-6">
                         <HiChevronDoubleRight className="text-gold" />
