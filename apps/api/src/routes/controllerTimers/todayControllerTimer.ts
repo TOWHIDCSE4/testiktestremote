@@ -41,16 +41,16 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
         .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
         .toISOString()
       if (isAllowed) {
-        const getAllActiveControllerTimerToday = await ControllerTimers.find({
+        const controllerTimer = await ControllerTimers.findOne({
           ...(timerId && { timerId: timerId }),
           ...(id && { _id: id }),
           createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
         })
           .sort({ $natural: -1 })
           .limit(1)
+
         let firstCycle = null
-        if (getAllActiveControllerTimerToday.length) {
-          const [controllerTimer] = getAllActiveControllerTimerToday
+        if (controllerTimer) {
           firstCycle = await CycleTimers.findOne({
             timerId,
             createdAt: { $gte: controllerTimer.createdAt },
@@ -58,10 +58,46 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
             .sort({ $natural: 1 })
             .limit(1)
         }
+        const productionTime = location?.productionTime || 0
+        const additionalTime = controllerTimer?.additionalTime || 0
+        const totalProductionTime = productionTime + additionalTime
+        let controllerShouldEndAt = null
+        if (firstCycle?.clientStartedAt) {
+          controllerShouldEndAt = dayjs
+            .utc(firstCycle.clientStartedAt)
+            .add(totalProductionTime, "hour")
+            .toISOString()
+        }
+        if (
+          controllerTimer &&
+          controllerShouldEndAt &&
+          !controllerTimer?.endAt &&
+          dayjs.utc(controllerShouldEndAt).diff(dayjs.utc(), "minutes") < 0
+        ) {
+          controllerTimer.endAt = new Date(controllerShouldEndAt)
+          await ControllerTimers.updateMany(
+            { timerId, endAt: null },
+            { endAt: new Date(controllerShouldEndAt) }
+          )
+          await CycleTimers.updateMany(
+            {
+              timerId,
+              endAt: null,
+            },
+            {
+              endAt: new Date(controllerShouldEndAt),
+            }
+          )
+        }
+
+        if (controllerShouldEndAt && controllerTimer?.endAt) {
+          controllerTimer.endAt = new Date(controllerShouldEndAt)
+        }
         res.json({
           error: false,
-          items: getAllActiveControllerTimerToday,
+          items: controllerTimer ? [controllerTimer] : [],
           controllerStartedAt: firstCycle ? firstCycle.clientStartedAt : null,
+          controllerShouldEndAt,
           itemCount: null,
           message: null,
         })

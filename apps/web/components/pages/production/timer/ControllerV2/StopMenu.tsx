@@ -91,6 +91,7 @@ export default function StopMenuComponent({
                 onStopCycleWithReasons()
                 toggleOpen()
               }}
+              disabled={!stopReasons.length}
               tabIndex={-1}
               className="border-2 border-[#90959b] bg-[#e8ebf0] leading-none rounded-lg text-[#0f2034] text-2xl px-3 font-semibold"
             >

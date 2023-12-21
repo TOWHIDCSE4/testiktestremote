@@ -51,6 +51,7 @@ import {
 } from "../../../../../helpers/date"
 import useGetCycleTimerRealTime from "../../../../../hooks/timers/useGetCycleTimerRealTime"
 import { nanoid } from "nanoid"
+import useUpdateControllerTimer from "../../../../../hooks/timers/useUpdateControllerTimer"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -101,6 +102,7 @@ export interface ControllerContextProps {
   addReadingMessage: (message: string) => void
   onJobChange: (jobId: string) => void
   onOperatorChange: (operatorId: string, operatorName: string) => void
+  onAddControllerTimerHour: (hour: number) => void
   startNewControllerSession: () => void
 }
 
@@ -136,6 +138,7 @@ export const ControllerContext = createContext<ControllerContextProps>({
   onToggleStart: () => {},
   setStopReasons: () => {},
   onStopCycleWithReasons: () => {},
+  onAddControllerTimerHour: () => {},
   onEndProduction: () => {},
   readingsDivRef: undefined,
   setReadingsDivRef: (div) => {},
@@ -222,6 +225,9 @@ export const ControllerContextProvider = ({
   const { mutate: updateJobTimer, isLoading: isChangingJob } =
     useUpdateJobTimer()
 
+  const { mutate: updateControllerTimer, isLoading: isUpdateTimerLoading } =
+    useUpdateControllerTimer()
+
   const [clockSeconds, setClockSeconds] = useState(0)
   const [clockMilliSeconds, setClockMilliSeconds] = useState(0)
   const [isControllerClockRunning, setIsControllerClockRunning] =
@@ -241,12 +247,21 @@ export const ControllerContextProvider = ({
   const controllerClockIntervalRef = useRef<any>()
   const cycleClockIntervalRef = useRef<any>()
   const isControllerModalOpenRef = useRef<any>()
+  const controllerTimeLeft = controllerTimerData?.controllerShouldEndAt
+    ? dayjs
+        .utc(controllerTimerData?.controllerShouldEndAt)
+        .diff(dayjs.utc(), "minutes")
+    : null
+  const isControllerOutOfTime = controllerTimeLeft
+    ? controllerTimeLeft < 0
+    : false
   const hasControllerTimer =
     Array.isArray(controllerTimerData?.items) &&
     controllerTimerData!.items.length > 0
 
   const isProductionEnded =
-    hasControllerTimer && !!controllerTimerData?.items[0]?.endAt
+    (hasControllerTimer && !!controllerTimerData?.items[0]?.endAt) ||
+    isControllerOutOfTime
 
   const [readingsDivRef, setReadingsDivRefState] =
     useState<RefObject<HTMLDivElement>>()
@@ -324,7 +339,9 @@ export const ControllerContextProvider = ({
       return set(query, "items.0.endAt", new Date())
     })
     endControllerTimer(timerId, {
-      onSettled: () => {},
+      onSettled: () => {
+        invalidateQueries()
+      },
     })
 
     if (onEndProductionProps) {
@@ -407,6 +424,50 @@ export const ControllerContextProvider = ({
     // }
   }
 
+  const invalidateQueries = () => {
+    queryClient.invalidateQueries(["controller-timer", timerId])
+    queryClient.invalidateQueries([
+      "timer-logs-count",
+      timerDetailData?.item?.locationId._id,
+      timerId,
+    ])
+    queryClient.invalidateQueries([
+      "timer-logs",
+      timerDetailData?.item?.locationId._id,
+      timerId,
+    ])
+    queryClient.invalidateQueries([
+      "in-production",
+      getObjectId(timerDetailData?.item?.locationId),
+    ])
+    queryClient.invalidateQueries([
+      "controller-timer",
+      timerDetailData?.item?._id,
+    ])
+    queryClient.invalidateQueries(["jobs"])
+    queryClient.invalidateQueries([
+      "total-tons-unit",
+      getObjectId(timerDetailData?.item?.locationId),
+      timerDetailData?.item?._id,
+    ])
+  }
+
+  const onAddControllerTimerHour = (hour: number) => {
+    updateControllerTimer(
+      {
+        _id: controllerTimerData?.items[0]?._id,
+        additionalTime:
+          (controllerTimerData?.items[0]?.additionalTime || 0) + hour,
+        endAt: null,
+      },
+      {
+        onSettled: () => {
+          invalidateQueries()
+        },
+      }
+    )
+  }
+
   const onStartCycle = () => {
     setClockMilliSeconds(0)
     startCycleClockInterval()
@@ -472,17 +533,7 @@ export const ControllerContextProvider = ({
     setUnitCreated(0)
     addControllerTimer(controllerTimerValue, {
       onSuccess: () => {
-        queryClient.invalidateQueries(["controller-timer", timerId])
-        queryClient.invalidateQueries([
-          "timer-logs-count",
-          timerDetailData?.item?.locationId._id,
-          timerId,
-        ])
-        queryClient.invalidateQueries([
-          "timer-logs",
-          timerDetailData?.item?.locationId._id,
-          timerId,
-        ])
+        invalidateQueries()
       },
     })
   }
@@ -753,7 +804,6 @@ export const ControllerContextProvider = ({
   ])
 
   useEffect(() => {
-    setUnitCreated(0)
     const controllerTimer = controllerTimerData?.items[0]
     const createdAt = controllerTimerData?.controllerStartedAt
 
@@ -763,7 +813,6 @@ export const ControllerContextProvider = ({
         timerDetailData?.item?.locationId.timeZone
       )
       setClockSeconds(seconds)
-      startControllerClockInterval()
     } else if (controllerTimer?.endAt) {
       const seconds = getSecondsDifferent(
         createdAt ||
@@ -782,6 +831,7 @@ export const ControllerContextProvider = ({
     controllerTimerData?.items[0]?.clientStartedAt,
     controllerTimerData?.items[0]?.endAt,
     controllerTimerData?.controllerStartedAt,
+    isControllerOutOfTime,
   ])
 
   useEffect(() => {
@@ -845,22 +895,10 @@ export const ControllerContextProvider = ({
         : "active"
     )
   }, [progress, isCycleClockRunning])
+
   useEffect(() => {
     const onVisibilityChange = () => {
-      queryClient.invalidateQueries([
-        "in-production",
-        getObjectId(timerDetailData?.item?.locationId),
-      ])
-      queryClient.invalidateQueries([
-        "controller-timer",
-        timerDetailData?.item?._id,
-      ])
-      queryClient.invalidateQueries(["jobs"])
-      queryClient.invalidateQueries([
-        "total-tons-unit",
-        getObjectId(timerDetailData?.item?.locationId),
-        timerDetailData?.item?._id,
-      ])
+      invalidateQueries()
       if (cycleTimerData?.items && cycleTimerData?.items.length > 0) {
         const timeZone = timerDetailData?.item?.locationId?.timeZone
         const createdAt =
@@ -904,6 +942,7 @@ export const ControllerContextProvider = ({
         isJobsLoading: isTimerJobsLoading,
         controllerJob: jobTimer?.item,
         isControllerJobLoading,
+        onAddControllerTimerHour,
         onOperatorChange,
         onJobChange,
         isChangingJob,
