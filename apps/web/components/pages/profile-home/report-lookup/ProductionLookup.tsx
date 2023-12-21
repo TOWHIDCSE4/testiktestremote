@@ -218,7 +218,7 @@ const Content = () => {
 
   return (
     <>
-      {Object.keys(filters)?.length > 0 ? (
+      {filters && Object.keys(filters)?.length > 0 ? (
         <div className={` pb-10`}>
           <div className="px-4 mx-auto content md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl">
             <div className="relative flex flex-col w-full gap-12 py-4">
