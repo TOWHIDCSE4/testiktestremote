@@ -218,275 +218,281 @@ const Content = () => {
 
   return (
     <>
-      <div className={` pb-10`}>
-        <div className="px-4 mx-auto content md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl">
-          <div className="relative flex flex-col w-full gap-12 py-4">
-            <div className="flex w-full bg-white border border-gray-200 rounded-lg">
-              <div className="flex flex-col flex-1 p-4">
-                <div className="text-xl font-bold">
-                  PRODUCTION REPORT LOOKUP
-                </div>
-                <div className="flex flex-col flex-1 py-4">
-                  {/* BEGIN SELECT */}
-                  <div className="flex mb-4 gap-x-3">
-                    <div className="w-1/6">
-                      <div className="text-sm">Select City</div>
-                      <CustomSelectComponent
-                        multiple
-                        items={selectedCity ?? []}
-                        value={selectedCity}
-                        // onChange={onCityChange}
-                      />
-                    </div>
-                    <div className="w-1/5">
-                      <div className="text-sm">Machine Class</div>
-                      <CustomSelectComponent
-                        multiple
-                        items={selectedMachineClasses ?? []}
-                        value={selectedMachineClasses}
-                        // onChange={onMachineClassChange}
-                      />
-                    </div>
-                    <div className="w-1/5">
-                      <div className="text-sm">Machine</div>
-                      <CustomSelectComponent
-                        multiple
-                        items={selectedMachines ?? []}
-                        value={selectedMachines}
-                        // onChange={onMachinesChange}
-                      />
-                    </div>
-                    <div className="w-1/5">
-                      <div className="text-sm">Part</div>
-                      <CustomSelectComponent
-                        multiple
-                        items={
-                          parts?.map((p) => ({
-                            key: p._id,
-                            label: p.name,
-                          })) as T_Dispaly_Part_Types[]
-                        }
-                        value={selectedParts}
-                        // onChange={onChangePart}
-                      />
-                    </div>
-                    <div className="w-[7rem]">
-                      <div className="text-sm">Include Cycles</div>
-                      <div className="px-2">
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={isIncludeCycle === true}
-                              // onChange={(eve) =>
-                              //   setIsIncludeCycle(eve.target.checked)
-                              // }
-                            />
+      {Object.keys(filters)?.length > 0 ? (
+        <div className={` pb-10`}>
+          <div className="px-4 mx-auto content md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl">
+            <div className="relative flex flex-col w-full gap-12 py-4">
+              <div className="flex w-full bg-white border border-gray-200 rounded-lg">
+                <div className="flex flex-col flex-1 p-4">
+                  <div className="text-xl font-bold">
+                    PRODUCTION REPORT LOOKUP
+                  </div>
+                  <div className="flex flex-col flex-1 py-4">
+                    {/* BEGIN SELECT */}
+                    <div className="flex mb-4 gap-x-3">
+                      <div className="w-1/6">
+                        <div className="text-sm">Select City</div>
+                        <CustomSelectComponent
+                          multiple
+                          items={selectedCity ?? []}
+                          value={selectedCity}
+                          // onChange={onCityChange}
+                        />
+                      </div>
+                      <div className="w-1/5">
+                        <div className="text-sm">Machine Class</div>
+                        <CustomSelectComponent
+                          multiple
+                          items={selectedMachineClasses ?? []}
+                          value={selectedMachineClasses}
+                          // onChange={onMachineClassChange}
+                        />
+                      </div>
+                      <div className="w-1/5">
+                        <div className="text-sm">Machine</div>
+                        <CustomSelectComponent
+                          multiple
+                          items={selectedMachines ?? []}
+                          value={selectedMachines}
+                          // onChange={onMachinesChange}
+                        />
+                      </div>
+                      <div className="w-1/5">
+                        <div className="text-sm">Part</div>
+                        <CustomSelectComponent
+                          multiple
+                          items={
+                            parts?.map((p) => ({
+                              key: p._id,
+                              label: p.name,
+                            })) as T_Dispaly_Part_Types[]
                           }
-                          label="Yes"
+                          value={selectedParts}
+                          // onChange={onChangePart}
                         />
                       </div>
-                    </div>
-                    <div className="w-[12%]">
-                      <div className="text-sm whitespace-nowrap">
-                        Review Range
+                      <div className="w-[7rem]">
+                        <div className="text-sm">Include Cycles</div>
+                        <div className="px-2">
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={isIncludeCycle === true}
+                                // onChange={(eve) =>
+                                //   setIsIncludeCycle(eve.target.checked)
+                                // }
+                              />
+                            }
+                            label="Yes"
+                          />
+                        </div>
                       </div>
+                      <div className="w-[12%]">
+                        <div className="text-sm whitespace-nowrap">
+                          Review Range
+                        </div>
 
-                      <DatePicker.RangePicker
-                        className="text-[10px] text-white w-[8rem] border-blue-950"
-                        size="small"
-                        disabledDate={(current: any) =>
-                          current.valueOf() >= Date.now()
-                        }
-                      />
-                      <div className="px-0 text-[11px] flex space-x-2 pt-3">
-                        <label htmlFor="checkbox-date">TODAY</label>
-                        <input
-                          id="checkbox-date"
-                          type="checkbox"
-                          checked={isCheckboxChecked}
-                          onChange={handleDate}
-                          className="flex justify-center py-1 px-1 rounded-full border border-1 border-black text-black"
+                        <DatePicker.RangePicker
+                          className="text-[10px] text-white w-[8rem] border-blue-950"
+                          size="small"
+                          disabledDate={(current: any) =>
+                            current.valueOf() >= Date.now()
+                          }
                         />
+                        <div className="px-0 text-[11px] flex space-x-2 pt-3">
+                          <label htmlFor="checkbox-date">TODAY</label>
+                          <input
+                            id="checkbox-date"
+                            type="checkbox"
+                            checked={isCheckboxChecked}
+                            onChange={handleDate}
+                            className="flex justify-center py-1 px-1 rounded-full border border-1 border-black text-black"
+                          />
 
-                        {/* <Button variant="contained">Today</Button> */}
+                          {/* <Button variant="contained">Today</Button> */}
+                        </div>
                       </div>
                     </div>
+                    {/* END SELECT */}
+
+                    {showReport && (
+                      <NewWindow
+                        copyStyles={true}
+                        features={{
+                          width: 1440,
+                          height: 1000,
+                        }}
+                        center="parent"
+                        onUnload={() => setShowReport(false)}
+                        title={"Report"}
+                        name="Report"
+                        ref={myRef}
+                      >
+                        <SystemReport
+                          data={data}
+                          isIncludeCycle={isIncludeCycle}
+                          // city={cityArray}
+                          keyword={keyword}
+                          sortType={sortType}
+                          factoryId={[]}
+                          process={process}
+                          machineId={machineSelectedIds}
+                          partId={partsSelectedIds}
+                          machineClassId={machineClassSelectedIds}
+                          locationId={
+                            selectedCity?.map((city) => city.key) as string[]
+                          }
+                          locationData={
+                            selectedCity?.map(
+                              (city: Record<string, string>) => ({
+                                _id: city.key,
+                                name: city.label,
+                              })
+                            ) ?? []
+                          }
+                          machineClassData={
+                            selectedMachineClasses?.map(
+                              (machineClass: Record<string, string>) => {
+                                return {
+                                  key: machineClass?.key,
+                                  label: machineClass?.label,
+                                }
+                              }
+                            ) ?? []
+                          }
+                          machineData={
+                            selectedMachines?.map(
+                              (machine: Record<string, string>) => {
+                                return {
+                                  key: machine?.key,
+                                  label: machine?.label,
+                                }
+                              }
+                            ) ?? []
+                          }
+                          startDateRange={startDate}
+                          endDateRange={endDate}
+                          newWindowRef={myRef}
+                        />
+                      </NewWindow>
+                    )}
+                    <p className="text-md pt-5">Confirmation Selection</p>
+                    <Divider />
+                    {/* BEGIN CONFIRM */}
+                    <div className="grid grid-cols-6 gap-x-3">
+                      {/* CITY */}
+                      <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
+                        {selectedCity?.map((city) => (
+                          <div key={city.key} className="p-1">
+                            <Chip
+                              label={city.label}
+                              className="text-left"
+                              variant="outlined"
+                              size="small"
+                              style={{
+                                width: "100px",
+                                justifyContent: "space-between",
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      {/* MACHINE CLASS */}
+                      <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
+                        {selectedMachineClasses?.map((item) => (
+                          <div key={item.key} className="p-1">
+                            <Chip
+                              label={item.label}
+                              className="text-left"
+                              variant="outlined"
+                              size="small"
+                              style={{
+                                width: "100px",
+                                justifyContent: "space-between",
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      {/* MACHINE */}
+                      <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit pl-2">
+                        {selectedMachines?.map((item) => (
+                          <div key={item.key} className="p-1">
+                            <Chip
+                              label={item.label}
+                              className="text-left"
+                              variant="outlined"
+                              size="small"
+                              style={{
+                                width: "100px",
+                                justifyContent: "space-between",
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      {/* PART */}
+                      <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit pl-8">
+                        {selectedParts?.map((item) => (
+                          <div key={item.key} className="p-1">
+                            <Chip
+                              label={item.label}
+                              className="text-left"
+                              variant="outlined"
+                              size="small"
+                              style={{
+                                width: "100px",
+                                justifyContent: "space-between",
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      {/* INCLUDE CYCLE */}
+                      <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
+                        {isIncludeCycle ? "Yes" : "No"}
+                      </div>
+                      {/* DATE RANGE */}
+                      <div className="flex justify-end text-xs">
+                        {startDate === endDate
+                          ? "Today"
+                          : dayjs(startDate).format("YYYY-MM-DD") +
+                            " - " +
+                            dayjs(endDate).format("YYYY-MM-DD")}
+                      </div>
+                    </div>
+                    {/* END CONFIRM */}
                   </div>
-                  {/* END SELECT */}
-
-                  {showReport && (
-                    <NewWindow
-                      copyStyles={true}
-                      features={{
-                        width: 1440,
-                        height: 1000,
-                      }}
-                      center="parent"
-                      onUnload={() => setShowReport(false)}
-                      title={"Report"}
-                      name="Report"
-                      ref={myRef}
+                  <div className="flex justify-end text-[11px]">
+                    <button
+                      className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-blue-950 text-slate-50"
+                      onClick={handleClick}
                     >
-                      <SystemReport
-                        data={data}
-                        isIncludeCycle={isIncludeCycle}
-                        // city={cityArray}
-                        keyword={keyword}
-                        sortType={sortType}
-                        factoryId={[]}
-                        process={process}
-                        machineId={machineSelectedIds}
-                        partId={partsSelectedIds}
-                        machineClassId={machineClassSelectedIds}
-                        locationId={
-                          selectedCity?.map((city) => city.key) as string[]
-                        }
-                        locationData={
-                          selectedCity?.map((city: Record<string, string>) => ({
-                            _id: city.key,
-                            name: city.label,
-                          })) ?? []
-                        }
-                        machineClassData={
-                          selectedMachineClasses?.map(
-                            (machineClass: Record<string, string>) => {
-                              return {
-                                key: machineClass?.key,
-                                label: machineClass?.label,
-                              }
-                            }
-                          ) ?? []
-                        }
-                        machineData={
-                          selectedMachines?.map(
-                            (machine: Record<string, string>) => {
-                              return {
-                                key: machine?.key,
-                                label: machine?.label,
-                              }
-                            }
-                          ) ?? []
-                        }
-                        startDateRange={startDate}
-                        endDateRange={endDate}
-                        newWindowRef={myRef}
-                      />
-                    </NewWindow>
-                  )}
-                  <p className="text-md pt-5">Confirmation Selection</p>
-                  <Divider />
-                  {/* BEGIN CONFIRM */}
-                  <div className="grid grid-cols-6 gap-x-3">
-                    {/* CITY */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
-                      {selectedCity?.map((city) => (
-                        <div key={city.key} className="p-1">
-                          <Chip
-                            label={city.label}
-                            className="text-left"
-                            variant="outlined"
-                            size="small"
-                            style={{
-                              width: "100px",
-                              justifyContent: "space-between",
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    {/* MACHINE CLASS */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
-                      {selectedMachineClasses?.map((item) => (
-                        <div key={item.key} className="p-1">
-                          <Chip
-                            label={item.label}
-                            className="text-left"
-                            variant="outlined"
-                            size="small"
-                            style={{
-                              width: "100px",
-                              justifyContent: "space-between",
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    {/* MACHINE */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit pl-2">
-                      {selectedMachines?.map((item) => (
-                        <div key={item.key} className="p-1">
-                          <Chip
-                            label={item.label}
-                            className="text-left"
-                            variant="outlined"
-                            size="small"
-                            style={{
-                              width: "100px",
-                              justifyContent: "space-between",
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    {/* PART */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit pl-8">
-                      {selectedParts?.map((item) => (
-                        <div key={item.key} className="p-1">
-                          <Chip
-                            label={item.label}
-                            className="text-left"
-                            variant="outlined"
-                            size="small"
-                            style={{
-                              width: "100px",
-                              justifyContent: "space-between",
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    {/* INCLUDE CYCLE */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
-                      {isIncludeCycle ? "Yes" : "No"}
-                    </div>
-                    {/* DATE RANGE */}
-                    <div className="flex justify-end text-xs">
-                      {startDate === endDate
-                        ? "Today"
-                        : dayjs(startDate).format("YYYY-MM-DD") +
-                          " - " +
-                          dayjs(endDate).format("YYYY-MM-DD")}
-                    </div>
+                      GENERATE REPORT
+                    </button>
                   </div>
-                  {/* END CONFIRM */}
                 </div>
-                <div className="flex justify-end text-[11px]">
-                  <button
-                    className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-blue-950 text-slate-50"
-                    onClick={handleClick}
-                  >
-                    GENERATE REPORT
-                  </button>
-                </div>
-              </div>
 
-              <div className="flex flex-col items-center">
-                <IconButton
-                  onClick={() => {
-                    setSelectedCity(undefined)
-                    setSelectedParts(undefined)
-                  }}
-                  size="small"
-                  color="primary"
-                >
-                  <HiRefresh className="text-blue-900" />
-                </IconButton>
+                <div className="flex flex-col items-center">
+                  <IconButton
+                    onClick={() => {
+                      setSelectedCity(undefined)
+                      setSelectedParts(undefined)
+                    }}
+                    size="small"
+                    color="primary"
+                  >
+                    <HiRefresh className="text-blue-900" />
+                  </IconButton>
+                </div>
               </div>
+              <div className="flex flex-col gap-4"></div>
             </div>
-            <div className="flex flex-col gap-4"></div>
           </div>
         </div>
-      </div>
+      ) : (
+        <></>
+      )}
     </>
   )
 }

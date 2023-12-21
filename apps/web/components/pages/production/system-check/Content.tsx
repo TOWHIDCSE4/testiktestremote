@@ -28,6 +28,7 @@ import dayjs from "dayjs"
 
 import { DatePicker } from "antd"
 import useAddProductionLookupFilter from "../../../../hooks/productionlookup/useAddProductionLookupFilter"
+import useDeleteProductionLookupFilter from "../../../../hooks/productionlookup/useDeleteProductionLookupFilter"
 
 type T_Dispaly_Part_Types = {
   key: string
@@ -74,6 +75,7 @@ const Content = () => {
   } = useMachineClasses(selectedCity?.map((city) => city.key) as string[])
 
   const mutation = useAddProductionLookupFilter()
+  const deleteProduction = useDeleteProductionLookupFilter()
 
   const [dateRange, setDateRange] = useState<Date[] | string[]>([])
   const machineClassSelectedIds = useMemo(
@@ -636,18 +638,20 @@ const Content = () => {
               <div className="flex flex-col items-center">
                 <IconButton
                   onClick={() => {
+                    setIsPinned(!isPinned)
                     if (!isPinned) {
                       mutation.mutate({
                         locations: selectedCity,
                         machineClasses: selectedMachineClasses,
                         machines: selectedMachines,
                         parts: selectedParts,
-                        includeCycles: isIncludeCycle,
+                        includeCycles: isIncludeCycle ?? false,
                         startDate: new Date(startDate),
                         endDate: new Date(endDate),
                       })
+                    } else {
+                      deleteProduction.mutate()
                     }
-                    setIsPinned(!isPinned)
                   }}
                   size="small"
                   color="primary"

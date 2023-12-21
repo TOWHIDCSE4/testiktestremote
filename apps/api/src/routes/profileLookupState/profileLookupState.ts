@@ -54,7 +54,7 @@ export const getProfileLookup = async (req: Request, res: Response) => {
     const profileLookup = await profileLookupState.findOne({ userId: user._id })
     console.log("profileLookup", profileLookup)
     if (!profileLookup) {
-      return res.status(404).json({ message: "Profile lookup state not found" })
+      return res.status(200).json({})
     }
     return res.status(200).json({ profileLookup })
   } catch (error: any) {
@@ -88,8 +88,8 @@ export const updateProfileLookup = async (req: Request, res: Response) => {
 export const deleteProfileLookup = async (req: Request, res: Response) => {
   const { user } = res.locals
   try {
-    await profileLookupState.findOneAndDelete({
-      profileId: user._id,
+    await profileLookupState.deleteMany({
+      userId: user._id,
     })
     return res.status(200).json({ message: "Profile lookup state deleted" })
   } catch (error: any) {

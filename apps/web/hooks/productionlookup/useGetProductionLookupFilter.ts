@@ -15,11 +15,7 @@ export async function fetcherfn() {
 }
 
 function useGetProfileLookup() {
-  const query = useQuery(["profile-lookup"], () => fetcherfn(), {
-    cacheTime: ONE_DAY,
-    staleTime: ONE_DAY,
-    refetchOnWindowFocus: false,
-  })
+  const query = useQuery(["profile-lookup"], () => fetcherfn(), {})
   return query
 }
 export default useGetProfileLookup
