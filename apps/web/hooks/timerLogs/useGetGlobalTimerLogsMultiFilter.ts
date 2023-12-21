@@ -101,8 +101,6 @@ function useGlobalTimerLogsMulti(
   const [startDateRange, setStartDateRange] = useState("")
   const [endDateRange, setEndDateRange] = useState("")
 
-  console.log("fetching data")
-
   const query = useQuery(
     [
       "global-timer-logs",
@@ -134,7 +132,7 @@ function useGlobalTimerLogsMulti(
       }),
     {
       refetchOnWindowFocus: false,
-      enabled: !!locationId.length,
+      enabled: !!locationId?.length,
       refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
     }
   )

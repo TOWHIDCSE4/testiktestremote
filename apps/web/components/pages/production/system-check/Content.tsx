@@ -22,7 +22,13 @@ import CustomSelectComponent, { T_SelectItem } from "./CustomSelect"
 import SystemReport from "./Report/SystemReport"
 import NewWindow from "react-new-window"
 import useGlobalTimerLogsMulti from "../../../../hooks/timerLogs/useGetGlobalTimerLogsMultiFilter"
+import dayjs from "dayjs"
+
 // import DeleteIcon from "@mui/icons-material/Delete"
+
+import { DatePicker } from "antd"
+import useAddProductionLookupFilter from "../../../../hooks/productionlookup/useAddProductionLookupFilter"
+import useDeleteProductionLookupFilter from "../../../../hooks/productionlookup/useDeleteProductionLookupFilter"
 
 type T_Dispaly_Part_Types = {
   key: string
@@ -37,7 +43,7 @@ const Content = () => {
   const myRef = useRef<NewWindow | null>(null)
   const [parts, setParts] = useState<T_Part[]>()
   const [part, onPartChange] = useState()
-  const [selectedCity, setSelectedCity] = useState<T_SelectItem | undefined>()
+  const [selectedCity, setSelectedCity] = useState<T_SelectItem[]>()
   const [showReport, setShowReport] = useState(false)
   const [selectedFactories, setSelectedFactories] = useState<T_SelectItem[]>()
   const [selectedMachineClasses, setSelectedMachineClasses] = useState<
@@ -52,15 +58,26 @@ const Content = () => {
   const [isPinned, setIsPinned] = useState<boolean>()
   const [keyword, setKeyword] = useState<string>("")
   const [sortType, setSortType] = useState<string>("")
+  const [startDate, setStartDate] = useState<string>("")
+  const [endDate, setEndDate] = useState<string>("")
 
+  const [isCheckboxChecked, setIsCheckboxChecked] = useState<
+    boolean | undefined
+  >(false)
   const { data: locations, isLoading: isLocationsLoading } = useLocations()
   const { data: machines, isLoading: isMachinesLoading } = useMachines()
   const { data: factories, isLoading: isFactoriesLoading } = useFactories()
-  const { data: machineClasses, isLoading: isMachineClassesLoading } =
-    useMachineClasses([selectedCity?.key] as string[])
+  const {
+    data: machineClasses,
+    isLoading: isMachineClassesLoading,
+    setStartDateForMachineClass,
+    setEndDateForMachineClass,
+  } = useMachineClasses(selectedCity?.map((city) => city.key) as string[])
 
-  const cityArray = useMemo(() => objectToArray(selectedCity), [selectedCity])
+  const mutation = useAddProductionLookupFilter()
+  const deleteProduction = useDeleteProductionLookupFilter()
 
+  const [dateRange, setDateRange] = useState<Date[] | string[]>([])
   const machineClassSelectedIds = useMemo(
     () =>
       selectedMachineClasses?.map(
@@ -87,7 +104,12 @@ const Content = () => {
     setStartDateRange,
     setEndDateRange,
     setPartId,
-  } = useGlobalTimerLogsMulti(cityArray, sortType, keyword, process)
+  } = useGlobalTimerLogsMulti(
+    selectedCity?.map((city) => city.key) as string[],
+    sortType,
+    keyword,
+    process
+  )
 
   // CITY
   const filteredCities = useMemo<Array<T_SelectItem>>(() => {
@@ -115,8 +137,11 @@ const Content = () => {
 
   // MACHINE CLASS
   const filteredMachineClasses = useMemo<Array<T_SelectItem>>(() => {
+    const selectedCitiesIds = selectedCity?.map((city) => city.key)
     return machineClasses?.items
-      ?.filter((item: T_MachineClass) => selectedCity?.key === item.factoryId)
+      ?.filter((item: T_MachineClass) =>
+        selectedCitiesIds?.includes(item.factoryId)
+      )
       ?.map((item: T_MachineClass) => ({
         key: item._id,
         label: item.name,
@@ -156,6 +181,14 @@ const Content = () => {
   }, [machineSelectedIds?.join(",")])
 
   useEffect(() => {
+    if (startDate !== undefined) setStartDateRange(startDate)
+  }, [startDate])
+
+  useEffect(() => {
+    if (endDate !== undefined) setEndDateRange(endDate)
+  }, [endDate])
+
+  useEffect(() => {
     setSelectedMachines((prev) =>
       prev?.filter((prevItem) =>
         filteredMachines?.some((m: T_SelectItem) => m.key == prevItem.key)
@@ -178,9 +211,16 @@ const Content = () => {
   }, [selectedParts?.join()])
 
   useEffect(() => {
+    setSelectedCity([])
+    setSelectedMachineClasses([])
+    setSelectedMachines([])
+    setSelectedParts([])
+  }, [startDate, endDate])
+
+  useEffect(() => {
     const token = Cookies.get("tfl")
     const locationsQuery = new URLSearchParams({
-      locations: selectedCity?.key as string,
+      locations: selectedCity?.map((city) => city.key) as unknown as string,
     }).toString()
 
     const machineClassesQuery = new URLSearchParams({
@@ -190,11 +230,11 @@ const Content = () => {
     }).toString()
 
     const fetchData = async () => {
-      if (!selectedCity) return
+      if (!selectedCity?.length) return
       let page = 1
 
       const res = await fetch(
-        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}`,
+        `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&startDate=${startDate}&endDate=${endDate}`,
         // &search=${search}&startDate=${startDate}&endDate=${endDate},
         {
           method: "GET",
@@ -209,11 +249,10 @@ const Content = () => {
     }
 
     fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedMachines])
+  }, [selectedMachines, startDate, endDate])
 
   const onCityChange = useCallback(
-    (val?: T_SelectItem) => setSelectedCity(val),
+    (val?: T_SelectItem[]) => setSelectedCity(val),
     [setSelectedCity]
   )
   const onMachineClassChange = useCallback(
@@ -233,6 +272,17 @@ const Content = () => {
 
   function handleClick() {
     setShowReport(true)
+  }
+
+  function handleDate() {
+    setIsCheckboxChecked(!isCheckboxChecked)
+    if (!isCheckboxChecked) {
+      setEndDate(dayjs().endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
+      setStartDate(dayjs().startOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"))
+    } else {
+      setStartDate("")
+      setEndDate("")
+    }
   }
 
   return (
@@ -258,6 +308,7 @@ const Content = () => {
                     <div className="w-1/6">
                       <div className="text-sm">Select City</div>
                       <CustomSelectComponent
+                        multiple
                         items={filteredCities}
                         value={selectedCity}
                         onChange={onCityChange}
@@ -267,7 +318,7 @@ const Content = () => {
                       <div className="text-sm">Machine Class</div>
                       <CustomSelectComponent
                         multiple
-                        items={machineClasses?.items.map((machine: any) => ({
+                        items={machineClasses?.items?.map((machine: any) => ({
                           key: machine._id,
                           label: machine.name,
                         }))}
@@ -298,7 +349,7 @@ const Content = () => {
                         onChange={onChangePart}
                       />
                     </div>
-                    <div className="w-1/6">
+                    <div className="w-[7rem]">
                       <div className="text-sm">Include Cycles</div>
                       <div className="px-2">
                         <FormControlLabel
@@ -315,25 +366,74 @@ const Content = () => {
                       </div>
                     </div>
                     <div className="w-[12%]">
-                      <div className="text-sm">Review Range</div>
-                      <div className="px-2 text-[11px]">
-                        <button className="flex justify-center py-2 px-4 border rounded-lg border-1 border-black bg-blue-950 text-slate-50">
-                          TODAY
-                        </button>
+                      <div className="text-sm whitespace-nowrap">
+                        Review Range
+                      </div>
+                      {/* <div className="flex text-[11px] items-center">
+                        <div className="w-2/3">
+                          <Space
+                            direction="vertical"
+                            className="w-full"
+                            size={12}
+                          >
+                            <RangePicker
+                              disabled={
+                                isCheckboxChecked || !process ? true : false
+                              }
+                              //@ts-expect-error
+                              value={isCheckboxChecked ? [null] : dateRange}
+                              // disabledDate={disabledDate}
+                              onChange={(e) => datePick(e)}
+                            />
+                          </Space>
+                        </div>
+                      </div> */}
+                      <DatePicker.RangePicker
+                        className="text-[10px] text-white w-[8rem] border-blue-950"
+                        size="small"
+                        disabledDate={(current: any) =>
+                          current.valueOf() >= Date.now()
+                        }
+                        onChange={(dateValues: any) => {
+                          if (!dateValues) return
+                          setStartDate(
+                            dayjs(dateValues[0]).format(
+                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                            )
+                          )
+                          setEndDate(
+                            dayjs(dateValues[1]).format(
+                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                            )
+                          )
+                          setStartDateForMachineClass(
+                            dayjs(dateValues[0]).format(
+                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                            )
+                          )
+                          setEndDateForMachineClass(
+                            dayjs(dateValues[1]).format(
+                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                            )
+                          )
+                        }}
+                      />
+                      <div className="px-0 text-[11px] flex space-x-2 pt-3">
+                        <label htmlFor="checkbox-date">TODAY</label>
+                        <input
+                          id="checkbox-date"
+                          type="checkbox"
+                          checked={isCheckboxChecked}
+                          onChange={handleDate}
+                          className="flex justify-center py-1 px-1 rounded-full border border-1 border-black text-black"
+                        />
+
                         {/* <Button variant="contained">Today</Button> */}
                       </div>
                     </div>
                   </div>
                   {/* END SELECT */}
-                  <Divider />
-                  <div className="flex justify-end p-6 text-[11px]">
-                    <button
-                      className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-blue-950 text-slate-50"
-                      onClick={handleClick}
-                    >
-                      GENERATE REPORT
-                    </button>
-                  </div>
+
                   {showReport && (
                     <NewWindow
                       copyStyles={true}
@@ -349,6 +449,7 @@ const Content = () => {
                     >
                       <SystemReport
                         data={data}
+                        isIncludeCycle={isIncludeCycle}
                         // city={cityArray}
                         keyword={keyword}
                         sortType={sortType}
@@ -359,10 +460,14 @@ const Content = () => {
                         machineId={machineSelectedIds}
                         partId={partsSelectedIds}
                         machineClassId={machineClassSelectedIds}
-                        locationId={cityArray}
+                        locationId={
+                          selectedCity?.map((city) => city.key) as string[]
+                        }
                         locationData={
                           locations?.items?.filter((item) =>
-                            cityArray?.includes(item._id ?? "")
+                            selectedCity
+                              ?.map((city) => city.key)
+                              ?.includes(item._id ?? "")
                           ) ?? []
                         }
                         machineClassData={
@@ -378,32 +483,45 @@ const Content = () => {
                             )
                           ) ?? []
                         }
-                        startDateRange={""}
-                        endDateRange={""}
+                        startDateRange={startDate}
+                        endDateRange={endDate}
                         newWindowRef={myRef}
                       />
                     </NewWindow>
                   )}
-                  <p className="text-md">Confirmation Selection</p>
+                  <p className="text-md pt-5">Confirmation Selection</p>
                   <Divider />
                   {/* BEGIN CONFIRM */}
                   <div className="grid grid-cols-6 gap-x-3">
                     {/* CITY */}
                     <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
-                      {selectedCity && (
-                        <div className="p-1">
+                      {selectedCity?.map((city) => (
+                        <div key={city.key} className="p-1">
                           <Chip
-                            label={selectedCity.label}
+                            label={city.label}
                             className="text-left"
                             variant="outlined"
                             size="small"
                             onDelete={() => {
-                              setSelectedCity(undefined)
+                              setSelectedCity((prev) => {
+                                return prev?.filter(
+                                  (previtem) => previtem.key != city.key
+                                )
+                              })
+                              setSelectedParts(undefined)
                             }}
-                            deleteIcon={<HiXCircle />}
+                            deleteIcon={
+                              <span className="text-end rounded-full text-xs px-[5px] py-[1px] bg-gray-500 text-white">
+                                X
+                              </span>
+                            }
+                            style={{
+                              width: "100px",
+                              justifyContent: "space-between",
+                            }}
                           />
                         </div>
-                      )}
+                      ))}
                     </div>
                     {/* MACHINE CLASS */}
                     <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
@@ -421,13 +539,21 @@ const Content = () => {
                                 )
                               })
                             }}
-                            deleteIcon={<HiXCircle />}
+                            deleteIcon={
+                              <span className="text-end rounded-full text-xs px-[5px] py-[1px] bg-gray-500 text-white">
+                                X
+                              </span>
+                            }
+                            style={{
+                              width: "100px",
+                              justifyContent: "space-between",
+                            }}
                           />
                         </div>
                       ))}
                     </div>
                     {/* MACHINE */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
+                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit pl-2">
                       {selectedMachines?.map((item) => (
                         <div key={item.key} className="p-1">
                           <Chip
@@ -436,19 +562,27 @@ const Content = () => {
                             variant="outlined"
                             size="small"
                             onDelete={() => {
-                              setSelectedMachineClasses((prev) => {
+                              setSelectedMachines((prev) => {
                                 return prev?.filter(
                                   (previtem) => previtem.key != item.key
                                 )
                               })
                             }}
-                            deleteIcon={<HiXCircle />}
+                            deleteIcon={
+                              <span className="text-end rounded-full text-xs px-[5px] py-[1px] bg-gray-500 text-white">
+                                X
+                              </span>
+                            }
+                            style={{
+                              width: "100px",
+                              justifyContent: "space-between",
+                            }}
                           />
                         </div>
                       ))}
                     </div>
                     {/* PART */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
+                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit pl-8">
                       {selectedParts?.map((item) => (
                         <div key={item.key} className="p-1">
                           <Chip
@@ -463,7 +597,15 @@ const Content = () => {
                                 )
                               })
                             }}
-                            deleteIcon={<HiXCircle />}
+                            deleteIcon={
+                              <span className="text-end rounded-full px-[5px] py-[1px] text-xs bg-gray-500 text-white">
+                                X
+                              </span>
+                            }
+                            style={{
+                              width: "100px",
+                              justifyContent: "space-between",
+                            }}
                           />
                         </div>
                       ))}
@@ -473,11 +615,23 @@ const Content = () => {
                       {isIncludeCycle ? "Yes" : "No"}
                     </div>
                     {/* DATE RANGE */}
-                    <div className="flex flex-col w-full col-span-1 text-xs text-left h-fit">
-                      Today
+                    <div className="flex justify-end text-xs">
+                      {startDate === endDate
+                        ? "Today"
+                        : dayjs(startDate).format("YYYY-MM-DD") +
+                          " - " +
+                          dayjs(endDate).format("YYYY-MM-DD")}
                     </div>
                   </div>
                   {/* END CONFIRM */}
+                </div>
+                <div className="flex justify-end text-[11px]">
+                  <button
+                    className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-blue-950 text-slate-50"
+                    onClick={handleClick}
+                  >
+                    GENERATE REPORT
+                  </button>
                 </div>
               </div>
 
@@ -485,6 +639,19 @@ const Content = () => {
                 <IconButton
                   onClick={() => {
                     setIsPinned(!isPinned)
+                    if (!isPinned) {
+                      mutation.mutate({
+                        locations: selectedCity,
+                        machineClasses: selectedMachineClasses,
+                        machines: selectedMachines,
+                        parts: selectedParts,
+                        includeCycles: isIncludeCycle ?? false,
+                        startDate: new Date(startDate),
+                        endDate: new Date(endDate),
+                      })
+                    } else {
+                      deleteProduction.mutate()
+                    }
                   }}
                   size="small"
                   color="primary"

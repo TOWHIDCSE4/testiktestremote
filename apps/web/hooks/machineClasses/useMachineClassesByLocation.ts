@@ -40,7 +40,7 @@ function useMachineClasses(locations: string[]) {
   const [endDateForMachineClass, setEndDateForMachineClass] =
     useState<string>("")
 
-  const LocationsString = locations.join(",")
+  const LocationsString = locations?.join(",")
 
   const query = useQuery(
     [

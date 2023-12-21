@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import useLocation from "../../../hooks/locations/useLocation"
 import useProfile from "../../../hooks/users/useProfile"
+import ProductionLookup from "./report-lookup/ProductionLookup"
 
 const Content = () => {
   const { data, isLoading: basicInfoLoading } = useProfile()
@@ -15,7 +16,7 @@ const Content = () => {
 
   return (
     <>
-      <div className={`my-20 pb-10`}>
+      <div>
         <div className="content px-4 md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mx-auto mt-28">
           <h1 className="text-gray-800 text-3xl font-bold">
             {!basicInfoLoading ? (
@@ -36,6 +37,8 @@ const Content = () => {
           <div className="w-full h-0.5 bg-gray-200 mt-6"></div>
         </div>
       </div>
+
+      <ProductionLookup />
     </>
   )
 }
