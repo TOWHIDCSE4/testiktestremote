@@ -238,12 +238,11 @@ const SystemReport = ({
           Totals
         </h6>
         <h5 className="text-md text-gray-800 mt-4">
-          <b>Total Units:</b>
-          {paginated?.itemCount || 0}
+          <b>Total Units:</b> {paginated?.itemCount || 0}
         </h5>
         <h5 className="text-md text-gray-800">
           <b>Total Tons:</b>{" "}
-          {/* {paginated?.items
+          {paginated?.items
             ? data?.items
                 ?.reduce(
                   (acc: number, log: { partId: { tons: any } }) =>
@@ -254,7 +253,7 @@ const SystemReport = ({
                   0
                 )
                 .toFixed(3)
-            : "0.000"} */}
+            : "0.000"}
         </h5>
         {isIncludeCycle ? (
           <>
@@ -396,7 +395,7 @@ const SystemReport = ({
                             <td className="border-[1px] border-neutral-300 whitespace-nowrap text-center px-3 py-2 text-sm text-gray-500">
                               {log.time.toFixed(2)}s
                             </td>
-                            <td className="border-[1px] border-neutral-300 whitespace-normal px-3 text-center py-2 text-sm text-gray-500">
+                            <td className="border-[1px] border-neutral-300 whitespace-nowrap px-3 text-center py-2 text-sm text-gray-500">
                               {log?.stopReason ? log?.stopReason : ""}
                             </td>
                           </tr>

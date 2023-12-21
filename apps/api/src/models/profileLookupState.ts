@@ -30,7 +30,7 @@ const profileLookupState = new Schema({
     type: Date,
     optional: true,
   },
-  inculeCycles: {
+  includeCycles: {
     type: Boolean,
     default: false,
   },

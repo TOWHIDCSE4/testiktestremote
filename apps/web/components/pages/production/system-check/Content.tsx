@@ -247,7 +247,6 @@ const Content = () => {
     }
 
     fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMachines, startDate, endDate])
 
   const onCityChange = useCallback(
@@ -282,28 +281,7 @@ const Content = () => {
       setStartDate("")
       setEndDate("")
     }
-    console.log(
-      "🚀 ~ file: Content.tsx:285 ~ handleDate ~ dayjs().format",
-      dayjs().endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-    )
   }
-
-  // const datePick = (inputValue: any) => {
-  //   console.log(inputValue)
-  //   setPage(1)
-  //   if (Array.isArray(inputValue)) {
-  //     if (inputValue && inputValue[0] && inputValue[1]) {
-  //       setStartDate(
-  //         dayjs(inputValue[0])
-  //           .startOf("day")
-  //           .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-  //       )
-  //       setEndDate(
-  //         dayjs(inputValue[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-  //       )
-  //     }
-  //   }
-  // }
 
   return (
     <>
@@ -658,15 +636,17 @@ const Content = () => {
               <div className="flex flex-col items-center">
                 <IconButton
                   onClick={() => {
-                    mutation.mutate({
-                      locations: selectedCity,
-                      machineClasses: selectedMachineClasses,
-                      machines: selectedMachines,
-                      parts: selectedParts,
-                      includeCycles: isIncludeCycle,
-                      startDate: new Date(startDate),
-                      endDate: new Date(endDate),
-                    })
+                    if (!isPinned) {
+                      mutation.mutate({
+                        locations: selectedCity,
+                        machineClasses: selectedMachineClasses,
+                        machines: selectedMachines,
+                        parts: selectedParts,
+                        includeCycles: isIncludeCycle,
+                        startDate: new Date(startDate),
+                        endDate: new Date(endDate),
+                      })
+                    }
                     setIsPinned(!isPinned)
                   }}
                   size="small"

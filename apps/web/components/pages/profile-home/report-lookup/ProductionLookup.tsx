@@ -108,137 +108,33 @@ const Content = () => {
     process
   )
 
-  // CITY
-  // const filteredCities = useMemo<Array<T_SelectItem>>(() => {
-  //   if (isLocationsLoading || !locations?.items) return []
-
-  //   return locations?.items.map((item) => ({
-  //     key: item._id ?? "",
-  //     label: item.name,
-  //   }))
-  // }, [locations, isLocationsLoading])
-
-  // const filteredFactories = useMemo<Array<T_SelectItem>>(() => {
-  //   if (isFactoriesLoading || !factories?.items || !selectedCity) return []
-
-  //   const data = factories?.items.map((item: T_Factory) => ({
-  //     key: item._id ?? "",
-  //     label: item.name,
-  //   }))
-
-  //   setSelectedFactories((prev) =>
-  //     prev?.filter((prevItem) => data?.some((f: any) => f.key == prevItem.key))
-  //   )
-  //   return data
-  // }, [factories, isFactoriesLoading, selectedCity])
-
-  // // MACHINE CLASS
-  // const filteredMachineClasses = useMemo<Array<T_SelectItem>>(() => {
-  //   const selectedCitiesIds = selectedCity?.map((city) => city.key)
-  //   return machineClasses?.items
-  //     ?.filter((item: T_MachineClass) =>
-  //       selectedCitiesIds?.includes(item.factoryId)
-  //     )
-  //     ?.map((item: T_MachineClass) => ({
-  //       key: item._id,
-  //       label: item.name,
-  //     }))
-  // }, [machineClasses, selectedCity])
-
   useEffect(() => {
-    console.log(
-      "🚀 ~ file: ProductionLookup.tsx:149 ~ useEffect ~ new Date():",
-      new Date()
-    )
     if (machineClassSelectedIds !== undefined) {
       setMachineClassId(machineClassSelectedIds)
     }
   }, [machineClassSelectedIds])
 
-  // useEffect(() => {
-  //   setSelectedMachineClasses((prev) =>
-  //     prev?.filter((prevItem) =>
-  //       filteredMachineClasses?.some((mc) => mc.key == prevItem.key)
-  //     )
-  //   )
-  // }, [filteredMachineClasses])
-
-  // MACHINES
-
-  // const filteredMachines = useMemo(() => {
-  //   const keysToMachine = selectedMachineClasses?.map((item: any) => item.key)
-  //   return machines?.items
-  //     ?.filter((item: any) => keysToMachine?.includes(item.machineClassId))
-  //     .map((item: T_Machine) => ({
-  //       key: item._id,
-  //       label: item.name,
-  //     }))
-  // }, [machines, selectedMachineClasses])
-
   useEffect(() => {
-    console.log(
-      "🚀 ~ file: ProductionLookup.tsx:176 ~ useEffect ~ new Date():",
-      new Date()
-    )
     if (machineSelectedIds !== undefined) {
       setMachineId(machineSelectedIds)
     }
   }, [machineSelectedIds?.join(",")])
 
   useEffect(() => {
-    console.log(
-      "🚀 ~ file: ProductionLookup.tsx:187 ~ useEffect ~ new Date():",
-      new Date()
-    )
     if (startDate !== undefined) setStartDateRange(startDate)
   }, [startDate])
 
   useEffect(() => {
-    console.log(
-      "🚀 ~ file: ProductionLookup.tsx:192 ~ useEffect ~ new Date():",
-      new Date()
-    )
     if (endDate !== undefined) setEndDateRange(endDate)
   }, [endDate])
 
-  // useEffect(() => {
-  //   setSelectedMachines((prev) =>
-  //     prev?.filter((prevItem) =>
-  //       filteredMachines?.some((m: T_SelectItem) => m.key == prevItem.key)
-  //     )
-  //   )
-  // }, [filteredMachines])
-
   useEffect(() => {
-    console.log(
-      "🚀 ~ file: ProductionLookup.tsx:207 ~ useEffect ~ new Date():",
-      new Date()
-    )
     if (partsSelectedIds !== undefined) {
       setPartId(partsSelectedIds)
     }
   }, [partsSelectedIds?.join(",")])
 
-  // useEffect(() => {
-  //   setSelectedParts((prev) =>
-  //     prev?.filter((prevItem) =>
-  //       selectedParts?.some((m: T_SelectItem) => m.key == prevItem.key)
-  //     )
-  //   )
-  // }, [selectedParts?.join()])
-
-  // useEffect(() => {
-  //   setSelectedCity([])
-  //   setSelectedMachineClasses([])
-  //   setSelectedMachines([])
-  //   setSelectedParts([])
-  // }, [startDate, endDate])
-
   useEffect(() => {
-    console.log(
-      "🚀 ~ file: ProductionLookup.tsx:225 ~ useEffect ~ new Date():",
-      new Date()
-    )
     const token = Cookies.get("tfl")
     const locationsQuery = new URLSearchParams({
       locations: selectedCity?.map((city) => city.key) as unknown as string,
@@ -273,25 +169,6 @@ const Content = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [startDate, endDate])
 
-  // const onCityChange = useCallback(
-  //   (val?: T_SelectItem[] | undefined) => setSelectedCity(val),
-  //   [setSelectedCity]
-  // )
-  // const onMachineClassChange = useCallback(
-  //   (val?: T_SelectItem[]) => {
-  //     setSelectedMachineClasses(val)
-  //   },
-  //   [setSelectedMachineClasses]
-  // )
-  // const onChangePart = useCallback(
-  //   (val?: T_SelectItem[]) => setSelectedParts(val),
-  //   [setSelectedParts]
-  // )
-  // const onMachinesChange = useCallback(
-  //   (val?: T_SelectItem[]) => setSelectedMachines(val),
-  //   [setSelectedMachines]
-  // )
-
   function handleClick() {
     setShowReport(true)
   }
@@ -307,13 +184,7 @@ const Content = () => {
     }
   }
 
-  console.log("PROFILE LOOKUP", filters)
-
   useEffect(() => {
-    console.log(
-      "🚀 ~ file: ProductionLookup.tsx:339 ~ useEffect ~ new Date():",
-      new Date()
-    )
     const profileLookupData = filters?.profileLookup
 
     setSelectedCity(
@@ -340,7 +211,7 @@ const Content = () => {
         label: parts.label,
       }))
     )
-    setIsIncludeCycle(profileLookupData?.inculeCycles)
+    setIsIncludeCycle(profileLookupData?.includeCycles)
     setStartDate(profileLookupData?.startDate)
     setEndDate(profileLookupData?.endDate)
   }, [filters])
@@ -405,10 +276,10 @@ const Content = () => {
                         <FormControlLabel
                           control={
                             <Checkbox
-                              checked={isIncludeCycle}
-                              onChange={(eve) =>
-                                setIsIncludeCycle(eve.target.checked)
-                              }
+                              checked={isIncludeCycle === true}
+                              // onChange={(eve) =>
+                              //   setIsIncludeCycle(eve.target.checked)
+                              // }
                             />
                           }
                           label="Yes"
@@ -419,54 +290,13 @@ const Content = () => {
                       <div className="text-sm whitespace-nowrap">
                         Review Range
                       </div>
-                      {/* <div className="flex text-[11px] items-center">
-                        <div className="w-2/3">
-                          <Space
-                            direction="vertical"
-                            className="w-full"
-                            size={12}
-                          >
-                            <RangePicker
-                              disabled={
-                                isCheckboxChecked || !process ? true : false
-                              }
-                              //@ts-expect-error
-                              value={isCheckboxChecked ? [null] : dateRange}
-                              // disabledDate={disabledDate}
-                              onChange={(e) => datePick(e)}
-                            />
-                          </Space>
-                        </div>
-                      </div> */}
+
                       <DatePicker.RangePicker
                         className="text-[10px] text-white w-[8rem] border-blue-950"
                         size="small"
                         disabledDate={(current: any) =>
                           current.valueOf() >= Date.now()
                         }
-                        // onChange={(dateValues: any) => {
-                        //   if (!dateValues) return
-                        //   setStartDate(
-                        //     dayjs(dateValues[0]).format(
-                        //       "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                        //     )
-                        //   )
-                        //   setEndDate(
-                        //     dayjs(dateValues[1]).format(
-                        //       "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                        //     )
-                        //   )
-                        //   setStartDateForMachineClass(
-                        //     dayjs(dateValues[0]).format(
-                        //       "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                        //     )
-                        //   )
-                        //   setEndDateForMachineClass(
-                        //     dayjs(dateValues[1]).format(
-                        //       "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                        //     )
-                        //   )
-                        // }}
                       />
                       <div className="px-0 text-[11px] flex space-x-2 pt-3">
                         <label htmlFor="checkbox-date">TODAY</label>
@@ -556,19 +386,6 @@ const Content = () => {
                             className="text-left"
                             variant="outlined"
                             size="small"
-                            // onDelete={() => {
-                            //   setSelectedCity((prev) => {
-                            //     return prev?.filter(
-                            //       (previtem) => previtem.key != city.key
-                            //     )
-                            //   })
-                            //   setSelectedParts(undefined)
-                            // }}
-                            // deleteIcon={
-                            //   <span className="text-end rounded-full text-xs px-[5px] py-[1px] bg-gray-500 text-white">
-                            //     X
-                            //   </span>
-                            // }
                             style={{
                               width: "100px",
                               justifyContent: "space-between",
@@ -586,18 +403,6 @@ const Content = () => {
                             className="text-left"
                             variant="outlined"
                             size="small"
-                            // onDelete={() => {
-                            //   setSelectedMachineClasses((prev) => {
-                            //     return prev?.filter(
-                            //       (previtem) => previtem.key != item.key
-                            //     )
-                            //   })
-                            // }}
-                            // deleteIcon={
-                            //   <span className="text-end rounded-full text-xs px-[5px] py-[1px] bg-gray-500 text-white">
-                            //     X
-                            //   </span>
-                            // }
                             style={{
                               width: "100px",
                               justifyContent: "space-between",
@@ -615,18 +420,6 @@ const Content = () => {
                             className="text-left"
                             variant="outlined"
                             size="small"
-                            // onDelete={() => {
-                            //   setSelectedMachines((prev) => {
-                            //     return prev?.filter(
-                            //       (previtem) => previtem.key != item.key
-                            //     )
-                            //   })
-                            // }}
-                            // deleteIcon={
-                            //   <span className="text-end rounded-full text-xs px-[5px] py-[1px] bg-gray-500 text-white">
-                            //     X
-                            //   </span>
-                            // }
                             style={{
                               width: "100px",
                               justifyContent: "space-between",
@@ -644,18 +437,6 @@ const Content = () => {
                             className="text-left"
                             variant="outlined"
                             size="small"
-                            // onDelete={() => {
-                            //   setSelectedParts((prev) => {
-                            //     return prev?.filter(
-                            //       (previtem) => previtem.key != item.key
-                            //     )
-                            //   })
-                            // }}
-                            // deleteIcon={
-                            //   <span className="text-end rounded-full px-[5px] py-[1px] text-xs bg-gray-500 text-white">
-                            //     X
-                            //   </span>
-                            // }
                             style={{
                               width: "100px",
                               justifyContent: "space-between",
