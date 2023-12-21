@@ -27,7 +27,7 @@ const App = (app: Application) => {
   app.use(`${API_ROOT}/jobs`, JobRoute)
   app.use(`${API_ROOT}/cycle-timers`, CycleTimerRoute)
   app.use(`${API_ROOT}/controller-timers`, ControllerTimerRoute)
-  app.use(`${API_ROOT}/profileLookup`, ProfileLookupRoute)
+  app.use(`${API_ROOT}/profile-lookup`, ProfileLookupRoute)
 }
 
 export default App

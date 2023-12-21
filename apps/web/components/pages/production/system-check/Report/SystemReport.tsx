@@ -12,6 +12,7 @@ import { API_URL_TIMER_LOGS } from "../../../../../helpers/constants"
 import { hourMinuteSecond } from "../../../../../helpers/timeConverter"
 import useGlobalTimerLogsMulti from "../../../../../hooks/timerLogs/useGetGlobalTimerLogsMultiFilter"
 import { T_Locations, T_Machine, T_MachineClass } from "custom-validator"
+import { T_SelectItem } from "../CustomSelect"
 
 const SystemReport = ({
   data,
@@ -46,8 +47,8 @@ const SystemReport = ({
   endDateRange: string
   partId: string[] | undefined
   locationData: T_Locations[]
-  machineClassData: T_MachineClass[]
-  machineData: T_Machine[]
+  machineClassData: T_SelectItem[]
+  machineData: T_SelectItem[]
   newWindowRef: any
 }) => {
   dayjs.extend(utc.default)
@@ -198,13 +199,13 @@ const SystemReport = ({
             {machineClassData.length > 0 && (
               <div className="text-sm">
                 <span className="text-gray-800 font-bold">Machine Class:</span>{" "}
-                {machineClassData.map((item) => item.name).join(", ")}
+                {machineClassData.map((item) => item?.label).join(", ")}
               </div>
             )}
             {machineData.length > 0 && (
               <div className="text-sm">
                 <span className="text-gray-800 font-bold">Machine:</span>{" "}
-                {machineData.map((item) => item.name).join(", ")}
+                {machineData.map((item) => item?.label).join(", ")}
               </div>
             )}
             {startDateRange && endDateRange && (
