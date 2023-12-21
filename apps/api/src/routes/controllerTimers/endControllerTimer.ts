@@ -35,7 +35,6 @@ export const endControllerTimer = async (req: Request, res: Response) => {
           {
             timerId,
             endAt: null,
-            createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
           },
           {
             endAt: Date.now(),
@@ -50,7 +49,6 @@ export const endControllerTimer = async (req: Request, res: Response) => {
           {
             timerId,
             endAt: null,
-            createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
           },
           {
             endAt: Date.now(),
