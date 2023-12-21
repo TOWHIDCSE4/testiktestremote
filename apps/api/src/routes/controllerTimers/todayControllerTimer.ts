@@ -68,27 +68,27 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
             .add(totalProductionTime, "hour")
             .toISOString()
         }
-        // if (
-        //   controllerTimer &&
-        //   controllerShouldEndAt &&
-        //   !controllerTimer?.endAt &&
-        //   dayjs.utc(controllerShouldEndAt).diff(dayjs.utc(), "minutes") < 0
-        // ) {
-        //   controllerTimer.endAt = new Date(controllerShouldEndAt)
-        //   await ControllerTimers.updateMany(
-        //     { timerId, endAt: null },
-        //     { endAt: new Date(controllerShouldEndAt) }
-        //   )
-        //   await CycleTimers.updateMany(
-        //     {
-        //       timerId,
-        //       endAt: null,
-        //     },
-        //     {
-        //       endAt: new Date(controllerShouldEndAt),
-        //     }
-        //   )
-        // }
+        if (
+          controllerTimer &&
+          controllerShouldEndAt &&
+          !controllerTimer?.endAt &&
+          dayjs.utc(controllerShouldEndAt).diff(dayjs.utc(), "minutes") < 0
+        ) {
+          controllerTimer.endAt = new Date(controllerShouldEndAt)
+          await ControllerTimers.updateMany(
+            { timerId, endAt: null },
+            { endAt: new Date(controllerShouldEndAt) }
+          )
+          await CycleTimers.updateMany(
+            {
+              timerId,
+              endAt: null,
+            },
+            {
+              endAt: new Date(controllerShouldEndAt),
+            }
+          )
+        }
 
         res.json({
           error: false,
