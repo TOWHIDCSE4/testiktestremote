@@ -71,7 +71,7 @@ export const updateProfileLookup = async (req: Request, res: Response) => {
   const { user } = res.locals
   try {
     await profileLookupState.findOneAndUpdate(
-      { profileId: user._id },
+      { userId: user._id },
       { $set: { ...req.body } }
     )
     return res.status(200).json({ message: "Profile lookup state updated" })
