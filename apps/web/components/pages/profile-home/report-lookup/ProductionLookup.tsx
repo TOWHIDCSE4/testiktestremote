@@ -188,25 +188,25 @@ const Content = () => {
     const profileLookupData = filters?.profileLookup
 
     setSelectedCity(
-      profileLookupData?.locations.map((location: any) => ({
+      profileLookupData?.locations?.map((location: any) => ({
         key: location.key,
         label: location.label,
       }))
     )
     setSelectedMachineClasses(
-      profileLookupData?.machineClasses.map((machineClasses: any) => ({
+      profileLookupData?.machineClasses?.map((machineClasses: any) => ({
         key: machineClasses.key,
         label: machineClasses.label,
       }))
     )
     setSelectedMachines(
-      profileLookupData?.machines.map((machines: any) => ({
+      profileLookupData?.machines?.map((machines: any) => ({
         key: machines.key,
         label: machines.label,
       }))
     )
     setSelectedParts(
-      profileLookupData?.parts.map((parts: any) => ({
+      profileLookupData?.parts?.map((parts: any) => ({
         key: parts.key,
         label: parts.label,
       }))
