@@ -3,7 +3,7 @@ const { Schema } = mongoose
 const profileLookupState = new Schema({
   userId: {
     type: mongoose.Schema.ObjectId,
-    ref: "Profile",
+    ref: "user",
     unique: true,
   },
   locations: {

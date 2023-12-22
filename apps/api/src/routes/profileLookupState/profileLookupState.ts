@@ -88,7 +88,7 @@ export const updateProfileLookup = async (req: Request, res: Response) => {
 export const deleteProfileLookup = async (req: Request, res: Response) => {
   const { user } = res.locals
   try {
-    await profileLookupState.deleteMany({
+    await profileLookupState.deleteOne({
       userId: user._id,
     })
     return res.status(200).json({ message: "Profile lookup state deleted" })
