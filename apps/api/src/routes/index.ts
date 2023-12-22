@@ -13,6 +13,7 @@ import JobRoute from "./jobs"
 import CycleTimerRoute from "./cycleTimers"
 import ControllerTimerRoute from "./controllerTimers"
 import ProfileLookupRoute from "./profileLookupState"
+import dashboardConfigRoute from "./dashboardConfig"
 
 const App = (app: Application) => {
   app.use(`${API_ROOT}/users`, UsersRoute)
@@ -28,6 +29,7 @@ const App = (app: Application) => {
   app.use(`${API_ROOT}/cycle-timers`, CycleTimerRoute)
   app.use(`${API_ROOT}/controller-timers`, ControllerTimerRoute)
   app.use(`${API_ROOT}/profile-lookup`, ProfileLookupRoute)
+  app.use(`${API_ROOT}/dashboard-config`, dashboardConfigRoute)
 }
 
 export default App

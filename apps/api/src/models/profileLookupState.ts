@@ -4,7 +4,6 @@ const profileLookupState = new Schema({
   userId: {
     type: mongoose.Schema.ObjectId,
     ref: "user",
-    unique: true,
   },
   locations: {
     type: Array,
