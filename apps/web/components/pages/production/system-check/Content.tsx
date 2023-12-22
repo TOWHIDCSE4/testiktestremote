@@ -55,6 +55,7 @@ const Content = () => {
   >()
   const [selectedParts, setSelectedParts] = useState<T_SelectItem[]>()
   const [isIncludeCycle, setIsIncludeCycle] = useState<boolean>()
+  const [isDisabled, setIsDisabled] = useState<boolean>(true)
   const [isPinned, setIsPinned] = useState<boolean>()
   const [keyword, setKeyword] = useState<string>("")
   const [sortType, setSortType] = useState<string>("")
@@ -627,10 +628,21 @@ const Content = () => {
                 </div>
                 <div className="flex justify-end text-[11px]">
                   <button
-                    className="flex justify-center py-2 px-2 border rounded-lg border-1 border-black bg-blue-950 text-slate-50"
+                    className="flex justify-center mr-2 py-2 px-2 border rounded-lg border-1 border-black bg-blue-950 text-slate-50"
                     onClick={handleClick}
                   >
                     GENERATE REPORT
+                  </button>
+                  <button
+                    className={`flex justify-center py-2 px-2 border rounded-lg border-1 ${
+                      isDisabled
+                        ? "bg-gray-400 border-none "
+                        : "bg-blue-950 border-black"
+                    } text-slate-50`}
+                    onClick={() => console.log("test")}
+                    disabled={isDisabled}
+                  >
+                    Save
                   </button>
                 </div>
               </div>
