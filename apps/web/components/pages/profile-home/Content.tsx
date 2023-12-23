@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import useLocation from "../../../hooks/locations/useLocation"
 import useProfile from "../../../hooks/users/useProfile"
-import ProductionLookup from "./report-lookup/ProductionLookup"
+// import ProductionLookup from "./report-lookup/ProductionLookup"
 
 const Content = () => {
   const { data, isLoading: basicInfoLoading } = useProfile()
@@ -38,7 +38,7 @@ const Content = () => {
         </div>
       </div>
 
-      <ProductionLookup />
+      {/* <ProductionLookup /> */}
     </>
   )
 }

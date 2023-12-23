@@ -76,6 +76,7 @@ export interface ControllerContextProps {
   unitCreated: number
   timerId: string | undefined
   isStopDisabled: boolean
+  isAddHourPopupOpen: boolean | null
   hasControllerTimer: boolean
   stopReasons: any[]
   isChangingOperator: boolean
@@ -96,6 +97,7 @@ export interface ControllerContextProps {
   setStopReasons: (...args: any) => void
   onStopCycleWithReasons: (...args: any) => void
   onEndProduction: () => void
+  setIsAddHourPopupOpen: (open: boolean | null) => void
   readingsDivRef?: RefObject<HTMLDivElement>
   setReadingsDivRef: (ref: RefObject<HTMLDivElement>) => void
   readingMessages?: Array<string>
@@ -120,6 +122,8 @@ export const ControllerContext = createContext<ControllerContextProps>({
   unitCreated: 0,
   timerId: undefined,
   stopReasons: [],
+  setIsAddHourPopupOpen: () => {},
+  isAddHourPopupOpen: false,
   timerLogs: [],
   jobs: [],
   isJobsLoading: false,
@@ -232,6 +236,9 @@ export const ControllerContextProvider = ({
 
   const [clockSeconds, setClockSeconds] = useState(0)
   const [clockMilliSeconds, setClockMilliSeconds] = useState(0)
+  const [isAddHourPopupOpen, setIsAddHourPopupOpen] = useState<boolean | null>(
+    null
+  )
   const [isControllerClockRunning, setIsControllerClockRunning] =
     useState(false)
   const [isCycleClockRunning, setIsCycleClockRunning] = useState(false)
@@ -249,13 +256,9 @@ export const ControllerContextProvider = ({
   const controllerClockIntervalRef = useRef<any>()
   const cycleClockIntervalRef = useRef<any>()
   const isControllerModalOpenRef = useRef<any>()
-  const controllerTimeLeft = controllerTimerData?.controllerShouldEndAt
-    ? dayjs
-        .utc(controllerTimerData?.controllerShouldEndAt)
-        .diff(dayjs.utc(), "minutes")
-    : null
-  const isControllerOutOfTime = controllerTimeLeft
-    ? controllerTimeLeft < 0
+  const controllerHourLeft = controllerTimerData?.hourToEnd
+  const isControllerOutOfTime = controllerHourLeft
+    ? controllerHourLeft < 0
     : false
   const hasControllerTimer =
     Array.isArray(controllerTimerData?.items) &&
@@ -340,11 +343,14 @@ export const ControllerContextProvider = ({
       if (!query?.items?.length) return query
       return set(query, "items.0.endAt", new Date())
     })
-    endControllerTimer(timerId, {
-      onSettled: () => {
-        invalidateQueries()
-      },
-    })
+    endControllerTimer(
+      { timerId, locationId: getObjectId(timerDetailData?.item?.locationId) },
+      {
+        onSettled: () => {
+          invalidateQueries()
+        },
+      }
+    )
 
     if (onEndProductionProps) {
       onEndProductionProps(unitCreated)
@@ -418,12 +424,6 @@ export const ControllerContextProvider = ({
     if (onStopCycleWithReasonsProps) {
       onStopCycleWithReasonsProps(unitCreated)
     }
-    // if (socket) {
-    //   socket.emit(`end-controller-pressed`, {
-    //     timerId,
-    //     action: "end-controller-pressed",
-    //   })
-    // }
   }
 
   const invalidateQueries = () => {
@@ -475,6 +475,10 @@ export const ControllerContextProvider = ({
         .subtract(timerDetailData?.item?.locationId?.productionTime, "hour")
         .toDate()
     } else {
+      if (hour) {
+        controllerTimerParam.additionalTime =
+          (controllerTimerData?.items[0]?.additionalTime || 0) + hour
+      }
       controllerTimerParam.clientStartedAt = dayjs
         .utc(dayjs())
         .subtract(clockSeconds, "seconds")
@@ -487,6 +491,9 @@ export const ControllerContextProvider = ({
     updateControllerTimer(controllerTimerParam, {
       onSettled: () => {
         invalidateQueries()
+      },
+      onSuccess: () => {
+        setIsAddHourPopupOpen(null)
       },
     })
   }
@@ -529,6 +536,7 @@ export const ControllerContextProvider = ({
   const startNewControllerSession = () => {
     const controllerTimerValue = {
       timerId: timerId,
+      clientStartedAt: Date.now(),
       locationId: getObjectId(timerDetailData?.item?.locationId),
       newSession: true,
     }
@@ -554,6 +562,8 @@ export const ControllerContextProvider = ({
       }
     )
     setUnitCreated(0)
+    setClockSeconds(0)
+    setClockMilliSeconds(0)
     addControllerTimer(controllerTimerValue, {
       onSuccess: () => {
         invalidateQueries()
@@ -827,6 +837,16 @@ export const ControllerContextProvider = ({
   ])
 
   useEffect(() => {
+    if (
+      controllerHourLeft < 1 &&
+      isAddHourPopupOpen === null &&
+      isControllerClockRunning
+    ) {
+      setIsAddHourPopupOpen(true)
+    }
+  }, [controllerHourLeft])
+
+  useEffect(() => {
     const controllerTimer = controllerTimerData?.items[0]
     const createdAt = controllerTimerData?.controllerStartedAt
 
@@ -837,6 +857,12 @@ export const ControllerContextProvider = ({
       )
       setClockSeconds(seconds)
       startControllerClockInterval()
+    } else if (isControllerOutOfTime) {
+      const seconds = controllerTimerData?.totalProductionTime * 3600
+      setClockSeconds(seconds)
+      stopControllerClockInterval()
+      setClockMilliSeconds(0)
+      stopCycleClockInterval()
     } else if (controllerTimer?.endAt) {
       const seconds = getSecondsDifferent(
         createdAt ||
@@ -847,14 +873,14 @@ export const ControllerContextProvider = ({
       )
       setClockSeconds(seconds)
       stopControllerClockInterval()
-    } else {
-      setClockSeconds(0)
-      stopControllerClockInterval()
+      setClockMilliSeconds(0)
+      stopCycleClockInterval()
     }
   }, [
     controllerTimerData?.items[0]?.clientStartedAt,
     controllerTimerData?.items[0]?.endAt,
     controllerTimerData?.controllerStartedAt,
+    controllerTimerData?.totalProductionTime,
     isControllerOutOfTime,
   ])
 
@@ -965,6 +991,8 @@ export const ControllerContextProvider = ({
         operator: currentOperator,
         jobs: timerJobs?.items || [],
         isJobsLoading: isTimerJobsLoading,
+        isAddHourPopupOpen,
+        setIsAddHourPopupOpen,
         controllerJob: jobTimer?.item,
         isControllerJobLoading,
         onAddControllerTimerHour,

@@ -3,76 +3,44 @@ import {
   UNKNOWN_ERROR_OCCURRED,
 } from "../../utils/constants"
 import { Request, Response } from "express"
-import CycleTimers from "../../models/cycleTimers"
-import ControllerTimers from "../../models/controllerTimers"
 import * as Sentry from "@sentry/node"
-import dayjs from "dayjs"
-import { getIo, ioEmit } from "../../config/setup-socket"
-import Locations from "../../models/location"
+import CycleTimerService from "../../services/cycleTimerService"
+import ControllerTimerService from "../../services/controllerTimerService"
+import ProductionCycleService from "../../services/productionCycleServices"
+import Location from "../../models/location"
 
 export const endControllerTimer = async (req: Request, res: Response) => {
   const { timerId, locationId } = req.body
+  const location = await Location.findById(locationId)
   try {
-    const io = getIo()
-    const location = await Locations.findOne({
-      _id: locationId,
-    })
-    const timeZone = location?.timeZone
-    const currentDateStart = dayjs
-      .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
-      .toISOString()
-    const currentDateEnd = dayjs
-      .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
-      .toISOString()
     if (timerId) {
-      const getExistingCycleTimer = await CycleTimers.find({
-        timerId,
-        endAt: null,
-        createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-      })
-      if (getExistingCycleTimer.length > 0) {
-        await CycleTimers.updateMany(
-          {
-            timerId,
-            endAt: null,
-          },
-          {
-            endAt: Date.now(),
-          }
-        )
-      }
-      const getExistingControllerTimer = await ControllerTimers.find({
-        timerId,
-      })
-      if (getExistingControllerTimer.length > 0) {
-        const endTimer = await ControllerTimers.updateMany(
-          {
-            timerId,
-            endAt: null,
-          },
-          {
-            endAt: Date.now(),
-          },
-          {
-            new: true,
-          }
-        )
+      const runningControllerTimer =
+        await ControllerTimerService.getAllRunningByTimerId(timerId)
 
-        ioEmit(`timer-${timerId}`, {
-          action: "end-controller",
-          route: "PATCH/controller-timers/end",
-          data: endTimer,
-        })
+      if (runningControllerTimer.length > 0) {
+        const endTimer = await ControllerTimerService.endAllByTimerId(timerId)
+        await CycleTimerService.endAllByTimerId(timerId)
+        const locationRunningControllers =
+          await ControllerTimerService.getAllRunningByLocationId(
+            locationId,
+            location?.timeZone || ""
+          )
+        const isLocationHaveRunningController =
+          locationRunningControllers.length > 0
+
+        if (!isLocationHaveRunningController) {
+          await ProductionCycleService.endByLocationId(locationId)
+        }
         res.json({
           error: false,
-          item: endTimer,
+          item: endTimer.length ? endTimer[0] : null,
           itemCount: 1,
           message: "Timer ended successfully",
         })
       } else {
-        res.json({
+        res.status(404).json({
           error: true,
-          message: "Timer controller not found",
+          message: "Starting Timer controller not found",
           item: null,
           itemCount: null,
         })
@@ -86,6 +54,7 @@ export const endControllerTimer = async (req: Request, res: Response) => {
       })
     }
   } catch (err: any) {
+    console.log(err)
     const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
     Sentry.captureException(err)
     res.json({
