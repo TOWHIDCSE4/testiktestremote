@@ -346,9 +346,7 @@ export const ControllerContextProvider = ({
     endControllerTimer(
       { timerId, locationId: getObjectId(timerDetailData?.item?.locationId) },
       {
-        onSettled: () => {
-          invalidateQueries()
-        },
+        onSettled: () => {},
       }
     )
 
