@@ -838,6 +838,7 @@ export const ControllerContextProvider = ({
 
   useEffect(() => {
     if (
+      controllerHourLeft &&
       controllerHourLeft < 1 &&
       isAddHourPopupOpen === null &&
       isControllerClockRunning
