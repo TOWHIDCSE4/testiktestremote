@@ -29,6 +29,7 @@ import { USER_ROLES } from "../../../../../helpers/constants"
 import useProfile from "../../../../../hooks/users/useProfile"
 import useGetTimerDetails from "../../../../../hooks/timers/useGetTimerDetails"
 import OverlayActionComponent from "./Overlay"
+import AddHourPopup from "./AddHourPopup"
 
 export interface ControllerDetailData {
   locationName: string
@@ -132,6 +133,7 @@ const ControllerV2 = ({
           isOpen={isStopMenuOpen}
           toggleOpen={toggleIsStopMenuOpen}
         />
+        <AddHourPopup />
         <EndProdMenuComponent
           onClick={() => {
             setIsEndProductionModalOpen(true)

@@ -67,13 +67,6 @@ export default function StopMenuComponent({
                   onChange={(eve) => {}}
                   onClick={() => {
                     setStopReasons([item])
-                    // if (stopReasons.includes(item)) {
-                    //   setStopReasons((prev: any) =>
-                    //     prev.filter((cItem: any) => cItem !== item)
-                    //   )
-                    // } else {
-                    //   setStopReasons((prev: any[]) => [...prev, item])
-                    // }
                   }}
                   tabIndex={-1}
                   className="w-3 h-3 bg-white border border-[#0f2034] rounded-full"

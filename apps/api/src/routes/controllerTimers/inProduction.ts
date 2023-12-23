@@ -7,6 +7,8 @@ import * as utc from "dayjs/plugin/utc"
 import Locations from "../../models/location"
 import * as Sentry from "@sentry/node"
 import CycleTimers from "../../models/cycleTimers"
+import ProductionCycleService from "../../services/productionCycleServices"
+import { getSecondsDifferent } from "../../utils/date"
 
 export const inProduction = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
@@ -17,63 +19,33 @@ export const inProduction = async (req: Request, res: Response) => {
       _id: locationId,
     })
     const timeZone = location?.timeZone
-    const currentDateStart = dayjs
-      .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
-      .toISOString()
-    const currentDateEnd = dayjs
-      .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
-      .toISOString()
-    const getDayFirstTimer = await ControllerTimers.findOne({
-      locationId: locationId,
-      createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-      endAt: null,
-    }).sort({ $natural: 1 })
-    const firstCycle = getDayFirstTimer
-      ? await CycleTimers.findOne({
-          createdAt: { $gte: getDayFirstTimer.createdAt },
-        })
-      : null
 
-    if (firstCycle) {
-      const createdAtTZ = dayjs.tz(
-        dayjs(firstCycle?.clientStartedAt),
-        timeZone ? timeZone : ""
+    const productionCycle =
+      await ProductionCycleService.getCurrentRunningByLocationId(locationId)
+
+    if (productionCycle) {
+      const diffSeconds = getSecondsDifferent(
+        productionCycle.createdAt,
+        timeZone
       )
-      const currentDateTZ = dayjs.tz(dayjs(), timeZone ? timeZone : "")
-      const diffHours = currentDateTZ.diff(createdAtTZ, "hour")
-      if (location?.productionTime && location?.productionTime > diffHours) {
-        const diffSeconds = currentDateTZ.diff(createdAtTZ, "second")
-        res.json({
-          error: false,
-          item: {
-            seconds: diffSeconds,
-            started: true,
-            createdAt: firstCycle?.clientStartedAt,
-          },
-          itemCount: null,
-          message: null,
-        })
-      } else {
-        res.json({
-          error: false,
-          item: {
-            seconds: 0,
-            started: false,
-            createdAt: firstCycle?.clientStartedAt,
-          },
-          itemCount: null,
-          message: null,
-        })
-      }
+      return res.json({
+        error: false,
+        item: {
+          seconds: diffSeconds,
+          started: true,
+          createdAt: productionCycle.createdAt,
+        },
+        itemCount: null,
+        message: null,
+      })
     } else {
-      res.json({
+      return res.json({
         error: false,
         item: {
           seconds: 0,
           started: false,
+          createdAt: null,
         },
-        itemCount: null,
-        message: null,
       })
     }
   } catch (err: any) {

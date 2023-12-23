@@ -19,6 +19,7 @@ import * as timezone from "dayjs/plugin/timezone"
 import * as utc from "dayjs/plugin/utc"
 import Timers from "../../models/timers"
 import ControllerTimers from "../../models/controllerTimers"
+import ProductionCycleService from "../../services/productionCycleServices"
 
 export const getAllCycleTimers = async (req: Request, res: Response) => {
   try {
@@ -103,6 +104,16 @@ export const addCycleTimer = async (req: Request, res: Response) => {
           createdAt: { $gte: currentControllerSession?.createdAt },
           endAt: null,
         })
+        const currentProductionCycle =
+          await ProductionCycleService.getCurrentRunningByLocationId(
+            timer?.locationId?._id
+          )
+        if (!currentProductionCycle) {
+          ProductionCycleService.startByLocation(
+            timer?.locationId?._id as string,
+            clientStartedAt
+          )
+        }
         if (getExistingCycleTimer.length === 0) {
           const createCycleTimer = await newCycleTimer.save()
           ioEmit(`timer-${timerId}`, { action: "add", ...createCycleTimer })

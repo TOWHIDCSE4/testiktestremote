@@ -14,70 +14,36 @@ import * as Sentry from "@sentry/node"
 import { getIo, ioEmit } from "../../config/setup-socket"
 import mongoose from "mongoose"
 import roleMatrix from "../../helpers/roleMatrix"
+import CycleTimerService from "../../services/cycleTimerService"
 
 export const todayCycleTimer = async (req: Request, res: Response) => {
   try {
     const io = getIo()
     dayjs.extend(utc.default)
     dayjs.extend(timezone.default)
-    const { id, timerId } = req.query
-    if (id || timerId) {
+    const { timerId } = req.query
+    if (timerId) {
       try {
         const user = res.locals.user
         const timer = await Timers.findOne({
           _id: new mongoose.Types.ObjectId(timerId as string),
         })
         const locationId = String(timer?.locationId)
-        const isAllowed =
-          (await isProductionTimeActive({ locationId })) ||
-          roleMatrix.controller.start_when_production_ended.includes(user.role)
         const location = await Locations.findOne({
           _id: new mongoose.Types.ObjectId(locationId),
         })
-        const timeZone = location?.timeZone
-        const currentDateStart = dayjs
-          .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
-          .toISOString()
-        const currentDateEnd = dayjs
-          .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
-          .toISOString()
-        if (isAllowed) {
-          const getAllActiveControllerTimerToday = await CycleTimers.find({
-            ...(timerId && { timerId: timerId }),
-            ...(id && { _id: id }),
-            endAt: null,
-            createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-          }).sort({ createdAt: -1 })
-          // ioEmit(`timer-${timerId}`, {
-          //   action: `update-cycle`,
-          //   user: user,
-          //   timers: getAllActiveControllerTimerToday,
-          // })
-          res.json({
-            error: false,
-            items: getAllActiveControllerTimerToday,
-            itemCount: null,
-            message: null,
-          })
-        } else {
-          const getAllActiveControllerTimerToday = await CycleTimers.find({
-            ...(timerId && { timerId: timerId }),
-            ...(id && { _id: id }),
-            endAt: null,
-            createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-          }).sort({ createdAt: -1 })
-          // ioEmit(`timer-${timerId}`, {
-          //   action: `update-cycle`,
-          //   user: user,
-          //   timers: getAllActiveControllerTimerToday,
-          // })
-          res.json({
-            error: false,
-            items: [],
-            itemCount: null,
-            message: null,
-          })
-        }
+        const timeZone = location?.timeZone || ""
+        const latestCycleTimer = await CycleTimerService.getLatestRunning(
+          timerId as string,
+          timeZone
+        )
+
+        res.json({
+          error: false,
+          items: latestCycleTimer ? [latestCycleTimer] : [],
+          itemCount: null,
+          message: null,
+        })
       } catch (err: any) {
         const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
         Sentry.captureException(err)

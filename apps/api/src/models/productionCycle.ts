@@ -1,20 +1,14 @@
 import mongoose from "mongoose"
 const { Schema } = mongoose
 
-const cycleTimers = new Schema({
-  timerId: {
+const productionCycles = new Schema({
+  locationId: {
     type: mongoose.Schema.ObjectId,
-    ref: "Timer",
+    ref: "Location",
   },
   createdAt: {
     type: Date,
     default: Date.now,
-  },
-  clientStartedAt: {
-    type: Date,
-  },
-  sessionId: {
-    type: String,
   },
   endAt: {
     type: Date,
@@ -22,4 +16,4 @@ const cycleTimers = new Schema({
   },
 })
 
-export default mongoose.model("CycleTimer", cycleTimers)
+export default mongoose.model("ProductionCycle", productionCycles)

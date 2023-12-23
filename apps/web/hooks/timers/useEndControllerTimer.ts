@@ -6,11 +6,11 @@ import { useMutation } from "@tanstack/react-query"
 import { T_BackendResponse } from "custom-validator"
 import Cookies from "js-cookie"
 
-export async function endControllerTimer(timerId: string) {
+export async function endControllerTimer(timerId: string, locationId: string) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_CONTROLLER_TIMER}/end`, {
     method: "PATCH",
-    body: JSON.stringify({ timerId }),
+    body: JSON.stringify({ timerId, locationId }),
     headers: {
       "content-type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -20,10 +20,14 @@ export async function endControllerTimer(timerId: string) {
 }
 
 function useEndControllerTimer() {
-  const query = useMutation((timerId: string) => endControllerTimer(timerId), {
-    retry: Number.MAX_SAFE_INTEGER,
-    retryDelay: 250,
-  })
+  const query = useMutation(
+    ({ timerId, locationId }: { timerId: string; locationId: string }) =>
+      endControllerTimer(timerId, locationId),
+    {
+      retry: Number.MAX_SAFE_INTEGER,
+      retryDelay: 250,
+    }
+  )
   return query
 }
 

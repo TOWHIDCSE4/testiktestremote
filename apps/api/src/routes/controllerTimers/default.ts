@@ -16,6 +16,9 @@ import * as utc from "dayjs/plugin/utc"
 import * as Sentry from "@sentry/node"
 import { ioEmit } from "../../config/setup-socket"
 import CycleTimers from "../../models/cycleTimers"
+import { getEndOfDayTimezone, getStartOfDayTimezone } from "../../utils/date"
+import ProductionCycleService from "../../services/productionCycleServices"
+import ControllerTimerService from "../../services/controllerTimerService"
 
 export const getAllControllerTimers = async (req: Request, res: Response) => {
   try {
@@ -68,7 +71,7 @@ export const getControllerTimer = async (req: Request, res: Response) => {
 export const addControllerTimer = async (req: Request, res: Response) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
-  const { timerId, locationId, newSession } = req.body
+  const { timerId, locationId, newSession, clientStartedAt } = req.body
   if (timerId && locationId) {
     const parseControllerTimer = ZControllerTimer.safeParse(req.body)
     if (parseControllerTimer.success) {
@@ -76,32 +79,24 @@ export const addControllerTimer = async (req: Request, res: Response) => {
         const location = await Locations.findOne({
           _id: locationId,
         })
-        const timeZone = location?.timeZone
-        const currentDateStart = dayjs
-          .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
-          .toISOString()
-        const currentDateEnd = dayjs
-          .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
-          .toISOString()
-        const isControllerExistToday = await ControllerTimer.findOne({
-          timerId,
-          createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-        })
+        const timeZone = location?.timeZone || ""
+
+        const isControllerExistToday =
+          await ControllerTimerService.isRunningTodayByTimerId(
+            timerId,
+            timeZone
+          )
         if (!isControllerExistToday || newSession) {
-          const newControllerTimer = new ControllerTimer({
+          const newControllerTimer = await ControllerTimerService.create({
             timerId,
             locationId,
             endAt: null,
-            updatedAt: null,
-            createdAt: Date.now(),
+            createdAt: new Date(),
+            clientStartedAt,
           })
-          ioEmit(`timer-${timerId}`, {
-            action: "add-controller",
-          })
-          const createControllerTimer = await newControllerTimer.save()
           res.json({
             error: false,
-            item: createControllerTimer,
+            item: newControllerTimer,
             itemCount: 1,
             message: ADD_SUCCESS_MESSAGE,
           })
@@ -142,19 +137,19 @@ export const addControllerTimer = async (req: Request, res: Response) => {
 }
 
 export const updateControllerTimer = async (req: Request, res: Response) => {
-  const getControllerTimer = await ControllerTimer.find({
+  const getControllerTimer = await ControllerTimer.findOne({
     _id: req.params.id,
     deletedAt: null,
   })
   const condition = req.body
-  if (getControllerTimer.length !== 0) {
+  if (getControllerTimer) {
     if (!isEmpty(condition)) {
       try {
         const bodyCreatedAt = req.body.clientStartedAt || req.body.createdAt
         if (bodyCreatedAt) {
           const firstCycle = await CycleTimers.findOne({
-            timerId: getControllerTimer[0].timerId,
-            createdAt: { $gte: getControllerTimer[0].createdAt },
+            timerId: getControllerTimer.timerId,
+            createdAt: { $gte: getControllerTimer.createdAt },
           })
             .sort({ $natural: 1 })
             .limit(1)
@@ -167,6 +162,16 @@ export const updateControllerTimer = async (req: Request, res: Response) => {
                 createdAt: bodyCreatedAt,
                 clientStartedAt: bodyCreatedAt,
               }
+            )
+          }
+          const runningByLocationId =
+            await ProductionCycleService.getCurrentRunningByLocationId(
+              String(getControllerTimer.locationId)
+            )
+          if (!runningByLocationId) {
+            ProductionCycleService.startByLocation(
+              String(getControllerTimer.locationId),
+              bodyCreatedAt
             )
           }
         }

@@ -20,7 +20,10 @@ const controllerTimers = new Schema({
   additionalTime: {
     type: Number,
   },
-  endAt: Date,
+  endAt: {
+    type: Date,
+    default: null,
+  },
 })
 
 export default mongoose.model("ControllerTimer", controllerTimers)
