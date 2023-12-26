@@ -24,6 +24,7 @@ import {
   T_ControllerTimer,
   T_CycleTimer,
   T_JobTimer,
+  T_Reading,
   T_TimerLog,
   T_TimerStopReason,
 } from "custom-validator"
@@ -52,6 +53,10 @@ import {
 import useGetCycleTimerRealTime from "../../../../../hooks/timers/useGetCycleTimerRealTime"
 import { nanoid } from "nanoid"
 import useUpdateControllerTimer from "../../../../../hooks/timers/useUpdateControllerTimer"
+import useAddReadings from "../../../../../hooks/readings/useAddReadings"
+import useGetReadingsByTimerId, {
+  readingByTimerIdQuery,
+} from "../../../../../hooks/readings/useGetReadingsByTimerId"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -212,7 +217,8 @@ export const ControllerContextProvider = ({
     locationId: timerDetailData?.item?.locationId._id,
     timerId,
   })
-
+  const { mutate: addReadingToBackend } = useAddReadings()
+  const { data: readingsBackendData } = useGetReadingsByTimerId(timerId)
   const defaultStopReasons = ["Unit Created"]
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
   const {
@@ -287,6 +293,20 @@ export const ControllerContextProvider = ({
         ...(prev ?? []),
         `${currentTime} : ${message}`,
       ])
+      addReadingToBackend(
+        {
+          timerId: timerDetailData?.item?._id,
+          createdAt: new Date(),
+          message,
+        },
+        {
+          onSettled: () => {
+            queryClient.invalidateQueries(
+              readingByTimerIdQuery(timerDetailData?._id)
+            )
+          },
+        }
+      )
       if (readingsDivRef?.current) {
         const div = readingsDivRef.current
         setTimeout(
@@ -904,6 +924,24 @@ export const ControllerContextProvider = ({
       setUnitCreated(initialUnitCreated)
     }
 
+    if (
+      !isControllerModalOpenRef.current &&
+      isControllerModalOpen &&
+      readingsBackendData?.items?.length
+    ) {
+      setReadingMessages(
+        readingsBackendData?.items?.map(
+          (data: T_Reading) =>
+            `${dayjs
+              .tz(
+                dayjs(data.createdAt),
+                timerDetailData?.item?.locationId.timeZone ?? ""
+              )
+              .format("YYYY-MM-DD HH:mm:ss")} : ${data.message}`
+        )
+      )
+    }
+
     // on close
     if (isControllerModalOpenRef.current && !isControllerModalOpen) {
       onControllerModalClosed(unitCreated, clockMilliSeconds)
@@ -915,6 +953,7 @@ export const ControllerContextProvider = ({
     isControllerModalOpen,
     isCycleClockRunning,
     startCycleClockInterval,
+    readingsBackendData?.items,
   ])
 
   const [variant, setVariant] =
