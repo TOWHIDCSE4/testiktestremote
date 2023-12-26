@@ -39,6 +39,7 @@ import useGetJobTimerByTimerId from "../../../../hooks/jobTimer/useGetJobTimerBy
 import useGetAllTimerLogs from "../../../../hooks/timerLogs/useGetAllTimerLogs"
 import { USER_ROLES } from "../../../../helpers/constants"
 import useProfile from "../../../../hooks/users/useProfile"
+import useGetReadingsByTimerId from "../../../../hooks/readings/useGetReadingsByTimerId"
 
 type T_Props = {
   timer: T_Timer
@@ -82,6 +83,9 @@ const Timer = ({
     locationId: timer.locationId as string,
     timerId: getObjectId(timer),
   })
+  const { isLoading: isControllerReadingLoading } = useGetReadingsByTimerId(
+    timer._id as string
+  )
   const { isLoading: isJobsLoading } = useGetTimerJobs(
     getObjectId(timerDetailData?.item?.locationId),
     getObjectId(timerDetailData?.item?.factoryId),
@@ -118,7 +122,8 @@ const Timer = ({
     isControllerTimerLoading ||
     isTimerDetailDataLoading ||
     isJobTimerLoading ||
-    isTimerLogsLoading
+    isTimerLogsLoading ||
+    isControllerReadingLoading
   const controllerDetailData = isTimerDetailDataLoading
     ? {}
     : {
