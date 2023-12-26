@@ -9,6 +9,10 @@ const get = (filter: T_ReadingOptional) => {
   })
 }
 
+const clearReadings = (filter: T_ReadingOptional) => {
+  return ReadingsRepository.deleteMany(filter)
+}
+
 const create = (newReading: T_CreateReading) => {
   return ReadingsRepository.create(newReading)
 }
@@ -16,6 +20,7 @@ const create = (newReading: T_CreateReading) => {
 const ReadingsService = {
   get,
   create,
+  clearReadings,
 }
 
 export default ReadingsService
