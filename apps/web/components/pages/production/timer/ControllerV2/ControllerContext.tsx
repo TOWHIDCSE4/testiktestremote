@@ -57,6 +57,7 @@ import useAddReadings from "../../../../../hooks/readings/useAddReadings"
 import useGetReadingsByTimerId, {
   readingByTimerIdQuery,
 } from "../../../../../hooks/readings/useGetReadingsByTimerId"
+import useDeleteReadingsByTimerId from "../../../../../hooks/readings/useDeleteReadingsByTimerId"
 
 export interface ControllerDetailData {
   factoryName: string
@@ -218,6 +219,7 @@ export const ControllerContextProvider = ({
     timerId,
   })
   const { mutate: addReadingToBackend } = useAddReadings()
+  const { mutate: deleteReadingsByTimerId } = useDeleteReadingsByTimerId()
   const { data: readingsBackendData } = useGetReadingsByTimerId(timerId)
   const defaultStopReasons = ["Unit Created"]
   const [stopReasons, setStopReasons] = useState<T_TimerStopReason[]>([])
@@ -558,6 +560,8 @@ export const ControllerContextProvider = ({
       locationId: getObjectId(timerDetailData?.item?.locationId),
       newSession: true,
     }
+    const timerReadingsQueryKey = readingByTimerIdQuery(timerId)
+    queryClient.setQueriesData(timerReadingsQueryKey, [])
     queryClient.setQueriesData(
       ["timer-logs-count", timerDetailData?.item?.locationId._id, timerId],
       (query: any) => {
@@ -579,12 +583,18 @@ export const ControllerContextProvider = ({
         return query
       }
     )
+    setReadingMessages([])
     setUnitCreated(0)
     setClockSeconds(0)
     setClockMilliSeconds(0)
     addControllerTimer(controllerTimerValue, {
       onSuccess: () => {
         invalidateQueries()
+      },
+    })
+    deleteReadingsByTimerId(timerId, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(timerReadingsQueryKey)
       },
     })
   }

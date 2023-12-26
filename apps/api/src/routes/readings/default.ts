@@ -56,3 +56,23 @@ export const createReadings = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const deleteReadings = async (req: Request, res: Response) => {
+  const { timerId } = req.query
+  const filter: any = {}
+  if (timerId) {
+    filter.timerId = timerId
+  }
+  try {
+    await ReadingsService.clearReadings(filter)
+  } catch (err: any) {
+    console.error(err)
+    Sentry.captureException(err)
+
+    return res.status(500).json({
+      error: true,
+      message: err.message,
+      detail: err,
+    })
+  }
+}

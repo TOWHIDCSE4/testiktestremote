@@ -71,7 +71,7 @@ export const createBaseRepository = <
   ): Promise<Data[]> => {
     await model.updateMany(filter, newData, { new: true })
 
-    return find(filter, option)
+    return find(filter, merge(option, DefaultOption))
   }
 
   const updateOne = async (
@@ -81,6 +81,22 @@ export const createBaseRepository = <
     return model.findOneAndUpdate(filter, newData, { new: true })
   }
 
+  const deleteMany = async (
+    filter: FilterQuery<Data>,
+    option: Partial<QueryOption> = DefaultOption
+  ) => {
+    const mergedOption = merge(option, DefaultOption)
+    return model.deleteMany(filter).sort(mergedOption.sort)
+  }
+
+  const deleteOne = async (
+    filter: FilterQuery<Data>,
+    option: Partial<QueryOption> = DefaultOption
+  ) => {
+    const mergedOption = merge(option, DefaultOption)
+    return model.deleteOne(filter).sort(mergedOption.sort)
+  }
+
   return {
     create,
     find,
@@ -88,5 +104,7 @@ export const createBaseRepository = <
     updateMany,
     updateOne,
     getPage,
+    deleteMany,
+    deleteOne,
   }
 }
