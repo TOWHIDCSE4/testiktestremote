@@ -16,7 +16,10 @@ export function setupSocket(expressApp: Application) {
 }
 
 export async function ioEmit(topic: string, message: any) {
-  io.emit(topic, message)
+  io.volatile.emit(topic, {
+    ...message,
+    timestamp: Date.now(),
+  })
 }
 
 export function getIo(): Server {
