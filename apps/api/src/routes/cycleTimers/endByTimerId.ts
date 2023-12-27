@@ -11,7 +11,6 @@ import { sendControllerTimerEvent } from "../../sse/sse"
 export const endByTimerId = async (req: Request, res: Response) => {
   const io = getIo()
   const { timerId } = req.body
-  ioEmit(`timer-${timerId}`, { action: "pre-end" })
   try {
     if (timerId) {
       const getExistingCycleTimer = await CycleTimers.find({

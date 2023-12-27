@@ -15,9 +15,6 @@ export const endAndAdd = async (req: Request, res: Response) => {
   const io = getIo()
   const { timerId, clientStartedAt, sessionId } = req.body
   try {
-    ioEmit(`timer-${timerId}`, {
-      action: "pre-endAndAdd",
-    })
     if (timerId) {
       await CycleTimers.updateMany(
         { timerId, endAt: null },
