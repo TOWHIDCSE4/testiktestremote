@@ -8,7 +8,9 @@ let httpServer: HttpServer
 
 export function setupSocket(expressApp: Application) {
   httpServer = createServer(expressApp)
-  io = new Server(httpServer)
+  io = new Server(httpServer, {
+    pingTimeout: 120000,
+  })
 
   chatSocket(io)
 
