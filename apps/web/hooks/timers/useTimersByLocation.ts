@@ -40,11 +40,6 @@ function useTimersByLocation() {
       enabled: locationId !== "",
     }
   )
-  useEffect(() => {
-    if (locationId) {
-      query.refetch()
-    }
-  }, [locationId])
 
   return { ...query, setLocationId, locationId }
 }
