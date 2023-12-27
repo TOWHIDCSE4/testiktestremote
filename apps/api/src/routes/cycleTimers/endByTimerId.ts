@@ -6,6 +6,7 @@ import { Request, Response } from "express"
 import CycleTimers from "../../models/cycleTimers"
 import * as Sentry from "@sentry/node"
 import { getIo, ioEmit } from "../../config/setup-socket"
+import { sendControllerTimerEvent } from "../../sse/sse"
 
 export const endByTimerId = async (req: Request, res: Response) => {
   const io = getIo()
@@ -24,7 +25,7 @@ export const endByTimerId = async (req: Request, res: Response) => {
             endAt: Date.now(),
           }
         )
-        ioEmit(`timer-${timerId}`, { action: "end", ...endCycle })
+        sendControllerTimerEvent(timerId, "refetch")
         res.json({
           error: false,
           item: endCycle,

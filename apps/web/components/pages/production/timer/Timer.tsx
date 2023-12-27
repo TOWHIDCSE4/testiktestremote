@@ -64,21 +64,25 @@ const Timer = ({
   dayjs.extend(timezone.default)
   const queryClient = useQueryClient()
   const { mutate, isLoading: isUpdateTimerLoading } = useUpdateTimer()
-  const { data: totalTonsUnit } = useTotalTonsUnit({
+  const { data: totalTonsUnit, refetch: refetchTons } = useTotalTonsUnit({
     locationId: timer.locationId as string,
     timerId: timer._id as string,
   })
-  const { isLoading: isTimerLogsLoading } = useGetAllTimerLogs({
-    locationId: timer.locationId as string,
-    timerId: timer._id as string,
-  })
-  const { data: timerLogsCount, refetch: refetchTimerLogs } =
+  const { isLoading: isTimerLogsLoading, refetch: refetchTimerLogs } =
+    useGetAllTimerLogs({
+      locationId: timer.locationId as string,
+      timerId: timer._id as string,
+    })
+  const { data: timerLogsCount, refetch: refetchTimerLogsCount } =
     useGetAllTimerLogsCount({
       locationId: timer.locationId as string,
       timerId: timer._id as string,
     })
-  const { data: timerDetailData, isLoading: isTimerDetailDataLoading } =
-    useGetTimerDetails(getObjectId(timer._id))
+  const {
+    data: timerDetailData,
+    isLoading: isTimerDetailDataLoading,
+    refetch: refetchTimerDetail,
+  } = useGetTimerDetails(getObjectId(timer._id))
   const { isLoading: isJobTimerLoading } = useGetJobTimerByTimerId({
     locationId: timer.locationId as string,
     timerId: getObjectId(timer),
@@ -86,7 +90,7 @@ const Timer = ({
   const { isLoading: isControllerReadingLoading } = useGetReadingsByTimerId(
     timer._id as string
   )
-  const { isLoading: isJobsLoading } = useGetTimerJobs(
+  const { isLoading: isJobsLoading, refetch: jobRefetch } = useGetTimerJobs(
     getObjectId(timerDetailData?.item?.locationId),
     getObjectId(timerDetailData?.item?.factoryId),
     getObjectId(timerDetailData?.item?.partId)
@@ -165,114 +169,26 @@ const Timer = ({
       runCycle()
     }
   }
-  // useEffect(() => {
-  //   console.log("data", socket)
-  //   if (!timer._id) return
-  //   const runSocket = (data: any) => {
-  //     console.log("Get Socket Data", data)
-  //     queryClient.invalidateQueries(["controller-timer", timer._id])
-  //     queryClient.invalidateQueries(["cycle-timer-real-time", timer._id])
-  //     queryClient.invalidateQueries([
-  //       "timer-logs-count",
-  //       timer.locationId,
-  //       timer._id,
-  //     ])
-  //     queryClient.invalidateQueries(["timer-logs", timer.locationId, timer._id])
-  //   }
-  //   socket?.on(`timer-${timer._id}`, runSocket)
+  useEffect(() => {
+    const handleRefetch = (e: CustomEvent<any>) => {
+      if (e.detail.timerId === timer._id) {
+        refetchTimerLogs()
+        cycleRefetch()
+        refetchTimerLogsCount()
+        refetchTons()
+        controllerTimerRefetch()
+        jobRefetch()
+      }
+    }
+    document.addEventListener("timer_refetch", handleRefetch as EventListener)
 
-  //   return () => {
-  //     socket?.off(`timer-${timer._id}`, runSocket)
-  //   }
-  // }, [socket, timer._id])
-
-  // useEffect(() => {
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   const runSocket = (data: any) => {
-  //     if (data.action === "pre-add") {
-  //       runCycle()
-  //     }
-  //     if (data.action === "add") {
-  //       runCycle()
-  //     }
-  //     if (data.action === "endAndAdd") {
-  //       if (!isControllerModalOpen) {
-  //         queryClient.invalidateQueries([
-  //           "timer-logs",
-  //           timer.locationId,
-  //           getObjectId(timer),
-  //         ])
-  //       }
-  //       setCycleClockInSeconds(0)
-  //       runCycle()
-  //     }
-  //     if (data.action === "end") {
-  //       if (!isControllerModalOpen) {
-  //         queryClient.invalidateQueries([
-  //           "timer-logs",
-  //           timer.locationId,
-  //           getObjectId(timer),
-  //         ])
-  //       }
-  //       setCycleClockInSeconds(0)
-  //       stopInterval()
-  //     }
-  //     if (data.action === "update-cycle" && data.timers.length > 0) {
-  //       if (!isControllerModalOpen && !isCycleClockRunning) {
-  //         runCycle()
-  //       }
-  //       const timeZone = timer?.location?.timeZone
-  //       const timerStart = dayjs.tz(
-  //         dayjs(data.timers[0].createdAt),
-  //         timeZone ? timeZone : ""
-  //       )
-  //       const currentDate = dayjs.tz(dayjs(), timeZone ? timeZone : "")
-  //       const secondsLapse = currentDate.diff(timerStart, "seconds", true)
-  //       setCycleClockInSeconds((current: number) => {
-  //         if (secondsLapse > current) {
-  //           return secondsLapse
-  //         }
-  //         return current
-  //       })
-  //     }
-
-  //     if (
-  //       data.action.includes("end-controller") ||
-  //       data.action.includes("end-production")
-  //     ) {
-  //       stopInterval()
-  //       setCycleClockInSeconds(0)
-  //     }
-  //     if (data.action === "start-press") {
-  //       runCycle()
-  //     }
-  //     if (data.action === "stop-press") {
-  //       stopInterval()
-  //       setCycleClockInSeconds(0)
-  //       runCycle()
-  //       setUnitCreated((current) => {
-  //         if (data.currentUnit > current) {
-  //           return data.currentUnit
-  //         }
-  //         return current
-  //       })
-  //     }
-  //     if (data.action === "pre-end") {
-  //       stopInterval()
-  //       setCycleClockInSeconds(0)
-  //     }
-  //     if (data.action === "end") {
-  //       stopInterval()
-  //       setCycleClockInSeconds(0)
-  //     }
-  //   }
-  //   socket?.on(`timer-${timer._id}`, runSocket)
-
-  //   return () => {
-  //     socket?.off(`timer-${timer._id}`, runSocket)
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [socket, timer._id])
+    return () => {
+      document.removeEventListener(
+        "timer_refetch",
+        handleRefetch as EventListener
+      )
+    }
+  }, [timer._id])
 
   const intervalRef = useRef<any>()
   useEffect(() => {
@@ -408,106 +324,6 @@ const Timer = ({
     setIsCycleClockRunning(false)
   }
 
-  // useEffect(() => {
-  //   const resyncClock = (data: {
-  //     timerId: string
-  //     isCycleClockRunning: boolean
-  //     unitCreated: number
-  //     cycleClockSeconds: number
-  //     isControllerModalOpen: boolean
-  //   }) => {
-  //     if (data.timerId === timer._id) {
-  //       if (data.isCycleClockRunning) {
-  //         setCycleClockInSeconds(data.cycleClockSeconds)
-  //         runCycle()
-  //       } else {
-  //         setCycleClockInSeconds(0)
-  //         stopInterval()
-  //       }
-  //     }
-  //   }
-  //   const timerTick = (data: {
-  //     timerId: string
-  //     isCycleClockRunning: boolean
-  //     unitCreated: number
-  //     cycleClockSeconds: number
-  //     isControllerModalOpen: boolean
-  //   }) => {
-  //     // if data come from closed modal
-  //     // or controller modal opened on current web/device
-  //     // dont do anything
-  //     // if (!data.isControllerModalOpen || isControllerModalOpen) return
-  //     if (data.timerId === timer._id) {
-  //       setUnitCreated((current) => {
-  //         if (data.unitCreated > unitCreated) {
-  //           return data.unitCreated
-  //         }
-  //         return current
-  //       })
-  //       resyncClock(data)
-  //     }
-  //   }
-
-  //   const controllerReconnect = (data: {
-  //     timerId: string
-  //     isCycleClockRunning: boolean
-  //     unitCreated: number
-  //     cycleClockSeconds: number
-  //     isControllerModalOpen: boolean
-  //   }) => {
-  //     // if data come from closed modal
-  //     // or controller modal opened on current web/device
-  //     // dont do anything
-  //     // if (!data.isControllerModalOpen || isControllerModalOpen) return
-  //     if (data.timerId === timer._id) {
-  //       setUnitCreated(data.unitCreated)
-  //       resyncClock(data)
-  //     }
-  //   }
-
-  //   const controllerStopPress = (data: { timerId: string }) => {
-  //     if (data.timerId === timer._id) {
-  //       queryClient.invalidateQueries([
-  //         "timer-logs",
-  //         timer.locationId,
-  //         timer._id,
-  //       ])
-  //     }
-  //   }
-
-  //   socket?.on("stop-press", controllerStopPress)
-  //   socket?.on("controller-timer-tick", timerTick)
-  //   socket?.on("controller-reconnect", controllerReconnect)
-  // }, [socket, timer._id])
-
-  // useEffect(() => {
-  //   if (!isControllerModalOpen) {
-  //     socket?.emit("join-timer", { timerId: timer._id })
-  //   } else {
-  //     socket?.emit("leave-timer", { timerId: timer._id })
-  //   }
-  //   useSocket.subscribe(({ isConnected }) => {
-  //     if (isConnected) {
-  //       socket?.emit("join-timer", { timerId: timer._id })
-  //     }
-  //   })
-  // }, [socket, timer._id, isControllerModalOpen])
-
-  // useEffect(() => {
-  //   const syncInterval = setInterval(() => {
-  //     queryClient.invalidateQueries(["cycle-timer-real-time", timer._id])
-  //     queryClient.invalidateQueries([
-  //       "timer-logs-count",
-  //       timer.locationId,
-  //       timer._id,
-  //     ])
-  //   }, 2000)
-
-  //   return () => {
-  //     clearInterval(syncInterval)
-  //   }
-  // }, [timer._id, timer.locationId])
-
   useEffect(() => {
     const onVisibilityChange = () => {
       queryClient.invalidateQueries(["in-production", timer.locationId])
@@ -585,7 +401,7 @@ const Timer = ({
                 <Combobox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-white rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                   {filteredParts.map((item: T_Part, index: number) => (
                     <Combobox.Option
-                      key={index}
+                      key={item._id}
                       value={{ id: item._id, name: item.name }}
                       className={`relative cursor-pointer select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-blue-600 hover:text-white`}
                     >

@@ -8,6 +8,7 @@ import CycleTimerService from "../../services/cycleTimerService"
 import ControllerTimerService from "../../services/controllerTimerService"
 import ProductionCycleService from "../../services/productionCycleServices"
 import Location from "../../models/location"
+import { sendControllerTimerEvent } from "../../sse/sse"
 
 export const endControllerTimer = async (req: Request, res: Response) => {
   const { timerId, locationId } = req.body
@@ -31,6 +32,7 @@ export const endControllerTimer = async (req: Request, res: Response) => {
         if (!isLocationHaveRunningController) {
           await ProductionCycleService.endByLocationId(locationId)
         }
+        sendControllerTimerEvent(timerId, "refetch")
         res.json({
           error: false,
           item: endTimer.length ? endTimer[0] : null,
