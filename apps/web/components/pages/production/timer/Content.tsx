@@ -42,29 +42,6 @@ const Content = () => {
     useMachineClasses()
 
   useEffect(() => {
-    const handleTimerEvent = (data: any) => {
-      if (data.message === "refetch") {
-        document.dispatchEvent(
-          new CustomEvent("timer_refetch", {
-            detail: {
-              timerId: data.timerId,
-            },
-          })
-        )
-      }
-    }
-    // const events = new EventSource(API_URL_EVENTS)
-    socket?.on("timer-event", handleTimerEvent)
-    // events.onmessage = (event) => {
-    //   const data = JSON.parse(event.data)
-
-    // }
-    return () => {
-      socket?.off("timer-event", handleTimerEvent)
-    }
-  }, [socket])
-
-  useEffect(() => {
     if (locationTabs.length === 0) {
       if (locations) {
         setLocationTabs(
