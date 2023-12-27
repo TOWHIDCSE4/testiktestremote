@@ -8,7 +8,7 @@ import Clocks from "./Clocks"
 import useMachineClasses from "../../../../hooks/machineClasses/useMachineClasses"
 import { T_MachineClass } from "custom-validator"
 import useStoreSession from "../../../../store/useStoreSession"
-import { USER_ROLES } from "../../../../helpers/constants"
+import { API_URL_EVENTS, USER_ROLES } from "../../../../helpers/constants"
 import useLocation from "../../../../hooks/locations/useLocation"
 import useProfile from "../../../../hooks/users/useProfile"
 
@@ -38,6 +38,26 @@ const Content = () => {
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses()
+
+  useEffect(() => {
+    const events = new EventSource(API_URL_EVENTS)
+
+    events.onmessage = (event) => {
+      const data = JSON.parse(event.data)
+      if (data.message === "refetch") {
+        document.dispatchEvent(
+          new CustomEvent("timer_refetch", {
+            detail: {
+              timerId: data.timerId,
+            },
+          })
+        )
+      }
+    }
+    return () => {
+      events.close()
+    }
+  }, [])
 
   useEffect(() => {
     if (locationTabs.length === 0) {

@@ -9,6 +9,7 @@ import { ZCycleTimer } from "custom-validator"
 import CycleTimers from "../../models/cycleTimers"
 import * as Sentry from "@sentry/node"
 import { getIo, ioEmit } from "../../config/setup-socket"
+import { sendControllerTimerEvent } from "../../sse/sse"
 
 export const endAndAdd = async (req: Request, res: Response) => {
   const io = getIo()
@@ -39,10 +40,7 @@ export const endAndAdd = async (req: Request, res: Response) => {
         })
         if (getExistingCycleTimer.length === 0) {
           const createCycleTimer = await newCycleTimer.save()
-          ioEmit(`timer-${timerId}`, {
-            action: "endAndAdd",
-            ...createCycleTimer,
-          })
+          sendControllerTimerEvent(timerId, "refetch")
           res.json({
             error: false,
             item: createCycleTimer,

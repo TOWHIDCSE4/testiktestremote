@@ -66,6 +66,7 @@ const TimerTracker = ({
           return timer.machineClassId === machineClassId ? timer : null
         })
         .filter((timer) => timer !== null)
+
       setSelectedTimerMachine(timers[0]?.machine?.name as string)
       setSelectedTimerId(timers[0]?._id as string)
       setSelectedLocationId(timers[0]?.locationId as string)

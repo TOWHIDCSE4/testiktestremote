@@ -1,4 +1,5 @@
 import {
+  API_URL_EVENTS,
   API_URL_TIMER_LOGS,
   REFETCH_ACTIVATED,
   REFETCH_TIME,
@@ -57,10 +58,12 @@ function useGetAllTimerLogs({
     {
       refetchOnWindowFocus: false,
       enabled: !!locationId && !!timerId,
-      refetchInterval: 2000,
-      keepPreviousData: true,
+      // refetchInterval: 2000,
+      refetchOnReconnect: "always",
+      refetchOnMount: "always",
     }
   )
+
   // useEffect(() => {
   //   if (paginated && page && page > 1) {
   //     query.refetch()

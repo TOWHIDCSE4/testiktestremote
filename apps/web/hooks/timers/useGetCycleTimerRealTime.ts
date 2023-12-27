@@ -1,6 +1,7 @@
 import {
   API_URL_CONTROLLER_TIMER,
   API_URL_CYCLE_TIMER,
+  API_URL_EVENTS,
   API_URL_TIMER,
   ONE_DAY,
   REFETCH_ACTIVATED,
@@ -12,6 +13,7 @@ import {
   T_CycleTimer,
 } from "custom-validator"
 import Cookies from "js-cookie"
+import { useEffect } from "react"
 
 type T_DBReturn = Omit<T_BackendResponse, "items"> & {
   items: T_CycleTimer[]
@@ -35,11 +37,13 @@ function useGetCycleTimerRealTime(timerId: string) {
     () => getCycleTimer(timerId),
     {
       // refetchInterval: REFETCH_ACTIVATED ? 1000 : false,
-      refetchInterval: 2000,
-      refetchOnWindowFocus: false,
+      // refetchInterval: 2000,
+      refetchOnReconnect: "always",
+      refetchOnMount: "always",
       enabled: !!timerId,
     }
   )
+
   return query
 }
 export default useGetCycleTimerRealTime

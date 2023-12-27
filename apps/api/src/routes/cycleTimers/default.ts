@@ -20,6 +20,7 @@ import * as utc from "dayjs/plugin/utc"
 import Timers from "../../models/timers"
 import ControllerTimers from "../../models/controllerTimers"
 import ProductionCycleService from "../../services/productionCycleServices"
+import { sendControllerTimerEvent } from "../../sse/sse"
 
 export const getAllCycleTimers = async (req: Request, res: Response) => {
   try {
@@ -116,7 +117,7 @@ export const addCycleTimer = async (req: Request, res: Response) => {
         }
         if (getExistingCycleTimer.length === 0) {
           const createCycleTimer = await newCycleTimer.save()
-          ioEmit(`timer-${timerId}`, { action: "add", ...createCycleTimer })
+          sendControllerTimerEvent(timerId, "refetch")
           res.json({
             error: false,
             item: createCycleTimer,

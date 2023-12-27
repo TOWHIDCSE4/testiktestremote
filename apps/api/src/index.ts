@@ -7,6 +7,7 @@ import * as Sentry from "@sentry/node"
 import { setupSocket } from "./config/setup-socket"
 import sentryConfig from "./utils/sentry.config"
 import * as os from "os"
+import { sseController } from "./sse/sse"
 
 const app: Application = express()
 Sentry.init(sentryConfig)
@@ -32,6 +33,7 @@ app.get("/", (req, res) => {
     },
   })
 })
+app.get("/api/events", sseController)
 routes(app)
 const server = setupSocket(app)
 app.use(Sentry.Handlers.errorHandler())

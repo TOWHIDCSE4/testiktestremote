@@ -22,31 +22,31 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
             ],
           },
         },
-        {
-          $lookup: {
-            from: "parts",
-            let: {
-              locationId: "$locationId",
-              machineClassId: "$machineClassId",
-              factoryId: "$factoryId",
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ["$locationId", "$$locationId"] },
-                      { $eq: ["$machineClassId", "$$machineClassId"] },
-                      { $eq: ["$factoryId", "$$factoryId"] },
-                    ],
-                  },
-                  $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
-                },
-              },
-            ],
-            as: "parts",
-          },
-        },
+        // {
+        //   $lookup: {
+        //     from: "parts",
+        //     let: {
+        //       locationId: "$locationId",
+        //       machineClassId: "$machineClassId",
+        //       factoryId: "$factoryId",
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match: {
+        //           $expr: {
+        //             $and: [
+        //               { $eq: ["$locationId", "$$locationId"] },
+        //               { $eq: ["$machineClassId", "$$machineClassId"] },
+        //               { $eq: ["$factoryId", "$$factoryId"] },
+        //             ],
+        //           },
+        //           $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
+        //         },
+        //       },
+        //     ],
+        //     as: "parts",
+        //   },
+        // },
         {
           $lookup: {
             from: "machines",
