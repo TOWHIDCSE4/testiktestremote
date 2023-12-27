@@ -33,7 +33,6 @@ app.get("/", (req, res) => {
     },
   })
 })
-app.get("/api/events", sseController)
 routes(app)
 const server = setupSocket(app)
 app.use(Sentry.Handlers.errorHandler())
