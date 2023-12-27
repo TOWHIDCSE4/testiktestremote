@@ -169,26 +169,14 @@ const Timer = ({
       runCycle()
     }
   }
-  useEffect(() => {
-    const handleRefetch = (e: CustomEvent<any>) => {
-      if (e.detail.timerId === timer._id) {
-        refetchTimerLogs()
-        cycleRefetch()
-        refetchTimerLogsCount()
-        refetchTons()
-        controllerTimerRefetch()
-        jobRefetch()
-      }
-    }
-    document.addEventListener("timer_refetch", handleRefetch as EventListener)
-
-    return () => {
-      document.removeEventListener(
-        "timer_refetch",
-        handleRefetch as EventListener
-      )
-    }
-  }, [timer._id])
+  const refetchTimerQueries = () => {
+    refetchTimerLogs()
+    cycleRefetch()
+    refetchTimerLogsCount()
+    refetchTons()
+    controllerTimerRefetch()
+    jobRefetch()
+  }
 
   const intervalRef = useRef<any>()
   useEffect(() => {
