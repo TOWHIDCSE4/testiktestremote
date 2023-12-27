@@ -16,7 +16,7 @@ export function setupSocket(expressApp: Application) {
 }
 
 export async function ioEmit(topic: string, message: any) {
-  io.volatile.emit(topic, {
+  io.sockets.emit(topic, {
     ...message,
     timestamp: Date.now(),
   })

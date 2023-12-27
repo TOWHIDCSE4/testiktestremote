@@ -5,21 +5,21 @@ import Users from "../models/users"
 import { ioEmit } from "../config/setup-socket"
 
 export default function chatSocket(io: Server) {
-  io.on("connection", async (socket: Socket) => {
-    const auth = socket.handshake.query.authorization
-    const token =
-      auth && !!auth?.length ? (auth as string).split(" ")[1] : undefined
+  io.sockets.on("connection", async (socket: Socket) => {
+    // const auth = socket.handshake.query.authorization
+    // const token =
+    //   auth && !!auth?.length ? (auth as string).split(" ")[1] : undefined
 
-    if (!token) socket.disconnect()
+    // if (!token) socket.disconnect()
 
-    const { email }: any = verify(token as string, keys.signKey as Secret, {
-      ignoreExpiration: true,
-    })
+    // const { email }: any = verify(token as string, keys.signKey as Secret, {
+    //   ignoreExpiration: true,
+    // })
 
-    const user = await Users.findOne({ email })
-    if (!user) socket.disconnect()
-    // @ts-ignore
-    socket["user"] = user
+    // const user = await Users.findOne({ email })
+    // if (!user) socket.disconnect()
+    // // @ts-ignore
+    // socket["user"] = user
 
     console.log("User connected")
     socket.on("join-timer", ({ timerId }) => {
@@ -30,7 +30,7 @@ export default function chatSocket(io: Server) {
       //     ioEmit(`timer-${timerId}`, { action: "update-operator", user: user })
       //   }
       // }
-      console.log("socket joined", (socket as any).user)
+      // console.log("socket joined", (socket as any).user)
 
       socket.join(timerId)
     })
