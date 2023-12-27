@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import crypto from "crypto"
+import { ioEmit } from "../config/setup-socket"
 
 interface SSEClient {
   id: string
@@ -35,4 +36,4 @@ export const sendEventToAllClients = (data: any) => {
 }
 
 export const sendControllerTimerEvent = (timerId: string, message: string) =>
-  sendEventToAllClients({ timerId, message } as ControllerTimerEvent)
+  ioEmit("timer-event", { timerId, message })

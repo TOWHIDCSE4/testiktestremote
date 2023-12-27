@@ -11,6 +11,7 @@ import useStoreSession from "../../../../store/useStoreSession"
 import { API_URL_EVENTS, USER_ROLES } from "../../../../helpers/constants"
 import useLocation from "../../../../hooks/locations/useLocation"
 import useProfile from "../../../../hooks/users/useProfile"
+import { useSocket } from "../../../../store/useSocket"
 
 type T_LocationTabs = {
   _id?: string
@@ -33,6 +34,7 @@ const Content = () => {
   const [selectedMachineClasses, setSelectedMachineClasses] = useState<
     (T_MachineClass & { isSelected: boolean })[]
   >([])
+  const socket = useSocket((state) => state.instance)
   const storeSession = useStoreSession((state) => state)
   const { data: location, setSelectedLocationId } = useLocation()
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
@@ -40,10 +42,7 @@ const Content = () => {
     useMachineClasses()
 
   useEffect(() => {
-    const events = new EventSource(API_URL_EVENTS)
-
-    events.onmessage = (event) => {
-      const data = JSON.parse(event.data)
+    const handleTimerEvent = (data: any) => {
       if (data.message === "refetch") {
         document.dispatchEvent(
           new CustomEvent("timer_refetch", {
@@ -54,10 +53,16 @@ const Content = () => {
         )
       }
     }
+    // const events = new EventSource(API_URL_EVENTS)
+    socket?.on("timer-event", handleTimerEvent)
+    // events.onmessage = (event) => {
+    //   const data = JSON.parse(event.data)
+
+    // }
     return () => {
-      events.close()
+      socket?.off("timer-event", handleTimerEvent)
     }
-  }, [])
+  }, [socket])
 
   useEffect(() => {
     if (locationTabs.length === 0) {

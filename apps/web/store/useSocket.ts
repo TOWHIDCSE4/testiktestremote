@@ -36,12 +36,12 @@ export const useSocket = create(
       socket.on("connect", () => {
         stopReconnectInterval()
         console.log("Socket connected")
-        // set((state) => ({ ...state, instance: socket, isConnected: true }))
+        set((state) => ({ ...state, instance: socket, isConnected: true }))
       })
       socket.on("disconnect", () => {
         initReconnect()
         console.log("Socket Disconnection")
-        // set((state) => ({ ...state, instance: socket, isConnected: false }))
+        set((state) => ({ ...state, instance: socket, isConnected: false }))
       })
       socket.io.on("reconnect_attempt", () => {
         console.log("Socket Atempt to reconnect")
@@ -49,20 +49,20 @@ export const useSocket = create(
       socket.io.on("reconnect_error", () => {
         console.log("Error while trying to reconnect")
         initReconnect()
-        // set((state) => ({ ...state, instance: socket, isConnected: false }))
+        set((state) => ({ ...state, instance: socket, isConnected: false }))
       })
       socket.io.on("reconnect", () => {
         stopReconnectInterval()
         console.log("Socket Reconnected")
-        // set((state) => ({ ...state, instance: socket, isConnected: true }))
+        set((state) => ({ ...state, instance: socket, isConnected: true }))
       })
       socket.io.on("reconnect_failed", () => {
         console.log("Socket Error while trying to reconnect")
-        // set((state) => ({ ...state, instance: socket, isConnected: false }))
+        set((state) => ({ ...state, instance: socket, isConnected: false }))
       })
       socket.on("connect_error", () => {
         initReconnect()
-        // set((state) => ({ ...state, instance: socket, isConnected: false }))
+        set((state) => ({ ...state, instance: socket, isConnected: false }))
         Sentry.captureException("Warn: Connect Error Happened on Socket", {
           level: "warning",
         })
