@@ -5,7 +5,7 @@ import {
   SIXTEEN_HOURS,
   TWELVE_HOURS,
 } from "../../helpers/constants"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { T_BackendResponse, T_Locations, T_Timer } from "custom-validator"
 import Cookies from "js-cookie"
 import { useEffect, useState } from "react"
@@ -27,6 +27,17 @@ export async function getTimerByLocation(locationId: string) {
     }
   )
   return (await res.json()) as T_DBReturn
+}
+
+export const usePrefetchTimersByLocation = () => {
+  const queryClient = useQueryClient()
+  const prefetch = (locationId: string) =>
+    queryClient.prefetchQuery({
+      queryKey: ["timers-location", locationId],
+      queryFn: () => getTimerByLocation(locationId),
+    })
+
+  return { prefetch }
 }
 
 function useTimersByLocation() {

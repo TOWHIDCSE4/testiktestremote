@@ -12,6 +12,7 @@ import { API_URL_EVENTS, USER_ROLES } from "../../../../helpers/constants"
 import useLocation from "../../../../hooks/locations/useLocation"
 import useProfile from "../../../../hooks/users/useProfile"
 import { useSocket } from "../../../../store/useSocket"
+import { usePrefetchTimersByLocation } from "../../../../hooks/timers/useTimersByLocation"
 
 type T_LocationTabs = {
   _id?: string
@@ -40,6 +41,7 @@ const Content = () => {
   const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const { data: machineClasses, isLoading: isMachineClassesLoading } =
     useMachineClasses()
+  const { prefetch: prefetchTimerByLocations } = usePrefetchTimersByLocation()
 
   useEffect(() => {
     if (locationTabs.length === 0) {
@@ -51,6 +53,9 @@ const Content = () => {
             count: 0,
           }))
         )
+        locations.items.forEach((location) => {
+          prefetchTimerByLocations(location._id as string)
+        })
       }
       if (
         !TIMER_CITY_ROLES.includes(
