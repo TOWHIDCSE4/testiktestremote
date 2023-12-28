@@ -29,30 +29,15 @@ export async function getAllParts({
   return (await res.json()) as T_DBReturn
 }
 
-function useGetPartsByFactoryLocation() {
-  const [locationId, setLocationId] = useState("")
-  const [factoryId, setFactoryId] = useState("")
+function useGetPartsByFactoryLocation(locationId: string, factoryId: string) {
   const query = useQuery(
     ["parts-factory-location", locationId, factoryId],
     () => getAllParts({ locationId, factoryId }),
     {
-      staleTime: THREE_MINUTES,
-      refetchOnWindowFocus: false,
       enabled: !!locationId && !!factoryId,
     }
   )
-  useEffect(() => {
-    if (locationId && factoryId) {
-      query.refetch()
-    }
-  }, [locationId, factoryId])
 
-  return {
-    ...query,
-    locationId,
-    setLocationId,
-    factoryId,
-    setFactoryId,
-  }
+  return query
 }
 export default useGetPartsByFactoryLocation

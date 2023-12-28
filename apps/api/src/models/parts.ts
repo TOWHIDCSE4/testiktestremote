@@ -10,6 +10,7 @@ const parts = new Schema({
   machineClassId: {
     type: mongoose.Schema.ObjectId,
     ref: "MachineClass",
+    index: true,
   },
   files: {
     type: Array,
@@ -52,6 +53,9 @@ const parts = new Schema({
   deletedAt: Date,
 })
 
-parts.index({ locationId: 1, machineClassId: 1, factoryId: 1 })
+parts.index({ locationId: 1, factoryId: 1 })
+const Parts = mongoose.model("Part", parts)
 
-export default mongoose.model("Part", parts)
+Parts.syncIndexes()
+
+export default Parts

@@ -3,6 +3,7 @@ import Timers from "../../models/timers"
 import { UNKNOWN_ERROR_OCCURRED } from "../../utils/constants"
 import { Request, Response } from "express"
 import * as Sentry from "@sentry/node"
+
 export const getAllTimersByLocation = async (req: Request, res: Response) => {
   const { locationId } = req.query
   if (locationId) {
@@ -22,46 +23,46 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
             ],
           },
         },
-        {
-          $lookup: {
-            from: "parts",
-            let: {
-              locationId: "$locationId",
-              machineClassId: "$machineClassId",
-              factoryId: "$factoryId",
-            },
-            pipeline: [
-              {
-                $match: {
-                  $and: [
-                    {
-                      $expr: {
-                        $and: [
-                          { $eq: ["$locationId", "$$locationId"] },
-                          { $eq: ["$machineClassId", "$$machineClassId"] },
-                          { $eq: ["$factoryId", "$$factoryId"] },
-                        ],
-                      },
-                    },
-                    {
-                      $or: [
-                        { deletedAt: { $exists: false } },
-                        { deletedAt: null },
-                      ],
-                    },
-                  ],
-                },
-              },
-              {
-                $project: {
-                  _id: 1,
-                  name: 1,
-                },
-              },
-            ],
-            as: "parts",
-          },
-        },
+        // {
+        //   $lookup: {
+        //     from: "parts",
+        //     let: {
+        //       locationId: "$locationId",
+        //       machineClassId: "$machineClassId",
+        //       factoryId: "$factoryId",
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match: {
+        //           $and: [
+        //             {
+        //               $expr: {
+        //                 $and: [
+        //                   { $eq: ["$locationId", "$$locationId"] },
+        //                   { $eq: ["$machineClassId", "$$machineClassId"] },
+        //                   { $eq: ["$factoryId", "$$factoryId"] },
+        //                 ],
+        //               },
+        //             },
+        //             {
+        //               $or: [
+        //                 { deletedAt: { $exists: false } },
+        //                 { deletedAt: null },
+        //               ],
+        //             },
+        //           ],
+        //         },
+        //       },
+        //       {
+        //         $project: {
+        //           _id: 1,
+        //           name: 1,
+        //         },
+        //       },
+        //     ],
+        //     as: "parts",
+        //   },
+        // },
         {
           $lookup: {
             from: "machines",

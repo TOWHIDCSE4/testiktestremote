@@ -40,6 +40,7 @@ import useGetAllTimerLogs from "../../../../hooks/timerLogs/useGetAllTimerLogs"
 import { USER_ROLES } from "../../../../helpers/constants"
 import useProfile from "../../../../hooks/users/useProfile"
 import useGetReadingsByTimerId from "../../../../hooks/readings/useGetReadingsByTimerId"
+import useGetPartsByFactoryLocation from "../../../../hooks/parts/useGetPartsByFactoryLocation"
 
 type T_Props = {
   timer: T_Timer
@@ -117,6 +118,8 @@ const Timer = ({
     id: typeof timer.partId === "string" && timer.partId ? timer.partId : "",
     name: timer?.part ? timer?.part?.name : "",
   })
+  const { data: parts, isLoading: isPartsLoading } =
+    useGetPartsByFactoryLocation(timer.locationId, timer.factoryId)
   const socket = useSocket((store) => store.instance)
   const [isUsed, setIsUsed] = useState(false)
   // const { isTimerStop } = useStoreTimer((store) => store)
@@ -290,8 +293,11 @@ const Timer = ({
 
   const filteredParts =
     partQuery === ""
-      ? timer?.parts?.slice(0, 30)
-      : timer?.parts
+      ? parts?.items
+          ?.filter((item) => item.machineClassId === timer.machineClassId)
+          ?.slice(0, 30)
+      : parts?.items
+          ?.filter((item) => item.machineClassId === timer.machineClassId)
           ?.filter((timer) => {
             return timer.name.toLowerCase().includes(partQuery.toLowerCase())
           })
