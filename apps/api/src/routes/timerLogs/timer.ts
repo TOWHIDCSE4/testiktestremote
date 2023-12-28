@@ -32,6 +32,7 @@ export const timer = async (req: Request, res: Response) => {
         timerId,
         createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
       }).sort({ $natural: -1 })
+
       if (getLastDayTimer) {
         let timerLogsCount = null
         let getTimerLogs = null
@@ -79,6 +80,7 @@ export const timer = async (req: Request, res: Response) => {
             .populate("machineId")
             .populate("operator")
         }
+
         res.json({
           error: false,
           items: getTimerLogs,

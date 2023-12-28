@@ -5,6 +5,7 @@ const controllerTimers = new Schema({
   timerId: {
     type: mongoose.Schema.ObjectId,
     ref: "Timer",
+    index: true,
   },
   locationId: {
     type: mongoose.Schema.ObjectId,

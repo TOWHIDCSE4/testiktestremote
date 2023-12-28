@@ -52,4 +52,6 @@ const parts = new Schema({
   deletedAt: Date,
 })
 
+parts.index({ locationId: 1, machineClassId: 1, factoryId: 1 })
+
 export default mongoose.model("Part", parts)

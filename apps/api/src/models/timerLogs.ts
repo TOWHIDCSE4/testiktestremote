@@ -31,6 +31,7 @@ const timerLogs = new Schema({
   timerId: {
     type: mongoose.Schema.ObjectId,
     ref: "Timer",
+    index: true,
   },
   time: Number,
   operatorName: {
