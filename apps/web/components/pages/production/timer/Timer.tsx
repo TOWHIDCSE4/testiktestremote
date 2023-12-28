@@ -119,7 +119,10 @@ const Timer = ({
     name: timer?.part ? timer?.part?.name : "",
   })
   const { data: parts, isLoading: isPartsLoading } =
-    useGetPartsByFactoryLocation(timer.locationId, timer.factoryId)
+    useGetPartsByFactoryLocation(
+      timer.locationId as string,
+      timer.factoryId as string
+    )
   const socket = useSocket((store) => store.instance)
   const [isUsed, setIsUsed] = useState(false)
   // const { isTimerStop } = useStoreTimer((store) => store)
@@ -369,7 +372,7 @@ const Timer = ({
             value={selectedPart}
             onChange={updateTimerPart}
             disabled={
-              isCycleClockRunning || isNotAllowedChangePart
+              isCycleClockRunning || isNotAllowedChangePart || isPartsLoading
                 ? true
                 : isUpdateTimerLoading
             }
