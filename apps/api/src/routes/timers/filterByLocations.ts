@@ -52,6 +52,12 @@ export const getAllTimersByLocation = async (req: Request, res: Response) => {
                   ],
                 },
               },
+              {
+                $project: {
+                  _id: 1,
+                  name: 1,
+                },
+              },
             ],
             as: "parts",
           },
