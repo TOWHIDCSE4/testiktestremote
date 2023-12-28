@@ -48,7 +48,7 @@ function useTimersByLocation() {
     {
       refetchInterval: REFETCH_ACTIVATED ? Number(REFETCH_TIME) : false,
       refetchOnWindowFocus: false,
-      enabled: locationId !== "",
+      enabled: !!locationId,
     }
   )
 
