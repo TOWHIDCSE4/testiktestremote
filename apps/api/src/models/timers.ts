@@ -17,6 +17,7 @@ const timers = new Schema({
   partId: {
     type: mongoose.Schema.ObjectId,
     ref: "Part",
+    index: true,
   },
   locationId: {
     type: mongoose.Schema.ObjectId,
