@@ -5,6 +5,7 @@ const cycleTimers = new Schema({
   timerId: {
     type: mongoose.Schema.ObjectId,
     ref: "Timer",
+    index: true,
   },
   createdAt: {
     type: Date,
