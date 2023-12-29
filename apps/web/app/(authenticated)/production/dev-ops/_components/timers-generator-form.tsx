@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation"
 import React from "react"
 import toast from "react-hot-toast"
 import useDevOpsTimers from "./_state"
-import { revalidateTag } from "next/cache"
 import { revalidateDevOpsTimers } from "./actions"
+import { API_URL } from "../../../../../helpers/constants"
 
 type DevOpsTimerTypes = {
   numberOfTimers: number
@@ -35,17 +35,14 @@ const TimersGeneratorForm = () => {
       )
         return
       const token = Cookies.get("tfl")
-      const res = await fetch(
-        "http://localhost:9000/api/timers/dev-ops-timers",
-        {
-          method: "POST",
-          body: JSON.stringify(data),
-          headers: {
-            "content-type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      const res = await fetch(`${API_URL}/timers/dev-ops-timers`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
       return await res.json()
     },
     onSuccess: () => {
