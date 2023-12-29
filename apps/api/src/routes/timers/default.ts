@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import Timers from "../../models/timers"
+import DevOpsTimers from "../../models/devOpsTimers"
 import {
   UNKNOWN_ERROR_OCCURRED,
   REQUIRED_VALUE_EMPTY,
@@ -17,6 +18,9 @@ import { timer } from "../timerLogs/timer"
 import TimerLogs from "../../models/timerLogs"
 import Jobs from "../../models/jobs"
 import { getIo, ioEmit } from "../../config/setup-socket"
+import { generateDevOpsTimers } from "../../utils/utils"
+import machineClasses from "../../models/machineClasses"
+import { ObjectId } from "mongoose"
 
 export const getAllTimers = async (req: Request, res: Response) => {
   try {
@@ -193,6 +197,66 @@ export const addTimer = async (req: Request, res: Response) => {
     res.json({
       error: true,
       message: REQUIRED_VALUE_EMPTY,
+      items: null,
+      itemCount: null,
+    })
+  }
+}
+
+export const getDevOpsTimers = async (req: Request, res: Response) => {
+  const locations = req.query?.locations as string
+  const locationsIds = locations?.split(",")
+  const timers = await DevOpsTimers.find()
+  const totalOfTimers = await DevOpsTimers.find().countDocuments()
+  try {
+    res.json({
+      error: false,
+      items: timers,
+      itemCount: totalOfTimers,
+      message: null,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
+    res.json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
+  }
+}
+
+export const createDevOpsTimers = async (req: Request, res: Response) => {
+  const { locationId, numberOfTimers, startTime, endTimeRange } = req.body
+  try {
+    const getAllMachineClasses = await machineClasses.find().sort({
+      createdAt: -1,
+    })
+    await DevOpsTimers.deleteMany({})
+    const results = generateDevOpsTimers({
+      locationId,
+      numberOfTimers: parseInt(numberOfTimers),
+      machineClassesIds: getAllMachineClasses.map(
+        (machineClass) => machineClass._id
+      ),
+      endTimeRange,
+      startTime,
+    })
+    await DevOpsTimers.insertMany(results)
+
+    res.json({
+      error: false,
+      item: "Timers hase been created.",
+      itemCount: 1,
+      message: ADD_SUCCESS_MESSAGE,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
+    res.json({
+      error: true,
+      message: message,
       items: null,
       itemCount: null,
     })

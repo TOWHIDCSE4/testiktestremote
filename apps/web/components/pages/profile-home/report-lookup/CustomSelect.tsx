@@ -36,7 +36,6 @@ export default function CustomSelectComponent({
 
   return (
     <Autocomplete
-      disabled
       isOptionEqualToValue={(option, value) => option.key === value?.key}
       value={value ?? (multiple ? [] : null)}
       size="small"

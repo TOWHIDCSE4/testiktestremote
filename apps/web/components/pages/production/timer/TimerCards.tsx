@@ -1,9 +1,9 @@
-import { T_Machine, T_Timer, T_User } from "custom-validator"
-import React, { useState, useEffect } from "react"
-import DetailsModal from "./modals/DetailsModal"
-import DeleteModal from "./modals/DeleteModal"
-import TimerTracker from "./TimerTracker"
+import { T_Machine, T_Timer } from "custom-validator"
+import { useState } from "react"
 import Timer from "./Timer"
+import TimerTracker from "./TimerTracker"
+import DeleteModal from "./modals/DeleteModal"
+import DetailsModal from "./modals/DetailsModal"
 
 type T_TimerByMachineClass = {
   id: string

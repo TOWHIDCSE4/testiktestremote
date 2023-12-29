@@ -24,7 +24,7 @@ export const getDashboardConfig = async (req: Request, res: Response) => {
       itemCount: 1,
     })
   } catch (error: any) {
-    return res.status(500).json({ message: error.message })
+    return res.status(500).json({ error: true, message: error.message })
   }
 }
 
@@ -36,17 +36,22 @@ export const getDashboardConfig = async (req: Request, res: Response) => {
 export const upsertDashboardConfig = async (req: Request, res: Response) => {
   const { user } = res.locals
   try {
-    const upsert = await dashboardConfig.findOneAndUpdate(
+    const upsert = await dashboardConfig.updateOne(
       { userId: user._id },
       { $set: { userId: user._id, ...req.body } },
       { upsert: true }
     )
-    return res.status(200).json({
-      error: false,
-      item: upsert,
-      itemCount: 1,
-    })
+    if (upsert.acknowledged) {
+      const getdashboardConfig = await dashboardConfig.findOne({
+        userId: user._id,
+      })
+      return res.status(200).json({
+        error: false,
+        item: getdashboardConfig,
+        itemCount: 1,
+      })
+    }
   } catch (error: any) {
-    return res.status(500).json({ message: error.message })
+    return res.status(500).json({ error: true, message: error.message })
   }
 }

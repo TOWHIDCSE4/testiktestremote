@@ -12,7 +12,7 @@ import JobTimerRoute from "./jobTimer"
 import JobRoute from "./jobs"
 import CycleTimerRoute from "./cycleTimers"
 import ControllerTimerRoute from "./controllerTimers"
-import ProfileLookupRoute from "./profileLookupState"
+import ProfileLookupRoute from "./productionLookupState"
 import dashboardConfigRoute from "./dashboardConfig"
 import readingsRoute from "./readings"
 
@@ -29,7 +29,7 @@ const App = (app: Application) => {
   app.use(`${API_ROOT}/jobs`, JobRoute)
   app.use(`${API_ROOT}/cycle-timers`, CycleTimerRoute)
   app.use(`${API_ROOT}/controller-timers`, ControllerTimerRoute)
-  app.use(`${API_ROOT}/profile-lookup`, ProfileLookupRoute)
+  app.use(`${API_ROOT}/production-lookup`, ProfileLookupRoute)
   app.use(`${API_ROOT}/dashboard-config`, dashboardConfigRoute)
   app.use(`${API_ROOT}/readings`, readingsRoute)
 }

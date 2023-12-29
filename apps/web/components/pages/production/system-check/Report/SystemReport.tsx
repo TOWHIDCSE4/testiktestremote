@@ -47,8 +47,8 @@ const SystemReport = ({
   endDateRange: string
   partId: string[] | undefined
   locationData: T_Locations[]
-  machineClassData: T_SelectItem[]
-  machineData: T_SelectItem[]
+  machineClassData: T_MachineClass[]
+  machineData: T_Machine[]
   newWindowRef: any
 }) => {
   dayjs.extend(utc.default)
@@ -78,6 +78,9 @@ const SystemReport = ({
     setKeyword(key)
     setSortType(sortType === "asc" ? "desc" : "asc")
   }
+
+  console.log("HELLO", machineClassData)
+
   const locationIdQueryString = new URLSearchParams({
     locationId: locationId as unknown as string,
   }).toString()
@@ -199,13 +202,13 @@ const SystemReport = ({
             {machineClassData.length > 0 && (
               <div className="text-sm">
                 <span className="text-gray-800 font-bold">Machine Class:</span>{" "}
-                {machineClassData.map((item) => item?.label).join(", ")}
+                {machineClassData.map((item) => item?.name).join(", ")}
               </div>
             )}
             {machineData.length > 0 && (
               <div className="text-sm">
                 <span className="text-gray-800 font-bold">Machine:</span>{" "}
-                {machineData.map((item) => item?.label).join(", ")}
+                {machineData.map((item) => item?.name).join(", ")}
               </div>
             )}
             {startDateRange && endDateRange && (

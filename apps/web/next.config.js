@@ -1,3 +1,5 @@
+/** @type {import('next').NextConfig} */
+
 const { existsSync } = require("fs")
 require("dotenv").config({
   path: existsSync("../../.env") ? "../../.env" : "../../../.env",
@@ -9,6 +11,12 @@ const gitRevision = require("child_process")
   .trim()
 
 module.exports = {
+  // typescript: {
+  //   ignoreBuildErrors: true,
+  // },
+  experimental: {
+    serverActions: true,
+  },
   async rewrites() {
     return [
       {

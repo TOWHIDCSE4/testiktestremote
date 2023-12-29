@@ -8,7 +8,6 @@ const dashboardConfig = new Schema({
   },
   systemLookup: {
     type: Boolean,
-    default: false,
   },
 })
 export default mongoose.model("DashboardConfig", dashboardConfig)

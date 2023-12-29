@@ -1,10 +1,10 @@
-import { API_URL_PRODUCTION_LOOKUP, ONE_DAY } from "../../helpers/constants"
+import { API_URL_DASHBOARD_CONFIG, ONE_DAY } from "../../helpers/constants"
 import { useQuery } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 
 export async function fetcherfn() {
   const token = Cookies.get("tfl")
-  const res = await fetch(`${API_URL_PRODUCTION_LOOKUP}`, {
+  const res = await fetch(`${API_URL_DASHBOARD_CONFIG}`, {
     method: "GET",
     headers: {
       "content-type": "application/json",
@@ -14,8 +14,8 @@ export async function fetcherfn() {
   return await res.json()
 }
 
-function useGetProductionLookup() {
-  const query = useQuery(["production-lookup"], () => fetcherfn(), {})
+function useGetDashboardConfig() {
+  const query = useQuery(["dashboard-config"], () => fetcherfn(), {})
   return query
 }
-export default useGetProductionLookup
+export default useGetDashboardConfig
