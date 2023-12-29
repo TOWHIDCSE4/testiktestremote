@@ -1,12 +1,12 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
+  "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "lint": "eslint --fix \"./src/**/*.{js,jsx,ts,tsx,json}\"",
-    "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,md}\""
+    "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,md}\"",
+    "lint": "eslint --fix \"./src/**/*.{js,jsx,ts,tsx,json}\""
   },
   "dependencies": {
     "@sentry/node": "^7.73.0",
@@ -34,6 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "eslint": "^8.21.0",
+    "eslint-config-custom": "*",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.2.1",

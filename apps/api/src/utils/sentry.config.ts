@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/node"
-import { ProfilingIntegration } from "@sentry/profiling-node"
 import { sentryDSN } from "../config"
 const sentryConfig: Sentry.NodeOptions = {
   dsn: sentryDSN,
@@ -16,6 +15,6 @@ const sentryConfig: Sentry.NodeOptions = {
   tracesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
   // Set sampling rate for profiling - this is relative to tracesSampleRate
   profilesSampleRate: 1.0, // Capture 100% of the transactions, reduce in production!
-  enabled: process.env.local === "true" ? false : true,
+  enabled: process.env.NODE_ENV === "development",
 }
 export default sentryConfig
