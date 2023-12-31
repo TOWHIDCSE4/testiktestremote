@@ -52,3 +52,5 @@ export const API_URL_GLOBAL_METRICS = "/api/timer-logs"
 export const API_URL_PROFILE_LOOKUP = "/api/profile-lookup"
 export const API_URL_READINGS = "/api/readings"
 export const API_URL_EVENTS = "/api/events"
+
+export const API_URL_REPORTS = "/api/reports"

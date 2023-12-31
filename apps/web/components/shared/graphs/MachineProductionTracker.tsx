@@ -1,68 +1,141 @@
 import { ResponsiveBar } from "@nivo/bar"
 import { linearGradientDef } from "@nivo/core"
+import useGetReportByLocationAndMachine from "../../../hooks/reports/useGetReportByLocationAndMachine"
+import React, { useEffect, useState } from "react"
+import Select from "react-select"
+import { sortBy } from "lodash"
+import cn from "classnames"
 
-const data = [
-  {
-    location: "Conroe",
-    machine_rp1225: 40,
-    machine_rp1225Color: "rgba(0,0,0,0)",
-    machine_rp1226: 40,
-    machine_rp1227: 40,
-    machine_rp1228: 40,
-  },
-  {
-    location: "Seguin",
-    machine_rp225: 30,
-    machine_rp226: 20,
-    machine_rp227: 60,
-    machine_rp228: 30,
-  },
-  {
-    location: "Gunter",
-    machine_rp25: 130,
-    machine_rp26: 120,
-    machine_rp27: 60,
-    machine_rp28: 30,
-  },
-]
-const MachineProductionTracker = () => {
-  const allKeys = data.reduce((prev, next: any) => {
-    return prev.concat(
-      Object.keys(next).filter(
-        (k: string) => k !== "location" && !k.includes("Color")
-      )
+const groupByMachineClass = (data: any[]) => {
+  if (!data || !data?.length) return []
+  const grouped = data.reduce((prev, next) => {
+    if (!prev[next.machineClass]) {
+      prev[next.machineClass] = []
+    }
+    const sameLocation = prev[next.machineClass].find(
+      (d: any) => d.locationName === next.locationName
     )
-  }, [] as string[])
+    if (sameLocation && prev[next.machineClass]) {
+      prev[next.machineClass] = prev[next.machineClass].map((d: any) => {
+        if (d.locationName === next.locationName) {
+          return {
+            ...d,
+            [`machine_${next.machineName}`]: next.total,
+            allTotal: d.allTotal ? d.allTotal + next.total : 0,
+          }
+        }
+        return d
+      })
+    } else {
+      prev[next.machineClass].push({
+        ...next,
+        [`machine_${next.machineName}`]: next.total,
+        allTotal: next.total,
+      })
+    }
+
+    return prev
+  }, {})
+  return grouped
+}
+const MachineProductionTracker = () => {
+  const { data: reportData, isLoading: isReportLoading } =
+    useGetReportByLocationAndMachine()
+  const [selectedType, setSelectedType] = useState("units")
+  const [selectedMachineClass, setSelectedMachineClass] = useState<string>()
+  const grouped = groupByMachineClass(reportData?.[selectedType])
+  const groupedKeys = Object.keys(grouped)
+  let data = selectedMachineClass ? grouped[selectedMachineClass] : []
+
+  if (data.length < 3) {
+    const locations = ["Seguin", "Conroe", "Gunter"]
+    locations.forEach((name) => {
+      if (!data.find((d: any) => d.locationName === name)) {
+        data.push({
+          locationName: name,
+          allTotal: 0,
+        })
+      }
+    })
+  }
+  const allKeys = selectedMachineClass
+    ? data.reduce((prev: any, next: any) => {
+        return prev.concat(
+          Object.keys(next).filter((k: string) => k.includes("machine_"))
+        )
+      }, [] as string[])
+    : []
+
+  useEffect(() => {
+    if (!selectedMachineClass && groupedKeys.length) {
+      setSelectedMachineClass(groupedKeys[0])
+    }
+  }, [groupedKeys])
+  if (isReportLoading) {
+    return null
+  }
   return (
-    <div className="w-full mx-4 sm:h-40 xl:h-[270px]  flex flex-col">
-      <ResponsiveBar
-        data={data}
-        margin={{ top: 10, right: 130, bottom: 50, left: 60 }}
-        padding={0.3}
-        indexBy="location"
-        label={(d) => {
-          return d.id.replace("machine_", "")
-        }}
-        borderWidth={2}
-        colorBy="indexValue"
-        colors={["#0ea5e9", "#a855f7", "#3b82f6"]}
-        borderColor={{
-          from: "color",
-          modifiers: [["darker", 0.5]],
-        }}
-        axisBottom={{
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          legend: "unit created",
-          legendPosition: "middle",
-          legendOffset: 32,
-          truncateTickAt: 0,
-        }}
-        keys={allKeys}
-        layout="horizontal"
-        labelTextColor="white"
-      />
+    <div className="flex-grow w-[50%]">
+      <h2 className="text-2xl flex gap-4 items-center">
+        <div className="w-fit">
+          <Select
+            value={{ value: selectedMachineClass, label: selectedMachineClass }}
+            options={groupedKeys?.map((d) => ({ value: d, label: d }))}
+            onChange={(d) => setSelectedMachineClass(d?.value as string)}
+          />
+        </div>
+        <div>Performance</div>
+      </h2>
+      <div className="w-full mx-4 sm:h-40 xl:h-[270px]  flex flex-col">
+        <ResponsiveBar
+          data={sortBy(data, ["allTotal"])}
+          label={(d) => {
+            return (d.id as string).replace("machine_", "")
+          }}
+          margin={{ top: 10, right: 130, bottom: 50, left: 60 }}
+          padding={0.3}
+          indexBy="locationName"
+          borderWidth={2}
+          colorBy="indexValue"
+          colors={["#0ea5e9", "#a855f7", "#3b82f6"]}
+          borderColor={{
+            from: "color",
+            modifiers: [["darker", 0.5]],
+          }}
+          axisBottom={{
+            tickSize: 5,
+            tickPadding: 5,
+            tickRotation: 0,
+            legend: "unit created",
+            legendPosition: "middle",
+            legendOffset: 32,
+            truncateTickAt: 0,
+          }}
+          keys={sortBy(allKeys)}
+          layout="horizontal"
+          labelTextColor="white"
+        />
+        <div className={"flex gap-4"}>
+          <button
+            onClick={() => setSelectedType("tons")}
+            className={cn("w-40 py-1 rounded-sm", {
+              "bg-gray-300": selectedType !== "tons",
+              "bg-blue-400 text-white": selectedType === "tons",
+            })}
+          >
+            Tons
+          </button>
+          <button
+            onClick={() => setSelectedType("units")}
+            className={cn(" w-40 py-1 rounded-sm ", {
+              "bg-blue-400 text-white": selectedType === "units",
+              "bg-gray-300": selectedType !== "units",
+            })}
+          >
+            units
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

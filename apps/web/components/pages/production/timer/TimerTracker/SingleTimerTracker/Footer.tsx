@@ -45,10 +45,8 @@ const Footer = ({
               <h2 className="text-2xl ">Factory Outlook</h2>
               <ProductionTrackerBar />
             </div>
-            <div className="flex-grow w-[50%]">
-              <h2 className="text-2xl">Pipe Performance</h2>
-              <MachineProductionTracker />
-            </div>
+
+            <MachineProductionTracker />
           </div>
           <TrackerDetails
             page={page}

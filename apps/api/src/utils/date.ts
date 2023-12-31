@@ -13,6 +13,12 @@ export const getEndOfDayTimezone = (timezone: string = "") => {
   return dayjs.utc(dayjs.tz(dayjs(), timezone).endOf("day")).toDate()
 }
 
+export const getYesterdayEndOfDayTimzeone = (timezone: string = "") => {
+  return dayjs
+    .utc(dayjs.tz(dayjs(), timezone).subtract(1, "day").endOf("day"))
+    .toDate()
+}
+
 export const getHoursDifferent = (
   createdAt?: Date,
   timeZone: string = "",
