@@ -1,9 +1,15 @@
 import { T_ProductionCycle, T_ProductionCycleCreate } from "custom-validator"
 import ProductionCycleRepository from "../repository/productionCycleRepository"
-import { getStartOfDayTimezone } from "../utils/date"
+import {
+  getStartOfDayTimezone,
+  getYesterdayEndOfDayTimzeone,
+} from "../utils/date"
 
-const isProductionCycleExistsInLocation = async (locationId: string) => {
-  const currentDayStart = getStartOfDayTimezone()
+const isProductionCycleExistsInLocation = async (
+  locationId: string,
+  timeZone: string
+) => {
+  const currentDayStart = getStartOfDayTimezone(timeZone)
   const productionToday = await ProductionCycleRepository.findOne(
     {
       locationId,
@@ -57,10 +63,26 @@ const endByLocationId = async (locationId: string) => {
   )
 }
 
-const getCurrentRunningByLocationId = async (locationId: string) => {
+const getCurrentRunningByLocationId = async (
+  locationId: string,
+  timeZone: string
+) => {
+  const currentDayStart = getStartOfDayTimezone(timeZone)
+  const yesterdayEndDay = getYesterdayEndOfDayTimzeone(timeZone)
+  await ProductionCycleRepository.updateMany(
+    {
+      createdAt: { $lte: yesterdayEndDay },
+      endAt: null,
+    },
+    {
+      endAt: yesterdayEndDay,
+    }
+  )
+
   return ProductionCycleRepository.findOne(
     {
       locationId,
+      createdAt: { $gte: currentDayStart },
       endAt: null,
     },
     {

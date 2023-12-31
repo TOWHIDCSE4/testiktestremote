@@ -49,8 +49,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-md xl:text-xl 2xl:text-2xl"
-                    : "text-md"
+                    ? "text-lg xl:text-lg 2xl:text-lg"
+                    : "text-lg"
                 } py-3.5 pr-3 text-left font-semibold text-gray-900 pl-4 lg:pl-8 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -64,8 +64,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-md xl:text-xl 2xl:text-2xl"
-                    : "text-md"
+                    ? "text-lg xl:text-lg 2xl:text-lg"
+                    : "text-lg"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -79,8 +79,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-md xl:text-xl 2xl:text-2xl"
-                    : "text-md"
+                    ? "text-lg xl:text-lg 2xl:text-lg"
+                    : "text-lg"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -94,8 +94,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-md xl:text-xl 2xl:text-2xl"
-                    : "text-md"
+                    ? "text-lg xl:text-lg 2xl:text-lg"
+                    : "text-lg"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -109,8 +109,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-md xl:text-xl 2xl:text-2xl"
-                    : "text-md"
+                    ? "text-lg xl:text-lg 2xl:text-lg"
+                    : "text-lg"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -124,8 +124,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-md xl:text-xl 2xl:text-2xl"
-                    : "text-md"
+                    ? "text-lg xl:text-lg 2xl:text-lg"
+                    : "text-lg"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -139,8 +139,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-md xl:text-xl 2xl:text-2xl"
-                    : "text-md"
+                    ? "text-lg xl:text-lg 2xl:text-lg"
+                    : "text-lg"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -154,8 +154,8 @@ const Table = ({
                 scope="col"
                 className={`${
                   path === "/production/timer/tracker"
-                    ? "text-md xl:text-xl 2xl:text-2xl"
-                    : "text-md"
+                    ? "text-lg xl:text-lg 2xl:text-lg"
+                    : "text-lg"
                 } px-3 py-3.5 text-left font-semibold text-gray-900 uppercase`}
               >
                 <a href="#" className="group inline-flex items-center">
@@ -178,14 +178,14 @@ const Table = ({
               paginated?.items.map((item, idx, array) => (
                 <tr key={idx} className={`${!item.jobId ? "bg-red-50" : ""}`}>
                   <td
-                    className={`py-4 pl-4 pr-3 text-lg xl:text-2xl font-medium sm:pl-6 lg:pl-8 ${
+                    className={`py-4 pl-4 pr-3 text-lg xl:text-lg font-medium sm:pl-6 lg:pl-8 ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
                     {item.cycle}
                   </td>
                   <td
-                    className={`px-3 py-2 text-lg xl:text-2xl flex flex-col ${
+                    className={`px-3 py-2 text-lg xl:text-lg flex flex-col ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
@@ -201,14 +201,14 @@ const Table = ({
                     </span>
                   </td>
                   <td
-                    className={`px-3 py-2 text-lg xl:text-2xl ${
+                    className={`px-3 py-2 text-lg xl:text-lg ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
                     {typeof item.partId === "object" ? item.partId.name : ""}
                   </td>
                   <td
-                    className={`px-3 py-2 text-lg xl:text-2xl ${
+                    className={`px-3 py-2 text-lg xl:text-lg ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
@@ -220,13 +220,13 @@ const Table = ({
                       : ""}
                   </td>
                   <td
-                    className={`px-3 py-2 text-lg xl:text-2xl ${
+                    className={`px-3 py-2 text-lg xl:text-lg ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
                     {item.globalCycle ? item.globalCycle : ""}
                   </td>
-                  <td className={`px-3 py-2 text-lg xl:text-2xl`}>
+                  <td className={`px-3 py-2 text-lg xl:text-lg`}>
                     {item.status === "Gain" ? (
                       <span
                         className={`font-bold ${
@@ -241,7 +241,7 @@ const Table = ({
                       </span>
                     )}
                   </td>
-                  <td className={`px-3 py-2 text-lg xl:text-2xl`}>
+                  <td className={`px-3 py-2 text-lg xl:text-lg`}>
                     {item.status === "Gain" ? (
                       <span
                         className={`font-bold ${
@@ -257,13 +257,13 @@ const Table = ({
                     )}
                   </td>
                   <td
-                    className={`px-3 py-2 text-lg xl:text-2xl ${
+                    className={`px-3 py-2 text-lg xl:text-lg ${
                       item.jobId ? "text-gray-900" : "text-red-500"
                     }`}
                   >
                     {item.stopReason.join(", ")}
                   </td>
-                  <td className="relative py-4 pl-3 pr-4 text-right text-lg xl:text-2xl font-medium sm:pr-6 lg:pr-8">
+                  <td className="relative py-4 pl-3 pr-4 text-right text-lg xl:text-lg font-medium sm:pr-6 lg:pr-8">
                     <EllipsisVerticalIcon className="h-6 w-6 text-gray-700 cursor-pointer" />
                   </td>
                 </tr>

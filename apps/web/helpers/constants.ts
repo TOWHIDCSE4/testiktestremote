@@ -53,3 +53,5 @@ export const API_URL_PRODUCTION_LOOKUP = "/api/production-lookup"
 export const API_URL_DASHBOARD_CONFIG = "/api/dashboard-config"
 export const API_URL_READINGS = "/api/readings"
 export const API_URL_EVENTS = "/api/events"
+
+export const API_URL_REPORTS = "/api/reports"
