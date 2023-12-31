@@ -2,8 +2,10 @@ import express from "express"
 const router = express.Router()
 import {
   addTimer,
+  createDevOpsTimers,
   deleteTimer,
   getAllTimers,
+  getDevOpsTimers,
   getTimer,
   updateTimer,
 } from "./default"
@@ -21,9 +23,11 @@ router.get("/total-tons-unit", isUserLoggedIn, totalTonsUnit)
 router.post("/assign-job", isUserLoggedIn, assignJob)
 
 //default
+router.get("/dev-ops", getDevOpsTimers)
 router.get("/", isUserLoggedIn, getAllTimers)
 router.get("/:id", isUserLoggedIn, getTimer)
 router.post("/", addTimer)
+router.post("/dev-ops-timers", createDevOpsTimers)
 router.patch("/:id", isUserLoggedIn, updateTimer)
 router.delete("/:id", isUserLoggedIn, deleteTimer)
 

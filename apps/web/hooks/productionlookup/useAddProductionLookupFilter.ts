@@ -1,4 +1,4 @@
-import { API_URL_PROFILE_LOOKUP } from "../../helpers/constants"
+import { API_URL_PRODUCTION_LOOKUP } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
 import { T_Location } from "custom-validator"
 import Cookies from "js-cookie"
@@ -16,7 +16,7 @@ interface I_Filters {
 
 export async function updaterFn(props: I_Filters) {
   const token = Cookies.get("tfl")
-  const res = await fetch(`${API_URL_PROFILE_LOOKUP}`, {
+  const res = await fetch(`${API_URL_PRODUCTION_LOOKUP}`, {
     method: "POST",
     body: JSON.stringify(props),
     headers: {

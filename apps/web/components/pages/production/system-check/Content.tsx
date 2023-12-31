@@ -8,6 +8,7 @@ import {
   FormControlLabel,
   IconButton,
 } from "@mui/material"
+import { BsFillPinAngleFill } from "react-icons/bs"
 import { T_Factory, T_Machine, T_MachineClass, T_Part } from "custom-validator"
 import Cookies from "js-cookie"
 import { useCallback, useEffect, useMemo, useState, useRef } from "react"
@@ -29,6 +30,9 @@ import dayjs from "dayjs"
 import { DatePicker } from "antd"
 import useAddProductionLookupFilter from "../../../../hooks/productionlookup/useAddProductionLookupFilter"
 import useDeleteProductionLookupFilter from "../../../../hooks/productionlookup/useDeleteProductionLookupFilter"
+import ReportTable from "./report-table/report-table"
+import useAddDashboardConfig from "../../../../hooks/dashboardConfig/useAddDashboardConfig"
+import useGetProductionLookup from "../../../../hooks/productionlookup/useGetProductionLookupFilter"
 
 type T_Dispaly_Part_Types = {
   key: string
@@ -49,6 +53,7 @@ const Content = () => {
   const [selectedMachineClasses, setSelectedMachineClasses] = useState<
     T_SelectItem[] | undefined
   >()
+  const pinnedDashboardConfig = useAddDashboardConfig()
 
   const [selectedMachines, setSelectedMachines] = useState<
     T_SelectItem[] | undefined
@@ -76,6 +81,7 @@ const Content = () => {
   } = useMachineClasses(selectedCity?.map((city) => city.key) as string[])
 
   const mutation = useAddProductionLookupFilter()
+
   const deleteProduction = useDeleteProductionLookupFilter()
 
   const [dateRange, setDateRange] = useState<Date[] | string[]>([])
@@ -111,6 +117,8 @@ const Content = () => {
     keyword,
     process
   )
+
+  // console.log("Report Data", savedReports?.productionLookup)
 
   // CITY
   const filteredCities = useMemo<Array<T_SelectItem>>(() => {
@@ -211,6 +219,8 @@ const Content = () => {
     )
   }, [selectedParts?.join()])
 
+  console.log("selected MACHINECLASSES====>>>>", machineClassSelectedIds)
+
   useEffect(() => {
     setSelectedCity([])
     setSelectedMachineClasses([])
@@ -288,7 +298,7 @@ const Content = () => {
 
   return (
     <>
-      <div className={`my-20 pb-10`}>
+      <div className={`my-20`}>
         <div className="px-4 mx-auto content md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mt-28">
           <h1 className="text-3xl font-bold text-gray-800">System Check</h1>
           <h4 className="mt-2 text-sm font-medium tracking-widest text-gray-500 uppercase">
@@ -297,15 +307,49 @@ const Content = () => {
             <span className="text-red-500">System Check</span>
           </h4>
           <div className="w-full h-0.5 bg-gray-200 mt-6"></div>
-          <div className="relative flex flex-col w-full gap-12 py-4">
+          <div className="relative flex flex-col w-full gap-2 py-4">
             <div className="flex w-full bg-white border border-gray-200 rounded-lg">
               <div className="flex flex-col flex-1 p-4">
                 <div className="text-xl font-bold">
                   PRODUCTION REPORT LOOKUP
                 </div>
                 <div className="flex flex-col flex-1 py-4">
+                  <div className="w-[12%]">
+                    <div className="text-sm whitespace-nowrap">
+                      Review Range
+                    </div>
+                    <DatePicker.RangePicker
+                      className="text-[10px] text-white w-[15rem] border-blue-950"
+                      disabledDate={(current: any) =>
+                        current.valueOf() >= Date.now()
+                      }
+                      onChange={(dateValues: any) => {
+                        if (!dateValues) return
+                        setStartDate(
+                          dayjs(dateValues[0]).format(
+                            "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                          )
+                        )
+                        setEndDate(
+                          dayjs(dateValues[1]).format(
+                            "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                          )
+                        )
+                        setStartDateForMachineClass(
+                          dayjs(dateValues[0]).format(
+                            "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                          )
+                        )
+                        setEndDateForMachineClass(
+                          dayjs(dateValues[1]).format(
+                            "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
+                          )
+                        )
+                      }}
+                    />
+                  </div>
                   {/* BEGIN SELECT */}
-                  <div className="flex mb-4 gap-x-3">
+                  <div className="flex mb-4 mt-4 gap-x-3">
                     <div className="w-1/6">
                       <div className="text-sm">Select City</div>
                       <CustomSelectComponent
@@ -368,57 +412,8 @@ const Content = () => {
                     </div>
                     <div className="w-[12%]">
                       <div className="text-sm whitespace-nowrap">
-                        Review Range
+                        Current Date
                       </div>
-                      {/* <div className="flex text-[11px] items-center">
-                        <div className="w-2/3">
-                          <Space
-                            direction="vertical"
-                            className="w-full"
-                            size={12}
-                          >
-                            <RangePicker
-                              disabled={
-                                isCheckboxChecked || !process ? true : false
-                              }
-                              //@ts-expect-error
-                              value={isCheckboxChecked ? [null] : dateRange}
-                              // disabledDate={disabledDate}
-                              onChange={(e) => datePick(e)}
-                            />
-                          </Space>
-                        </div>
-                      </div> */}
-                      <DatePicker.RangePicker
-                        className="text-[10px] text-white w-[8rem] border-blue-950"
-                        size="small"
-                        disabledDate={(current: any) =>
-                          current.valueOf() >= Date.now()
-                        }
-                        onChange={(dateValues: any) => {
-                          if (!dateValues) return
-                          setStartDate(
-                            dayjs(dateValues[0]).format(
-                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                            )
-                          )
-                          setEndDate(
-                            dayjs(dateValues[1]).format(
-                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                            )
-                          )
-                          setStartDateForMachineClass(
-                            dayjs(dateValues[0]).format(
-                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                            )
-                          )
-                          setEndDateForMachineClass(
-                            dayjs(dateValues[1]).format(
-                              "YYYY-MM-DDTHH:mm:ss.SSS[Z]"
-                            )
-                          )
-                        }}
-                      />
                       <div className="px-0 text-[11px] flex space-x-2 pt-3">
                         <label htmlFor="checkbox-date">TODAY</label>
                         <input
@@ -471,12 +466,10 @@ const Content = () => {
                               ?.includes(item._id ?? "")
                           ) ?? []
                         }
-                        machineClassData={
-                          machineClasses?.items?.filter(
-                            (item: T_MachineClass) =>
-                              machineClassSelectedIds?.includes(item._id ?? "")
-                          ) ?? []
-                        }
+                        machineClassData={machineClasses?.items?.filter(
+                          (item: T_MachineClass) =>
+                            machineClassSelectedIds?.includes(item._id ?? "")
+                        )}
                         machineData={
                           machines?.items?.filter((item: T_Machine) =>
                             machineSelectedIds?.includes(
@@ -616,7 +609,7 @@ const Content = () => {
                       {isIncludeCycle ? "Yes" : "No"}
                     </div>
                     {/* DATE RANGE */}
-                    <div className="flex justify-end text-xs">
+                    <div className="flex justify-end text-xs whitespace-nowrap">
                       {startDate === endDate
                         ? "Today"
                         : dayjs(startDate).format("YYYY-MM-DD") +
@@ -631,27 +624,11 @@ const Content = () => {
                     className="flex justify-center mr-2 py-2 px-2 border rounded-lg border-1 border-black bg-blue-950 text-slate-50"
                     onClick={handleClick}
                   >
-                    GENERATE REPORT
+                    REPORT
                   </button>
                   <button
-                    className={`flex justify-center py-2 px-2 border rounded-lg border-1 ${
-                      isDisabled
-                        ? "bg-gray-400 border-none "
-                        : "bg-blue-950 border-black"
-                    } text-slate-50`}
-                    onClick={() => console.log("test")}
-                    disabled={isDisabled}
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <IconButton
-                  onClick={() => {
-                    setIsPinned(!isPinned)
-                    if (!isPinned) {
+                    className={`flex justify-center py-2 px-2 border bg-blue-950 border-black rounded-lg border-1 disabled:bg-gray-400 disabled:border-none  text-slate-50`}
+                    onClick={() =>
                       mutation.mutate({
                         locations: selectedCity,
                         machineClasses: selectedMachineClasses,
@@ -661,16 +638,33 @@ const Content = () => {
                         startDate: new Date(startDate),
                         endDate: new Date(endDate),
                       })
-                    } else {
-                      deleteProduction.mutate()
                     }
+                    disabled={selectedCity?.length === 0}
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              <div className={`flex flex-col  items-center`}>
+                <IconButton
+                  onClick={() => {
+                    setIsPinned(!isPinned)
+                    console.log(isPinned)
+
+                    // Use the updated value directly in the mutate function
+                    pinnedDashboardConfig.mutate({
+                      systemLookup: !isPinned,
+                    })
                   }}
                   size="small"
                   color="primary"
                 >
-                  <BiSolidPin
-                    className={`text-blue-900 ${isPinned ? "rotate-90" : ""}`}
-                  />
+                  {isPinned ? (
+                    <BsFillPinAngleFill className={`text-blue-900`} />
+                  ) : (
+                    <BiSolidPin className={`text-blue-900`} />
+                  )}
                 </IconButton>
                 <IconButton
                   onClick={() => {
@@ -686,6 +680,8 @@ const Content = () => {
             </div>
             <div className="flex flex-col gap-4"></div>
           </div>
+          <Divider />
+          <ReportTable />
         </div>
       </div>
     </>

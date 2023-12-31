@@ -40,6 +40,7 @@ const navigation = [
     slug: "production",
     children: [
       { name: "Timer", href: "/production/timer" },
+      { name: "Dev Ops", href: "/production/dev-ops" },
       { name: "System Check", href: "/production/system-check" },
       { name: "Product List", href: "/production/product-list" },
     ],

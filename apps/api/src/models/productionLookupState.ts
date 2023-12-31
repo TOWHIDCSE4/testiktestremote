@@ -1,9 +1,9 @@
 import mongoose from "mongoose"
 const { Schema } = mongoose
-const profileLookupState = new Schema({
+const productionLookupState = new Schema({
   userId: {
     type: mongoose.Schema.ObjectId,
-    ref: "user",
+    ref: "User",
   },
   locations: {
     type: Array,
@@ -40,4 +40,4 @@ const profileLookupState = new Schema({
   updatedAt: Date,
   deletedAt: Date,
 })
-export default mongoose.model("ProfileLookupState", profileLookupState)
+export default mongoose.model("productionLookupState", productionLookupState)

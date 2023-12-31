@@ -1,4 +1,6 @@
+import Cookies from "js-cookie"
 import Content from "../../../../components/pages/production/timer/Content"
+import { cookies } from "next/headers"
 
 export const metadata = {
   title: "APMS - Production / Timer",
@@ -6,6 +8,8 @@ export const metadata = {
 }
 
 const Timer = () => {
+  const store = cookies()
+  console.log("[TFL]", store.get("tfl"))
   return <Content />
 }
 
