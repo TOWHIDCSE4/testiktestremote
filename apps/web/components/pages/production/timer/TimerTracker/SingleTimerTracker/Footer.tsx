@@ -3,6 +3,8 @@ import React, { Dispatch, useEffect, useState } from "react"
 import { hourMinuteSecond } from "../../../../../../helpers/timeConverter"
 import TrackerDetails from "./Details"
 import { usePathname } from "next/navigation"
+import ProductionTrackerBar from "../../../../../shared/graphs/ProductionTrackerBar"
+import MachineProductionTracker from "../../../../../shared/graphs/MachineProductionTracker"
 
 const Footer = ({
   page,
@@ -38,6 +40,14 @@ const Footer = ({
         }`}
       >
         <div>
+          <div className=" px-8 flex relative  border-t pt-2">
+            <div className="flex-shrink  w-[50%]">
+              <h2 className="text-2xl ">Factory Outlook</h2>
+              <ProductionTrackerBar />
+            </div>
+
+            <MachineProductionTracker />
+          </div>
           <TrackerDetails
             page={page}
             setPage={setPage}
@@ -52,15 +62,13 @@ const Footer = ({
         </div>
         <div>
           <nav
-            className="flex items-center justify-between border-t border-gray-300 bg-white px-4 py-3 lg:px-8"
+            className="flex items-center justify-between border-t border-gray-300 bg-white px-4 py-2 lg:px-8"
             aria-label="Pagination"
           >
             <div className="hidden sm:block">
               <p
                 className={`${
-                  path === "/production/timer/tracker"
-                    ? "text-lg xl:text-xl 2xl:text-2xl"
-                    : "text-lg"
+                  path === "/production/timer/tracker" ? "text-lg " : "text-lg"
                 } text-gray-700`}
               >
                 Showing <span className="font-medium">{logs.length}</span> of{" "}
@@ -72,9 +80,7 @@ const Footer = ({
               <button
                 type="button"
                 className={`${
-                  path === "/production/timer/tracker"
-                    ? "text-lg xl:text-xl 2xl:text-2xl"
-                    : "text-lg"
+                  path === "/production/timer/tracker" ? "text-lg " : "text-lg"
                 } relative inline-flex items-center rounded-md bg-white px-3 py-2 font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0 disabled:opacity-70 disabled:cursor-not-allowed`}
                 onClick={() => page > 1 && setPage(page - 1)}
                 disabled={page < 2}
@@ -84,9 +90,7 @@ const Footer = ({
               <button
                 type="button"
                 className={`${
-                  path === "/production/timer/tracker"
-                    ? "text-lg xl:text-xl 2xl:text-2xl"
-                    : "text-lg"
+                  path === "/production/timer/tracker" ? "text-lg " : "text-lg"
                 } relative ml-3 inline-flex items-center rounded-md bg-white px-3 py-2 font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-offset-0 disabled:opacity-70 disabled:cursor-not-allowed`}
                 onClick={() => setPage(page + 1)}
                 disabled={page === maxPage || logs.length === 0}

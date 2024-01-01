@@ -35,7 +35,7 @@ const TimersGeneratorForm = () => {
       )
         return
       const token = Cookies.get("tfl")
-      const res = await fetch(`${API_URL}/timers/dev-ops-timers`, {
+      const res = await fetch(`${API_URL}/api/timers/dev-ops-timers`, {
         method: "POST",
         body: JSON.stringify(data),
         headers: {

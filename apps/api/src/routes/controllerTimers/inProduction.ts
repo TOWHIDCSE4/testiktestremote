@@ -21,7 +21,10 @@ export const inProduction = async (req: Request, res: Response) => {
     const timeZone = location?.timeZone
 
     const productionCycle =
-      await ProductionCycleService.getCurrentRunningByLocationId(locationId)
+      await ProductionCycleService.getCurrentRunningByLocationId(
+        locationId,
+        timeZone as string
+      )
 
     if (productionCycle) {
       const diffSeconds = getSecondsDifferent(
