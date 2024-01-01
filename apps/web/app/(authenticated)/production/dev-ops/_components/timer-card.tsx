@@ -1,7 +1,9 @@
+"use client"
 import { Card, Divider, IconButton } from "@mui/material"
 import { T_Timer } from "custom-validator"
 import { Suspense } from "react"
 import { LuMoreVertical } from "react-icons/lu"
+import useDevOpsTimers from "./_state"
 import PartSelection from "./part-selection"
 import TimerCardClock from "./timer-card-clock"
 
@@ -13,6 +15,9 @@ interface Props {
 }
 
 const TimerCard: React.FC<Props> = ({ timer }) => {
+  const unit = useDevOpsTimers((state) => state.dailyUnits)?.find(
+    (t) => t.timerId === (timer._id as string)
+  )?.unit
   return (
     <Card className="w-full">
       <div className="flex items-center justify-between space-x-2 p-2">
@@ -32,10 +37,17 @@ const TimerCard: React.FC<Props> = ({ timer }) => {
           <TimerCardClock
             startAt={new Date(timer?.startAt)}
             endAt={new Date(timer?.endAt)}
+            timerId={timer?._id as string}
           />
           <p className="text-lg text-amber-600">{`Operator Unassigned`}</p>
           <div>
-            <h2 className="text-5xl font-semibold text-gray-400">000</h2>
+            <h2
+              className={`text-center font-bold text-5xl ${
+                !unit ? "text-stone-400" : "text-stone-800"
+              }`}
+            >
+              {String(unit ?? 0).padStart(3, "0")}
+            </h2>
             <h6 className="text-lg font-semibold text-gray-700 uppercase">
               Daily Units
             </h6>
@@ -56,7 +68,7 @@ const TimerCard: React.FC<Props> = ({ timer }) => {
           </div>
         </div>
         <div className="flex items-center justify-between space-x-2 px-4 py-4">
-          <button className="uppercase text-sm text-white  p-1 rounded-md bg-green-800">
+          <button className="p-1 text-sm text-white uppercase rounded-md bg-stone-300">
             Controller
           </button>
           <button className="p-1 text-sm text-white uppercase rounded-md bg-stone-300">

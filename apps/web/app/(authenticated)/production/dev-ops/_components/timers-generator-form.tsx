@@ -1,12 +1,11 @@
 "use client"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
-import { useRouter, useSearchParams } from "next/navigation"
-import React from "react"
+import { useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
+import { API_URL } from "../../../../../helpers/constants"
 import useDevOpsTimers from "./_state"
 import { revalidateDevOpsTimers } from "./actions"
-import { API_URL } from "../../../../../helpers/constants"
 
 type DevOpsTimerTypes = {
   numberOfTimers: number
@@ -26,7 +25,6 @@ const TimersGeneratorForm = () => {
 
   const devOpsTimers = useMutation({
     mutationFn: async (data: DevOpsTimerTypes) => {
-      console.log("data", data)
       if (
         !data.numberOfTimers ||
         !data.endTimeRange ||
@@ -46,7 +44,6 @@ const TimersGeneratorForm = () => {
       return await res.json()
     },
     onSuccess: () => {
-      // router.refresh()
       revalidateDevOpsTimers()
       toast.success("Timers has been generated")
     },

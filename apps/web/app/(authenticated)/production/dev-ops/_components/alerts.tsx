@@ -5,7 +5,7 @@ import Alert from "./alert"
 
 const Alerts = () => {
   return (
-    <Card className="w-full flex-1 h-[40rem] overflow-y-auto">
+    <Card className="w-full flex-1">
       <div className="flex items-center justify-between space-x-2 p-2 z-50">
         <h2 className="font-semibold">Alerts Section</h2>
         <div className="flex items-center space-x-2">
@@ -45,18 +45,20 @@ const Alerts = () => {
             Success
           </div>
         </div>
-        <Alert type="success" />
-        <Alert type="info" />
-        <Alert type="error" />
-        <Alert type="warning" />
-        <Alert type="success" />
-        <Alert type="info" />
-        <Alert type="error" />
-        <Alert type="warning" />
-        <Alert type="success" />
-        <Alert type="info" />
-        <Alert type="error" />
-        <Alert type="warning" />
+        <div className="h-[25rem] overflow-y-auto">
+          <Alert type="success" />
+          <Alert type="info" />
+          <Alert type="error" />
+          <Alert type="warning" />
+          <Alert type="success" />
+          <Alert type="info" />
+          <Alert type="error" />
+          <Alert type="warning" />
+          <Alert type="success" />
+          <Alert type="info" />
+          <Alert type="error" />
+          <Alert type="warning" />
+        </div>
       </div>
     </Card>
   )

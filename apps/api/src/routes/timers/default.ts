@@ -243,6 +243,7 @@ export const createDevOpsTimers = async (req: Request, res: Response) => {
       endTimeRange,
       startTime,
     })
+
     await DevOpsTimers.insertMany(results)
 
     res.json({

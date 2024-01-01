@@ -20,8 +20,10 @@ export const generateDevOpsTimers = ({
       const start = Date.now() + startTime
 
       const randomEndTime =
-        Math.floor(Math.random() * (endTimeRange[0] - endTimeRange[1] + 1)) +
-        endTimeRange[1]
+        Math.floor(
+          Math.random() * (endTimeRange[0] * 1000 - endTimeRange[1] * 1000 + 1)
+        ) +
+        endTimeRange[1] * 1000
 
       const randomStartTime =
         Date.now() + Math.floor(Math.random() * (startTime - 1000) + 1000)

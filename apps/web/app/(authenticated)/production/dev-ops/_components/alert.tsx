@@ -1,5 +1,5 @@
 "use client"
-import React from "react"
+import React, { useState } from "react"
 import { BiInfoCircle } from "react-icons/bi"
 import { BsEye, BsPin } from "react-icons/bs"
 
@@ -18,6 +18,8 @@ const Alert: React.FC<Props> = ({
   onView,
   onPin,
 }) => {
+  const [isOpen, setIsOpen] = useState(false)
+
   const classes = {
     success: "border-green-300 text-green-800 bg-green-50",
     error: "border-red-300 text-red-800 bg-red-50",
@@ -54,7 +56,7 @@ const Alert: React.FC<Props> = ({
         <h3 className="text-md font-semibold line-clamp-1 w-52">
           This is a info alert
         </h3>
-        <div className="text-sm line-clamp-1">
+        <div className={`text-sm ${isOpen ? "" : "line-clamp-1"}`}>
           More info about this info alert goes here. This example text is going
           to run a bit longer so that you can see how spacing within an alert
           works with this kind of content.
@@ -62,9 +64,12 @@ const Alert: React.FC<Props> = ({
       </div>
       {displayActions && (
         <div className="flex items-center w-96 space-x-2">
-          <button onClick={onView} className={ButtonClass[type]}>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className={ButtonClass[type]}
+          >
             <BsEye className="w-3 h-3 mr-2" />
-            View more
+            {isOpen ? "View more" : "View less"}
           </button>
           <button onClick={onDismiss} className={dismissButtonClass[type]}>
             Dismiss

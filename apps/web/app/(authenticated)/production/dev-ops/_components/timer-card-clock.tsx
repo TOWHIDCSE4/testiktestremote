@@ -7,12 +7,15 @@ import useTimer from "../hooks/useTimer"
 interface Props {
   startAt: Date
   endAt: Date
+  timerId: string
 }
 
-const TimerCardClock: React.FC<Props> = ({ endAt, startAt }) => {
+const TimerCardClock: React.FC<Props> = ({ endAt, startAt, timerId }) => {
   const { formattedTime, isClockRunning, setIsClockRunning } = useTimer({
     startTime: startAt,
     endTime: endAt,
+    resetInterval: Math.floor(Math.random() * (59 - 20 + 1)) + 10,
+    timerId,
   })
   const ref = useRef<any>()
 

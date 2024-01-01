@@ -1,14 +1,23 @@
 import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
 import { useEffect, useState } from "react"
+import useDevOpsTimers from "../_components/_state"
 
 const useTimer = ({
   startTime,
   endTime,
+  resetInterval,
+  timerId,
 }: {
   startTime: Date
   endTime: Date
+  resetInterval: number
+  timerId: string
 }) => {
+  const setDailyUnit = useDevOpsTimers((state) => state.setDailyUnits)
+  const unit = useDevOpsTimers((state) => state.dailyUnits).find(
+    (timer) => timer.timerId === timerId
+  )?.unit
   dayjs.extend(duration)
   const [formattedTime, setFormattedTime] = useState("00:00:00")
   const [isClockRunning, setIsClockRunning] = useState(false)
@@ -18,7 +27,7 @@ const useTimer = ({
   const [milliseconds, setMilliseconds] = useState(0)
 
   useEffect(() => {
-    const startAtTime = dayjs(startTime)
+    let startAtTime = dayjs(startTime)
     const endAtTime = dayjs(endTime)
 
     const updateTimer = () => {
@@ -26,9 +35,11 @@ const useTimer = ({
       let duration
 
       if (currentTime.isBefore(startAtTime)) {
-        duration = dayjs.duration(startAtTime.diff(currentTime))
-        setIsClockRunning(false)
+        // if current time is before start time then set duration to start time - current time
+        duration = dayjs.duration(startAtTime.diff(currentTime)) // duration = start time - current time
+        setIsClockRunning(false) // set clock running to false
       } else if (currentTime.isAfter(endAtTime)) {
+        // if current time is after end time then set duration to current time - end time
         clearInterval(timerInterval)
         setFormattedTime("00:00:00")
         setIsClockRunning(false)
@@ -40,6 +51,12 @@ const useTimer = ({
       } else {
         duration = dayjs.duration(currentTime.diff(startAtTime))
         setIsClockRunning(true)
+
+        if (currentTime.get("seconds") === resetInterval) {
+          startAtTime = dayjs()
+          duration = dayjs.duration(0)
+          setDailyUnit({ timerId })
+        }
       }
 
       setHours(duration.hours())
