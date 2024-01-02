@@ -57,7 +57,7 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
   const groupedKeys = Object.keys(grouped)
   let data = selectedMachineClass ? grouped[selectedMachineClass] : []
 
-  if (data.length < 3) {
+  if (data?.length < 3) {
     const locations = ["Seguin", "Conroe", "Gunter"]
     locations.forEach((name) => {
       if (!data.find((d: any) => d.locationName === name)) {
@@ -77,7 +77,7 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
     : []
 
   useEffect(() => {
-    if (!selectedMachineClass && groupedKeys.length) {
+    if (!selectedMachineClass && groupedKeys?.length) {
       setSelectedMachineClass(groupedKeys[0])
     }
   }, [groupedKeys])
