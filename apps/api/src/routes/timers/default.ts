@@ -228,27 +228,58 @@ export const getDevOpsTimers = async (req: Request, res: Response) => {
 }
 
 export const createDevOpsTimers = async (req: Request, res: Response) => {
-  const { locationId, numberOfTimers, startTime, endTimeRange } = req.body
+  const {
+    locationId,
+    numberOfTimers,
+    startTime,
+    endTimeRange,
+    unitCycleTime,
+    selectedMachineClasses,
+  } = req.body
   try {
-    const getAllMachineClasses = await machineClasses.find().sort({
-      createdAt: -1,
-    })
+    // const getAllMachineClasses = await machineClasses.find().sort({
+    //   createdAt: -1,
+    // })
     await DevOpsTimers.deleteMany({})
     const results = generateDevOpsTimers({
       locationId,
       numberOfTimers: parseInt(numberOfTimers),
-      machineClassesIds: getAllMachineClasses.map(
-        (machineClass) => machineClass._id
-      ),
+      machineClassesIds: selectedMachineClasses,
       endTimeRange,
       startTime,
+      unitCycleTime,
     })
+
+    // console.log("[RESULTS]:", results)
 
     await DevOpsTimers.insertMany(results)
 
     res.json({
       error: false,
       item: "Timers hase been created.",
+      itemCount: 1,
+      message: ADD_SUCCESS_MESSAGE,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
+    res.json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
+  }
+}
+
+export const createDevOpsTimersUnit = async (req: Request, res: Response) => {
+  const { timerId } = req.body
+  try {
+    await DevOpsTimers.findByIdAndUpdate(timerId, { $inc: { units: 1 } })
+
+    res.json({
+      error: false,
+      item: "Unit has been added.",
       itemCount: 1,
       message: ADD_SUCCESS_MESSAGE,
     })

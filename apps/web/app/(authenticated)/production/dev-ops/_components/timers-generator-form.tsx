@@ -12,6 +12,8 @@ type DevOpsTimerTypes = {
   locationId: string
   startTime: number
   endTimeRange: number[]
+  unitCycleTime: number[]
+  selectedMachineClasses: string[] | string
 }
 
 const TimersGeneratorForm = () => {
@@ -19,6 +21,10 @@ const TimersGeneratorForm = () => {
   const startTime = useDevOpsTimers((state) => state.startTime)
   const endTimeRange = useDevOpsTimers((state) => state.endTimerRange)
   const numberOfTimers = useDevOpsTimers((state) => state.numberOfTimers)
+  const selectedMachineClasses = useDevOpsTimers(
+    (state) => state.selectedMachineClasses
+  )
+  const unitCycleTime = useDevOpsTimers((state) => state.unitCycleTime)
 
   const searchParams = useSearchParams()
   const locationId = searchParams.get("location") as string
@@ -59,6 +65,8 @@ const TimersGeneratorForm = () => {
       numberOfTimers,
       startTime,
       endTimeRange,
+      unitCycleTime,
+      selectedMachineClasses,
     })
   }
 

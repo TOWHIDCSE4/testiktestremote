@@ -7,7 +7,7 @@ import { T_DBReturn } from "../../../../_types"
 import { T_MachineClass } from "custom-validator"
 import { GrVirtualMachine } from "react-icons/gr"
 
-const _Get_Machine_Classess = cache(async () => {
+export const _Get_Machine_Classess = cache(async () => {
   const cookiesStore = cookies()
   const token = cookiesStore.get("tfl")
   const response = await fetch(`${process.env.API_URL}/api/machine-classes`, {

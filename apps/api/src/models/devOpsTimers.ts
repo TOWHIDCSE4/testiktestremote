@@ -47,6 +47,14 @@ const devOpsTimers = new Schema({
     type: Date,
     default: Date.now,
   },
+  cycleTime: {
+    type: Number,
+    default: 0,
+  },
+  units: {
+    type: Number,
+    default: 0,
+  },
   startAt: { type: Date, default: Date.now },
   updatedAt: Date,
   deletedAt: Date,

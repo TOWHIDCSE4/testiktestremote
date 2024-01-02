@@ -3,6 +3,7 @@ const router = express.Router()
 import {
   addTimer,
   createDevOpsTimers,
+  createDevOpsTimersUnit,
   deleteTimer,
   getAllTimers,
   getDevOpsTimers,
@@ -28,6 +29,7 @@ router.get("/", isUserLoggedIn, getAllTimers)
 router.get("/:id", isUserLoggedIn, getTimer)
 router.post("/", addTimer)
 router.post("/dev-ops-timers", createDevOpsTimers)
+router.post("/dev-ops-timers-unit", createDevOpsTimersUnit)
 router.patch("/:id", isUserLoggedIn, updateTimer)
 router.delete("/:id", isUserLoggedIn, deleteTimer)
 

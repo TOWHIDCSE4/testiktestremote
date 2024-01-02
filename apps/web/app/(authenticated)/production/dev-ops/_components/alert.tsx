@@ -1,4 +1,5 @@
 "use client"
+import { Disclosure } from "@headlessui/react"
 import React, { useState } from "react"
 import { BiInfoCircle } from "react-icons/bi"
 import { BsEye, BsPin } from "react-icons/bs"
@@ -6,17 +7,15 @@ import { BsEye, BsPin } from "react-icons/bs"
 interface Props {
   type: "success" | "error" | "warning" | "info"
   displayActions?: boolean
-  onView?: () => void
-  onDismiss?: () => void
-  onPin?: () => void
+  heading: string
+  description: string
 }
 
 const Alert: React.FC<Props> = ({
   type = "success",
   displayActions = true,
-  onDismiss,
-  onView,
-  onPin,
+  heading,
+  description,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -48,38 +47,40 @@ const Alert: React.FC<Props> = ({
   }
 
   return (
-    <div
-      className={`flex items-center justify-between p-4 border-l-4 ${classes[type]}`}
-    >
-      <div className="flex items-center">
-        <BiInfoCircle className="w-8 h-8 mr-2" />
-        <h3 className="text-md font-semibold line-clamp-1 w-52">
-          This is a info alert
-        </h3>
-        <div className={`text-sm ${isOpen ? "" : "line-clamp-1"}`}>
-          More info about this info alert goes here. This example text is going
-          to run a bit longer so that you can see how spacing within an alert
-          works with this kind of content.
-        </div>
-      </div>
-      {displayActions && (
-        <div className="flex items-center w-96 space-x-2">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className={ButtonClass[type]}
-          >
-            <BsEye className="w-3 h-3 mr-2" />
-            {isOpen ? "View more" : "View less"}
-          </button>
-          <button onClick={onDismiss} className={dismissButtonClass[type]}>
-            Dismiss
-          </button>
-          <button onClick={onPin} className={dismissButtonClass[type]}>
-            <BsPin className="w-3 h-3" />
-          </button>
-        </div>
-      )}
-    </div>
+    <Disclosure>
+      {({ close, open }) => {
+        return (
+          <>
+            <div
+              className={`flex items-center justify-between p-4 border-l-4 ${classes[type]}`}
+            >
+              <div className="flex items-center">
+                <BiInfoCircle className="w-8 h-8 mr-2" />
+                <h3 className="text-md font-semibold line-clamp-1 w-52">
+                  This is a info alert
+                </h3>
+                <div className="text-sm line-clamp-1">{description}</div>
+              </div>
+              {displayActions && (
+                <div className="flex items-center justify-end w-96 space-x-2">
+                  <Disclosure.Button className={ButtonClass[type]}>
+                    <BsEye className="w-3 h-3 mr-2" />
+                    {open ? "View Less" : "View more"}
+                  </Disclosure.Button>
+                  <button className={dismissButtonClass[type]}>Dismiss</button>
+                  <button className={dismissButtonClass[type]}>
+                    <BsPin className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+            <Disclosure.Panel className={`text-sm p-8 ${classes[type]}`}>
+              {description}
+            </Disclosure.Panel>
+          </>
+        )
+      }}
+    </Disclosure>
   )
 }
 

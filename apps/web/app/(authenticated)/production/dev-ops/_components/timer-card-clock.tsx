@@ -8,13 +8,19 @@ interface Props {
   startAt: Date
   endAt: Date
   timerId: string
+  unitCycleTime: number
 }
 
-const TimerCardClock: React.FC<Props> = ({ endAt, startAt, timerId }) => {
+const TimerCardClock: React.FC<Props> = ({
+  endAt,
+  startAt,
+  timerId,
+  unitCycleTime,
+}) => {
   const { formattedTime, isClockRunning, setIsClockRunning } = useTimer({
     startTime: startAt,
     endTime: endAt,
-    resetInterval: Math.floor(Math.random() * (59 - 20 + 1)) + 10,
+    resetInterval: unitCycleTime,
     timerId,
   })
   const ref = useRef<any>()

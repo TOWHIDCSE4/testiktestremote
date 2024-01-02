@@ -1,19 +1,41 @@
+import { useMutation } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
+import Cookies from "js-cookie"
 import { useEffect, useState } from "react"
+import { API_URL } from "../../../../../helpers/constants"
 import useDevOpsTimers from "../_components/_state"
 
-const useTimer = ({
-  startTime,
-  endTime,
-  resetInterval,
-  timerId,
-}: {
+interface Props {
   startTime: Date
   endTime: Date
   resetInterval: number
   timerId: string
-}) => {
+}
+
+const useTimer = ({ startTime, endTime, resetInterval, timerId }: Props) => {
+  const devOpsTimersUnit = useMutation({
+    mutationFn: async (data: { timerId: string }) => {
+      if (!data.timerId) return
+      const token = Cookies.get("tfl")
+      const res = await fetch(`${API_URL}/api/timers/dev-ops-timers-unit`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      return await res.json()
+    },
+    onSuccess: () => {
+      console.log("UNIT HAS BEEN CREATED")
+    },
+    onError: (e) => {
+      console.log("[ERROR_FROM_INCREMENT_TIMERS_UNIT]", e)
+    },
+  })
+
   const setDailyUnit = useDevOpsTimers((state) => state.setDailyUnits)
   const unit = useDevOpsTimers((state) => state.dailyUnits).find(
     (timer) => timer.timerId === timerId
@@ -56,6 +78,7 @@ const useTimer = ({
           startAtTime = dayjs()
           duration = dayjs.duration(0)
           setDailyUnit({ timerId })
+          devOpsTimersUnit.mutate({ timerId })
         }
       }
 

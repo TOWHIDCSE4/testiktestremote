@@ -6,7 +6,7 @@ const EndTimerRangeSlider = () => {
   const endTimeRange = useDevOpsTimers((state) => state.endTimerRange)
   const setEndTimeRange = useDevOpsTimers((state) => state.setEndTimerRange)
 
-  const convertSecondsIntoMilliseconds = (value: number) => ms(value * 1000)
+  const convertMinToMs = (value: number) => ms(value * 60000)
 
   return (
     <div>
@@ -15,28 +15,32 @@ const EndTimerRangeSlider = () => {
         <div className="flex flex-col items-center justify-center">
           <input
             type="number"
-            placeholder="No of timers"
-            defaultValue={endTimeRange[0]}
-            value={endTimeRange[0]}
+            placeholder="Minuts"
+            defaultValue={endTimeRange[1] - 2}
+            min={1}
+            max={endTimeRange[1] - 2}
+            value={endTimeRange[0] === 0 ? "" : endTimeRange[0]}
             className="rounded-md shadow-md w-32"
             onChange={(e) =>
               setEndTimeRange([+e.target.value, endTimeRange[1]])
             }
           />
-          <h2>{convertSecondsIntoMilliseconds(endTimeRange[0])}</h2>
+          <h2>{convertMinToMs(endTimeRange[0])}</h2>
         </div>
         <div className="flex flex-col items-center justify-center">
           <input
-            defaultValue={endTimeRange[1]}
-            value={endTimeRange[1]}
+            defaultValue={endTimeRange[0] + 2}
+            min={endTimeRange[0] + 2}
+            max={180}
+            value={endTimeRange[1] === 0 ? "" : endTimeRange[1]}
             type="number"
-            placeholder="No of timers"
+            placeholder="Minuts"
             className="rounded-md shadow-md w-32"
             onChange={(e) =>
               setEndTimeRange([endTimeRange[0], +e.target.value])
             }
           />
-          <h2>{convertSecondsIntoMilliseconds(endTimeRange[1])}</h2>
+          <h2>{convertMinToMs(endTimeRange[1])}</h2>
         </div>
       </div>
     </div>
