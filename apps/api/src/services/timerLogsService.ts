@@ -24,18 +24,23 @@ const getReportByLocation = async () => {
   }
 }
 
-const getReportByMachineAndLocation = async () => {
+const getReportByMachineAndLocation = async (
+  option: { locationId?: string } = {}
+) => {
   const currentDayStart = getStartOfDayTimezone("America/Chicago")
   const endDayStart: Date = getEndOfDayTimezone("America/Chicago")
+
   const units =
     await TimerLogsRepository.getUnitCreatedReportByMachineAndLocation(
       currentDayStart,
-      endDayStart
+      endDayStart,
+      option
     )
 
   const tons = await TimerLogsRepository.getTonsReportByMachineAndLocation(
     currentDayStart,
-    endDayStart
+    endDayStart,
+    option
   )
 
   return {
