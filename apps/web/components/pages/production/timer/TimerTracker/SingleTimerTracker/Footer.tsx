@@ -42,11 +42,11 @@ const Footer = ({
         <div>
           <div className=" px-8 flex relative  border-t pt-2">
             <div className="flex-shrink  w-[50%]">
-              <h2 className="text-2xl ">Factory Outlook</h2>
               <ProductionTrackerBar />
             </div>
-
-            <MachineProductionTracker />
+            <div className="flex-shrink  w-[50%]">
+              <MachineProductionTracker machineClassId={machineClassId} />
+            </div>
           </div>
           <TrackerDetails
             page={page}

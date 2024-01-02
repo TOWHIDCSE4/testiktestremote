@@ -6,12 +6,13 @@ import Select from "react-select"
 import { sortBy } from "lodash"
 import cn from "classnames"
 
-const groupByMachineClass = (data: any[]) => {
+const groupByMachineClass = (data: any[], machineClassId?: string) => {
   if (!data || !data?.length) return []
   const grouped = data.reduce((prev, next) => {
     if (!prev[next.machineClass]) {
       prev[next.machineClass] = []
     }
+
     const sameLocation = prev[next.machineClass].find(
       (d: any) => d.locationName === next.locationName
     )
@@ -38,12 +39,21 @@ const groupByMachineClass = (data: any[]) => {
   }, {})
   return grouped
 }
-const MachineProductionTracker = () => {
+
+interface Props {
+  machineClassId?: string
+}
+const MachineProductionTracker = ({ machineClassId }: Props) => {
   const { data: reportData, isLoading: isReportLoading } =
     useGetReportByLocationAndMachine()
   const [selectedType, setSelectedType] = useState("units")
   const [selectedMachineClass, setSelectedMachineClass] = useState<string>()
-  const grouped = groupByMachineClass(reportData?.[selectedType])
+  const filteredReportData = machineClassId
+    ? reportData?.[selectedType]?.filter(
+        (d: any) => d._id.machineClassId === machineClassId
+      )
+    : reportData?.[selectedType]
+  const grouped = groupByMachineClass(filteredReportData, machineClassId)
   const groupedKeys = Object.keys(grouped)
   let data = selectedMachineClass ? grouped[selectedMachineClass] : []
 
@@ -75,7 +85,7 @@ const MachineProductionTracker = () => {
     return null
   }
   return (
-    <div className="flex-grow w-[50%]">
+    <div className="flex-grow w-full">
       <h2 className="text-2xl flex gap-4 items-center">
         <div className="w-fit">
           <Select
@@ -86,7 +96,7 @@ const MachineProductionTracker = () => {
         </div>
         <div>Performance</div>
       </h2>
-      <div className="w-full mx-4 sm:h-40 xl:h-[270px]  flex flex-col">
+      <div className="w-full mx-4 sm:h-40 xl:min-h-[270px]  flex flex-col">
         <ResponsiveBar
           data={sortBy(data, ["allTotal"])}
           label={(d) => {

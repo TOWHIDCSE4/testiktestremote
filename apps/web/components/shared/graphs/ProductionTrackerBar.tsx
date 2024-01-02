@@ -1,7 +1,7 @@
 import { linearGradientDef } from "@nivo/core"
 import { ResponsiveBar } from "@nivo/bar"
 import useGetReportByLocation from "../../../hooks/reports/useGetReportByLocation"
-import { useState } from "react"
+import React, { useState } from "react"
 import { sortBy } from "lodash"
 import cn from "classnames"
 
@@ -37,6 +37,7 @@ const ProductionTrackerBar = () => {
     : {}
   return (
     <div className="flex flex-col gap-2">
+      <h2 className="text-2xl ">Factory Outlook</h2>
       <div className="w-full mx-4 sm:h-40 xl:h-[270px]  flex flex-col">
         <ResponsiveBar
           data={sortBy(usedData, ["total"])}

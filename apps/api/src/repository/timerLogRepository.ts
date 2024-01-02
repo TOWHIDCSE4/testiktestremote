@@ -86,12 +86,21 @@ const getTonsReportByLocations = (dateStart: Date, dateEnd: Date) => {
   ])
 }
 
-const getTonsReportByMachineAndLocation = (dateStart: Date, dateEnd: Date) => {
+const getTonsReportByMachineAndLocation = (
+  dateStart: Date,
+  dateEnd: Date,
+  option: { locationId?: string } = {}
+) => {
+  const additionalFilter: any = {}
+  if (option.locationId) {
+    additionalFilter.locationId = option.locationId
+  }
   return TimerLogs.aggregate([
     {
       $match: {
         createdAt: { $gte: dateStart, $lte: dateEnd },
         stopReason: { $in: ["Unit Created"] },
+        ...additionalFilter,
       },
     },
     {
@@ -162,13 +171,19 @@ const getTonsReportByMachineAndLocation = (dateStart: Date, dateEnd: Date) => {
 
 const getUnitCreatedReportByMachineAndLocation = (
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  option: { locationId?: string } = {}
 ) => {
+  const additionalFilter: any = {}
+  if (option.locationId) {
+    additionalFilter.locationId = option.locationId
+  }
   return TimerLogs.aggregate([
     {
       $match: {
         createdAt: { $gte: startDate, $lte: endDate },
         stopReason: { $in: ["Unit Created"] },
+        ...additionalFilter,
       },
     },
     {
