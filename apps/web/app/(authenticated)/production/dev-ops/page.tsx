@@ -17,6 +17,7 @@ import TimersGeneratorForm from "./_components/timers-generator-form"
 import UnitCycleRange from "./_components/unit-cycle-range"
 import WithAuth from "./_components/withAuth"
 import SessionSimulation from "./_components/sessions-simulation"
+import DashboardMonitoring from "./_components/dashboard-monitoring"
 
 const Timers = dynamic(() => import("./_components/timers"))
 
@@ -84,7 +85,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
   // if client is provide incorrect location
   // ids or location searchParams key dose not exist
   // then he will redirected to correct url
-  if (!searchParams?.location || !isVerified) {
+  if (!searchParams || !searchParams?.location || !isVerified) {
     redirect(
       `/production/dev-ops?location=${encodeURI(
         locations.items
@@ -106,7 +107,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         <Divider />
         <div className="flex flex-col md:flex-row justify-between items-center py-2 px-6">
           <div className="flex flex-col space-y-4">
-            <LocationsSelection locations={locations} />
+            {/* <LocationsSelection locations={locations} /> */}
             <SelectMachineClass machineClasses={machineClassess} />
           </div>
           <SliderComponent />
@@ -123,6 +124,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
       <SessionSimulation />
       <PerformanceSection />
       <Alerts />
+      <DashboardMonitoring />
     </WithAuth>
   )
 }
