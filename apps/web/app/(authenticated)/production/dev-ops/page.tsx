@@ -16,8 +16,14 @@ import SliderComponent from "./_components/slider-component"
 import TimersGeneratorForm from "./_components/timers-generator-form"
 import UnitCycleRange from "./_components/unit-cycle-range"
 import WithAuth from "./_components/withAuth"
+import SessionSimulation from "./_components/sessions-simulation"
 
 const Timers = dynamic(() => import("./_components/timers"))
+
+export type T_Timer_Group_Types = {
+  _id: string
+  timers: T_Timer[]
+}
 
 const _Get_Timers_By_Location = cache(async (locationId: string[]) => {
   const cookiesStore = cookies()
@@ -29,7 +35,7 @@ const _Get_Timers_By_Location = cache(async (locationId: string[]) => {
       next: { tags: ["devOps-timers"] },
     }
   )
-  return (await res.json()) as T_DBReturn<T_Timer[]>
+  return (await res.json()) as T_DBReturn<T_Timer_Group_Types[]>
 })
 
 interface Props {
@@ -89,7 +95,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
     )
   }
 
-  const timers = searchParams?.location
+  const timersGroups = searchParams?.location
     ? await _Get_Timers_By_Location([])
     : undefined
 
@@ -113,7 +119,8 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         </div>
       </div>
       <Analytics />
-      {timers && <Timers timers={timers} />}
+      {timersGroups && <Timers timersGroups={timersGroups} />}
+      <SessionSimulation />
       <PerformanceSection />
       <Alerts />
     </WithAuth>

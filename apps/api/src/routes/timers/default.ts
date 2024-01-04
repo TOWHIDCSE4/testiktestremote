@@ -206,8 +206,16 @@ export const addTimer = async (req: Request, res: Response) => {
 export const getDevOpsTimers = async (req: Request, res: Response) => {
   const locations = req.query?.locations as string
   const locationsIds = locations?.split(",")
-  const timers = await DevOpsTimers.find()
-  const totalOfTimers = await DevOpsTimers.find().countDocuments()
+
+  const timers = await DevOpsTimers.aggregate([
+    { $match: { createdBy: res.locals.user._id } },
+    { $group: { _id: "$sessionName", timers: { $push: "$$ROOT" } } },
+  ])
+
+  const totalOfTimers = await DevOpsTimers.find({
+    createdBy: res.locals.user._id,
+  }).countDocuments()
+
   try {
     res.json({
       error: false,
@@ -235,12 +243,11 @@ export const createDevOpsTimers = async (req: Request, res: Response) => {
     endTimeRange,
     unitCycleTime,
     selectedMachineClasses,
+    sessionName,
   } = req.body
   try {
-    // const getAllMachineClasses = await machineClasses.find().sort({
-    //   createdAt: -1,
-    // })
-    await DevOpsTimers.deleteMany({})
+    await DevOpsTimers.deleteMany({ createdBy: res.locals.user._id })
+
     const results = generateDevOpsTimers({
       locationId,
       numberOfTimers: parseInt(numberOfTimers),
@@ -248,9 +255,9 @@ export const createDevOpsTimers = async (req: Request, res: Response) => {
       endTimeRange,
       startTime,
       unitCycleTime,
+      createdBy: res.locals.user._id,
+      sessionName,
     })
-
-    // console.log("[RESULTS]:", results)
 
     await DevOpsTimers.insertMany(results)
 

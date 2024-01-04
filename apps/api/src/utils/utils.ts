@@ -5,6 +5,8 @@ export const generateDevOpsTimers = ({
   startTime,
   endTimeRange,
   unitCycleTime,
+  createdBy,
+  sessionName,
 }: {
   numberOfTimers: number
   locationId: string
@@ -12,6 +14,8 @@ export const generateDevOpsTimers = ({
   startTime: number
   endTimeRange: number[]
   unitCycleTime: number[]
+  createdBy: string
+  sessionName: string
 }) => {
   if (numberOfTimers <= 0 && !locationId) return
 
@@ -43,8 +47,9 @@ export const generateDevOpsTimers = ({
         partId: "64d5816bb996589a945a6405",
         locationId: locationId.split(",")[i],
         operatorName: `Operator ${i + j}`,
+        sessionName: sessionName,
         operator: "64d5816bb996589a945a6405",
-        createdBy: "64d5816bb996589a945a6405",
+        createdBy: createdBy,
         status: "STOP",
         cycleTime: randomUnitCycleTime,
         units: 0,
