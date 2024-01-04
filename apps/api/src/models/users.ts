@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import { EUserPinnedComponents } from "custom-validator/ZUser"
 const { Schema } = mongoose
 
 const users = new Schema({
@@ -18,6 +19,26 @@ const users = new Schema({
       "Sales",
     ],
   },
+  pinnedComponentsDashboard: [
+    {
+      type: String,
+      enum: [
+        EUserPinnedComponents.perMachine,
+        EUserPinnedComponents.perMachinePerLocation,
+        EUserPinnedComponents.factoryOutlook,
+      ],
+    },
+  ],
+  pinnedComponentsPopup: [
+    {
+      type: String,
+      enum: [
+        EUserPinnedComponents.perMachine,
+        EUserPinnedComponents.perMachinePerLocation,
+        EUserPinnedComponents.factoryOutlook,
+      ],
+    },
+  ],
   email: String,
   password: String,
   locationId: {

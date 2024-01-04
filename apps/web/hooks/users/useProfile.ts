@@ -20,14 +20,20 @@ export async function getProfile(email: string) {
   return (await res.json()) as T_DBReturn
 }
 
+export const useProfileQueryKey = () => {
+  const storeSession = useStoreSession((state) => state)
+  const getProfileQueryKey = () => ["profile", storeSession.email]
+
+  return { getProfileQueryKey }
+}
+
 function useProfile() {
   const storeSession = useStoreSession((state) => state)
+  const { getProfileQueryKey } = useProfileQueryKey()
   const query = useQuery(
-    ["profile", storeSession.email],
+    getProfileQueryKey(),
     () => getProfile(storeSession.email),
     {
-      cacheTime: ONE_DAY,
-      staleTime: ONE_DAY,
       refetchOnWindowFocus: false,
       enabled: !!storeSession.email,
     }

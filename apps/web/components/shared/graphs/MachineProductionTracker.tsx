@@ -68,13 +68,14 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
       }
     })
   }
-  const allKeys = selectedMachineClass
-    ? data.reduce((prev: any, next: any) => {
-        return prev.concat(
-          Object.keys(next).filter((k: string) => k.includes("machine_"))
-        )
-      }, [] as string[])
-    : []
+  const allKeys =
+    selectedMachineClass && data?.length
+      ? data.reduce((prev: any, next: any) => {
+          return prev.concat(
+            Object.keys(next).filter((k: string) => k.includes("machine_"))
+          )
+        }, [] as string[])
+      : []
 
   useEffect(() => {
     if (!selectedMachineClass && groupedKeys?.length) {
