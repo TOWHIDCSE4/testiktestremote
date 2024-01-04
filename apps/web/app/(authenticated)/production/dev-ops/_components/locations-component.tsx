@@ -39,8 +39,9 @@ const LocationsSelection: React.FC<Props> = ({ locations }) => {
   }, [selectedLocations])
 
   return (
-    <div>
-      <FormControl sx={{ m: 1, width: 220, mt: 3 }}>
+    <div className="">
+      <h2>Locations</h2>
+      <FormControl sx={{ width: "100%" }}>
         <Select
           className="h-10"
           multiple

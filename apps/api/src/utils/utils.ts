@@ -4,12 +4,18 @@ export const generateDevOpsTimers = ({
   machineClassesIds,
   startTime,
   endTimeRange,
+  unitCycleTime,
+  createdBy,
+  sessionName,
 }: {
   numberOfTimers: number
   locationId: string
-  machineClassesIds: any[]
+  machineClassesIds: string[]
   startTime: number
   endTimeRange: number[]
+  unitCycleTime: number[]
+  createdBy: string
+  sessionName: string
 }) => {
   if (numberOfTimers <= 0 && !locationId) return
 
@@ -20,13 +26,19 @@ export const generateDevOpsTimers = ({
       const start = Date.now() + startTime
 
       const randomEndTime =
-        Math.floor(Math.random() * (endTimeRange[0] - endTimeRange[1] + 1)) +
-        endTimeRange[1]
-
+        Math.floor(
+          Math.random() *
+            (endTimeRange[0] * 60000 - endTimeRange[1] * 60000 + 1)
+        ) +
+        endTimeRange[1] * 60000
       const randomStartTime =
         Date.now() + Math.floor(Math.random() * (startTime - 1000) + 1000)
 
       const end = start + randomEndTime
+
+      const randomUnitCycleTime =
+        Math.floor(Math.random() * (unitCycleTime[0] - unitCycleTime[1] + 1)) +
+        unitCycleTime[1]
 
       bulkData.push({
         factoryId: "64d5816bb996589a945a6405",
@@ -35,9 +47,12 @@ export const generateDevOpsTimers = ({
         partId: "64d5816bb996589a945a6405",
         locationId: locationId.split(",")[i],
         operatorName: `Operator ${i + j}`,
+        sessionName: sessionName,
         operator: "64d5816bb996589a945a6405",
-        createdBy: "64d5816bb996589a945a6405",
+        createdBy: createdBy,
         status: "STOP",
+        cycleTime: randomUnitCycleTime,
+        units: 0,
         startAt: new Date(randomStartTime),
         endAt: new Date(end),
         updatedAt: Date.now(),

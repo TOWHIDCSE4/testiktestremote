@@ -9,12 +9,21 @@ import Alerts from "./_components/alerts"
 import Analytics from "./_components/analytics"
 import EndTimerRangeSlider from "./_components/end-timer-range-slider"
 import LocationsSelection from "./_components/locations-component"
+import { _Get_Machine_Classess } from "./_components/machine-classes"
 import PerformanceSection from "./_components/performance-section"
+import SelectMachineClass from "./_components/select-machine-class"
 import SliderComponent from "./_components/slider-component"
 import TimersGeneratorForm from "./_components/timers-generator-form"
+import UnitCycleRange from "./_components/unit-cycle-range"
 import WithAuth from "./_components/withAuth"
+import SessionSimulation from "./_components/sessions-simulation"
 
 const Timers = dynamic(() => import("./_components/timers"))
+
+export type T_Timer_Group_Types = {
+  _id: string
+  timers: T_Timer[]
+}
 
 const _Get_Timers_By_Location = cache(async (locationId: string[]) => {
   const cookiesStore = cookies()
@@ -26,7 +35,7 @@ const _Get_Timers_By_Location = cache(async (locationId: string[]) => {
       next: { tags: ["devOps-timers"] },
     }
   )
-  return (await res.json()) as T_DBReturn<T_Timer[]>
+  return (await res.json()) as T_DBReturn<T_Timer_Group_Types[]>
 })
 
 interface Props {
@@ -55,6 +64,8 @@ const isIdsCorrect = cache(
 )
 
 const Page: React.FC<Props> = async ({ searchParams }) => {
+  // Get All Machine Classes
+  const machineClassess = await _Get_Machine_Classess()
   // Get All Locations
   const locations = await _Get_Locations()
 
@@ -84,7 +95,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
     )
   }
 
-  const timers = searchParams?.location
+  const timersGroups = searchParams?.location
     ? await _Get_Timers_By_Location([])
     : undefined
 
@@ -94,14 +105,22 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         <h2 className="p-2 font-semibold">Random Parameters</h2>
         <Divider />
         <div className="flex flex-col md:flex-row justify-between items-center py-2 px-6">
-          <LocationsSelection locations={locations} />
+          <div className="flex flex-col space-y-4">
+            <LocationsSelection locations={locations} />
+            <SelectMachineClass machineClasses={machineClassess} />
+          </div>
           <SliderComponent />
-          <EndTimerRangeSlider />
+          <div className="flex flex-col space-y-2">
+            <EndTimerRangeSlider />
+            <UnitCycleRange />
+          </div>
+          {/* <EndTimerRangeSlider /> */}
           <TimersGeneratorForm />
         </div>
       </div>
       <Analytics />
-      {timers && <Timers timers={timers} />}
+      {timersGroups && <Timers timersGroups={timersGroups} />}
+      <SessionSimulation />
       <PerformanceSection />
       <Alerts />
     </WithAuth>

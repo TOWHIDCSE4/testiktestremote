@@ -31,7 +31,7 @@ const SliderComponent = () => {
         className="w-60"
         style={{ color: "#102136" }}
       />
-      <h2>{ms(startTime)}</h2>
+      <h2>0s-{ms(startTime)}</h2>
     </div>
   )
 }

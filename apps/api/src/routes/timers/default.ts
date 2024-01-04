@@ -206,8 +206,16 @@ export const addTimer = async (req: Request, res: Response) => {
 export const getDevOpsTimers = async (req: Request, res: Response) => {
   const locations = req.query?.locations as string
   const locationsIds = locations?.split(",")
-  const timers = await DevOpsTimers.find()
-  const totalOfTimers = await DevOpsTimers.find().countDocuments()
+
+  const timers = await DevOpsTimers.aggregate([
+    { $match: { createdBy: res.locals.user._id } },
+    { $group: { _id: "$sessionName", timers: { $push: "$$ROOT" } } },
+  ])
+
+  const totalOfTimers = await DevOpsTimers.find({
+    createdBy: res.locals.user._id,
+  }).countDocuments()
+
   try {
     res.json({
       error: false,
@@ -228,26 +236,57 @@ export const getDevOpsTimers = async (req: Request, res: Response) => {
 }
 
 export const createDevOpsTimers = async (req: Request, res: Response) => {
-  const { locationId, numberOfTimers, startTime, endTimeRange } = req.body
+  const {
+    locationId,
+    numberOfTimers,
+    startTime,
+    endTimeRange,
+    unitCycleTime,
+    selectedMachineClasses,
+    sessionName,
+  } = req.body
   try {
-    const getAllMachineClasses = await machineClasses.find().sort({
-      createdAt: -1,
-    })
-    await DevOpsTimers.deleteMany({})
+    await DevOpsTimers.deleteMany({ createdBy: res.locals.user._id })
+
     const results = generateDevOpsTimers({
       locationId,
       numberOfTimers: parseInt(numberOfTimers),
-      machineClassesIds: getAllMachineClasses.map(
-        (machineClass) => machineClass._id
-      ),
+      machineClassesIds: selectedMachineClasses,
       endTimeRange,
       startTime,
+      unitCycleTime,
+      createdBy: res.locals.user._id,
+      sessionName,
     })
+
     await DevOpsTimers.insertMany(results)
 
     res.json({
       error: false,
       item: "Timers hase been created.",
+      itemCount: 1,
+      message: ADD_SUCCESS_MESSAGE,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
+    res.json({
+      error: true,
+      message: message,
+      items: null,
+      itemCount: null,
+    })
+  }
+}
+
+export const createDevOpsTimersUnit = async (req: Request, res: Response) => {
+  const { timerId } = req.body
+  try {
+    await DevOpsTimers.findByIdAndUpdate(timerId, { $inc: { units: 1 } })
+
+    res.json({
+      error: false,
+      item: "Unit has been added.",
       itemCount: 1,
       message: ADD_SUCCESS_MESSAGE,
     })

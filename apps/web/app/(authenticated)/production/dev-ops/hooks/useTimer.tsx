@@ -1,14 +1,45 @@
+import { useMutation } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
+import Cookies from "js-cookie"
 import { useEffect, useState } from "react"
+import { API_URL } from "../../../../../helpers/constants"
+import useDevOpsTimers from "../_components/_state"
 
-const useTimer = ({
-  startTime,
-  endTime,
-}: {
+interface Props {
   startTime: Date
   endTime: Date
-}) => {
+  resetInterval: number
+  timerId: string
+}
+
+const useTimer = ({ startTime, endTime, resetInterval, timerId }: Props) => {
+  const devOpsTimersUnit = useMutation({
+    mutationFn: async (data: { timerId: string }) => {
+      if (!data.timerId) return
+      const token = Cookies.get("tfl")
+      const res = await fetch(`${API_URL}/api/timers/dev-ops-timers-unit`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      return await res.json()
+    },
+    onSuccess: () => {
+      console.log("UNIT HAS BEEN CREATED")
+    },
+    onError: (e) => {
+      console.log("[ERROR_FROM_INCREMENT_TIMERS_UNIT]", e)
+    },
+  })
+
+  const setDailyUnit = useDevOpsTimers((state) => state.setDailyUnits)
+  const unit = useDevOpsTimers((state) => state.dailyUnits).find(
+    (timer) => timer.timerId === timerId
+  )?.unit
   dayjs.extend(duration)
   const [formattedTime, setFormattedTime] = useState("00:00:00")
   const [isClockRunning, setIsClockRunning] = useState(false)
@@ -18,7 +49,7 @@ const useTimer = ({
   const [milliseconds, setMilliseconds] = useState(0)
 
   useEffect(() => {
-    const startAtTime = dayjs(startTime)
+    let startAtTime = dayjs(startTime)
     const endAtTime = dayjs(endTime)
 
     const updateTimer = () => {
@@ -26,9 +57,11 @@ const useTimer = ({
       let duration
 
       if (currentTime.isBefore(startAtTime)) {
-        duration = dayjs.duration(startAtTime.diff(currentTime))
-        setIsClockRunning(false)
+        // if current time is before start time then set duration to start time - current time
+        duration = dayjs.duration(startAtTime.diff(currentTime)) // duration = start time - current time
+        setIsClockRunning(false) // set clock running to false
       } else if (currentTime.isAfter(endAtTime)) {
+        // if current time is after end time then set duration to current time - end time
         clearInterval(timerInterval)
         setFormattedTime("00:00:00")
         setIsClockRunning(false)
@@ -40,6 +73,13 @@ const useTimer = ({
       } else {
         duration = dayjs.duration(currentTime.diff(startAtTime))
         setIsClockRunning(true)
+
+        if (currentTime.get("seconds") === resetInterval) {
+          startAtTime = dayjs()
+          duration = dayjs.duration(0)
+          setDailyUnit({ timerId })
+          devOpsTimersUnit.mutate({ timerId })
+        }
       }
 
       setHours(duration.hours())

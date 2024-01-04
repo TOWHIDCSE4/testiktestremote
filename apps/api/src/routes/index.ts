@@ -16,6 +16,7 @@ import ProfileLookupRoute from "./productionLookupState"
 import dashboardConfigRoute from "./dashboardConfig"
 import readingsRoute from "./readings"
 import reportsRoute from "./reports"
+import devOpsRoute from "./dev-ops"
 
 const App = (app: Application) => {
   app.use(`${API_ROOT}/users`, UsersRoute)
@@ -34,6 +35,7 @@ const App = (app: Application) => {
   app.use(`${API_ROOT}/dashboard-config`, dashboardConfigRoute)
   app.use(`${API_ROOT}/readings`, readingsRoute)
   app.use(`${API_ROOT}/reports`, reportsRoute)
+  app.use(`${API_ROOT}/dev-ops`, devOpsRoute)
 }
 
 export default App

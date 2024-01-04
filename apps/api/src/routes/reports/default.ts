@@ -24,7 +24,9 @@ export const getReportByMachineAndLocation = async (
   res: Response
 ) => {
   try {
-    const report = await TimerLogsService.getReportByMachineAndLocation()
+    const report = await TimerLogsService.getReportByMachineAndLocation({
+      locationId: req.query.locationId as string,
+    })
 
     res.status(200).json({
       error: false,

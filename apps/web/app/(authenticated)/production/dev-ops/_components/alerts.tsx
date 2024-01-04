@@ -5,7 +5,7 @@ import Alert from "./alert"
 
 const Alerts = () => {
   return (
-    <Card className="w-full flex-1 h-[40rem] overflow-y-auto">
+    <Card className="w-full flex-1">
       <div className="flex items-center justify-between space-x-2 p-2 z-50">
         <h2 className="font-semibold">Alerts Section</h2>
         <div className="flex items-center space-x-2">
@@ -45,18 +45,52 @@ const Alerts = () => {
             Success
           </div>
         </div>
-        <Alert type="success" />
-        <Alert type="info" />
-        <Alert type="error" />
-        <Alert type="warning" />
-        <Alert type="success" />
-        <Alert type="info" />
-        <Alert type="error" />
-        <Alert type="warning" />
-        <Alert type="success" />
-        <Alert type="info" />
-        <Alert type="error" />
-        <Alert type="warning" />
+        <div className="h-[25rem] overflow-y-auto">
+          <Alert
+            description="Description 1"
+            heading="heading 1"
+            type="success"
+          />
+          <Alert description="Description 2" heading="heading 2" type="info" />
+          <Alert description="Description 3" heading="heading 3" type="error" />
+          <Alert
+            description="Description 4"
+            heading="heading 4"
+            type="warning"
+          />
+          <Alert
+            description="Description 5"
+            heading="heading 5"
+            type="success"
+          />
+          <Alert description="Description 6" heading="heading 6" type="info" />
+          <Alert description="Description 7" heading="heading 7" type="error" />
+          <Alert
+            description="Description 8"
+            heading="heading 8"
+            type="warning"
+          />
+          <Alert
+            description="Description 9"
+            heading="heading 9"
+            type="success"
+          />
+          <Alert
+            description="Description 10"
+            heading="heading 10"
+            type="info"
+          />
+          <Alert
+            description="Description 11"
+            heading="heading 11"
+            type="error"
+          />
+          <Alert
+            description="Description 12"
+            heading="heading 12"
+            type="warning"
+          />
+        </div>
       </div>
     </Card>
   )

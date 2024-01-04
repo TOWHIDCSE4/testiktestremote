@@ -14,6 +14,10 @@ const devOpsTimers = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "MachineClass",
   },
+  sessionId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "DevOpsSession",
+  },
   partId: {
     type: mongoose.Schema.ObjectId,
     ref: "Part",
@@ -25,6 +29,10 @@ const devOpsTimers = new Schema({
   operatorName: {
     type: String,
     nullable: true,
+  },
+  sessionName: {
+    type: String,
+    ref: "DevOpsSession",
   },
   operator: {
     type: mongoose.Schema.ObjectId,
@@ -46,6 +54,14 @@ const devOpsTimers = new Schema({
   endAt: {
     type: Date,
     default: Date.now,
+  },
+  cycleTime: {
+    type: Number,
+    default: 0,
+  },
+  units: {
+    type: Number,
+    default: 0,
   },
   startAt: { type: Date, default: Date.now },
   updatedAt: Date,
