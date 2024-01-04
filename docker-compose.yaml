@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: ./apps/web/config/Dockerfile
+      args:
+        - MEDIA_URL=${MEDIA_URL}
+        - API_URL=${API_URL}
+        - SENTRY_WEB_DSN=${SENTRY_WEB_DSN}
+    restart: always
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: ./apps/api/config/Dockerfile
+    restart: always
+    ports:
+      - 9001:9001
+    env_file:
+      - .env
