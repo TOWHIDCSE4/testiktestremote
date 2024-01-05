@@ -8,6 +8,7 @@ import {
 import { ZDevOpsSession } from "custom-validator"
 import DevOpsTimers from "../../models/devOpsTimers"
 import { generateDevOpsTimers } from "../../utils/utils"
+import devOpsTimers from "../../models/devOpsTimers"
 
 export const sessionList = async (req: Request, res: Response) => {
   try {
@@ -32,6 +33,26 @@ export const sessionList = async (req: Request, res: Response) => {
   }
 }
 
+export const timersBySession = async (req: Request, res: Response) => {
+  try {
+    const sessionList = await devOpsTimers.find({ sessionName: req.query.name })
+    res.json({
+      error: false,
+      items: sessionList,
+      message: null,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
+    res.json({
+      error: true,
+      message: message,
+      item: null,
+      itemCount: null,
+    })
+  }
+}
+
 export const addSession = async (req: Request, res: Response) => {
   const {
     name,
@@ -39,7 +60,9 @@ export const addSession = async (req: Request, res: Response) => {
     noOfTimers,
     locationId,
     startTime,
+    endTimeRange,
     unitCycleTime,
+    machineClassIds,
     ...rest
   } = req.body
   if (name) {
@@ -65,8 +88,8 @@ export const addSession = async (req: Request, res: Response) => {
           const results = generateDevOpsTimers({
             locationId,
             numberOfTimers: parseInt(noOfTimers),
-            machineClassesIds: [],
-            endTimeRange: endTime,
+            machineClassIds,
+            endTimeRange,
             startTime,
             unitCycleTime,
             createdBy: res.locals.user._id,

@@ -1,7 +1,7 @@
 export const generateDevOpsTimers = ({
   numberOfTimers,
   locationId,
-  machineClassesIds,
+  machineClassIds,
   startTime,
   endTimeRange,
   unitCycleTime,
@@ -10,7 +10,7 @@ export const generateDevOpsTimers = ({
 }: {
   numberOfTimers: number
   locationId: string
-  machineClassesIds: string[]
+  machineClassIds: string[]
   startTime: number
   endTimeRange: number[]
   unitCycleTime: number[]
@@ -43,7 +43,7 @@ export const generateDevOpsTimers = ({
       bulkData.push({
         factoryId: "64d5816bb996589a945a6405",
         machineId: "64d5816bb996589a945a6405",
-        machineClassId: machineClassesIds[j],
+        machineClassId: machineClassIds[j],
         partId: "64d5816bb996589a945a6405",
         locationId: locationId.split(",")[i],
         operatorName: `Operator ${i + j}`,

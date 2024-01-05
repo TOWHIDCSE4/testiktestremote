@@ -251,7 +251,7 @@ export const createDevOpsTimers = async (req: Request, res: Response) => {
     const results = generateDevOpsTimers({
       locationId,
       numberOfTimers: parseInt(numberOfTimers),
-      machineClassesIds: selectedMachineClasses,
+      machineClassIds: selectedMachineClasses,
       endTimeRange,
       startTime,
       unitCycleTime,
