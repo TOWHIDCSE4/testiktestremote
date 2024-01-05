@@ -33,7 +33,7 @@ const DashboardMonitoringChart = () => {
         return (
           <div className="w-56 rounded-tremor-default text-tremor-default bg-tremor-background p-2 shadow-tremor-dropdown border border-tremor-border">
             {payload.map((category, idx) => (
-              <div key={category.dataKey} className="flex flex-1 space-x-2.5">
+              <div key={idx} className="flex flex-1 space-x-2.5">
                 <div
                   className={`w-1 flex flex-col bg-${category.color}-500 rounded`}
                 />

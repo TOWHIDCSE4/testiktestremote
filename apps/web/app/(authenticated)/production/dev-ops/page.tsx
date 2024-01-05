@@ -37,6 +37,16 @@ const _Get_Timers_by_User = cache(async () => {
   return (await res.json()) as T_DBReturn<T_Timer_Group_Types[]>
 })
 
+const _Get_Sessions_List = cache(async () => {
+  const cookiesStore = cookies()
+  const token = cookiesStore.get("tfl")
+  const res = await fetch(`${API_URL}/api/dev-ops/session-list`, {
+    headers: { Authorization: `Bearer ${token?.value}` },
+    next: { tags: ["devOps-timers"] },
+  })
+  return (await res.json()) as T_DBReturn<T_Timer_Group_Types[]>
+})
+
 interface Props {
   searchParams: {
     location: string
@@ -50,11 +60,13 @@ const _Get_Locations = cache(async () => {
 
 const Page: React.FC<Props> = async ({ searchParams }) => {
   // Get All Machine Classes and Locations and Timers
-  const [locations, machineClasses, timersGroups] = await Promise.all([
-    _Get_Locations(),
-    _Get_Machine_Classes(),
-    _Get_Timers_by_User(),
-  ])
+  const [locations, machineClasses, timersGroups, sessionsList] =
+    await Promise.all([
+      _Get_Locations(),
+      _Get_Machine_Classes(),
+      _Get_Timers_by_User(),
+      _Get_Sessions_List(),
+    ])
 
   // ids or location searchParams key dose not exist
   // then he will redirected to correct url
@@ -89,7 +101,9 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
       </div>
       <Analytics />
       {timersGroups && <Timers timersGroups={timersGroups} />}
-      <SessionSimulation />
+      <div className="mt-20">
+        <SessionSimulation sessionsList={sessionsList} />
+      </div>
       <PerformanceSection />
       <Alerts />
       <DashboardMonitoring />

@@ -114,7 +114,10 @@ export const columns: ColumnDef<DashboardMonitoringData>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <DashboardMonitoringTableRowStatus status={row.original.status} />
+      <DashboardMonitoringTableRowStatus
+        status={row.original.status}
+        key={row.original.id}
+      />
     ),
   },
   {
@@ -132,7 +135,9 @@ export const columns: ColumnDef<DashboardMonitoringData>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => <DashboardMonitoringTableRowDropDown />,
+    cell: ({ row }) => (
+      <DashboardMonitoringTableRowDropDown key={row.original.id} />
+    ),
   },
 ]
 
