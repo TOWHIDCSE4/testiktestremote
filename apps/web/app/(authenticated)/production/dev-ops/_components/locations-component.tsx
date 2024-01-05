@@ -1,6 +1,5 @@
 "use client"
 import * as React from "react"
-import { Theme, useTheme } from "@mui/material/styles"
 import OutlinedInput from "@mui/material/OutlinedInput"
 import MenuItem from "@mui/material/MenuItem"
 import FormControl from "@mui/material/FormControl"
@@ -31,12 +30,12 @@ const LocationsSelection: React.FC<Props> = ({ locations }) => {
     )
   }
 
-  React.useEffect(() => {
-    router.replace(
-      `/production/dev-ops?location=${selectedLocations.join(",").toString()}`
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLocations])
+  // React.useEffect(() => {
+  //   router.replace(
+  //     `/production/dev-ops?location=${selectedLocations.join(",").toString()}`
+  //   )
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [selectedLocations])
 
   return (
     <div className="">

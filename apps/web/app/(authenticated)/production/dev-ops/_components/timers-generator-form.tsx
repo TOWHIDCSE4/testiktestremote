@@ -8,13 +8,15 @@ import useDevOpsTimers from "./_state"
 import { revalidateDevOpsTimers } from "./actions"
 
 type DevOpsTimerTypes = {
-  numberOfTimers: number
+  noOfTimers: number
   locationId: string
   startTime: number
-  endTimeRange: number[]
+  endTime: Date | null
   unitCycleTime: number[]
-  selectedMachineClasses: string[] | string
-  sessionName: string
+  machineClassIds: string[] | string
+  name: string
+  noOfAlerts: number
+  endTimeRange: number[]
 }
 
 const TimersGeneratorForm = () => {
@@ -34,17 +36,16 @@ const TimersGeneratorForm = () => {
 
   const devOpsTimers = useMutation({
     mutationFn: async (data: DevOpsTimerTypes) => {
-      if (!data.numberOfTimers) toast.error("Please provide number of timers")
+      if (!data.noOfTimers) toast.error("Please provide number of timers")
       if (!data.startTime) toast.error("Please provide start time")
-      if (!data.endTimeRange) toast.error("Please provide end time range")
+      if (!data.endTime) toast.error("Please provide end time range")
       if (!data.unitCycleTime) toast.error("Please provide unit cycle time")
-      if (!data.selectedMachineClasses)
-        toast.error("Please provide machine classes")
+      if (!data.machineClassIds) toast.error("Please provide machine classes")
       if (!data.locationId) toast.error("Please provide location id")
-      if (!data.sessionName) toast.error("Please provide session name")
+      if (!data.name) toast.error("Please provide session name")
 
       const token = Cookies.get("tfl")
-      const res = await fetch(`${API_URL}/api/timers/dev-ops-timers`, {
+      const res = await fetch(`${API_URL}/api/dev-ops/session-create`, {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -66,13 +67,15 @@ const TimersGeneratorForm = () => {
 
   const onSubmit = () => {
     devOpsTimers.mutate({
-      locationId,
-      numberOfTimers,
-      startTime,
-      endTimeRange,
-      unitCycleTime,
-      selectedMachineClasses,
-      sessionName,
+      name: sessionName,
+      endTime: null,
+      noOfTimers: numberOfTimers,
+      noOfAlerts: 3,
+      machineClassIds: selectedMachineClasses,
+      unitCycleTime: unitCycleTime,
+      startTime: startTime,
+      endTimeRange: endTimeRange,
+      locationId: locationId,
     })
   }
 

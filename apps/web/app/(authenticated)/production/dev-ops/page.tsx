@@ -9,7 +9,7 @@ import Alerts from "./_components/alerts"
 import Analytics from "./_components/analytics"
 import EndTimerRangeSlider from "./_components/end-timer-range-slider"
 import LocationsSelection from "./_components/locations-component"
-import { _Get_Machine_Classess } from "./_components/machine-classes"
+import { _Get_Machine_Classes } from "./_components/machine-classes"
 import PerformanceSection from "./_components/performance-section"
 import SelectMachineClass from "./_components/select-machine-class"
 import SliderComponent from "./_components/slider-component"
@@ -17,6 +17,8 @@ import TimersGeneratorForm from "./_components/timers-generator-form"
 import UnitCycleRange from "./_components/unit-cycle-range"
 import WithAuth from "./_components/withAuth"
 import SessionSimulation from "./_components/sessions-simulation"
+import DashboardMonitoring from "./_components/dashboard-monitoring"
+import { API_URL } from "../../../../helpers/constants"
 
 const Timers = dynamic(() => import("./_components/timers"))
 
@@ -25,16 +27,23 @@ export type T_Timer_Group_Types = {
   timers: T_Timer[]
 }
 
-const _Get_Timers_By_Location = cache(async (locationId: string[]) => {
+const _Get_Timers_by_User = cache(async () => {
   const cookiesStore = cookies()
   const token = cookiesStore.get("tfl")
-  const res = await fetch(
-    `${process.env.API_URL}/api/timers/dev-ops?locations=${locationId}`,
-    {
-      headers: { Authorization: `Bearer ${token?.value}` },
-      next: { tags: ["devOps-timers"] },
-    }
-  )
+  const res = await fetch(`${API_URL}/api/dev-ops/active-session-timers`, {
+    headers: { Authorization: `Bearer ${token?.value}` },
+    next: { tags: ["devOps-timers"] },
+  })
+  return (await res.json()) as T_DBReturn<T_Timer_Group_Types[]>
+})
+
+const _Get_Sessions_List = cache(async () => {
+  const cookiesStore = cookies()
+  const token = cookiesStore.get("tfl")
+  const res = await fetch(`${API_URL}/api/dev-ops/session-list`, {
+    headers: { Authorization: `Bearer ${token?.value}` },
+    next: { tags: ["devOps-timers"] },
+  })
   return (await res.json()) as T_DBReturn<T_Timer_Group_Types[]>
 })
 
@@ -45,46 +54,23 @@ interface Props {
 }
 
 const _Get_Locations = cache(async () => {
-  const response = await fetch(`${process.env.API_URL}/api/locations`)
+  const response = await fetch(`${API_URL}/api/locations`)
   return (await response.json()) as T_DBReturn<T_Location[]>
 })
 
-interface Is_Ids_Correct {
-  originlLocations: string[]
-  searchLocations: string[]
-}
-
-const isIdsCorrect = cache(
-  ({ originlLocations, searchLocations }: Is_Ids_Correct) => {
-    for (let i = 0; i < searchLocations.length; i++) {
-      if (originlLocations.includes(searchLocations[i])) return true
-    }
-    return false
-  }
-)
-
 const Page: React.FC<Props> = async ({ searchParams }) => {
-  // Get All Machine Classes
-  const machineClassess = await _Get_Machine_Classess()
-  // Get All Locations
-  const locations = await _Get_Locations()
+  // Get All Machine Classes and Locations and Timers
+  const [locations, machineClasses, timersGroups, sessionsList] =
+    await Promise.all([
+      _Get_Locations(),
+      _Get_Machine_Classes(),
+      _Get_Timers_by_User(),
+      _Get_Sessions_List(),
+    ])
 
-  // if locations is not exist in database then
-  // use will be redirect to location create form
-  if (!locations?.items) redirect("/create/location")
-
-  // is searchParams locations ids is correct
-  const isVerified = isIdsCorrect({
-    originlLocations: locations.items.map((l) => l._id) as string[],
-    searchLocations: searchParams?.location
-      ? searchParams?.location?.split(",")
-      : [],
-  })
-
-  // if client is provide incorrect location
   // ids or location searchParams key dose not exist
   // then he will redirected to correct url
-  if (!searchParams?.location || !isVerified) {
+  if (!searchParams || !searchParams?.location) {
     redirect(
       `/production/dev-ops?location=${encodeURI(
         locations.items
@@ -95,10 +81,6 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
     )
   }
 
-  const timersGroups = searchParams?.location
-    ? await _Get_Timers_By_Location([])
-    : undefined
-
   return (
     <WithAuth>
       <div className="bg-white shadow-md rounded-md ">
@@ -107,22 +89,24 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         <div className="flex flex-col md:flex-row justify-between items-center py-2 px-6">
           <div className="flex flex-col space-y-4">
             <LocationsSelection locations={locations} />
-            <SelectMachineClass machineClasses={machineClassess} />
+            <SelectMachineClass machineClasses={machineClasses} />
           </div>
           <SliderComponent />
           <div className="flex flex-col space-y-2">
             <EndTimerRangeSlider />
             <UnitCycleRange />
           </div>
-          {/* <EndTimerRangeSlider /> */}
           <TimersGeneratorForm />
         </div>
       </div>
       <Analytics />
       {timersGroups && <Timers timersGroups={timersGroups} />}
-      <SessionSimulation />
+      <div className="mt-20">
+        <SessionSimulation sessionsList={sessionsList} />
+      </div>
       <PerformanceSection />
       <Alerts />
+      <DashboardMonitoring />
     </WithAuth>
   )
 }
