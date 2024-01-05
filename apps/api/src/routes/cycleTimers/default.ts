@@ -107,7 +107,8 @@ export const addCycleTimer = async (req: Request, res: Response) => {
         })
         const currentProductionCycle =
           await ProductionCycleService.getCurrentRunningByLocationId(
-            timer?.locationId?._id
+            timer?.locationId?._id,
+            timeZone
           )
         if (!currentProductionCycle) {
           ProductionCycleService.startByLocation(

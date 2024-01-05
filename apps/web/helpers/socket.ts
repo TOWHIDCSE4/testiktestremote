@@ -1,6 +1,6 @@
 import Cookies from "js-cookie"
 import { io, Socket } from "socket.io-client"
-import { API_URL } from "./constants"
+import { NEXT_PUBLIC_API_URL } from "./constants"
 
 let socket: Socket
 
@@ -8,7 +8,7 @@ export const initializeSocket = () => {
   try {
     const token = Cookies.get("tfl")
 
-    const url = `${API_URL}?authorization=Bearer ${token}`
+    const url = `${NEXT_PUBLIC_API_URL}?authorization=Bearer ${token}`
 
     socket = io(url, { transports: ["websocket"] })
 

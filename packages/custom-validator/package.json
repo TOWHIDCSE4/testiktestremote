@@ -1,17 +1,19 @@
 {
   "name": "custom-validator",
   "version": "0.0.0",
-  "main": "./index.ts",
-  "types": "./index.ts",
   "license": "MIT",
+  "main": "./build/index.js",
+  "module": "build",
+  "types": "./build/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "zod": "^3.21.4",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
     "tsconfig": "*",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.2",
+    "zod": "^3.21.4"
   }
 }

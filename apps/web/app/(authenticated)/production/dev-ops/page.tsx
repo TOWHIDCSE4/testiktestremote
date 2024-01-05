@@ -29,7 +29,7 @@ const _Get_Timers_By_Location = cache(async (locationId: string[]) => {
   const cookiesStore = cookies()
   const token = cookiesStore.get("tfl")
   const res = await fetch(
-    `${process.env.API_URL}/api/timers/dev-ops?locations=${locationId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/timers/dev-ops?locations=${locationId}`,
     {
       headers: { Authorization: `Bearer ${token?.value}` },
       next: { tags: ["devOps-timers"] },
@@ -45,7 +45,9 @@ interface Props {
 }
 
 const _Get_Locations = cache(async () => {
-  const response = await fetch(`${process.env.API_URL}/api/locations`)
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/locations`
+  )
   return (await response.json()) as T_DBReturn<T_Location[]>
 })
 
