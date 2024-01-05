@@ -30,12 +30,12 @@ const LocationsSelection: React.FC<Props> = ({ locations }) => {
     )
   }
 
-  React.useEffect(() => {
-    router.replace(
-      `/production/dev-ops?location=${selectedLocations.join(",").toString()}`
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLocations])
+  // React.useEffect(() => {
+  //   router.replace(
+  //     `/production/dev-ops?location=${selectedLocations.join(",").toString()}`
+  //   )
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [selectedLocations])
 
   return (
     <div className="">
