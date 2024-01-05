@@ -107,7 +107,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         <Divider />
         <div className="flex flex-col md:flex-row justify-between items-center py-2 px-6">
           <div className="flex flex-col space-y-4">
-            {/* <LocationsSelection locations={locations} /> */}
+            <LocationsSelection locations={locations} />
             <SelectMachineClass machineClasses={machineClassess} />
           </div>
           <SliderComponent />

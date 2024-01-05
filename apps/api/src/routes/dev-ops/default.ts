@@ -53,6 +53,28 @@ export const timersBySession = async (req: Request, res: Response) => {
   }
 }
 
+export const getUserSessions = async (req: Request, res: Response) => {
+  try {
+    const sessionList = await devOpsTimers.find({
+      createdBy: res.locals.user._id,
+    })
+    res.json({
+      error: false,
+      items: sessionList,
+      message: null,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
+    res.json({
+      error: true,
+      message: message,
+      item: null,
+      itemCount: null,
+    })
+  }
+}
+
 export const addSession = async (req: Request, res: Response) => {
   const {
     name,
