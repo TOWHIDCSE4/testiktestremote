@@ -1,7 +1,7 @@
 import { Socket, io } from "socket.io-client"
 import { create } from "zustand"
 import { combine } from "zustand/middleware"
-import { API_URL } from "../helpers/constants"
+import { NEXT_PUBLIC_API_URL } from "../helpers/constants"
 import * as Sentry from "@sentry/nextjs"
 
 const InitialState = {
@@ -16,7 +16,7 @@ export const useSocket = create(
 
       if (storeInstance) return
 
-      const url = `${API_URL}?authorization=Bearer ${token}`
+      const url = `${NEXT_PUBLIC_API_URL}?authorization=Bearer ${token}`
       const socket = io(url, { transports: ["websocket"] })
       let reconnectInterval: any = null
 

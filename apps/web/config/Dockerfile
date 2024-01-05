@@ -5,10 +5,12 @@ FROM node:18-alpine AS base
 
 ARG MEDIA_URL
 ENV MEDIA_URL ${MEDIA_URL}
-ARG API_URL
-ENV API_URL ${API_URL}
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL ${NEXT_PUBLIC_API_URL}
 ARG SENTRY_WEB_DSN
 ENV SENTRY_WEB_DSN ${SENTRY_WEB_DSN}
+
+RUN npm install -g turbo
 
 
 FROM base AS builder
@@ -19,7 +21,7 @@ RUN apk update
 WORKDIR /app
 # Assuming 'turbo' is a global dependency you want to use, installing it globally using npm
 COPY . .
-RUN npx turbo prune web --docker
+RUN turbo prune web --docker
 
 # Add lockfile and package.json's of isolated subworkspace
 FROM base AS installer
@@ -44,10 +46,11 @@ COPY turbo.json turbo.json
 # ARG TURBO_TOKEN
 # ENV TURBO_TOKEN=$TURBO_TOKEN
 
-RUN npx turbo build --filter=web
+RUN turbo build --filter=web
 
 FROM base AS runner
 WORKDIR /app
+ENV NODE_ENV production
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs

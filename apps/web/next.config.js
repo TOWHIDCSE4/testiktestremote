@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 const { existsSync } = require("fs")
+const path = require("path")
 require("dotenv").config({
   path: existsSync("../../.env") ? "../../.env" : "../../../.env",
 })
@@ -9,6 +10,11 @@ require("dotenv").config({
 module.exports = {
   experimental: {
     serverActions: true,
+    outputFileTracingRoot: path.join(__dirname, "../../"),
+  },
+  output: "standalone",
+  eslint: {
+    ignoreDuringBuilds: true,
   },
   async rewrites() {
     return [
@@ -20,14 +26,9 @@ module.exports = {
         source: "/files/:path*",
         destination: `${process.env.MEDIA_URL}/files/:path*`,
       },
-      {
-        source: "/api/:path*",
-        destination: `${process.env.API_URL}/api/:path*`,
-      },
     ]
   },
   reactStrictMode: true,
-  transpilePackages: ["ui"],
   images: {
     remotePatterns: [
       {
@@ -50,7 +51,7 @@ module.exports = {
   },
   env: {
     MEDIA_KEY: process.env.MEDIA_KEY,
-    API_URL: process.env.API_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     SENTRY_WEB_DSN: process.env.SENTRY_WEB_DSN,
   },
 }

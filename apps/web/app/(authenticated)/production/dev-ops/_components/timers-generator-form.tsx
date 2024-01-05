@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 import { useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
-import { API_URL } from "../../../../../helpers/constants"
+import { NEXT_PUBLIC_API_URL } from "../../../../../helpers/constants"
 import useDevOpsTimers from "./_state"
 import { revalidateDevOpsTimers } from "./actions"
 
@@ -44,14 +44,17 @@ const TimersGeneratorForm = () => {
       if (!data.sessionName) toast.error("Please provide session name")
 
       const token = Cookies.get("tfl")
-      const res = await fetch(`${API_URL}/api/timers/dev-ops-timers`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "content-type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const res = await fetch(
+        `${NEXT_PUBLIC_API_URL}/api/timers/dev-ops-timers`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       return await res.json()
     },
     onSuccess: () => {
