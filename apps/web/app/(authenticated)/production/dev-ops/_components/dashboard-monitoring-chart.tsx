@@ -2,18 +2,18 @@
 import { AreaChart } from "@tremor/react"
 
 const chartdata3 = [
-  { date: "Jan", "Distance Running": 500 },
-  { date: "Feb", "Distance Running": 300 },
-  { date: "Mar", "Distance Running": 245 },
-  { date: "Apr", "Distance Running": 444 },
-  { date: "May", "Distance Running": 555 },
-  { date: "Jun", "Distance Running": 666 },
-  { date: "Jul", "Distance Running": 333 },
-  { date: "Aug", "Distance Running": 300 },
-  { date: "Sep", "Distance Running": 600 },
-  { date: "Oct", "Distance Running": 300 },
-  { date: "Nov", "Distance Running": 555 },
-  { date: "Dec", "Distance Running": 500 },
+  { date: "Jan", "Distance Running": 300 },
+  { date: "Feb", "Distance Running": 333 },
+  { date: "Mar", "Distance Running": 600 },
+  { date: "Apr", "Distance Running": 399 },
+  { date: "May", "Distance Running": 422 },
+  { date: "Jun", "Distance Running": 500 },
+  { date: "Jul", "Distance Running": 488 },
+  { date: "Aug", "Distance Running": 511 },
+  { date: "Sep", "Distance Running": 599 },
+  { date: "Oct", "Distance Running": 400 },
+  { date: "Nov", "Distance Running": 333 },
+  { date: "Dec", "Distance Running": 366 },
 ]
 
 const DashboardMonitoringChart = () => {

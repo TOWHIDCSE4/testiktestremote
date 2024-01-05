@@ -30,7 +30,7 @@ export type T_Timer_Group_Types = {
 const _Get_Timers_by_User = cache(async () => {
   const cookiesStore = cookies()
   const token = cookiesStore.get("tfl")
-  const res = await fetch(`${API_URL}/api/timers/dev-ops`, {
+  const res = await fetch(`${API_URL}/api/dev-ops/active-session-timers`, {
     headers: { Authorization: `Bearer ${token?.value}` },
     next: { tags: ["devOps-timers"] },
   })

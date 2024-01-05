@@ -1,4 +1,5 @@
 export const generateDevOpsTimers = ({
+  sessionId,
   numberOfTimers,
   locationId,
   machineClassIds,
@@ -16,6 +17,7 @@ export const generateDevOpsTimers = ({
   unitCycleTime: number[]
   createdBy: string
   sessionName: string
+  sessionId: any
 }) => {
   if (numberOfTimers <= 0 && !locationId) return
 
@@ -31,9 +33,9 @@ export const generateDevOpsTimers = ({
             (endTimeRange[0] * 60000 - endTimeRange[1] * 60000 + 1)
         ) +
         endTimeRange[1] * 60000
+
       const randomStartTime =
         Date.now() + Math.floor(Math.random() * (startTime - 1000) + 1000)
-
       const end = start + randomEndTime
 
       const randomUnitCycleTime =
@@ -53,6 +55,7 @@ export const generateDevOpsTimers = ({
         status: "STOP",
         cycleTime: randomUnitCycleTime,
         units: 0,
+        sessionId,
         startAt: new Date(randomStartTime),
         endAt: new Date(end),
         updatedAt: Date.now(),

@@ -22,7 +22,7 @@ const Simulation: React.FC<Props> = ({
             <div className="flex items-center justify-between p-4 border-l-4 border-gray-300 text-gray-800 bg-gray-100">
               <div className="flex items-center">
                 <BsClockHistory className="w-5 h-5 mr-2" />
-                <h3 className="text-md font-semibold line-clamp-1 w-56 truncate">
+                <h3 className="text-md font-semibold line-clamp-1 w-56 ellipsis mr-10">
                   {heading}
                 </h3>
                 <div className="text-sm line-clamp-1">{description}</div>
