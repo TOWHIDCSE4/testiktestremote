@@ -26,14 +26,14 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: "dev"
-    # env:
-    #   API_PORT: ${{ env.API_PORT }}
-    #   ORIGINS: ${{ env.ORIGINS }}
-    #   ENCRYPT_KEY: ${{ env.ENCRYPT_KEY }}
-    #   SIGN_KEY: ${{ env.SIGN_KEY }}
-    #   MONGO_URL: ${{ env.MONGO_URL }}
-    #   REDIS_URL: ${{ env.REDIS_URL }}
-    #   SENTRY_DSN: ${{ env.SENTRY_DSN }}
+    env:
+      API_PORT: ${{ vars.API_PORT }}
+      ORIGINS: ${{ vars.ORIGINS }}
+      ENCRYPT_KEY: ${{ vars.ENCRYPT_KEY }}
+      SIGN_KEY: ${{ vars.SIGN_KEY }}
+      MONGO_URL: ${{ vars.MONGO_URL }}
+      REDIS_URL: ${{ vars.REDIS_URL }}
+      SENTRY_DSN: ${{ vars.SENTRY_DSN }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
@@ -64,8 +64,8 @@ jobs:
     needs: build_and_push
     environment:
       name: "dev"
-    # env:
-    #   API_PORT: ${{ env.API_PORT }}
+    env:
+      API_PORT: ${{ vars.API_PORT }}
     steps:
       - name: Set the IMAGE_TAG environment variable
         id: set_image_tag
@@ -82,9 +82,9 @@ jobs:
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Stop running container
-            docker stop $IMAGE_NAME
+            docker stop $IMAGE_NAME || true
             # Remove old container
-            docker rm $IMAGE_NAME
+            docker rm $IMAGE_NAME || true
             # Run a new container from a new image
             docker run -d \
             -p $API_PORT:$API_PORT
