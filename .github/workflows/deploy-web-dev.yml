@@ -28,11 +28,11 @@ jobs:
     environment:
       name: "dev"
     env:
-      PORT: ${{ vars.PORT }}
-      NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
-      MEDIA_URL: ${{ vars.MEDIA_URL }}
-      SENTRY_WEB_DSN: ${{ vars.SENTRY_WEB_DSN }}
-      MEDIA_KEY: ${{ vars.MEDIA_KEY }}
+      PORT: ${{ secrets.PORT }}
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+      MEDIA_URL: ${{ secrets.MEDIA_URL }}
+      SENTRY_WEB_DSN: ${{ secrets.SENTRY_WEB_DSN }}
+      MEDIA_KEY: ${{ secrets.MEDIA_KEY }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
@@ -64,7 +64,7 @@ jobs:
     environment:
       name: "dev"
     env:
-      PORT: ${{ vars.PORT }}
+      PORT: ${{ secrets.PORT }}
     steps:
       - name: Set the IMAGE_TAG environment variable
         id: set_image_tag
