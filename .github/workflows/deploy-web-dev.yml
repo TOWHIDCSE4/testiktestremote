@@ -27,12 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: "dev"
-    # env:
-    #   PORT: ${{ vars.PORT }}
-    #   NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
-    #   MEDIA_URL: ${{ vars.MEDIA_URL }}
-    #   SENTRY_WEB_DSN: ${{ vars.SENTRY_WEB_DSN }}
-    #   MEDIA_KEY: ${{ vars.MEDIA_KEY }}
+    env:
+      PORT: ${{ vars.PORT }}
+      NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+      MEDIA_URL: ${{ vars.MEDIA_URL }}
+      SENTRY_WEB_DSN: ${{ vars.SENTRY_WEB_DSN }}
+      MEDIA_KEY: ${{ vars.MEDIA_KEY }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
@@ -63,8 +63,8 @@ jobs:
     needs: build_and_push
     environment:
       name: "dev"
-    # env:
-    #   PORT: ${{ vars.PORT }}
+    env:
+      PORT: ${{ vars.PORT }}
     steps:
       - name: Set the IMAGE_TAG environment variable
         id: set_image_tag
@@ -81,9 +81,9 @@ jobs:
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Stop running container
-            docker stop $IMAGE_NAME
+            docker stop $IMAGE_NAME || true
             # Remove old container
-            docker rm $IMAGE_NAME
+            docker rm $IMAGE_NAME || true
             # Run a new container from a new image
             docker run -d \
             -p $PORT:$PORT
