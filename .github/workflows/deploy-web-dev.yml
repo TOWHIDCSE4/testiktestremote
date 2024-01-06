@@ -59,7 +59,7 @@ jobs:
         run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
 
       - name: Init Garbage Collect
-        run: doctl registry garbage-collection start
+        run: doctl registry garbage-collection start --force
 
   deploy:
     runs-on: ubuntu-latest
