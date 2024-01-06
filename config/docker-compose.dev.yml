@@ -11,7 +11,7 @@ services:
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
         - SENTRY_WEB_DSN=${SENTRY_WEB_DSN}
         - MEDIA_KEY=${MEDIA_KEY}
-        - PORT=${PORT}
+        - PORT=${FRONTEND_PORT}
   api:
     image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
     build:
