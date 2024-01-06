@@ -26,13 +26,13 @@ jobs:
     environment:
       name: "dev"
     env:
-      API_PORT: ${{ environment.API_PORT }}
-      ORIGINS: ${{ environment.ORIGINS }}
-      ENCRYPT_KEY: ${{ environment.ENCRYPT_KEY }}
-      SIGN_KEY: ${{ environment.SIGN_KEY }}
-      MONGO_URL: ${{ environment.MONGO_URL }}
-      REDIS_URL: ${{ environment.REDIS_URL }}
-      SENTRY_DSN: ${{ environment.SENTRY_DSN }}
+      API_PORT: ${{ vars.API_PORT }}
+      ORIGINS: ${{ vars.ORIGINS }}
+      ENCRYPT_KEY: ${{ vars.ENCRYPT_KEY }}
+      SIGN_KEY: ${{ vars.SIGN_KEY }}
+      MONGO_URL: ${{ vars.MONGO_URL }}
+      REDIS_URL: ${{ vars.REDIS_URL }}
+      SENTRY_DSN: ${{ vars.SENTRY_DSN }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
@@ -60,7 +60,7 @@ jobs:
     environment:
       name: "dev"
     env:
-      API_PORT: ${{ environment.API_PORT }}
+      API_PORT: ${{ vars.API_PORT }}
     steps:
       - name: Deploy to Digital Ocean droplet via SSH action
         uses: appleboy/ssh-action@v0.1.3

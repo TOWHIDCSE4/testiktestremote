@@ -26,11 +26,11 @@ jobs:
     environment:
       name: "dev"
     env:
-      PORT: ${{ environment.PORT }}
-      NEXT_PUBLIC_API_URL: ${{ environment.NEXT_PUBLIC_API_URL }}
-      MEDIA_URL: ${{ environment.MEDIA_URL }}
-      SENTRY_WEB_DSN: ${{ environment.SENTRY_WEB_DSN }}
-      MEDIA_KEY: ${{ environment.MEDIA_KEY }}
+      PORT: ${{ vars.PORT }}
+      NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+      MEDIA_URL: ${{ vars.MEDIA_URL }}
+      SENTRY_WEB_DSN: ${{ vars.SENTRY_WEB_DSN }}
+      MEDIA_KEY: ${{ vars.MEDIA_KEY }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
@@ -58,7 +58,7 @@ jobs:
     environment:
       name: "dev"
     env:
-      PORT: ${{ environment.PORT }}
+      PORT: ${{ vars.PORT }}
     steps:
       - name: Deploy to Digital Ocean droplet via SSH action
         uses: appleboy/ssh-action@v0.1.3
