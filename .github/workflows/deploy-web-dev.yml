@@ -28,7 +28,7 @@ jobs:
     environment:
       name: "dev"
     env:
-      PORT: ${{ vars.PORT }}
+      FRONTEND_PORT: ${{ vars.FRONTEND_PORT }}
       NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
       MEDIA_URL: ${{ vars.MEDIA_URL }}
       SENTRY_WEB_DSN: ${{ vars.SENTRY_WEB_DSN }}
@@ -64,7 +64,7 @@ jobs:
     environment:
       name: "dev"
     env:
-      PORT: ${{ vars.PORT }}
+      FRONTEND_PORT: ${{ vars.FRONTEND_PORT }}
     steps:
       - name: Set the IMAGE_TAG environment variable
         id: set_image_tag
@@ -76,7 +76,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA,PORT,IMAGE_TAG
+          envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA,FRONTEND_PORT,IMAGE_TAG
           script: |
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
@@ -86,7 +86,7 @@ jobs:
             docker ps -q --filter "name=$IMAGE_NAME" | grep -q . && docker rm $IMAGE_NAME
             # Run a new container from a new image
             docker run -d \
-            -p $PORT:$PORT \
+            -p $FRONTEND_PORT:$FRONTEND_PORT \
             --restart always \
             --name $IMAGE_NAME \
             $(echo $REGISTRY)/$IMAGE_NAME:$IMAGE_TAG
