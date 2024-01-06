@@ -2,8 +2,7 @@ version: "3"
 
 services:
   web:
-    container_name: web
-    image: apms-web-dev
+    image: ${REGISTRY}/${IMAGE_NAME}
     build:
       context: ..
       dockerfile: ./apps/web/config/Dockerfile
@@ -14,8 +13,7 @@ services:
         - MEDIA_KEY=${MEDIA_KEY}
         - PORT=${PORT}
   api:
-    container_name: api
-    image: apms-api-dev
+    image: ${REGISTRY}/${IMAGE_NAME}
     build:
       context: ..
       dockerfile: ./apps/api/config/Dockerfile

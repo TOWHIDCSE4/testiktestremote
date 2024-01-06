@@ -16,7 +16,7 @@ on:
         required: true
 
 env:
-  REGISTRY: "registry.digitalocean.com"
+  REGISTRY: "registry.digitalocean.com/apms"
   IMAGE_NAME: "apms-api-dev"
   SERVICE_NAME: "api"
   CONFIG_NAME: "docker-compose.dev.yml"
