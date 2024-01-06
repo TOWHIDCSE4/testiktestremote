@@ -27,12 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: "dev"
-    env:
-      PORT: ${{ secrets.PORT }}
-      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-      MEDIA_URL: ${{ secrets.MEDIA_URL }}
-      SENTRY_WEB_DSN: ${{ secrets.SENTRY_WEB_DSN }}
-      MEDIA_KEY: ${{ secrets.MEDIA_KEY }}
+    # env:
+    #   PORT: ${{ vars.PORT }}
+    #   NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+    #   MEDIA_URL: ${{ vars.MEDIA_URL }}
+    #   SENTRY_WEB_DSN: ${{ vars.SENTRY_WEB_DSN }}
+    #   MEDIA_KEY: ${{ vars.MEDIA_KEY }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
@@ -63,8 +63,8 @@ jobs:
     needs: build_and_push
     environment:
       name: "dev"
-    env:
-      PORT: ${{ secrets.PORT }}
+    # env:
+    #   PORT: ${{ vars.PORT }}
     steps:
       - name: Set the IMAGE_TAG environment variable
         id: set_image_tag
@@ -75,6 +75,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
           key: ${{ secrets.SSHKEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA,PORT,IMAGE_TAG
