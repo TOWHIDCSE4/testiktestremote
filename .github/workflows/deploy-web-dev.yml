@@ -37,6 +37,10 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v2
 
+      - name: Set the IMAGE_TAG environment variable
+        id: set_image_tag
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
       - name: Build container image
         run: docker-compose -f ./config/${{ env.CONFIG_NAME }} build ${{ env.SERVICE_NAME }}
 
@@ -62,6 +66,10 @@ jobs:
     env:
       PORT: ${{ vars.PORT }}
     steps:
+      - name: Set the IMAGE_TAG environment variable
+        id: set_image_tag
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
       - name: Deploy to Digital Ocean droplet via SSH action
         uses: appleboy/ssh-action@v0.1.3
         with:
