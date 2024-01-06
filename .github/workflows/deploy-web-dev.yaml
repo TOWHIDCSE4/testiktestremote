@@ -1,12 +1,12 @@
-name: CI
+name: FRONTEND CI/CD DEV
 
 on:
   push:
     branches:
       - dev-v2
-  paths:
-    - apps/web/**
-    - packages/**
+    paths:
+      - apps/web/**
+      - packages/**
   workflow_dispatch:
     inputs:
       version:
@@ -24,17 +24,17 @@ jobs:
     environment:
       name: "dev"
     env:
-      - PORT: ${{ environment.PORT }}
-      - NEXT_PUBLIC_API_URL: ${{ environment.NEXT_PUBLIC_API_URL }}
-      - MEDIA_URL: ${{ environment.MEDIA_URL }}
-      - SENTRY_WEB_DSN: ${{ environment.SENTRY_WEB_DSN }}
-      - MEDIA_KEY: ${{ environment.MEDIA_KEY }}
+      PORT: ${{ environment.PORT }}
+      NEXT_PUBLIC_API_URL: ${{ environment.NEXT_PUBLIC_API_URL }}
+      MEDIA_URL: ${{ environment.MEDIA_URL }}
+      SENTRY_WEB_DSN: ${{ environment.SENTRY_WEB_DSN }}
+      MEDIA_KEY: ${{ environment.MEDIA_KEY }}
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
 
       - name: Build container image
-        run: docker compose build $(echo $SERVICE_NAME)
+        run: docker compose build ${{ env.SERVICE_NAME }}
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -45,10 +45,10 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       - name: Remove all old images
-        run: if [ ! -z "$(doctl registry repository list | grep "$(echo $IMAGE_NAME)")" ]; then doctl registry repository delete-manifest $(echo $IMAGE_NAME) $(doctl registry repository list-tags $(echo $IMAGE_NAME) | grep -o "sha.*") --force; else echo "No repository"; fi
+        run: if [ ! -z "$(doctl registry repository list | grep "${{ env.IMAGE_NAME }}")" ]; then doctl registry repository delete-manifest ${{ env.IMAGE_NAME }} $(doctl registry repository list-tags ${{ env.IMAGE_NAME }} | grep -o "sha.*") --force; else echo "No repository"; fi
 
       - name: Push image to DigitalOcean Container Registry
-        run: docker push $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$(echo $GITHUB_SHA | head -c7)
 
   deploy:
     runs-on: ubuntu-latest
@@ -65,17 +65,17 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHKEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
-          envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA
+          envs: ${{ env.IMAGE_NAME}},${{ env.REGISTRY }},{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA
           script: |
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Stop running container
-            docker stop $(echo $IMAGE_NAME)
+            docker stop ${{ env.IMAGE_NAME }}
             # Remove old container
-            docker rm $(echo $IMAGE_NAME)
+            docker rm ${{ env.IMAGE_NAME }}
             # Run a new container from a new image
             docker run -d \
             -p $(echo $PORT):$(echo $PORT)\
             --restart always \
-            --name $(echo $IMAGE_NAME) \
-            $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7)
+            --name ${{ env.IMAGE_NAME }} \
+            $(echo $REGISTRY)/${{ env.IMAGE_NAME }}:$(echo $GITHUB_SHA | head -c7)
