@@ -81,12 +81,12 @@ jobs:
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Stop running container
-            docker stop $IMAGE_NAME || true
+            docker ps -q --filter "name=$IMAGE_NAME" | grep -q . && docker stop $IMAGE_NAME
             # Remove old container
-            docker rm $IMAGE_NAME || true
+            docker ps -q --filter "name=$IMAGE_NAME" | grep -q . && docker rm $IMAGE_NAME
             # Run a new container from a new image
             docker run -d \
-            -p $PORT:$PORT
+            -p $PORT:$PORT \
             --restart always \
             --name $IMAGE_NAME \
             $(echo $REGISTRY)/$IMAGE_NAME:$IMAGE_TAG
