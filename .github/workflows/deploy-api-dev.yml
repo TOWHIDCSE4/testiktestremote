@@ -53,7 +53,7 @@ jobs:
         run: if [ ! -z "$(doctl registry repository list | grep "${{ env.IMAGE_NAME }}")" ]; then doctl registry repository delete-manifest ${{ env.IMAGE_NAME }} $(doctl registry repository list-tags ${{ env.IMAGE_NAME }} | grep -o "sha.*") --force; else echo "No repository"; fi
 
       - name: Push image to DigitalOcean Container Registry
-        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$(echo $GITHUB_SHA | head -c7)
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${GITHUB_SHA::7}
 
   deploy:
     runs-on: ubuntu-latest
@@ -70,17 +70,17 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHKEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
-          envs: ${{ env.IMAGE_NAME}},${{ env.REGISTRY }},{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA
+          envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA,API_PORT
           script: |
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Stop running container
-            docker stop ${{ env.IMAGE_NAME }}
+            docker stop $IMAGE_NAME
             # Remove old container
-            docker rm ${{ env.IMAGE_NAME }}
+            docker rm $IMAGE_NAME
             # Run a new container from a new image
             docker run -d \
-            -p $(echo $API_PORT):$(echo $API_PORT)\
+            -p $API_PORT:$API_PORT
             --restart always \
-            --name ${{ env.IMAGE_NAME }} \
-            $(echo $REGISTRY)/${{ env.IMAGE_NAME }}:$(echo $GITHUB_SHA | head -c7)
+            --name $IMAGE_NAME \
+            $(echo $REGISTRY)/$IMAGE_NAME:$(echo $GITHUB_SHA | head -c7)
