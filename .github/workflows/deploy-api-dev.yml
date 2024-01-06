@@ -20,7 +20,6 @@ env:
   IMAGE_NAME: "apms-api-dev"
   SERVICE_NAME: "api"
   CONFIG_NAME: "docker-compose.dev.yml"
-  IMAGE_TAG: ${GITHUB_SHA::7}
 
 jobs:
   build_and_push:
@@ -38,6 +37,10 @@ jobs:
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2
+
+      - name: Set the IMAGE_TAG environment variable
+        id: set_image_tag
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Build container image
         run: docker-compose -f ./config/${{ env.CONFIG_NAME }} build ${{ env.SERVICE_NAME }}
@@ -64,6 +67,10 @@ jobs:
     env:
       API_PORT: ${{ vars.API_PORT }}
     steps:
+      - name: Set the IMAGE_TAG environment variable
+        id: set_image_tag
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
       - name: Deploy to Digital Ocean droplet via SSH action
         uses: appleboy/ssh-action@v0.1.3
         with:
