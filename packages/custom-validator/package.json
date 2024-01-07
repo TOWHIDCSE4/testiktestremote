@@ -7,10 +7,9 @@
   "types": "./build/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint --fix --quiet \"**/*.ts*\""
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
     "eslint-config-custom": "*",
     "tsconfig": "*",
     "typescript": "^4.5.2",
