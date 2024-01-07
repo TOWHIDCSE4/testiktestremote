@@ -90,5 +90,6 @@ jobs:
             -p $FRONTEND_PORT:$FRONTEND_PORT \
             --restart always \
             --name $IMAGE_NAME \
-            docker image prune -a -f
             $(echo $REGISTRY)/$IMAGE_NAME:$IMAGE_TAG
+            # prune old images
+            docker image prune -a -f
