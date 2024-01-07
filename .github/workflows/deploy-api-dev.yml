@@ -90,6 +90,7 @@ jobs:
             docker run -d \
             -p $API_PORT:$API_PORT \
             --restart always \
+            --network=caddy-net \
             --name $IMAGE_NAME \
             $(echo $REGISTRY)/$IMAGE_NAME:$IMAGE_TAG
             # prune old images
