@@ -91,4 +91,5 @@ jobs:
             -p $API_PORT:$API_PORT \
             --restart always \
             --name $IMAGE_NAME \
+            docker image prune -a -f
             $(echo $REGISTRY)/$IMAGE_NAME:$IMAGE_TAG
