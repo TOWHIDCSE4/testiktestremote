@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build": "turbo run build --no-cache",
+    "check:prettier": "prettier --check --write \"**/*.{ts,tsx,md}\"",
     "dev": "turbo run dev",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
