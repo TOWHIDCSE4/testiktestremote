@@ -83,9 +83,9 @@ jobs:
             # Login to registry
             docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
             # Stop running container
-            docker ps -q --filter "name=$IMAGE_NAME" | xargs -r docker stop
+            docker stop $IMAGE_NAME || true
             # Remove old container
-            docker ps -q --filter "name=$IMAGE_NAME" | xargs -r docker rm
+            docker rm $IMAGE_NAME || true
             # Run a new container from a new image
             docker run -d \
             -p $API_PORT:$API_PORT \
