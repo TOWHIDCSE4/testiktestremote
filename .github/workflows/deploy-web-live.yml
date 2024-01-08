@@ -1,0 +1,97 @@
+name: FRONTEND CI/CD LIVE
+
+on:
+  push:
+    branches:
+      - live-2.0
+    paths:
+      - apps/web/**
+      - packages/**
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Image version"
+        required: true
+
+env:
+  REGISTRY: "registry.digitalocean.com/apms"
+  IMAGE_NAME: "apms-web-live"
+  SERVICE_NAME: "web"
+  CONFIG_NAME: "docker-compose.yml"
+  IMAGE_TAG: ${GITHUB_SHA::7}
+
+jobs:
+  build_and_push:
+    name: Build and push frontend to live
+    runs-on: ubuntu-latest
+    environment:
+      name: "live"
+    env:
+      FRONTEND_PORT: ${{ vars.FRONTEND_PORT }}
+      NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+      MEDIA_URL: ${{ vars.MEDIA_URL }}
+      SENTRY_WEB_DSN: ${{ vars.SENTRY_WEB_DSN }}
+      MEDIA_KEY: ${{ vars.MEDIA_KEY }}
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+
+      - name: Set the IMAGE_TAG environment variable
+        id: set_image_tag
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Build container image
+        run: docker-compose -f ./config/${{ env.CONFIG_NAME }} build ${{ env.SERVICE_NAME }}
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Remove all old images
+        run: if [ ! -z "$(doctl registry repository list | grep "${{ env.IMAGE_NAME }}")" ]; then doctl registry repository delete-manifest ${{ env.IMAGE_NAME }} $(doctl registry repository list-tags ${{ env.IMAGE_NAME }} | grep -o "sha.*") --force; else echo "No repository"; fi
+
+      - name: Push image to DigitalOcean Container Registry
+        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+  deploy:
+    name: Deploy frontend to live
+    runs-on: ubuntu-latest
+    needs: build_and_push
+    environment:
+      name: "live"
+    env:
+      FRONTEND_PORT: ${{ vars.FRONTEND_PORT }}
+    steps:
+      - name: Set the IMAGE_TAG environment variable
+        id: set_image_tag
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Deploy to Digital Ocean droplet via SSH action
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA,FRONTEND_PORT,IMAGE_TAG
+          script: |
+            echo $IMAGE_NAME
+            # Login to registry
+            docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
+            # Stop running container
+            docker stop $IMAGE_NAME || true
+            # Remove old container
+            docker rm $IMAGE_NAME || true
+            # Run a new container from a new image
+            docker run -d \
+            -p $FRONTEND_PORT:$FRONTEND_PORT \
+            --restart always \
+            --network=caddy-net \
+            --name $IMAGE_NAME \
+            $(echo $REGISTRY)/$IMAGE_NAME:$IMAGE_TAG
+            # prune old images
+            docker image prune -a -f
+            echo "Build Successful"
