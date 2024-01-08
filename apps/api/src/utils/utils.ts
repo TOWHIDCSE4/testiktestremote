@@ -42,10 +42,13 @@ export const generateDevOpsTimers = ({
         Math.floor(Math.random() * (unitCycleTime[0] - unitCycleTime[1] + 1)) +
         unitCycleTime[1]
 
+      const randomMachineClassId =
+        machineClassIds[Math.floor(Math.random() * machineClassIds.length)]
+
       bulkData.push({
         factoryId: "64d5816bb996589a945a6405",
         machineId: "64d5816bb996589a945a6405",
-        machineClassId: machineClassIds[j],
+        machineClassId: randomMachineClassId,
         partId: "64d5816bb996589a945a6405",
         locationId: locationId.split(",")[i],
         operatorName: `Operator ${i + j}`,
