@@ -7,8 +7,6 @@ on:
     paths:
       - apps/api/**
       - packages/**
-      - .github/**
-      - config/**
   workflow_dispatch:
     inputs:
       version:
@@ -19,7 +17,7 @@ env:
   REGISTRY: "registry.digitalocean.com/apms"
   IMAGE_NAME: "apms-api-dev"
   SERVICE_NAME: "api"
-  CONFIG_NAME: "docker-compose.dev.yml"
+  CONFIG_NAME: "docker-compose.yml"
 
 jobs:
   build_and_push:
