@@ -5,6 +5,7 @@ import TrackerDetails from "./Details"
 import { usePathname } from "next/navigation"
 import ProductionTrackerBar from "../../../../../shared/graphs/ProductionTrackerBar"
 import MachineProductionTracker from "../../../../../shared/graphs/MachineProductionTracker"
+import isDev from "../../../../../../helpers/isDev"
 
 const Footer = ({
   page,
@@ -40,14 +41,17 @@ const Footer = ({
         }`}
       >
         <div>
-          <div className=" px-8 flex relative  border-t pt-2">
-            <div className="flex-shrink  w-[50%]">
-              <ProductionTrackerBar />
+          {isDev && (
+            <div className=" px-8 flex relative  border-t pt-2">
+              <div className="flex-shrink  w-[50%]">
+                <ProductionTrackerBar />
+              </div>
+              <div className="flex-shrink  w-[50%]">
+                <MachineProductionTracker machineClassId={machineClassId} />
+              </div>
             </div>
-            <div className="flex-shrink  w-[50%]">
-              <MachineProductionTracker machineClassId={machineClassId} />
-            </div>
-          </div>
+          )}
+
           <TrackerDetails
             page={page}
             setPage={setPage}

@@ -53,6 +53,7 @@ module.exports = {
     MEDIA_KEY: process.env.MEDIA_KEY,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     SENTRY_WEB_DSN: process.env.SENTRY_WEB_DSN,
+    NEXT_PUBLIC_ENV_NAME: process.env.ENV_NAME,
   },
 }
 
