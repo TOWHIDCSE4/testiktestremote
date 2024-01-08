@@ -5,12 +5,15 @@ import combineClasses from "../helpers/combineClasses"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import path from "path"
+import isDev from "../helpers/isDev"
 
 type AccordionProps = {
   name: string
   slug: string
+  showOnLive?: boolean
   children: {
     name: string
+    showOnLive?: boolean
     href: string
   }[]
 }
@@ -22,6 +25,10 @@ const Accordion = (props: {
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const willShow =
+    !isDev && typeof props.item.showOnLive === "boolean"
+      ? props.item.showOnLive
+      : true
 
   useEffect(() => {
     const firstPath = pathname.split("/")[1]
@@ -42,6 +49,10 @@ const Accordion = (props: {
       setIsOpen(false)
     }
   }, [props.activePage])
+
+  if (!willShow) {
+    return null
+  }
 
   return (
     <div
@@ -76,6 +87,14 @@ const Accordion = (props: {
       {isOpen && (
         <div className="mt-1 ml-4 px-2">
           {props.item.children.map((subItem, index) => {
+            const willShow =
+              !isDev && typeof subItem.showOnLive === "boolean"
+                ? subItem.showOnLive
+                : true
+
+            if (!willShow) {
+              return null
+            }
             return (
               <div key={index} className="flex items-center">
                 {pathname === subItem.href && (
