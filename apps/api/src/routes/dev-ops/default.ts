@@ -10,6 +10,7 @@ import { ZDevOpsSession } from "custom-validator"
 import DevOpsTimers from "../../models/devOpsTimers"
 import { generateDevOpsTimers } from "../../utils/utils"
 import devOpsTimers from "../../models/devOpsTimers"
+import machineClasses from "../../models/machineClasses"
 
 export const sessionList = async (req: Request, res: Response) => {
   try {
@@ -40,6 +41,48 @@ export const timersBySession = async (req: Request, res: Response) => {
     res.json({
       error: false,
       items: sessionList,
+      message: null,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
+    res.json({
+      error: true,
+      message: message,
+      item: null,
+      itemCount: null,
+    })
+  }
+}
+
+export const timersByMachineClass = async (req: Request, res: Response) => {
+  try {
+    const session = await devOpsSession
+      .findOne({ _id: req.query.sessionId })
+      .populate("timers")
+    const machines = await machineClasses.find()
+    const timersByMachineClass: Record<string, number> = {}
+
+    if (session?.timers) {
+      for (const timer of session.timers) {
+        //@ts-expect-error
+        const machineClassId = timer.machineClassId
+        const machineClass = machines.find(
+          (machine) => machine._id.toString() === machineClassId.toString()
+        )
+
+        const machineClassName: string =
+          (machineClass ? machineClass.name : "Unknown") ?? ""
+
+        // Count occurrences of the machine class
+        timersByMachineClass[machineClassName] =
+          (timersByMachineClass[machineClassName] || 0) + 1
+      }
+    }
+
+    res.json({
+      error: false,
+      items: timersByMachineClass,
       message: null,
     })
   } catch (err: any) {
