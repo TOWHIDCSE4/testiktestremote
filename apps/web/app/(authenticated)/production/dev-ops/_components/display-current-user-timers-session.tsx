@@ -27,7 +27,7 @@ const DisplayCurrentUsersTimersSession: React.FC<Props> = ({
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-2 my-1">
         {group?.timers?.map((timer: any) => (
-          <TimerCard timer={timer} />
+          <TimerCard key={timer.id} timer={timer} />
         ))}
       </div>
     </Suspense>

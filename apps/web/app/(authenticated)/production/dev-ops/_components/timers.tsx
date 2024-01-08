@@ -13,6 +13,7 @@ const timersGroups: React.FC<Props> = ({ timersGroups }) => {
     <div className="w-full overflow-y-auto max-h-[56rem] mt-4">
       {timersGroups?.items?.map((group: any) => (
         <DisplayCurrentUsersTimersSession
+          key={group.id}
           isCurrentUser={group.isCurrentUser}
           group={group}
         />

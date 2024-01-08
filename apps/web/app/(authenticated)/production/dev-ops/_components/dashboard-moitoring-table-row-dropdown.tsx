@@ -21,4 +21,7 @@ const DashboardMonitoringTableRowDropDown: React.FC = memo(() => {
   )
 })
 
+DashboardMonitoringTableRowDropDown.displayName =
+  "DashboardMonitoringTableRowDropDown"
+
 export default DashboardMonitoringTableRowDropDown
