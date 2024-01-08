@@ -32,6 +32,8 @@ jobs:
       MEDIA_URL: ${{ vars.MEDIA_URL }}
       SENTRY_WEB_DSN: ${{ vars.SENTRY_WEB_DSN }}
       MEDIA_KEY: ${{ vars.MEDIA_KEY }}
+      ENV_NAME: ${{ vars.ENV_NAME }}
+
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v2

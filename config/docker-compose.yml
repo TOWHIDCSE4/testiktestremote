@@ -12,6 +12,7 @@ services:
         - SENTRY_WEB_DSN=${SENTRY_WEB_DSN}
         - MEDIA_KEY=${MEDIA_KEY}
         - PORT=${FRONTEND_PORT}
+        - ENV_NAME=${ENV_NAME}
   api:
     image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
     build:

@@ -18,6 +18,8 @@
         "API_PORT",
         "PORT",
         "NEXT_PUBLIC_API_URL",
+        "ENV_NAME",
+        "NEXT_PUBLIC_ENV_NAME",
         "WEB_URL",
         "MEDIA_URL",
         "MEDIA_KEY",
