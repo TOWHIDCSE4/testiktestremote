@@ -12,6 +12,10 @@ const devOpsSession = new Schema({
     type: Date,
     default: Date.now,
   },
+  createdBy: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
   timers: [
     {
       type: mongoose.Schema.ObjectId,
