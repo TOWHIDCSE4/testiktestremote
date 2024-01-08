@@ -53,5 +53,5 @@ export const API_URL_PRODUCTION_LOOKUP = `${NEXT_PUBLIC_API_URL}/api/production-
 export const API_URL_DASHBOARD_CONFIG = `${NEXT_PUBLIC_API_URL}/api/dashboard-config`
 export const API_URL_READINGS = `${NEXT_PUBLIC_API_URL}/api/readings`
 export const API_URL_EVENTS = `${NEXT_PUBLIC_API_URL}/api/events`
-
+export const API_URL = `${NEXT_PUBLIC_API_URL}`
 export const API_URL_REPORTS = `${NEXT_PUBLIC_API_URL}/api/reports`
