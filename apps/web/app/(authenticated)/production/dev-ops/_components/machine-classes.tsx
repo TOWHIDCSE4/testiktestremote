@@ -7,7 +7,7 @@ import { T_DBReturn } from "../../../../_types"
 import { T_MachineClass } from "custom-validator"
 import { GrVirtualMachine } from "react-icons/gr"
 
-export const _Get_Machine_Classess = cache(async () => {
+export const _Get_Machine_Classes = cache(async () => {
   const cookiesStore = cookies()
   const token = cookiesStore.get("tfl")
   const response = await fetch(`${process.env.API_URL}/api/machine-classes`, {
@@ -18,7 +18,7 @@ export const _Get_Machine_Classess = cache(async () => {
 })
 
 const MachineClassesCard = async () => {
-  const machineClassess = await _Get_Machine_Classess()
+  const machineClassess = await _Get_Machine_Classes()
   return (
     <Card className="flex-none w-80 h-[40rem] overflow-y-auto">
       <div className="flex items-center justify-between space-x-2 p-2">

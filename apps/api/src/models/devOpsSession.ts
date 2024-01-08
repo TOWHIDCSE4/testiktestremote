@@ -12,6 +12,12 @@ const devOpsSession = new Schema({
     type: Date,
     default: Date.now,
   },
+  timers: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "DevOpsTimers",
+    },
+  ],
 })
 
 export default mongoose.model("DevOpsSession", devOpsSession)

@@ -7,7 +7,7 @@ export const ZDevOpsSession = z.object({
   _id: z.string().optional(),
   duration: z.number().optional(),
   date: z.date().nullable().optional(),
-  endTime: z.union([z.string(), z.date()]).nullable(),
+  endTime: z.union([z.string(), z.date()]).optional(),
   createdAt: z.date().nullable().optional(),
 })
 

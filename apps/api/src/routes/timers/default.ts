@@ -248,18 +248,18 @@ export const createDevOpsTimers = async (req: Request, res: Response) => {
   try {
     await DevOpsTimers.deleteMany({ createdBy: res.locals.user._id })
 
-    const results = generateDevOpsTimers({
-      locationId,
-      numberOfTimers: parseInt(numberOfTimers),
-      machineClassesIds: selectedMachineClasses,
-      endTimeRange,
-      startTime,
-      unitCycleTime,
-      createdBy: res.locals.user._id,
-      sessionName,
-    })
+    // const results = generateDevOpsTimers({
+    //   locationId,
+    //   numberOfTimers: parseInt(numberOfTimers),
+    //   machineClassIds: selectedMachineClasses,
+    //   endTimeRange,
+    //   startTime,
+    //   unitCycleTime,
+    //   createdBy: res.locals.user._id,
+    //   sessionName,
+    // })
 
-    await DevOpsTimers.insertMany(results)
+    // await DevOpsTimers.insertMany(results)
 
     res.json({
       error: false,
