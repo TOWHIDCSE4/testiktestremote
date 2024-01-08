@@ -1,17 +1,20 @@
 "use client"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
 import { API_URL } from "../../../../../helpers/constants"
 import useDevOpsTimers from "./_state"
-import { revalidateDevOpsTimers } from "./actions"
+import {
+  revalidateDevOpsTimers,
+  revalidateDevOpsTimersSessions,
+} from "./actions"
 
 type DevOpsTimerTypes = {
   noOfTimers: number
   locationId: string
   startTime: number
-  endTime: Date | null
+  // endTime: Date | null
   unitCycleTime: number[]
   machineClassIds: string[] | string
   name: string
@@ -20,6 +23,7 @@ type DevOpsTimerTypes = {
 }
 
 const TimersGeneratorForm = () => {
+  const router = useRouter()
   const sessionName = useDevOpsTimers((state) => state.sessionName)
   const setSessionName = useDevOpsTimers((state) => state.setSessionName)
   const setNumberOfTimers = useDevOpsTimers((state) => state.setNumberOfTimers)
@@ -38,7 +42,7 @@ const TimersGeneratorForm = () => {
     mutationFn: async (data: DevOpsTimerTypes) => {
       if (!data.noOfTimers) toast.error("Please provide number of timers")
       if (!data.startTime) toast.error("Please provide start time")
-      if (!data.endTime) toast.error("Please provide end time range")
+      // if (!data.endTime) toast.error("Please provide end time range")
       if (!data.unitCycleTime) toast.error("Please provide unit cycle time")
       if (!data.machineClassIds) toast.error("Please provide machine classes")
       if (!data.locationId) toast.error("Please provide location id")
@@ -57,6 +61,8 @@ const TimersGeneratorForm = () => {
     },
     onSuccess: () => {
       revalidateDevOpsTimers()
+      revalidateDevOpsTimersSessions()
+      router.refresh()
       toast.success("Timers has been generated")
     },
     onError: (e) => {
@@ -68,7 +74,7 @@ const TimersGeneratorForm = () => {
   const onSubmit = () => {
     devOpsTimers.mutate({
       name: sessionName,
-      endTime: null,
+      // endTime: null,
       noOfTimers: numberOfTimers,
       noOfAlerts: 3,
       machineClassIds: selectedMachineClasses,
@@ -96,9 +102,17 @@ const TimersGeneratorForm = () => {
       />
       <button
         onClick={onSubmit}
-        disabled={devOpsTimers.isLoading}
+        disabled={
+          devOpsTimers.isLoading ||
+          !sessionName ||
+          !startTime ||
+          !unitCycleTime ||
+          !selectedMachineClasses?.length ||
+          !locationId ||
+          !numberOfTimers
+        }
         type="submit"
-        className="p-2 rounded-md w-full bg-[#102136] shadow-md border-1 text-white"
+        className="p-2 rounded-md w-full bg-[#102136] shadow-md border-1 text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         {devOpsTimers.isLoading ? "Generating ..." : "Generate"}
       </button>

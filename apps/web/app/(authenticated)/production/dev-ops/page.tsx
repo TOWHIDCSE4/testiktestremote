@@ -4,21 +4,21 @@ import dynamic from "next/dynamic"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import React, { cache } from "react"
+import { API_URL } from "../../../../helpers/constants"
 import { T_DBReturn } from "../../../_types"
 import Alerts from "./_components/alerts"
 import Analytics from "./_components/analytics"
+import DashboardMonitoring from "./_components/dashboard-monitoring"
 import EndTimerRangeSlider from "./_components/end-timer-range-slider"
 import LocationsSelection from "./_components/locations-component"
 import { _Get_Machine_Classes } from "./_components/machine-classes"
 import PerformanceSection from "./_components/performance-section"
 import SelectMachineClass from "./_components/select-machine-class"
+import SessionSimulation from "./_components/sessions-simulation"
 import SliderComponent from "./_components/slider-component"
 import TimersGeneratorForm from "./_components/timers-generator-form"
 import UnitCycleRange from "./_components/unit-cycle-range"
 import WithAuth from "./_components/withAuth"
-import SessionSimulation from "./_components/sessions-simulation"
-import DashboardMonitoring from "./_components/dashboard-monitoring"
-import { API_URL } from "../../../../helpers/constants"
 
 const Timers = dynamic(() => import("./_components/timers"))
 
@@ -27,7 +27,7 @@ export type T_Timer_Group_Types = {
   timers: T_Timer[]
 }
 
-const _Get_Timers_by_User = cache(async () => {
+const _Get_Timers_by_User = async () => {
   const cookiesStore = cookies()
   const token = cookiesStore.get("tfl")
   const res = await fetch(`${API_URL}/api/dev-ops/active-session-timers`, {
@@ -35,17 +35,17 @@ const _Get_Timers_by_User = cache(async () => {
     next: { tags: ["devOps-timers"] },
   })
   return (await res.json()) as T_DBReturn<T_Timer_Group_Types[]>
-})
+}
 
-const _Get_Sessions_List = cache(async () => {
+const _Get_Sessions_List = async () => {
   const cookiesStore = cookies()
   const token = cookiesStore.get("tfl")
   const res = await fetch(`${API_URL}/api/dev-ops/session-list`, {
     headers: { Authorization: `Bearer ${token?.value}` },
-    next: { tags: ["devOps-timers"] },
+    next: { tags: ["devOps-timers-sessions-list"] },
   })
   return (await res.json()) as T_DBReturn<T_Timer_Group_Types[]>
-})
+}
 
 interface Props {
   searchParams: {
@@ -84,7 +84,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
   return (
     <WithAuth>
       <div className="bg-white shadow-md rounded-md ">
-        <h2 className="p-2 font-semibold">Random Parameters</h2>
+        <h2 className="p-2 font-semibold">Start New Stress Sim</h2>
         <Divider />
         <div className="flex flex-col md:flex-row justify-between items-center py-2 px-6">
           <div className="flex flex-col space-y-4">
@@ -100,10 +100,10 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         </div>
       </div>
       <Analytics />
-      {timersGroups && <Timers timersGroups={timersGroups} />}
-      <div className="mt-20">
-        <SessionSimulation sessionsList={sessionsList} />
-      </div>
+      {timersGroups?.items?.length > 0 && (
+        <Timers timersGroups={timersGroups} />
+      )}
+      <SessionSimulation sessionsList={sessionsList} />
       <PerformanceSection />
       <Alerts />
       <DashboardMonitoring />

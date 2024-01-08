@@ -1,8 +1,7 @@
-import { T_Timer } from "custom-validator"
+"use client"
 import React, { Suspense } from "react"
-import { T_DBReturn } from "../../../../_types"
 import TimerCard from "./timer-card"
-import { T_Timer_Group_Types } from "../page"
+import DisplayCurrentUsersTimersSession from "./display-current-user-timers-session"
 
 interface Props {
   timersGroups: any //TODO: Specify the correct type here
@@ -13,6 +12,12 @@ const timersGroups: React.FC<Props> = ({ timersGroups }) => {
   return (
     <div className="w-full overflow-y-auto max-h-[56rem] mt-4">
       {timersGroups?.items?.map((group: any) => (
+        <DisplayCurrentUsersTimersSession
+          isCurrentUser={group.isCurrentUser}
+          group={group}
+        />
+      ))}
+      {/* {timersGroups?.items?.map((group: any) => (
         <Suspense
           key={group?.name}
           fallback={
@@ -28,7 +33,7 @@ const timersGroups: React.FC<Props> = ({ timersGroups }) => {
             ))}
           </div>
         </Suspense>
-      ))}
+      ))} */}
     </div>
   )
 }
