@@ -80,7 +80,7 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
     if (!selectedMachineClass && groupedKeys?.length) {
       setSelectedMachineClass(groupedKeys[0])
     }
-  }, [groupedKeys])
+  }, [groupedKeys, selectedMachineClass])
   if (isReportLoading) {
     return null
   }

@@ -28,7 +28,7 @@ module.exports = {
       },
     },
   },
-  ignorePatterns: ["node_modules/", "dist/"],
+  ignorePatterns: ["node_modules/", "dist/", "build/"],
   // add rules configurations here
   rules: {
     "@next/next/no-html-link-for-pages": "off",

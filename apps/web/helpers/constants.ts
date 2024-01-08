@@ -2,7 +2,7 @@ export const REFETCH_ACTIVATED = false
 
 export const INVALID_AUTH = "Invalid authentication"
 
-export const API_URL = process.env.API_URL
+export const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL
 export const REFETCH_TIME = 5000
 export const SENTRY_WEB_DSN = process.env.SENTRY_WEB_DSN
 
@@ -33,25 +33,25 @@ export const THREE_MINUTES = 1000 * 60 * 3 // 3 minutes
 export const FIFTEEN_MINUTES = 1000 * 60 * 15 // 15 minutes
 export const TEN_MINUTES = 1000 * 60 * 10 // 10 minutes
 
-export const API_URL_USERS = "/api/users"
-export const API_URL_PARTS = "/api/parts"
-export const API_URL_FACTORIES = "/api/factories"
-export const API_URL_MACHINE_CLASS = "/api/machine-classes"
-export const API_URL_LOCATIONS = "/api/locations"
-export const API_URL_UPLOAD = "/api/files"
-export const API_URL_TIMER = "/api/timers"
-export const API_URL_TIMER_LOGS = "/api/timer-logs"
-export const API_URL_MACHINE = "/api/machines"
-export const API_URL_JOBS = "/api/jobs"
-export const API_URL_CONTROLLER_TIMER = "/api/controller-timers"
-export const API_URL_CYCLE_TIMER = "/api/cycle-timers"
-export const API_URL_JOB_TIMER = "/api/job-timer"
-export const API_URL_VERIFIED_PART = "/api/parts/verify"
-export const API_URL_VERIFIED_MACHINE = "/api/machines/verify"
-export const API_URL_GLOBAL_METRICS = "/api/timer-logs"
-export const API_URL_PRODUCTION_LOOKUP = "/api/production-lookup"
-export const API_URL_DASHBOARD_CONFIG = "/api/dashboard-config"
-export const API_URL_READINGS = "/api/readings"
-export const API_URL_EVENTS = "/api/events"
-
-export const API_URL_REPORTS = "/api/reports"
+export const API_URL_USERS = `${NEXT_PUBLIC_API_URL}/api/users`
+export const API_URL_PARTS = `${NEXT_PUBLIC_API_URL}/api/parts`
+export const API_URL_FACTORIES = `${NEXT_PUBLIC_API_URL}/api/factories`
+export const API_URL_MACHINE_CLASS = `${NEXT_PUBLIC_API_URL}/api/machine-classes`
+export const API_URL_LOCATIONS = `${NEXT_PUBLIC_API_URL}/api/locations`
+export const API_URL_UPLOAD = `${NEXT_PUBLIC_API_URL}/api/files`
+export const API_URL_TIMER = `${NEXT_PUBLIC_API_URL}/api/timers`
+export const API_URL_TIMER_LOGS = `${NEXT_PUBLIC_API_URL}/api/timer-logs`
+export const API_URL_MACHINE = `${NEXT_PUBLIC_API_URL}/api/machines`
+export const API_URL_JOBS = `${NEXT_PUBLIC_API_URL}/api/jobs`
+export const API_URL_CONTROLLER_TIMER = `${NEXT_PUBLIC_API_URL}/api/controller-timers`
+export const API_URL_CYCLE_TIMER = `${NEXT_PUBLIC_API_URL}/api/cycle-timers`
+export const API_URL_JOB_TIMER = `${NEXT_PUBLIC_API_URL}/api/job-timer`
+export const API_URL_VERIFIED_PART = `${NEXT_PUBLIC_API_URL}/api/parts/verify`
+export const API_URL_VERIFIED_MACHINE = `${NEXT_PUBLIC_API_URL}/api/machines/verify`
+export const API_URL_GLOBAL_METRICS = `${NEXT_PUBLIC_API_URL}/api/timer-logs`
+export const API_URL_PRODUCTION_LOOKUP = `${NEXT_PUBLIC_API_URL}/api/production-lookup`
+export const API_URL_DASHBOARD_CONFIG = `${NEXT_PUBLIC_API_URL}/api/dashboard-config`
+export const API_URL_READINGS = `${NEXT_PUBLIC_API_URL}/api/readings`
+export const API_URL_EVENTS = `${NEXT_PUBLIC_API_URL}/api/events`
+export const API_URL = `${NEXT_PUBLIC_API_URL}`
+export const API_URL_REPORTS = `${NEXT_PUBLIC_API_URL}/api/reports`

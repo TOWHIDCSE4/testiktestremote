@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 import { useRouter, useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
-import { API_URL } from "../../../../../helpers/constants"
+import { API_URL, NEXT_PUBLIC_API_URL } from "../../../../../helpers/constants"
 import useDevOpsTimers from "./_state"
 import {
   revalidateDevOpsTimers,
