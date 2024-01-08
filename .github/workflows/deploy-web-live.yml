@@ -94,4 +94,4 @@ jobs:
             $(echo $REGISTRY)/$IMAGE_NAME:$IMAGE_TAG
             # prune old images
             docker image prune -a -f
-            echo "Build Successful"
+            echo "Build Successful."
