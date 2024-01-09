@@ -5,15 +5,15 @@ import * as utc from "dayjs/plugin/utc"
 dayjs.extend(utc.default)
 dayjs.extend(timezone.default)
 
-export const getStartOfDayTimezone = (timeZone: string = "") => {
+export const getStartOfDayTimezone = (timeZone = "") => {
   return dayjs.utc(dayjs.tz(dayjs(), timeZone).startOf("day")).toDate()
 }
 
-export const getEndOfDayTimezone = (timezone: string = "") => {
+export const getEndOfDayTimezone = (timezone = "") => {
   return dayjs.utc(dayjs.tz(dayjs(), timezone).endOf("day")).toDate()
 }
 
-export const getYesterdayEndOfDayTimzeone = (timezone: string = "") => {
+export const getYesterdayEndOfDayTimzeone = (timezone = "") => {
   return dayjs
     .utc(dayjs.tz(dayjs(), timezone).subtract(1, "day").endOf("day"))
     .toDate()
@@ -21,7 +21,7 @@ export const getYesterdayEndOfDayTimzeone = (timezone: string = "") => {
 
 export const getHoursDifferent = (
   createdAt?: Date,
-  timeZone: string = "",
+  timeZone = "",
   endAt?: Date | null
 ) => {
   const timerStart = dayjs.tz(dayjs(createdAt), timeZone ? timeZone : "")
@@ -35,7 +35,7 @@ export const getHoursDifferent = (
 
 export const getSecondsDifferent = (
   createdAt?: Date,
-  timeZone: string = "",
+  timeZone = "",
   endAt?: Date | null
 ) => {
   const timerStart = dayjs.tz(dayjs(createdAt), timeZone ? timeZone : "")

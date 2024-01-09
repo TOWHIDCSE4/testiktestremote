@@ -742,15 +742,6 @@ const LogsTable = ({
     setCheckedProduction(updatedArray)
   }
 
-  useEffect(() => {
-    if (
-      paginated &&
-      paginated.items &&
-      paginated.items.length === checkedProduction.length
-    ) {
-    }
-  }, [paginated, checkedProduction])
-
   const isChecked = (id: string) => {
     return checkedProduction.filter((item) => item.id === id).length > 0
   }
@@ -1050,7 +1041,10 @@ const LogsTable = ({
               <NewWindow
                 copyStyles={true}
                 features={{
-                  width: paginated?.items?.length! > 0 ? 1440 : 500,
+                  width:
+                    paginated?.items?.length && paginated?.items?.length > 0
+                      ? 1440
+                      : 500,
                   height: 1000,
                 }}
                 center="parent"

@@ -36,6 +36,7 @@ const clockDigitCV = cva("transition-colors", {
       digit: ["w-[1.5rem]", "sm:w-[2.5rem]"],
       divider: ["w-[1.3rem]", "sm:w-[1.5rem]", "mb-3"],
     },
+    // eslint-disable-next-line
     size: { primary: ["text-[3.3rem]", , "sm:text-[5rem]"] },
     font: { lato: ["!font-lato"] },
   },

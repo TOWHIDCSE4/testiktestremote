@@ -193,7 +193,6 @@ const NewModal = ({
     if (selectedPart && typeof selectedPart === "object") {
       setPartQuery(selectedPart.name as string)
       setValue("partId", selectedPart.id as string)
-    } else if (typeof selectedPart === "string") {
     }
   }, [selectedPart])
 
@@ -201,7 +200,6 @@ const NewModal = ({
     if (timer) {
       if (typeof selectedPart === "object" && selectedPart.name) {
         setPartQuery(selectedPart.name)
-      } else if (typeof selectedPart === "string") {
       }
     }
   })

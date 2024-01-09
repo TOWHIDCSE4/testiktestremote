@@ -242,7 +242,7 @@ const Content = () => {
 
     const fetchData = async () => {
       if (!selectedCity?.length) return
-      let page = 1
+      const page = 1
 
       const res = await fetch(
         `${API_URL_PARTS}/by/location-machine-class?page=${page}&${machineClassesQuery}&${locationsQuery}&startDate=${startDate}&endDate=${endDate}`,

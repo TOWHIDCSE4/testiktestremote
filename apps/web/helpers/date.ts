@@ -5,7 +5,7 @@ import moment from "moment"
 
 export const formatDate = (
   dateFromDb: Date | null | undefined,
-  formatStr: string = "MM/DD/YYYY"
+  formatStr = "MM/DD/YYYY"
 ) => {
   dayjs.extend(utc.default)
   dayjs.extend(timezone.default)
@@ -34,7 +34,7 @@ export function formatTime(seconds: string) {
 
 export const getSecondsDifferent = (
   createdAt?: Date,
-  timeZone: string = "",
+  timeZone = "",
   endAt?: Date | null
 ) => {
   const timerStart = dayjs.tz(dayjs(createdAt), timeZone ? timeZone : "")
@@ -48,7 +48,7 @@ export const getSecondsDifferent = (
 
 export const getHoursDifferent = (
   createdAt?: Date,
-  timeZone: string = "",
+  timeZone = "",
   endAt?: Date | null
 ) => {
   const timerStart = dayjs.tz(dayjs(createdAt), timeZone ? timeZone : "")

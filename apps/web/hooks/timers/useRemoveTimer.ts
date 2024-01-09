@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import { T_Timer } from "custom-validator"
 import Cookies from "js-cookie"
 
-export async function removeTimer(id: String) {
+export async function removeTimer(id: string) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_TIMER}/${id}`, {
     method: "DELETE",

@@ -4,14 +4,7 @@ import SystemReport from "../Report/SystemReport"
 import useGetProductionLookup from "../../../../../hooks/productionlookup/useGetProductionLookupFilter"
 import useProfile from "../../../../../hooks/users/useProfile"
 
-const ReportTable = ({}: //   locationId,
-//   userRole,
-//   renderData,
-{
-  //   locationId: string[]
-  //   userRole: string | undefined
-  //   renderData: boolean
-}) => {
+const ReportTable = () => {
   const [isSavedTableOpen, setSavedTableOpen] = useState(false)
   const [isSharedTableOpen, setSharedTableOpen] = useState(false)
   const { data: userProfile } = useProfile()

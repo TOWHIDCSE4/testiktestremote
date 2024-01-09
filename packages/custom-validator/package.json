@@ -3,10 +3,14 @@
   "version": "0.0.0",
   "license": "MIT",
   "main": "./build/index.js",
-  "module": "build",
+  "module": "./build",
   "types": "./build/index.d.ts",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "build": "tsc",
+    "dev": "tsc --watch",
     "lint": "eslint --fix --quiet \"**/*.ts*\""
   },
   "devDependencies": {

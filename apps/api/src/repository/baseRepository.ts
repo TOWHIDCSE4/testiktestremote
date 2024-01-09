@@ -11,7 +11,7 @@ const DefaultOption = {}
 
 export const createBaseRepository = <
   T extends Model<any>,
-  Data = {},
+  Data = any,
   CreateParam = Data
 >(
   model: T

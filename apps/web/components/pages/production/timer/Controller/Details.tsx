@@ -34,20 +34,7 @@ type T_Props = {
   setIsJobSwitch: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Details = ({}: // timerDetails,
-// isTimerDetailDataLoading,
-// readingMessages,
-// sectionDiv,
-// jobTimer,
-// jobUpdateId,
-// defaultOperator,
-// isJobTimerLoading,
-// isCycleClockRunning,
-// timerJobs,
-// isTimerJobsLoading,
-// isJobSwitch,
-// setIsJobSwitch,
-T_Props) => {
+const Details = () => {
   // const searchRef = useRef<HTMLInputElement>(null)
   // const comboboxRef = useRef<HTMLDivElement>(null)
   // const [isComboboxFocused, setIsComboboxFocused] = useState(false)

@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/node"
-const { ObjectId } = require("mongodb")
 import { Request, Response } from "express"
 import devOpsSession from "../../models/devOpsSession"
 import {
@@ -108,7 +107,8 @@ export const currentSessionTimers = async (req: Request, res: Response) => {
     const active = JSON.parse(JSON.stringify(currentSession))
     const sessions = active.map((session: any) => {
       const isCurrentUser =
-        active && new ObjectId(session.createdBy).equals(res.locals.user._id)
+        active &&
+        session.createdBy?.toString() === res.locals?.user?._id?.toString()
       return {
         ...session,
         isCurrentUser: isCurrentUser,
