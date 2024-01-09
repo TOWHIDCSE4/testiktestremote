@@ -7,8 +7,8 @@ import {
 import Cookies from "js-cookie"
 
 export async function getSession() {
-  const tlf = Cookies.get("tfl")
-  const res = await fetch(`${API_URL_USERS}/verify/${tlf}`, {
+  const tfl = Cookies.get("tfl")
+  const res = await fetch(`${API_URL_USERS}/verify/${tfl}`, {
     method: "GET",
     headers: {
       "content-type": "application/json",

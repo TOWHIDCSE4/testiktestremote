@@ -8,8 +8,6 @@ import CryptoJS from "crypto-js"
 import jwt from "jsonwebtoken"
 import { Request, Response } from "express"
 import { ZLogin, ZSession } from "custom-validator"
-import redisClient from "../../utils/redisClient"
-import dayjs from "dayjs"
 import * as Sentry from "@sentry/node"
 
 export const auth = async (req: Request, res: Response) => {
@@ -52,32 +50,32 @@ export const auth = async (req: Request, res: Response) => {
             },
             keys.signKey as string,
             {
-              expiresIn: "48h",
+              expiresIn: "2d",
             }
           )
           if (res.locals.user) {
             delete res.locals.user
           }
-          function addHours(date: Date, hours: number) {
-            date.setTime(date.getTime() + hours * 60 * 60 * 1000)
-            return date
-          }
+
           const zodParsedSession = ZSession.safeParse({
             token,
             email: user.email,
             role: user.role,
           })
           if (zodParsedSession.success) {
-            const now = new Date(Date.now())
-            await redisClient.hSet(`${token}`, {
-              expireIn: `${dayjs(addHours(now, 48)).format()}`,
-            })
-            res.json({
-              error: false,
-              message: null,
-              item: zodParsedSession.data,
-              itemCount: null,
-            })
+            console.log("seperti lagu")
+            res
+              .cookie("accessToken", token, {
+                httpOnly: false,
+                secure: false,
+                maxAge: 900000,
+              })
+              .send({
+                error: false,
+                message: null,
+                item: zodParsedSession.data,
+                itemCount: null,
+              })
           } else {
             res.json({
               error: true,

@@ -9,7 +9,6 @@ import {
   useState,
 } from "react"
 import useGetUser from "../../../../../hooks/users/useGetUser"
-import useSession from "../../../../../hooks/users/useSession"
 import useProfile from "../../../../../hooks/users/useProfile"
 import { getObjectId } from "../../../../../helpers/ids"
 import useGetControllerTimer from "../../../../../hooks/timers/useGetControllerTimer"

@@ -1,13 +1,14 @@
 import { API_URL_USERS } from "../../helpers/constants"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Cookies from "js-cookie"
+import router from "next/router"
 
 export async function logoutUser() {
-  const tlf = Cookies.get("tfl")
+  const tfl = Cookies.get("tfl")
   const res = await fetch(`${API_URL_USERS}/logout`, {
     method: "POST",
     body: JSON.stringify({
-      token: tlf,
+      token: tfl,
     }),
     headers: {
       "content-type": "application/json",
@@ -17,13 +18,10 @@ export async function logoutUser() {
 }
 
 function useLogout() {
-  const queryClient = useQueryClient()
   const query = useMutation({
     mutationFn: () => logoutUser(),
     onSettled: () => {
-      queryClient.clear()
-      window.localStorage.clear()
-      window.location.href = "/"
+      Cookies.remove("tfl")
     },
   })
   return query

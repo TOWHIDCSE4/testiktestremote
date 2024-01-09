@@ -11,23 +11,23 @@ type Props = {
 }
 
 const AuthGuard = ({ children }: Props) => {
-  const { data, isLoading } = useSession()
+  const { data, isLoading, error } = useSession()
   const router = useRouter()
   const updateStoreSession = useStoreSession((state) => state.update)
   const initSocket = useSocket((store) => store.setInstance)
-
   useEffect(() => {
+    if (error) {
+      Cookies.remove("tfl")
+      router.replace("/login")
+      return
+    }
     if (!isLoading && !data?.error && data?.item) {
       initSocket(data.item)
       updateStoreSession(data?.item)
     }
-  }, [isLoading, data, updateStoreSession])
+  }, [isLoading, data, updateStoreSession, error])
 
-  if (!isLoading && data?.error) {
-    Cookies.remove("tfl")
-    router.push("/")
-    return <>{children}</>
-  } else if (isLoading) {
+  if (isLoading) {
     return (
       <div
         className="m-4 animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-blue-600 rounded-full"
@@ -37,9 +37,15 @@ const AuthGuard = ({ children }: Props) => {
         <span className="sr-only">Loading...</span>
       </div>
     )
-  } else {
-    return <>{children}</>
   }
+  const currentTfl = Cookies.get("tfl")
+
+  if (!data?.item || error || !currentTfl) {
+    Cookies.remove("tfl")
+    router.replace("/login")
+    return
+  }
+  return children
 }
 
 export default AuthGuard
