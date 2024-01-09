@@ -14,6 +14,7 @@ export type {
   T_UserPassword,
   T_UserProfile,
   T_UserPinnedComponents,
+  T_UserStatus,
 } from "./ZUser"
 
 export { ZLogin } from "./ZLogin"
