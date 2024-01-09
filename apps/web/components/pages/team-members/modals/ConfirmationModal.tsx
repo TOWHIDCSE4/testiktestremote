@@ -7,7 +7,7 @@ import { T_BackendResponse } from "custom-validator"
 import { useQueryClient } from "@tanstack/react-query"
 import toast from "react-hot-toast"
 import useUpdateUser from "../../../../hooks/users/useUpdateUser"
-import { T_User, T_UserStatus } from "custom-validator/ZUser"
+import { T_User, T_UserStatus } from "custom-validator"
 import useProfile from "../../../../hooks/users/useProfile"
 
 interface ConfirmationModalProps {

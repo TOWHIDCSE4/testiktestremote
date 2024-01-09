@@ -9,7 +9,7 @@ import {
   T_User,
   T_UserRole,
 } from "custom-validator"
-import { T_UserStatus } from "custom-validator/ZUser"
+import { T_UserStatus } from "custom-validator"
 import Cookies from "js-cookie"
 import { useEffect, useState } from "react"
 import useProfile from "./useProfile"
