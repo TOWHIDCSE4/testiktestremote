@@ -24,22 +24,17 @@ const isUserLoggedIn = async (
         }
       )
       const user = await Users.findOne({ email, role })
-      const RD_Session = await redisClient.hGetAll(`${bearerToken}`)
-      const isTokenExpired = dayjs().isAfter(RD_Session.expireIn)
-      if (!RD_Session || isTokenExpired) {
-        res.json({ error: true, message: "Token has been expired" })
-      } else {
-        if (user && user.deletedAt) {
-          throw new Error("We cannot find your account in our system")
-        }
-        if (user && user.status === "Blocked") {
-          throw new Error(
-            "Your account was banned, all actions and requested data was prohibited"
-          )
-        }
-        res.locals.user = user
-        next()
+      if (user && user.deletedAt) {
+        throw new Error("We cannot find your account in our system")
       }
+      if (user && user.status === "Blocked") {
+        throw new Error(
+          "Your account was banned, all actions and requested data was prohibited"
+        )
+      }
+      res.locals.user = user
+      next()
+      return
     } catch (err: any) {
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       if (message === "jwt malformed") {

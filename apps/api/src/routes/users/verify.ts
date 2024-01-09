@@ -16,12 +16,10 @@ export const verify = async (req: Request, res: Response) => {
           ignoreExpiration: true,
         }
       )
-      const RD_Session = await redisClient.hGetAll(req.params.token)
       const user = await Users.findOne({
         email,
       })
-      const isTokenExpired = dayjs().isAfter(RD_Session.expireIn)
-      if (user && !isTokenExpired) {
+      if (user) {
         res.json({
           error: false,
           message: null,
@@ -32,7 +30,7 @@ export const verify = async (req: Request, res: Response) => {
           },
         })
       } else {
-        res.json({
+        res.status(401).json({
           error: true,
           message: "Authentication is expired or invalid",
           items: null,
@@ -41,7 +39,7 @@ export const verify = async (req: Request, res: Response) => {
       }
     } catch (error) {
       Sentry.captureException(error)
-      res.json({
+      res.status(401).json({
         error: true,
         message: String(error),
         items: null,
@@ -49,7 +47,7 @@ export const verify = async (req: Request, res: Response) => {
       })
     }
   } else {
-    res.json({
+    res.status(401).json({
       error: true,
       message: REQUIRED_VALUES_MISSING,
       items: null,

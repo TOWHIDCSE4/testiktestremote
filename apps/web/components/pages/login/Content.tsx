@@ -44,11 +44,11 @@ const Content = () => {
   }
 
   useEffect(() => {
-    const tlf = Cookies.get("tfl")
-    if (tlf) {
-      router.push(`/profile-home`)
-    }
-  }, [router])
+    // const tfl = Cookies.get("tfl")
+    // if (tfl) {
+    //   router.push(`/profile-home`)
+    // }
+  }, [])
 
   return (
     <>

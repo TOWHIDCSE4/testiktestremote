@@ -128,7 +128,6 @@ const SideBarNav = () => {
     const callBackReq = {
       onSuccess: (data: T_BackendResponse) => {
         if (!data.error) {
-          Cookies.remove("tfl")
           queryClient.invalidateQueries({
             queryKey: ["session"],
           })
