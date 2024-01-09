@@ -10,7 +10,6 @@
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch",
     "lint": "eslint --fix --quiet \"**/*.ts*\""
   },
   "devDependencies": {
