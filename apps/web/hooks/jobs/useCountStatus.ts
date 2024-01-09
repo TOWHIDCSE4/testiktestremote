@@ -45,7 +45,6 @@ function useCountStatus() {
   )
 
   const reloadCountStatus = useCallback(() => {
-    console.log("refetch", statuses, jobLocationId)
     query.refetch()
   }, [statuses, jobLocationId])
 

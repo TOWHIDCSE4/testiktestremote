@@ -1,5 +1,5 @@
 import useProfile from "../../../../hooks/users/useProfile"
-import { EUserPinnedComponents } from "custom-validator/ZUser"
+import { EUserPinnedComponents } from "custom-validator"
 import ProductionTrackerBar from "../../../shared/graphs/ProductionTrackerBar"
 import MachineProductionTracker from "../../../shared/graphs/MachineProductionTracker"
 import MachineProductionPerLocationTracker from "../../../shared/graphs/MachineProductionPerLocationTracker"

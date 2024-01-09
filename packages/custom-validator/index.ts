@@ -4,6 +4,7 @@ export {
   ZUserBasic,
   ZUserPassword,
   ZUserProfile,
+  EUserPinnedComponents,
 } from "./ZUser"
 export type {
   T_User,
@@ -61,6 +62,9 @@ export type { T_CycleTimer } from "./ZCycleTimer"
 
 export { ZControllerTimer } from "./ZControllerTimer"
 export type { T_ControllerTimer } from "./ZControllerTimer"
+
+export { ZDevOpsSession } from "./ZDevOpsSession"
+export type { T_DevOpsSession } from "./ZDevOpsSession"
 
 export * from "./ZProductionCycle"
 export * from "./ZReading"

@@ -4,7 +4,9 @@ export type T_DailyUnit = {
   timerId: string
   unit: number
 }
+
 interface States {
+  sessionName: string
   dailyUnits: T_DailyUnit[]
   startTime: number
   endTimerRange: number[]
@@ -14,6 +16,7 @@ interface States {
 }
 
 interface Actions {
+  setSessionName: (sessionName: string) => void
   setStartTime: (startTime: number) => void
   setEndTimerRange: (endTimerRange: number[]) => void
   setNumberOfTimers: (numberOfTimers: number) => void
@@ -23,6 +26,7 @@ interface Actions {
 }
 
 const useDevOpsTimers = create<States & Actions>((set, get) => ({
+  sessionName: "",
   dailyUnits: [],
   startTime: 20000,
   endTimerRange: [3, 5],
@@ -30,6 +34,7 @@ const useDevOpsTimers = create<States & Actions>((set, get) => ({
   selectedMachineClasses: [],
   unitCycleTime: [20, 40],
 
+  setSessionName: (sessionName) => set({ sessionName }),
   setUnitCycleTime: (unitCycleTime) => set({ unitCycleTime }),
   setSelectedMachineClasses: (selectedMachineClasses) =>
     set({ selectedMachineClasses }),

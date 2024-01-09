@@ -29,7 +29,6 @@ export const createBaseRepository = <
     const { sort, limit, offset } = merge(option, DefaultOption)
     const result = model.find(filter)
     if (sort) {
-      console.log("penisirin", sort)
       result.sort(sort)
     }
     if (limit) {

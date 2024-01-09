@@ -75,7 +75,6 @@ const Part = ({
         setMachineClassIdFilter("all")
       }
       setSelectedFactoryId(factoryIdFilter)
-      console.log("factoryIdFilter", factoryIdFilter)
     }
   }, [factoryIdFilter, setSelectedFactoryId])
 

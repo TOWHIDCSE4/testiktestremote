@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  web:
+    image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+    build:
+      context: ..
+      dockerfile: ./apps/web/config/Dockerfile
+      args:
+        - MEDIA_URL=${MEDIA_URL}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+        - SENTRY_WEB_DSN=${SENTRY_WEB_DSN}
+        - MEDIA_KEY=${MEDIA_KEY}
+        - PORT=${FRONTEND_PORT}
+        - ENV_NAME=${ENV_NAME}
+  api:
+    image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+    build:
+      context: ..
+      dockerfile: ./apps/api/config/Dockerfile
+      args:
+        - API_PORT=${API_PORT}
+        - ORIGINS=${ORIGINS}
+        - ENCRYPT_KEY=${ENCRYPT_KEY}
+        - SIGN_KEY=${SIGN_KEY}
+        - MONGO_URL=${MONGO_URL}
+        - REDIS_URL=${REDIS_URL}
+        - SENTRY_DSN=${SENTRY_DSN}

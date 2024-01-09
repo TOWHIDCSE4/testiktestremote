@@ -19,6 +19,7 @@ import useProfile from "../hooks/users/useProfile"
 import { USER_ROLES } from "../helpers/constants"
 import useStoreSession from "../store/useStoreSession"
 import { T_BackendResponse } from "custom-validator"
+import isDev from "../helpers/isDev"
 
 const navigation = [
   { name: "Profile Home", slug: "profile-home", href: "/profile-home" },
@@ -38,11 +39,16 @@ const navigation = [
   {
     name: "Production",
     slug: "production",
+    showOnLive: true,
     children: [
       { name: "Timer", href: "/production/timer" },
-      { name: "Analytics", href: "/production/analytics" },
-      { name: "Dev Ops", href: "/production/dev-ops" },
-      { name: "System Check", href: "/production/system-check" },
+      { name: "Analytics", href: "/production/analytics", showOnLive: false },
+      { name: "Dev Ops", href: "/production/dev-ops", showOnLive: false },
+      {
+        name: "System Check",
+        href: "/production/system-check",
+        showOnLive: false,
+      },
       { name: "Product List", href: "/production/product-list" },
     ],
   },
@@ -111,6 +117,7 @@ const navigation = [
 
 const SideBarNav = () => {
   const pathname = usePathname()
+
   const queryClient = useQueryClient()
   const router = useRouter()
   const storeSession = useStoreSession((state) => state)
@@ -254,9 +261,14 @@ const SideBarNav = () => {
             <ul role="list" className="space-y-1">
               {navigation.map((item, index) => {
                 const currentUserRole = storeSession?.role
-                const willShow = item.showOnlyFor?.find(
+                const willShowForRole = item.showOnlyFor?.find(
                   (item) => item === currentUserRole
                 )
+                const willShowOnCurrentEnv =
+                  !isDev && typeof item.showOnLive === "boolean"
+                    ? item.showOnLive
+                    : true
+                const willShow = willShowForRole && willShowOnCurrentEnv
                 if (!item.showOnlyFor || willShow) {
                   return (
                     <li key={item.name}>

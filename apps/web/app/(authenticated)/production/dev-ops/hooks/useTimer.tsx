@@ -3,7 +3,7 @@ import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
 import Cookies from "js-cookie"
 import { useEffect, useState } from "react"
-import { API_URL } from "../../../../../helpers/constants"
+import { NEXT_PUBLIC_API_URL } from "../../../../../helpers/constants"
 import useDevOpsTimers from "../_components/_state"
 
 interface Props {
@@ -18,14 +18,17 @@ const useTimer = ({ startTime, endTime, resetInterval, timerId }: Props) => {
     mutationFn: async (data: { timerId: string }) => {
       if (!data.timerId) return
       const token = Cookies.get("tfl")
-      const res = await fetch(`${API_URL}/api/timers/dev-ops-timers-unit`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "content-type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const res = await fetch(
+        `${NEXT_PUBLIC_API_URL}/api/timers/dev-ops-timers-unit`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "content-type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       return await res.json()
     },
     onSuccess: () => {

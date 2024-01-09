@@ -41,10 +41,6 @@ const PinOption = ({ pinnedComponentType }: Props) => {
         {
           onSuccess: (data) => {
             queryClient.setQueriesData(getProfileQueryKey(), (query: any) => {
-              console.log(
-                "tung",
-                set(query, "item", { ...query.item, ...data.item })
-              )
               return set(query, "item", { ...query.item, ...data.item })
             })
             // queryClient.invalidateQueries(getProfileQueryKey())
@@ -64,11 +60,6 @@ const PinOption = ({ pinnedComponentType }: Props) => {
       {
         onSuccess: (data) => {
           queryClient.setQueriesData(getProfileQueryKey(), (query: any) => {
-            console.log(
-              "tung",
-              set(query, "item", { ...query.item, ...data.item })
-            )
-
             return set(query, "item", { ...query.item, ...data.item })
           })
           // queryClient.invalidateQueries(getProfileQueryKey())
@@ -91,10 +82,6 @@ const PinOption = ({ pinnedComponentType }: Props) => {
         {
           onSuccess: (data) => {
             queryClient.setQueriesData(getProfileQueryKey(), (query: any) => {
-              console.log(
-                "tung",
-                set(query, "item", { ...query.item, ...data.item })
-              )
               return set(query, "item", { ...query.item, ...data.item })
             })
             queryClient.invalidateQueries(getProfileQueryKey())
@@ -111,11 +98,6 @@ const PinOption = ({ pinnedComponentType }: Props) => {
       {
         onSuccess: (data) => {
           queryClient.setQueriesData(getProfileQueryKey(), (query: any) => {
-            console.log(
-              "tung",
-              set(query, "item", { ...query.item, ...data.item })
-            )
-
             return set(query, "item", { ...query.item, ...data.item })
           })
           queryClient.invalidateQueries(getProfileQueryKey())

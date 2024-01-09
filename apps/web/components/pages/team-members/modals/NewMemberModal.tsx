@@ -69,7 +69,6 @@ const NewMemberModal = ({ isOpen, onClose }: NewModalProps) => {
   ]
 
   const handleCheckboxChange = () => {
-    console.log(isNotChecked)
     setIsNotChecked(!isNotChecked)
   }
 

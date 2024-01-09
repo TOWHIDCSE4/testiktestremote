@@ -1,22 +1,31 @@
 "use client"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
-import { API_URL } from "../../../../../helpers/constants"
+import { API_URL, NEXT_PUBLIC_API_URL } from "../../../../../helpers/constants"
 import useDevOpsTimers from "./_state"
-import { revalidateDevOpsTimers } from "./actions"
+import {
+  revalidateDevOpsTimers,
+  revalidateDevOpsTimersSessions,
+} from "./actions"
 
 type DevOpsTimerTypes = {
-  numberOfTimers: number
+  noOfTimers: number
   locationId: string
   startTime: number
-  endTimeRange: number[]
+  // endTime: Date | null
   unitCycleTime: number[]
-  selectedMachineClasses: string[] | string
+  machineClassIds: string[] | string
+  name: string
+  noOfAlerts: number
+  endTimeRange: number[]
 }
 
 const TimersGeneratorForm = () => {
+  const router = useRouter()
+  const sessionName = useDevOpsTimers((state) => state.sessionName)
+  const setSessionName = useDevOpsTimers((state) => state.setSessionName)
   const setNumberOfTimers = useDevOpsTimers((state) => state.setNumberOfTimers)
   const startTime = useDevOpsTimers((state) => state.startTime)
   const endTimeRange = useDevOpsTimers((state) => state.endTimerRange)
@@ -31,15 +40,16 @@ const TimersGeneratorForm = () => {
 
   const devOpsTimers = useMutation({
     mutationFn: async (data: DevOpsTimerTypes) => {
-      if (
-        !data.numberOfTimers ||
-        !data.endTimeRange ||
-        !data.locationId ||
-        !data.startTime
-      )
-        return
+      if (!data.noOfTimers) toast.error("Please provide number of timers")
+      if (!data.startTime) toast.error("Please provide start time")
+      // if (!data.endTime) toast.error("Please provide end time range")
+      if (!data.unitCycleTime) toast.error("Please provide unit cycle time")
+      if (!data.machineClassIds) toast.error("Please provide machine classes")
+      if (!data.locationId) toast.error("Please provide location id")
+      if (!data.name) toast.error("Please provide session name")
+
       const token = Cookies.get("tfl")
-      const res = await fetch(`${API_URL}/api/timers/dev-ops-timers`, {
+      const res = await fetch(`${API_URL}/api/dev-ops/session-create`, {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -51,6 +61,8 @@ const TimersGeneratorForm = () => {
     },
     onSuccess: () => {
       revalidateDevOpsTimers()
+      revalidateDevOpsTimersSessions()
+      router.refresh()
       toast.success("Timers has been generated")
     },
     onError: (e) => {
@@ -61,17 +73,27 @@ const TimersGeneratorForm = () => {
 
   const onSubmit = () => {
     devOpsTimers.mutate({
-      locationId,
-      numberOfTimers,
-      startTime,
-      endTimeRange,
-      unitCycleTime,
-      selectedMachineClasses,
+      name: sessionName,
+      // endTime: null,
+      noOfTimers: numberOfTimers,
+      noOfAlerts: 3,
+      machineClassIds: selectedMachineClasses,
+      unitCycleTime: unitCycleTime,
+      startTime: startTime,
+      endTimeRange: endTimeRange,
+      locationId: locationId,
     })
   }
 
   return (
     <div className="flex flex-col items-center space-y-2">
+      <input
+        type="text"
+        value={sessionName}
+        placeholder="Session Name"
+        className="rounded-md shadow-md"
+        onChange={(e) => setSessionName(e.target.value)}
+      />
       <input
         type="number"
         placeholder="No of timers"
@@ -80,9 +102,17 @@ const TimersGeneratorForm = () => {
       />
       <button
         onClick={onSubmit}
-        disabled={devOpsTimers.isLoading}
+        disabled={
+          devOpsTimers.isLoading ||
+          !sessionName ||
+          !startTime ||
+          !unitCycleTime ||
+          !selectedMachineClasses?.length ||
+          !locationId ||
+          !numberOfTimers
+        }
         type="submit"
-        className="p-2 rounded-md w-full bg-[#102136] shadow-md border-1 text-white"
+        className="p-2 rounded-md w-full bg-[#102136] shadow-md border-1 text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         {devOpsTimers.isLoading ? "Generating ..." : "Generate"}
       </button>

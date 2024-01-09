@@ -13,6 +13,7 @@ interface Props {
     endAt: string
     cycleTime: number
     units: number
+    sessionName: string
   }
 }
 
@@ -34,6 +35,7 @@ const TimerCard: React.FC<Props> = ({ timer }) => {
             {timer?.machine?.name}
           </h3>
           <TimerCardClock
+            sessionName={timer?.sessionName}
             startAt={new Date(timer?.startAt)}
             endAt={new Date(timer?.endAt)}
             timerId={timer?._id as string}

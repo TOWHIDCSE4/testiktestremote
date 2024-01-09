@@ -24,11 +24,11 @@ router.get("/total-tons-unit", isUserLoggedIn, totalTonsUnit)
 router.post("/assign-job", isUserLoggedIn, assignJob)
 
 //default
-router.get("/dev-ops", getDevOpsTimers)
+router.get("/dev-ops", isUserLoggedIn, getDevOpsTimers)
 router.get("/", isUserLoggedIn, getAllTimers)
 router.get("/:id", isUserLoggedIn, getTimer)
 router.post("/", addTimer)
-router.post("/dev-ops-timers", createDevOpsTimers)
+router.post("/dev-ops-timers", isUserLoggedIn, createDevOpsTimers)
 router.post("/dev-ops-timers-unit", createDevOpsTimersUnit)
 router.patch("/:id", isUserLoggedIn, updateTimer)
 router.delete("/:id", isUserLoggedIn, deleteTimer)

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import useLocation from "../../../hooks/locations/useLocation"
 import useProfile from "../../../hooks/users/useProfile"
 import PinnedDashboardComponents from "./pinned-dashboard-components/PinnedDashboardComponents"
+import isDev from "../../../helpers/isDev"
 // import ProductionLookup from "./report-lookup/ProductionLookup"
 
 const Content = () => {
@@ -35,9 +36,11 @@ const Content = () => {
             <span className="text-black mx-2">&gt;</span>
             <span className="text-red-500">{location?.item?.name}</span>
           </h4>
-          <div className="w-full h-0.5 bg-gray-200 mt-6">
-            <PinnedDashboardComponents />
-          </div>
+          {isDev && (
+            <div className="w-full h-0.5 bg-gray-200 mt-6">
+              <PinnedDashboardComponents />
+            </div>
+          )}
         </div>
       </div>
 

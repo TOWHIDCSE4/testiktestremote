@@ -4,7 +4,7 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"],
+      "outputs": [".next/**", "!.next/cache/**", "build/**"],
       "env": [
         "SENTRY_DSN",
         "NODE_ENV",
@@ -15,8 +15,11 @@
         "MONGO_URL",
         "REDIS_URL",
         "ORIGINS",
+        "API_PORT",
         "PORT",
-        "API_URL",
+        "NEXT_PUBLIC_API_URL",
+        "ENV_NAME",
+        "NEXT_PUBLIC_ENV_NAME",
         "WEB_URL",
         "MEDIA_URL",
         "MEDIA_KEY",

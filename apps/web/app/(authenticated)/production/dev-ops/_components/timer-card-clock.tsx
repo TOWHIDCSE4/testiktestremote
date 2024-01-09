@@ -3,12 +3,14 @@
 import dayjs from "dayjs"
 import React, { useEffect, useRef } from "react"
 import useTimer from "../hooks/useTimer"
+import useDevOpsTimers from "./_state"
 
 interface Props {
   startAt: Date
   endAt: Date
   timerId: string
   unitCycleTime: number
+  sessionName: string
 }
 
 const TimerCardClock: React.FC<Props> = ({
@@ -16,7 +18,9 @@ const TimerCardClock: React.FC<Props> = ({
   startAt,
   timerId,
   unitCycleTime,
+  sessionName,
 }) => {
+  const setSessionName = useDevOpsTimers((state) => state.setSessionName)
   const { formattedTime, isClockRunning, setIsClockRunning } = useTimer({
     startTime: startAt,
     endTime: endAt,
