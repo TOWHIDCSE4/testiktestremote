@@ -158,9 +158,9 @@ const SystemReport = ({
 
   // useEffect for convert portrait to landscape
   useEffect(() => {
-    var css = "@page { size: landscape; }"
-    var head = document.head || document.getElementsByTagName("head")[0]
-    var style = document.createElement("style")
+    const css = "@page { size: landscape; }"
+    const head = document.head || document.getElementsByTagName("head")[0]
+    const style = document.createElement("style")
 
     style.type = "text/css"
     style.media = "print"

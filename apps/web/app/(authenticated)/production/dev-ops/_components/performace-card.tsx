@@ -15,9 +15,7 @@ import { MdStackedLineChart } from "react-icons/md"
 import { SlBadge } from "react-icons/sl"
 import { TiChartBar } from "react-icons/ti"
 
-interface Props {}
-
-const PerformaceCard: React.FC<Props> = () => {
+const PerformaceCard: React.FC<{}> = () => {
   return (
     <Card className="w-full flex-1 h-[40rem] overflow-y-auto">
       <div className="flex items-center justify-between space-x-2 p-2 z-50">

@@ -55,7 +55,7 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
     : reportData?.[selectedType]
   const grouped = groupByMachineClass(filteredReportData, machineClassId)
   const groupedKeys = Object.keys(grouped)
-  let data = selectedMachineClass ? grouped[selectedMachineClass] : []
+  const data = selectedMachineClass ? grouped[selectedMachineClass] : []
 
   if (data?.length < 3) {
     const locations = ["Seguin", "Conroe", "Gunter"]

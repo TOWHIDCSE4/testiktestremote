@@ -26,7 +26,7 @@ const NOT_PART_EDITABLE_USERS = [USER_ROLES.Personnel]
 
 const DetailsModal = ({ isOpen, onClose, id }: DetailsModalProps) => {
   const storeSession = useStoreSession((state) => state)
-  let socket = useSocket((store) => store.instance)
+  const socket = useSocket((store) => store.instance)
   const queryClient = useQueryClient()
   const closeButtonRef = useRef(null)
   const searchRef = useRef(null)

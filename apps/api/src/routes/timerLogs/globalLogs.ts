@@ -336,7 +336,7 @@ export const calculateGlobalMetrics = async (req: Request, res: Response) => {
     //   startDate && endDate
     //     ? dayjs(String(endDate)).diff(String(startDate), "hour")
     //     : dayjs(Date.now()).diff(dayjs(firstRecord[0].createdAt), "hour")
-    let query = {}
+    const query = {}
 
     if (locationId) {
       const locationids = locationId

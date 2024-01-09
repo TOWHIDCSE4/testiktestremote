@@ -3,7 +3,7 @@ import ProductionTrackerBar from "../../../shared/graphs/ProductionTrackerBar"
 import MachineProductionTracker from "../../../shared/graphs/MachineProductionTracker"
 import MachineProductionPerLocationTracker from "../../../shared/graphs/MachineProductionPerLocationTracker"
 import PinOption from "../../../shared/Pin/PinOption"
-import { EUserPinnedComponents } from "custom-validator/ZUser"
+import { EUserPinnedComponents } from "custom-validator"
 
 const Analytics = () => {
   return (

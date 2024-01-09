@@ -164,7 +164,7 @@ export const paginated = async (req: Request, res: Response) => {
         ],
       })
 
-      let sorting: any = {}
+      const sorting: any = {}
       if (key && sort) {
         sorting[`${key}`] = sort
       } else {

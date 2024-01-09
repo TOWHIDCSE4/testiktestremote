@@ -2,7 +2,7 @@ import { API_URL_TIMER_LOGS } from "../../helpers/constants"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 
-export async function deleteTimeLog(id: String) {
+export async function deleteTimeLog(id: string) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_TIMER_LOGS}/${id}`, {
     method: "DELETE",

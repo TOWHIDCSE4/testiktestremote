@@ -110,7 +110,7 @@ const Content = () => {
   )?.name
 
   useEffect(() => {
-    let tempArr: string[] = []
+    const tempArr: string[] = []
     locations?.items.forEach((location) => {
       tempArr.push(String(location._id))
     })

@@ -750,11 +750,7 @@ export const ControllerContextProvider = ({
     }
   }, [timerDetailData])
   // function of add time log call+
-  const timeLogCall = (
-    jobId: any,
-    byPassLocal: boolean = false,
-    attempt: number = 0
-  ) => {
+  const timeLogCall = (jobId: any, byPassLocal = false, attempt = 0) => {
     if (attempt > 5) return
     if (!byPassLocal) {
       if (!stopReasons.length) {

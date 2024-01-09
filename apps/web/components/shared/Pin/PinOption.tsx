@@ -25,8 +25,6 @@ const PinOption = ({ pinnedComponentType }: Props) => {
   const pinnedComponentsDashboard = profileData?.item?.pinnedComponentsDashboard
   const pinnedComponentsPopup = profileData?.item?.pinnedComponentsPopup
   const onPinToDashboard = () => {
-    e.stopPropagation()
-    e.preventDefault()
     if (!pinnedComponentsDashboard) {
       return
     }

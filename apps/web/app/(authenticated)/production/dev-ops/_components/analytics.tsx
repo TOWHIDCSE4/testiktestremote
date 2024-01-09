@@ -2,9 +2,7 @@ import { Card } from "@mui/material"
 import React from "react"
 import AnalyticsCard from "./analytics-card"
 
-interface Props {}
-
-const Analytics: React.FC<Props> = () => {
+const Analytics: React.FC<{}> = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-x-2">
       {[

@@ -65,7 +65,7 @@ const endByLocationId = async (locationId: string) => {
 
 const getCurrentRunningByLocationId = async (
   locationId: string,
-  timeZone: string = "America/Chicago"
+  timeZone = "America/Chicago"
 ) => {
   const currentDayStart = getStartOfDayTimezone(timeZone)
   const yesterdayEndDay = getYesterdayEndOfDayTimzeone(timeZone)

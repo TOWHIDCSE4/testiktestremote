@@ -129,7 +129,7 @@ const MachineDetailsModal = ({
           {
             ...data,
             _id: machineDetails?.item?._id as string,
-            files: [...machineDetails?.item?.files, ...uploadedNames],
+            files: [...(machineDetails?.item?.files || []), ...uploadedNames],
           },
           callBackReq
         )

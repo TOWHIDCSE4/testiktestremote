@@ -61,7 +61,7 @@ export const locationMachineClass = async (req: Request, res: Response) => {
           message: "Data from cache",
         })
       } else {
-        let query: any = {
+        const query: any = {
           _id: { $in: distinctMachineIds },
           locationId: { $in: locationIds },
           $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],

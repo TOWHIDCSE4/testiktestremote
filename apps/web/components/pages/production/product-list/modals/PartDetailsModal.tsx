@@ -27,8 +27,7 @@ import {
   USER_ROLES,
 } from "../../../../../helpers/constants"
 import useStoreSession from "../../../../../store/useStoreSession"
-
-const _ = require("lodash")
+import _ from "lodash"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -159,7 +158,7 @@ const PartDetailsModal = ({
           {
             ...data,
             _id: partDetails?.item?._id as string,
-            files: [...partDetails?.item?.files, ...uploadedNames],
+            files: [...(partDetails?.item?.files || []), ...uploadedNames],
           },
           callBackReq
         )

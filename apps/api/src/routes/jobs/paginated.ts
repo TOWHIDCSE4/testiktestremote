@@ -236,7 +236,7 @@ export const paginated = async (req: Request, res: Response) => {
       })
 
       getAllJobs.forEach((job, index) => {
-        let { timerLogs } = job
+        const { timerLogs } = job
         if (timerLogs.length) {
           const groupedLogs = chain(timerLogs)
             .groupBy((log) => log?.date?.split(":")[0]) // Extracting only the date part
@@ -251,7 +251,7 @@ export const paginated = async (req: Request, res: Response) => {
           const maping = Object.values(groupedLogs)
             .map((item) => {
               const array = Object.values(item).flat()
-              let [itm] = array
+              const [itm] = array
               if (!itm) {
                 return []
               }
