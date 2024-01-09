@@ -5,6 +5,7 @@ export {
   ZUserPassword,
   ZUserProfile,
   EUserPinnedComponents,
+  ZUserPinnedComponents,
 } from "./ZUser"
 export type {
   T_User,
@@ -12,6 +13,7 @@ export type {
   T_UserBasic,
   T_UserPassword,
   T_UserProfile,
+  T_UserPinnedComponents,
 } from "./ZUser"
 
 export { ZLogin } from "./ZLogin"

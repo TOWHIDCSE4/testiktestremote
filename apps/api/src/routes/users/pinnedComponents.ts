@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { z } from "zod"
-import { ZUserPinnedComponents } from "custom-validator/ZUser"
+import { ZUserPinnedComponents } from "custom-validator"
 import User from "../../models/users"
 import * as Sentry from "@sentry/node"
 

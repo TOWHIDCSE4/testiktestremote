@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { EUserPinnedComponents } from "custom-validator/ZUser"
+import { EUserPinnedComponents } from "custom-validator"
 const { Schema } = mongoose
 
 const users = new Schema({

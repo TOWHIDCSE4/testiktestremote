@@ -6,7 +6,7 @@ import useDeleteUser from "../../../../hooks/users/useDeleteUser"
 import { useQueryClient } from "@tanstack/react-query"
 import { T_BackendResponse, T_User } from "custom-validator"
 import toast from "react-hot-toast"
-import { T_UserStatus } from "custom-validator/ZUser"
+import { T_UserStatus } from "custom-validator"
 import useUpdateUser from "../../../../hooks/users/useUpdateUser"
 
 interface DeleteModalProps {
