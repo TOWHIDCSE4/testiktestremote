@@ -26,7 +26,6 @@ const getFirstCycleFrom = async (timerId: string, time: Date) => {
 }
 
 const endAllByTimerId = async (timerId: string, endAt = new Date()) => {
-  console.log("byTimer", timerId)
   return CycleTimerRepository.updateMany(
     {
       timerId,

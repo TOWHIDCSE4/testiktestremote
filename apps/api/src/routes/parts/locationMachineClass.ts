@@ -62,7 +62,6 @@ export const byLocationMachineClass = async (req: Request, res: Response) => {
   const { machineClasses, locations, search, page } = req.query
   let { startDate, endDate } = req.query
 
-  console.log("[START_DATE]:", startDate, "[END_DATE]:", endDate)
   if (
     !machineClasses ||
     !machineClasses?.length ||

@@ -21,7 +21,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
     const { role, machineClassId, factoryId } = req.query
     const query = { status: "Approved", role, machineClassId, factoryId }
     const filteredQuery = pickBy((v) => !isEmpty(v), query)
-    console.log("query", filteredQuery)
     const usersCounts = await Users.find(filteredQuery).countDocuments()
     const getAllUsers = await Users.find(filteredQuery).sort({ createdAt: -1 })
     res.json({

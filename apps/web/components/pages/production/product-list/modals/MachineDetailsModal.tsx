@@ -63,10 +63,6 @@ const MachineDetailsModal = ({
   // const { mutate: toVerify, isLoading: isVerifyLoading } =
   //   useVerifiedMachine(id)
 
-  console.log(
-    "🚀 ~ file: MachineDetailsModal.tsx:65 ~ machineDetails?.item?.verified:",
-    machineDetails?.item?.verified
-  )
   const [isVerifiedMachine, setIsVerifiedMachine] = useState(
     machineDetails?.item?.verified ? true : false
   )

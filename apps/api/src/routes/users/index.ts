@@ -17,6 +17,10 @@ import { roleCount } from "./roleCount"
 import { paginated } from "./paginated"
 import { acceptUser } from "./accept"
 import { getOperatorList } from "./operator"
+import {
+  updatePinnedComponentsDashboard,
+  updatePinnedComponentsPopup,
+} from "./pinnedComponents"
 
 //custom
 router.get("/paginated", isUserLoggedIn, paginated)
@@ -37,5 +41,9 @@ router.delete("/:id", isUserLoggedIn, deleteUser)
 router.post("/login", auth)
 router.post("/logout", logout)
 router.get("/verify/:token", verify)
+
+// pinned comp
+router.patch("/pinned-components/dashboard", updatePinnedComponentsDashboard)
+router.patch("/pinned-components/popup", updatePinnedComponentsPopup)
 
 export default router

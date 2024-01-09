@@ -8,8 +8,6 @@ export const metadata = {
 }
 
 const Timer = () => {
-  const store = cookies()
-  console.log("[TFL]", store.get("tfl"))
   return <Content />
 }
 

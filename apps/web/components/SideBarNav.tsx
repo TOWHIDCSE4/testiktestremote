@@ -44,7 +44,11 @@ const navigation = [
       { name: "Timer", href: "/production/timer" },
       { name: "Analytics", href: "/production/analytics", showOnLive: false },
       { name: "Dev Ops", href: "/production/dev-ops", showOnLive: false },
-      { name: "System Check", href: "/production/system-check" },
+      {
+        name: "System Check",
+        href: "/production/system-check",
+        showOnLive: false,
+      },
       { name: "Product List", href: "/production/product-list" },
     ],
   },

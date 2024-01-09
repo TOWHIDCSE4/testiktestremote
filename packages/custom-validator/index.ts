@@ -4,6 +4,7 @@ export {
   ZUserBasic,
   ZUserPassword,
   ZUserProfile,
+  EUserPinnedComponents,
 } from "./ZUser"
 export type {
   T_User,

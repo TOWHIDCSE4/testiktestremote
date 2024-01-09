@@ -307,7 +307,6 @@ export const updateTimer = async (req: Request, res: Response) => {
     _id: req.params.id,
     $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }],
   })
-  console.log(getTimer)
   const condition = req.body
   if (getTimer.length > 0) {
     if (!isEmpty(condition)) {

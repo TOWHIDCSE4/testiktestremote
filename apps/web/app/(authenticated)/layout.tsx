@@ -5,6 +5,8 @@ import "../globals.css"
 import { Exo_2 } from "next/font/google"
 import { Toaster } from "react-hot-toast"
 // import {clarity} from 'clarity-js';
+import "react-grid-layout/css/styles.css"
+import "react-resizable/css/styles.css"
 
 const exo = Exo_2({ subsets: ["latin"] })
 

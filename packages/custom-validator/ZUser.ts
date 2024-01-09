@@ -18,6 +18,17 @@ export const ZUserRoles = z.enum([
   "Corporate_Director",
 ])
 
+export const EUserPinnedComponents = {
+  factoryOutlook: "factoryOutlook",
+  perMachine: "perMachine",
+  perMachinePerLocation: "perMachinePerLocation",
+}
+export const ZUserPinnedComponents = z.enum([
+  EUserPinnedComponents.factoryOutlook,
+  EUserPinnedComponents.perMachine,
+  EUserPinnedComponents.perMachinePerLocation,
+])
+
 export const ZUserStatus = z.enum([
   "Approved",
   "Rejected",
@@ -45,6 +56,8 @@ export const ZUser = z.object({
   lastName: z.string(),
   machineClassId: z.union([z.string(), ZMachineClass]).nullable().optional(),
   role: ZUserRoles,
+  pinnedComponentsDashboard: z.array(ZUserPinnedComponents),
+  pinnedComponentsPopup: z.array(ZUserPinnedComponents),
   email: z.string().email(),
   password: z.string().min(8),
   isGlobalFactory: z.boolean().optional(),
@@ -77,3 +90,4 @@ export type T_UserRole = z.infer<typeof ZUserRoles>
 export type T_UserBasic = z.infer<typeof ZUserBasic>
 export type T_UserProfile = z.infer<typeof ZUserProfile>
 export type T_UserPassword = z.infer<typeof ZUserPassword>
+export type T_UserPinnedComponents = z.infer<typeof ZUserPinnedComponents>

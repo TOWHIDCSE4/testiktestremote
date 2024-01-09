@@ -83,10 +83,6 @@ export const locationMachineClass = async (req: Request, res: Response) => {
         })
       }
     } catch (err: any) {
-      console.log(
-        "🚀 ~ file: locationMachineClass.ts:99 ~ locationMachineClass ~ err:",
-        err
-      )
       const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
       res.json({
         error: true,
