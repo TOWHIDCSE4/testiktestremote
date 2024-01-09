@@ -34,6 +34,57 @@ export const sessionList = async (req: Request, res: Response) => {
   }
 }
 
+export const restartSession = async (req: Request, res: Response) => {
+  try {
+    let updatedSession
+    const { sessionId } = req.body
+    const session = await devOpsSession.findOne({ _id: sessionId })
+    if (session) {
+      const currentTime = new Date()
+      const endTime = currentTime.getTime() + (session.duration ?? 0)
+      session.createdAt = currentTime
+      session.endTime = endTime.toString()
+      await session.save()
+      await devOpsTimers.deleteMany({ sessionId })
+      await devOpsSession.updateOne(
+        { _id: sessionId },
+        { $unset: { timers: 1 } }
+      )
+      const results = generateDevOpsTimers({
+        sessionId,
+        locationId: session.locationId ?? "",
+        numberOfTimers: session.noOfTimers ?? 1,
+        machineClassIds: session.machineClassIds,
+        endTimeRange: session.endTimeRange,
+        startTime: session.startTime ?? 1,
+        unitCycleTime: session.unitCycleTime,
+        createdBy: res.locals.user._id,
+        sessionName: session.name ?? "",
+      })
+
+      const timers = await DevOpsTimers.insertMany(results)
+      const timerIds = timers.map((timer) => timer._id)
+      updatedSession = await devOpsSession
+        .findByIdAndUpdate(sessionId, { timers: timerIds }, { new: true })
+        .populate("timers")
+    }
+    res.json({
+      error: false,
+      items: updatedSession,
+      message: null,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
+    res.json({
+      error: true,
+      message: message,
+      item: null,
+      itemCount: null,
+    })
+  }
+}
+
 export const timersBySession = async (req: Request, res: Response) => {
   try {
     const sessionList = await devOpsTimers.find({ sessionName: req.query.name })
@@ -172,11 +223,17 @@ export const addSession = async (req: Request, res: Response) => {
     const sessionName =
       name + "_" + res.locals.user.firstName + res.locals.user.lastName
     const duration: number = new Date(endTime).getTime() - new Date().getTime()
+    const timers = noOfTimers * locationId.split(",").length
     const newSession = new devOpsSession({
       name: sessionName,
       endTime,
       duration,
-      noOfTimers,
+      locationId,
+      startTime,
+      endTimeRange,
+      unitCycleTime,
+      machineClassIds,
+      noOfTimers: timers,
       createdAt: Date.now(),
       createdBy: res.locals.user._id,
       ...rest,

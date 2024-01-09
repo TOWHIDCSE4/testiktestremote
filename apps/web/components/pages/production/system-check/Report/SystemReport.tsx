@@ -166,7 +166,7 @@ const SystemReport = ({
     style.media = "print"
 
     if ((style as any).sheet) {
-      ;(style as any).sheet.cssText = css
+      (style as any).sheet.cssText = css
     } else {
       style.appendChild(document.createTextNode(css))
     }

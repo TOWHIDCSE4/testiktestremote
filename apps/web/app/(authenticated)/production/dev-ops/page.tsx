@@ -6,12 +6,12 @@ import { redirect } from "next/navigation"
 import React, { cache } from "react"
 import { API_URL } from "../../../../helpers/constants"
 import { T_DBReturn } from "../../../_types"
+import { _Get_Machine_Classes } from "./_components/actions"
 import Alerts from "./_components/alerts"
 import Analytics from "./_components/analytics"
 import DashboardMonitoring from "./_components/dashboard-monitoring"
 import EndTimerRangeSlider from "./_components/end-timer-range-slider"
 import LocationsSelection from "./_components/locations-component"
-import { _Get_Machine_Classes } from "./_components/machine-classes"
 import PerformanceSection from "./_components/performance-section"
 import SelectMachineClass from "./_components/select-machine-class"
 import SessionSimulation from "./_components/sessions-simulation"
@@ -104,7 +104,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
         <Timers timersGroups={timersGroups} />
       )}
       <SessionSimulation sessionsList={sessionsList} />
-      <PerformanceSection />
+      <PerformanceSection sessionsList={sessionsList} />
       <Alerts />
       <DashboardMonitoring />
     </WithAuth>

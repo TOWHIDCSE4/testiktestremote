@@ -1,13 +1,19 @@
-import React from "react"
+import React, { Suspense } from "react"
 import MachineClassesCard from "./machine-classes"
-import PerformaceCard from "./performace-card"
+import PerformanceCard from "./performance-card"
 
-const PerformanceSection = async () => {
+interface Props {
+  sessionsList: any
+}
+
+const PerformanceSection: React.FC<Props> = async ({ sessionsList }) => {
   return (
     <div className="flex flex-col space-y-2">
       <div className="flex items-center justify-between space-x-2  mt-6">
-        <PerformaceCard />
-        <MachineClassesCard />
+        <PerformanceCard sessionsList={sessionsList} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <MachineClassesCard />
+        </Suspense>
       </div>
     </div>
   )

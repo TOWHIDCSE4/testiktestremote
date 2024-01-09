@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material"
+import dayjs from "dayjs"
 import React from "react"
 import { BiRefresh } from "react-icons/bi"
 import { LuMoreVertical } from "react-icons/lu"
@@ -15,7 +16,11 @@ import { MdStackedLineChart } from "react-icons/md"
 import { SlBadge } from "react-icons/sl"
 import { TiChartBar } from "react-icons/ti"
 
-const PerformaceCard: React.FC<{}> = () => {
+interface Props {
+  sessionsList: any
+}
+
+const PerformanceCard: React.FC<Props> = ({ sessionsList }) => {
   return (
     <Card className="w-full flex-1 h-[40rem] overflow-y-auto">
       <div className="flex items-center justify-between space-x-2 p-2 z-50">
@@ -61,98 +66,108 @@ const PerformaceCard: React.FC<{}> = () => {
             </div>
           </div>
         </div>
-        <Table
-          sx={{ minWidth: 650 }}
-          aria-label="simple table"
-          className="mt-6"
-        >
-          <TableHead>
-            <TableRow sx={{ borderBottom: 2 }}>
-              <TableCell
-                className="font-semibold text-xl"
-                sx={{ paddingBottom: 1, paddingTop: 1 }}
-              >
-                Date
-              </TableCell>
-              <TableCell
-                align="center"
-                className="font-semibold text-xl"
-                sx={{ paddingBottom: 1, paddingTop: 1 }}
-              >
-                Timers
-              </TableCell>
-              <TableCell
-                align="center"
-                className="font-semibold text-xl"
-                sx={{ paddingBottom: 1, paddingTop: 1 }}
-              >
-                Successful
-              </TableCell>
-              <TableCell
-                align="center"
-                className="font-semibold text-xl"
-                sx={{ paddingBottom: 1, paddingTop: 1 }}
-              >
-                Failed
-              </TableCell>
-              <TableCell
-                align="center"
-                className="font-semibold text-xl"
-                sx={{ paddingBottom: 1, paddingTop: 1 }}
-              >
-                % Failure
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {[...Array.from({ length: 8 })].map((row, i) => (
-              <TableRow
-                key={`row-${row}`}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
+        {sessionsList?.items.length ? (
+          <Table
+            sx={{ minWidth: 650 }}
+            aria-label="simple table"
+            className="mt-6"
+          >
+            <TableHead>
+              <TableRow sx={{ borderBottom: 2 }}>
                 <TableCell
-                  component="th"
-                  scope="row"
-                  className="text-[1rem]"
+                  className="font-semibold text-xl"
                   sx={{ paddingBottom: 1, paddingTop: 1 }}
                 >
-                  {new Date().toLocaleDateString()}
+                  Date / Time
                 </TableCell>
                 <TableCell
                   align="center"
-                  className="text-[1rem]"
+                  className="font-semibold text-xl"
                   sx={{ paddingBottom: 1, paddingTop: 1 }}
                 >
-                  {i * 20}
+                  Timers
                 </TableCell>
                 <TableCell
                   align="center"
-                  className="text-green-600 font-semibold text-[1rem]"
+                  className="font-semibold text-xl"
                   sx={{ paddingBottom: 1, paddingTop: 1 }}
                 >
-                  {i * 10}
+                  Successful
                 </TableCell>
                 <TableCell
                   align="center"
-                  className="text-red-600 font-semibold text-[1rem]"
+                  className="font-semibold text-xl"
                   sx={{ paddingBottom: 1, paddingTop: 1 }}
                 >
-                  {i * 5}
+                  Failed
                 </TableCell>
                 <TableCell
                   align="center"
-                  className="text-[1rem]"
+                  className="font-semibold text-xl"
                   sx={{ paddingBottom: 1, paddingTop: 1 }}
                 >
-                  {i + 20} %
+                  % Failure
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {sessionsList?.items?.map((session: any, i: number) => (
+                <TableRow
+                  key={session._id}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    className="text-[1rem]"
+                    sx={{ paddingBottom: 1, paddingTop: 1 }}
+                  >
+                    {new Date(session?.createdAt).toLocaleDateString()} /
+                    <span className="font-semibold">
+                      {" "}
+                      {dayjs(session?.createdAt as string).format("HH:mm")}
+                    </span>
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    className="text-[1rem]"
+                    sx={{ paddingBottom: 1, paddingTop: 1 }}
+                  >
+                    {session?.noOfTimers}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    className="text-green-600 font-semibold text-[1rem]"
+                    sx={{ paddingBottom: 1, paddingTop: 1 }}
+                  >
+                    {i * 10}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    className="text-red-600 font-semibold text-[1rem]"
+                    sx={{ paddingBottom: 1, paddingTop: 1 }}
+                  >
+                    {i * 5}
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    className="text-[1rem]"
+                    sx={{ paddingBottom: 1, paddingTop: 1 }}
+                  >
+                    {i + 20} %
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="flex items-center justify-center w-full h-40">
+            <h2 className="font-semibold text-xl">NO Data Found.</h2>
+          </div>
+        )}
       </div>
     </Card>
   )
 }
 
-export default PerformaceCard
+export default PerformanceCard

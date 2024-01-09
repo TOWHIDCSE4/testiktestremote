@@ -13,6 +13,7 @@ interface States {
   numberOfTimers: number
   selectedMachineClasses: string[] | string
   unitCycleTime: number[]
+  activeSession: string
 }
 
 interface Actions {
@@ -23,6 +24,7 @@ interface Actions {
   setDailyUnits: (timerId: { timerId: string }) => void
   setSelectedMachineClasses: (selectedMachineClass: string) => void
   setUnitCycleTime: (unitCycleTime: number[]) => void
+  setActiveSession: (activeSession: string) => void
 }
 
 const useDevOpsTimers = create<States & Actions>((set, get) => ({
@@ -33,7 +35,9 @@ const useDevOpsTimers = create<States & Actions>((set, get) => ({
   numberOfTimers: 0,
   selectedMachineClasses: [],
   unitCycleTime: [20, 40],
+  activeSession: "",
 
+  setActiveSession: (activeSession) => set({ activeSession }),
   setSessionName: (sessionName) => set({ sessionName }),
   setUnitCycleTime: (unitCycleTime) => set({ unitCycleTime }),
   setSelectedMachineClasses: (selectedMachineClasses) =>

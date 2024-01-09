@@ -4,15 +4,17 @@ import React from "react"
 import { BsClockHistory, BsEye } from "react-icons/bs"
 
 interface Props {
-  displayActions?: boolean
   heading: string
   description: string
+  noOfTimers: number
+  noOfAlerts: number
 }
 
 const Simulation: React.FC<Props> = ({
-  displayActions = true,
   heading,
   description,
+  noOfAlerts,
+  noOfTimers,
 }) => {
   return (
     <Disclosure>
@@ -27,21 +29,32 @@ const Simulation: React.FC<Props> = ({
                 </h3>
                 <div className="text-sm line-clamp-1">{description}</div>
               </div>
-              {displayActions && (
-                <div className="flex items-center justify-end w-96 space-x-2">
-                  <Disclosure.Button className="text-white bg-gray-600 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-1.5  text-center inline-flex items-center">
-                    <BsEye className="w-3 h-3 mr-2" />
-                    {open ? "Hide Details" : "Show Details"}
-                  </Disclosure.Button>
-                  <Disclosure.Button className="text-white bg-gray-600 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-1.5  text-center inline-flex items-center">
-                    <BsClockHistory className="w-3 h-3 mr-2" />
-                    Re-run Simulation
-                  </Disclosure.Button>
-                </div>
-              )}
+              <div className="flex items-center justify-end w-96 space-x-2">
+                <Disclosure.Button className="text-white bg-gray-600 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-1.5  text-center inline-flex items-center">
+                  <BsEye className="w-3 h-3 mr-2" />
+                  {open ? "Hide Details" : "Show Details"}
+                </Disclosure.Button>
+                <button className="text-white bg-gray-600 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-1.5  text-center inline-flex items-center">
+                  <BsClockHistory className="w-3 h-3 mr-2" />
+                  Re-run Simulation
+                </button>
+              </div>
             </div>
             <Disclosure.Panel className="text-sm p-8 border-gray-300 text-gray-800 bg-gray-50">
-              Ran for Duration: {description}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <p>Ran for Duration:</p>
+                  <p>{description}</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <p>Number Of Alerts</p>
+                  <p>{noOfAlerts}</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <p>Number Of Timers</p>
+                  <p>{noOfTimers}</p>
+                </div>
+              </div>
             </Disclosure.Panel>
           </>
         )

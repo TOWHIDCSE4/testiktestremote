@@ -11,7 +11,7 @@ import {
 } from "./actions"
 
 type DevOpsTimerTypes = {
-  noOfTimers: number
+  // noOfTimers: number
   locationId: string
   startTime: number
   // endTime: Date | null
@@ -40,7 +40,7 @@ const TimersGeneratorForm = () => {
 
   const devOpsTimers = useMutation({
     mutationFn: async (data: DevOpsTimerTypes) => {
-      if (!data.noOfTimers) toast.error("Please provide number of timers")
+      // if (!data.noOfTimers) toast.error("Please provide number of timers")
       if (!data.startTime) toast.error("Please provide start time")
       // if (!data.endTime) toast.error("Please provide end time range")
       if (!data.unitCycleTime) toast.error("Please provide unit cycle time")
@@ -75,7 +75,7 @@ const TimersGeneratorForm = () => {
     devOpsTimers.mutate({
       name: sessionName,
       // endTime: null,
-      noOfTimers: numberOfTimers,
+      // noOfTimers: numberOfTimers,
       noOfAlerts: 3,
       machineClassIds: selectedMachineClasses,
       unitCycleTime: unitCycleTime,

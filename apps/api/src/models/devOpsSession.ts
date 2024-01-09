@@ -8,6 +8,11 @@ const devOpsSession = new Schema({
   endTime: String,
   noOfTimers: Number,
   noOfAlerts: Number,
+  locationId: String,
+  startTime: Number,
+  endTimeRange: Array,
+  unitCycleTime: Array,
+  machineClassIds: Array,
   createdAt: {
     type: Date,
     default: Date.now,

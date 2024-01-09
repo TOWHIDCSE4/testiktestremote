@@ -1,9 +1,8 @@
 "use client"
-import React, { Suspense, useState } from "react"
-import { LuMoreHorizontal } from "react-icons/lu"
-import TimerCard from "./timer-card"
-import Loader from "../../../../../assets/images/loadGif.gif"
 import Image from "next/image"
+import React, { Suspense, useState } from "react"
+import Loader from "../../../../../assets/images/loadGif.gif"
+import TimerCard from "./timer-card"
 
 interface Props {
   isCurrentUser: boolean
@@ -34,7 +33,6 @@ const DisplayCurrentUsersTimersSession: React.FC<Props> = ({
   ) : (
     <div className=" p-4 text-center bg-white rounded-lg shadow  sm:p-5 my-4">
       <div className="w-28 h-28 rounded-full bg-green-100 dark:bg-green-900 p-2 flex items-center justify-center mx-auto mb-3.5">
-        {/* <LuMoreHorizontal className="w-28 h-28" /> */}
         <Image src={Loader} alt="loading..." />
       </div>
       <p className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
