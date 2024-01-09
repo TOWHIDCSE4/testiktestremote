@@ -6,11 +6,9 @@ import "./utils/mongodb"
 import * as Sentry from "@sentry/node"
 import { setupSocket } from "./config/setup-socket"
 import sentryConfig from "./utils/sentry.config"
-import cookieParser from "cookie-parser"
 import * as os from "os"
 
 const app: Application = express()
-app.use(cookieParser())
 
 Sentry.init(sentryConfig)
 app.use(Sentry.Handlers.requestHandler({ user: true }))
