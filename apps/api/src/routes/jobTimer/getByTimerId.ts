@@ -43,7 +43,7 @@ export const getByTimerId = async (req: Request, res: Response) => {
       }).countDocuments()
 
       if (targetCountJob && currCountJob && currCountJob <= targetCountJob) {
-        const limitReached = currCountJob <= targetCountJob || false
+        const limitReached = currCountJob >= targetCountJob || false
 
         const recommendation =
           getStockJob && limitReached
@@ -70,6 +70,11 @@ export const getByTimerId = async (req: Request, res: Response) => {
             return res.json({
               error: false,
               message: null,
+              meta: {
+                currCountJob,
+                targetCountJob,
+                recommendation,
+              },
               item: updateJobTimer,
               itemCount: null,
             })

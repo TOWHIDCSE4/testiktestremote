@@ -402,7 +402,6 @@ export const getTimeLog = async (req: Request, res: Response) => {
 export const addTimeLog = async (req: Request, res: Response) => {
   try {
     const io = getIo()
-    console.error("timerbody", req.body)
     const parsedTimerLog = ZTimerLog.safeParse(req.body)
     if (parsedTimerLog.success) {
       try {
@@ -439,7 +438,7 @@ export const addTimeLog = async (req: Request, res: Response) => {
             // ],
           })
           if (targetCountJob && currCountJob === targetCountJob) {
-            const limitReached = currCountJob + 1 === targetCountJob || false
+            const limitReached = currCountJob + 1 >= targetCountJob || false
             const recommendation =
               getStockJob && limitReached
                 ? JOB_ACTION.SWITCH
@@ -515,7 +514,9 @@ export const addTimeLog = async (req: Request, res: Response) => {
                     : 0) + 1,
             })
             const createTimerLog = await newTimerLog.save()
-            const limitReached = currCountJob + 1 === targetCountJob || false
+            const limitReached = !targetCountJob
+              ? false
+              : currCountJob + 1 >= targetCountJob
             const recommendation =
               getStockJob && limitReached
                 ? JOB_ACTION.SWITCH
@@ -532,16 +533,6 @@ export const addTimeLog = async (req: Request, res: Response) => {
               recommendation === JOB_ACTION.STOP ||
               recommendation === JOB_ACTION.SWITCH
             ) {
-              ioEmit(`timer-${req.body.timerId}`, {
-                action: `job-change`,
-                route: "POST/timer-log",
-                data: {
-                  completed: limitReached,
-                  recommendation,
-                  jobToBe,
-                  data: jobToBe == getStockJob?._id ? getStockJob : job,
-                },
-              })
               const updateJob = jobTimer.findByIdAndUpdate(req.body.timerId, {
                 jobId: jobToBe,
               })

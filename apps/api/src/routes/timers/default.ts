@@ -82,7 +82,7 @@ export const getTimer = async (req: Request, res: Response) => {
         })
       : job
 
-    const targetCountJob = !job?.isStock ? job?.count : "unlimited"
+    const targetCountJob = !job?.isStock ? job?.count : Number.POSITIVE_INFINITY
 
     const currCountJob = !job?.isStock
       ? await TimerLogs.find({
@@ -91,7 +91,8 @@ export const getTimer = async (req: Request, res: Response) => {
         }).countDocuments()
       : null
 
-    const limitReached = currCountJob === targetCountJob || false
+    const limitReached =
+      !currCountJob || !targetCountJob ? false : currCountJob >= targetCountJob
     const recommendation =
       getStockJob && limitReached
         ? JOB_ACTION.SWITCH
