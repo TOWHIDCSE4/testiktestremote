@@ -10,13 +10,15 @@ import DevOpsTimers from "../../models/devOpsTimers"
 import { generateDevOpsTimers } from "../../utils/utils"
 import devOpsTimers from "../../models/devOpsTimers"
 import machineClasses from "../../models/machineClasses"
+import { EndpointStats, getEndpointStats } from "../../middleware/requestCount"
 
-export const sessionList = async (req: Request, res: Response) => {
+export const sessionList = async (req: any, res: Response) => {
   try {
     const sessionList = await devOpsSession
       .find()
       .sort({ createdAt: -1 })
       .limit(5)
+
     res.json({
       error: false,
       items: sessionList,
@@ -303,4 +305,36 @@ export const addSession = async (req: Request, res: Response) => {
       itemCount: null,
     })
   }
+}
+
+export const requestTracker = (req: Request, res: Response) => {
+  try {
+    const filteredEndpointStats = getFilteredEndpointStats()
+    res.json({
+      message: "Endpoint Details",
+      endpointStats: filteredEndpointStats,
+    })
+  } catch (error: any) {
+    res.json({
+      message: error.message,
+    })
+  }
+}
+
+export const getFilteredEndpointStats = () => {
+  const fullStats = getEndpointStats()
+
+  // Create a copy of the stats without the 'totalTime' and 'requestTime' properties
+  const filteredStats: Record<
+    string,
+    Omit<EndpointStats, "totalTime" | "requestTime">
+  > = {}
+
+  for (const endpoint in fullStats) {
+    const { totalTime, requestTime, ...statsWithoutTotalAndRequestTime } =
+      fullStats[endpoint]
+    filteredStats[endpoint] = statsWithoutTotalAndRequestTime
+  }
+
+  return filteredStats
 }

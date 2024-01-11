@@ -1,30 +1,47 @@
 "use client"
 import { AreaChart } from "@tremor/react"
+import { T_Endpoint } from "../../../../_types"
+import React from "react"
 
-const chartdata3 = [
-  { date: "Jan", "Distance Running": 300 },
-  { date: "Feb", "Distance Running": 333 },
-  { date: "Mar", "Distance Running": 600 },
-  { date: "Apr", "Distance Running": 399 },
-  { date: "May", "Distance Running": 422 },
-  { date: "Jun", "Distance Running": 500 },
-  { date: "Jul", "Distance Running": 488 },
-  { date: "Aug", "Distance Running": 511 },
-  { date: "Sep", "Distance Running": 599 },
-  { date: "Oct", "Distance Running": 400 },
-  { date: "Nov", "Distance Running": 333 },
-  { date: "Dec", "Distance Running": 366 },
-]
+interface Props {
+  data: T_Endpoint
+}
 
-const DashboardMonitoringChart = () => {
+const DashboardMonitoringChart: React.FC<Props> = ({ data }) => {
+  const memoizedData = React.useMemo(() => {
+    const endpointStatsObj = data.endpointStats
+    const resultArray = []
+
+    for (const endpoint in endpointStatsObj) {
+      if (endpointStatsObj[endpoint]) {
+        const endpointInfo = {
+          request_endpoint: endpoint,
+          no_of_request: endpointStatsObj[endpoint].requestCount,
+          average_response: endpointStatsObj[endpoint].averageResponseTime,
+        }
+        resultArray.push(endpointInfo)
+      }
+    }
+
+    return resultArray
+  }, [data.endpointStats])
+
+  const chartData = React.useMemo(() => {
+    return memoizedData.map((item) => ({
+      Endpoint: item.request_endpoint,
+      "No Of Requests": item.no_of_request,
+      "Average Response": item.average_response,
+    }))
+  }, [memoizedData])
+
   return (
     <AreaChart
       className="h-72 p-10"
-      data={chartdata3}
-      index="date"
-      categories={["Distance Running"]}
+      data={chartData}
+      index="Average Response"
+      categories={["Average Response", "Endpoint"]}
       colors={["blue"]}
-      showYAxis={false}
+      showYAxis={true}
       showLegend={false}
       showAnimation={true}
       yAxisWidth={30}
@@ -40,7 +57,7 @@ const DashboardMonitoringChart = () => {
                 <div className="space-y-1">
                   <p className="text-tremor-content">{category.dataKey}</p>
                   <p className="font-medium text-tremor-content-emphasis">
-                    {category.value} bpm
+                    {category.value?.toString().slice(0, 40)}
                   </p>
                 </div>
               </div>

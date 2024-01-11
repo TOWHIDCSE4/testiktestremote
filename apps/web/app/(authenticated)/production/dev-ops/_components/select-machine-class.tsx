@@ -2,7 +2,13 @@
 import React from "react"
 import { T_DBReturn } from "../../../../_types"
 import { T_MachineClass } from "custom-validator"
-import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material"
+import {
+  Checkbox,
+  FormControl,
+  MenuItem,
+  OutlinedInput,
+  Select,
+} from "@mui/material"
 import useDevOpsTimers from "./_state"
 
 interface Props {
@@ -18,7 +24,7 @@ const SelectMachineClass: React.FC<Props> = ({ machineClasses }) => {
   )
   return (
     <div>
-      <h2>Machine Classes</h2>
+      <h2 className="font-semibold">Machine Classes</h2>
       <FormControl sx={{ width: "100%", maxWidth: "220px" }}>
         <Select
           className="h-10"
@@ -46,6 +52,12 @@ const SelectMachineClass: React.FC<Props> = ({ machineClasses }) => {
           </MenuItem>
           {machineClasses?.items.map((machineClass) => (
             <MenuItem key={machineClass._id} value={machineClass._id}>
+              <Checkbox
+                checked={
+                  selectedMachineClasses.indexOf(machineClass._id as string) >
+                  -1
+                }
+              />
               {machineClass.name}
             </MenuItem>
           ))}

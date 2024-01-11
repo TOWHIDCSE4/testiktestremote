@@ -30,6 +30,7 @@ const SessionSimulation: React.FC<Props> = ({ sessionsList }) => {
             sessionsList?.items?.map((session: any) => (
               <Simulation
                 key={session._id}
+                sessionId={session._id}
                 description={ms(session.duration ?? 0)}
                 heading={session.name}
                 noOfAlerts={session.noOfAlerts}

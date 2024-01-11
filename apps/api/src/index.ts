@@ -7,6 +7,7 @@ import * as Sentry from "@sentry/node"
 import { setupSocket } from "./config/setup-socket"
 import sentryConfig from "./utils/sentry.config"
 import * as os from "os"
+import { logStartTimeAndCountRequests } from "./middleware/requestCount"
 
 const app: Application = express()
 
@@ -20,6 +21,12 @@ app.use(
     credentials: true,
   })
 )
+app.use((req, res, next) => {
+  res.locals.startTime = Date.now()
+  next()
+})
+
+app.use(logStartTimeAndCountRequests)
 app.get("/", (req, res) => {
   res.status(200).json({
     error: false,

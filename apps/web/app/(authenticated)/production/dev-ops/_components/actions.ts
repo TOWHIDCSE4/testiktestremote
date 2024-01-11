@@ -1,15 +1,12 @@
 "use server"
 
-import { revalidatePath, revalidateTag } from "next/cache"
-import { T_DBReturn } from "../../../../_types"
 import { T_MachineClass } from "custom-validator"
+import { revalidateTag } from "next/cache"
 import { cookies } from "next/headers"
+import { T_DBReturn } from "../../../../_types"
 
 export const revalidateDevOpsTimers = () => {
   revalidateTag("devOps-timers")
-}
-export const revalidateDevOpsTimersSessions = () => {
-  revalidateTag("devOps-timers-sessions-list")
 }
 
 export const _Get_Machine_Classes = async () => {

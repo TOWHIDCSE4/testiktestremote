@@ -2,12 +2,18 @@
 import { Disclosure } from "@headlessui/react"
 import React from "react"
 import { BsClockHistory, BsEye } from "react-icons/bs"
+import { useMutation } from "@tanstack/react-query"
+import Cookies from "js-cookie"
+import { API_URL } from "../../../../../helpers/constants"
+import { revalidateDevOpsTimers } from "./actions"
+import { usePathname, useRouter } from "next/navigation"
 
 interface Props {
   heading: string
   description: string
   noOfTimers: number
   noOfAlerts: number
+  sessionId: string
 }
 
 const Simulation: React.FC<Props> = ({
@@ -15,7 +21,29 @@ const Simulation: React.FC<Props> = ({
   description,
   noOfAlerts,
   noOfTimers,
+  sessionId,
 }) => {
+  const pathname = usePathname()
+  const router = useRouter()
+  const reRunSession = useMutation({
+    mutationFn: async (data: { sessionId: string }) => {
+      const token = Cookies.get("tfl")
+      const res = await fetch(`${API_URL}/api/dev-ops/restart-simulation`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      return await res.json()
+    },
+    onSuccess: () => {
+      revalidateDevOpsTimers()
+      router.replace(pathname)
+    },
+  })
+
   return (
     <Disclosure>
       {({ close, open }) => {
@@ -34,9 +62,17 @@ const Simulation: React.FC<Props> = ({
                   <BsEye className="w-3 h-3 mr-2" />
                   {open ? "Hide Details" : "Show Details"}
                 </Disclosure.Button>
-                <button className="text-white bg-gray-600 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-1.5  text-center inline-flex items-center">
+                <button
+                  onClick={() => {
+                    reRunSession.mutate({ sessionId: sessionId })
+                  }}
+                  disabled={reRunSession.isLoading}
+                  className="text-white bg-gray-600 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-200 font-medium rounded-lg text-xs px-3 py-1.5  text-center inline-flex items-center disabled:opacity-50"
+                >
                   <BsClockHistory className="w-3 h-3 mr-2" />
-                  Re-run Simulation
+                  {reRunSession.isLoading
+                    ? "Running Simulation ..."
+                    : "Re-run Simulation"}
                 </button>
               </div>
             </div>
@@ -47,11 +83,11 @@ const Simulation: React.FC<Props> = ({
                   <p>{description}</p>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <p>Number Of Alerts</p>
+                  <p>Number Of Alerts:</p>
                   <p>{noOfAlerts}</p>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <p>Number Of Timers</p>
+                  <p>Number Of Timers:</p>
                   <p>{noOfTimers}</p>
                 </div>
               </div>

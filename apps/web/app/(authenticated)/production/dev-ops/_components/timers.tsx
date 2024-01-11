@@ -8,7 +8,7 @@ interface Props {
 }
 
 const TimersGroups: React.FC<Props> = ({ timersGroups }) => {
-  const setActiveSession = useDevOpsTimers((s) => s.setActiveSession)
+  const setActiveSession = useDevOpsTimers((state) => state.setActiveSession)
 
   const currentUserSessions = timersGroups?.items?.filter(
     (group: any) => group.isCurrentUser

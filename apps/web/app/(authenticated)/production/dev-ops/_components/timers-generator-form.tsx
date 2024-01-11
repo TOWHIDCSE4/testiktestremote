@@ -1,14 +1,11 @@
 "use client"
 import { useMutation } from "@tanstack/react-query"
 import Cookies from "js-cookie"
-import { useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
-import { API_URL, NEXT_PUBLIC_API_URL } from "../../../../../helpers/constants"
+import { API_URL } from "../../../../../helpers/constants"
 import useDevOpsTimers from "./_state"
-import {
-  revalidateDevOpsTimers,
-  revalidateDevOpsTimersSessions,
-} from "./actions"
+import { revalidateDevOpsTimers } from "./actions"
 
 type DevOpsTimerTypes = {
   noOfTimers: number
@@ -23,6 +20,7 @@ type DevOpsTimerTypes = {
 }
 
 const TimersGeneratorForm = () => {
+  const pathname = usePathname()
   const router = useRouter()
   const sessionName = useDevOpsTimers((state) => state.sessionName)
   const setSessionName = useDevOpsTimers((state) => state.setSessionName)
@@ -61,8 +59,7 @@ const TimersGeneratorForm = () => {
     },
     onSuccess: () => {
       revalidateDevOpsTimers()
-      revalidateDevOpsTimersSessions()
-      router.refresh()
+      router.replace(pathname)
       toast.success("Timers has been generated")
     },
     onError: (e) => {
@@ -114,8 +111,12 @@ const TimersGeneratorForm = () => {
         type="submit"
         className="p-2 rounded-md w-full bg-[#102136] shadow-md border-1 text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
-        {devOpsTimers.isLoading ? "Generating ..." : "Generate"}
+        {devOpsTimers.isLoading ? `Generating ...` : `Generate`}
       </button>
+
+      <span className="italic">
+        {locationId?.split(",")?.length * numberOfTimers} Timers
+      </span>
     </div>
   )
 }

@@ -42,7 +42,7 @@ const _Get_Sessions_List = async () => {
   const token = cookiesStore.get("tfl")
   const res = await fetch(`${API_URL}/api/dev-ops/session-list`, {
     headers: { Authorization: `Bearer ${token?.value}` },
-    next: { tags: ["devOps-timers-sessions-list"] },
+    next: { tags: ["devOps-timers"] },
   })
   return (await res.json()) as T_DBReturn<T_Timer_Group_Types[]>
 }

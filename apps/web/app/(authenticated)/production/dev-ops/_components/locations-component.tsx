@@ -1,12 +1,13 @@
 "use client"
-import * as React from "react"
-import OutlinedInput from "@mui/material/OutlinedInput"
-import MenuItem from "@mui/material/MenuItem"
+import { Checkbox } from "@mui/material"
 import FormControl from "@mui/material/FormControl"
+import MenuItem from "@mui/material/MenuItem"
+import OutlinedInput from "@mui/material/OutlinedInput"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
-import { T_DBReturn } from "../../../../_types"
 import { T_Location } from "custom-validator"
 import { useRouter, useSearchParams } from "next/navigation"
+import * as React from "react"
+import { T_DBReturn } from "../../../../_types"
 
 interface Props {
   locations: T_DBReturn<T_Location[]>
@@ -39,7 +40,7 @@ const LocationsSelection: React.FC<Props> = ({ locations }) => {
 
   return (
     <div className="">
-      <h2>Locations</h2>
+      <h2 className="font-semibold">Locations</h2>
       <FormControl sx={{ width: "100%" }}>
         <Select
           className="h-10"
@@ -67,11 +68,18 @@ const LocationsSelection: React.FC<Props> = ({ locations }) => {
           </MenuItem>
           {locations?.items.map((location) => (
             <MenuItem key={location._id} value={location._id}>
+              <Checkbox
+                checked={selectedLocations.indexOf(location._id as string) > -1}
+              />
               {location.name}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
+
+      <span className="flex flex-col items-end justify-end italic">
+        x{selectedLocations?.length} Timers
+      </span>
     </div>
   )
 }
