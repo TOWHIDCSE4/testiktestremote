@@ -47,6 +47,16 @@ const _Get_Sessions_List = async () => {
   return (await res.json()) as T_DBReturn<T_Timer_Group_Types[]>
 }
 
+const _Alert_List = async () => {
+  const cookiesStore = cookies()
+  const token = cookiesStore.get("tfl")
+  const res = await fetch(`${API_URL}/api/dev-ops/alert-list`, {
+    headers: { Authorization: `Bearer ${token?.value}` },
+    next: { tags: ["devOps-alerts"] },
+  })
+  return (await res.json()) as T_DBReturn<any>
+}
+
 interface Props {
   searchParams: {
     location: string
@@ -60,12 +70,13 @@ const _Get_Locations = cache(async () => {
 
 const Page: React.FC<Props> = async ({ searchParams }) => {
   // Get All Machine Classes and Locations and Timers
-  const [locations, machineClasses, timersGroups, sessionsList] =
+  const [locations, machineClasses, timersGroups, sessionsList, alertList] =
     await Promise.all([
       _Get_Locations(),
       _Get_Machine_Classes(),
       _Get_Timers_by_User(),
       _Get_Sessions_List(),
+      _Alert_List()
     ])
 
   // ids or location searchParams key dose not exist
@@ -105,7 +116,7 @@ const Page: React.FC<Props> = async ({ searchParams }) => {
       )}
       <SessionSimulation sessionsList={sessionsList} />
       <PerformanceSection sessionsList={sessionsList} />
-      <Alerts />
+      <Alerts alertList={alertList}/>
       <DashboardMonitoring />
     </WithAuth>
   )

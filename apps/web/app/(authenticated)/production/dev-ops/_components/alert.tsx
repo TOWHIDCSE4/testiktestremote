@@ -12,11 +12,12 @@ interface Props {
 }
 
 const Alert: React.FC<Props> = ({
-  type = "success",
+  type,
   displayActions = true,
   heading,
   description,
 }) => {
+  console.log("🚀 ~ type:", type)
   const [isOpen, setIsOpen] = useState(false)
 
   const classes = {
@@ -57,7 +58,7 @@ const Alert: React.FC<Props> = ({
               <div className="flex items-center">
                 <BiInfoCircle className="w-8 h-8 mr-2" />
                 <h3 className="text-md font-semibold line-clamp-1 w-52">
-                  This is a info alert
+                  {heading}
                 </h3>
                 <div className="text-sm line-clamp-1">{description}</div>
               </div>

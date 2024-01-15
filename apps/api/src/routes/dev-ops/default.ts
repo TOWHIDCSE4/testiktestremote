@@ -11,11 +11,13 @@ import { generateDevOpsTimers } from "../../utils/utils"
 import devOpsTimers from "../../models/devOpsTimers"
 import machineClasses from "../../models/machineClasses"
 import { EndpointStats, getEndpointStats } from "../../middleware/requestCount"
+import devOpsAlert from "../../models/devOpsAlert"
+import dayjs from "dayjs"
 
 export const sessionList = async (req: any, res: Response) => {
   try {
     const sessionList = await devOpsSession
-      .find()
+      .find({ endTime: { $lte: Date.now().toString() }})
       .sort({ createdAt: -1 })
       .limit(5)
 
@@ -39,6 +41,7 @@ export const sessionList = async (req: any, res: Response) => {
 export const restartSession = async (req: Request, res: Response) => {
   try {
     let updatedSession
+    let activeTimersRange
     const { sessionId } = req.body
     const session = await devOpsSession.findOne({ _id: sessionId })
     if (session) {
@@ -52,10 +55,12 @@ export const restartSession = async (req: Request, res: Response) => {
         { _id: sessionId },
         { $unset: { timers: 1 } }
       )
+      const noOfTimers =
+        session.noOfTimers ?? 1 / (session?.locationId?.split(",").length ?? 1)
       const results = generateDevOpsTimers({
         sessionId,
         locationId: session.locationId ?? "",
-        numberOfTimers: session.noOfTimers ?? 1,
+        numberOfTimers: noOfTimers,
         machineClassIds: session.machineClassIds,
         endTimeRange: session.endTimeRange,
         startTime: session.startTime ?? 1,
@@ -64,10 +69,16 @@ export const restartSession = async (req: Request, res: Response) => {
         sessionName: session.name ?? "",
       })
 
+      if (results) activeTimersRange = analyzeTimerActivity(results)
+
       const timers = await DevOpsTimers.insertMany(results)
       const timerIds = timers.map((timer) => timer._id)
       updatedSession = await devOpsSession
-        .findByIdAndUpdate(sessionId, { timers: timerIds }, { new: true })
+        .findByIdAndUpdate(
+          sessionId,
+          { timers: timerIds, activeTimersRange },
+          { new: true }
+        )
         .populate("timers")
     }
     res.json({
@@ -218,6 +229,7 @@ export const addSession = async (req: Request, res: Response) => {
     ...rest
   } = req.body
   if (name) {
+    let activeTimersRange
     const currentTime = new Date()
     const endTime = currentTime.setMinutes(
       currentTime.getMinutes() + endTimeRange[1]
@@ -259,12 +271,17 @@ export const addSession = async (req: Request, res: Response) => {
             sessionName,
           })
 
+          if (results) {
+            activeTimersRange = analyzeTimerActivity(results)
+          }
           const timers = await DevOpsTimers.insertMany(results)
           const timerIds = timers.map((timer) => timer._id)
           await devOpsSession.findByIdAndUpdate(newSession._id, {
             timers: timerIds,
+            activeTimersRange: activeTimersRange?.activeTimeRanges,
           })
 
+          await createAlert(createSession);
           res.json({
             error: false,
             item: createSession,
@@ -337,4 +354,88 @@ export const getFilteredEndpointStats = () => {
   }
 
   return filteredStats
+}
+
+export const analyzeTimerActivity = (generatedTimers: any[]) => {
+  const allTimes: { time: number; active: number }[] = generatedTimers.flatMap(
+    (timer) => [
+      { time: timer.startAt, active: 1 },
+      { time: timer.endAt, active: -1 },
+    ]
+  )
+
+  // Sort times
+  allTimes.sort((a, b) => a.time - b.time)
+  let activeTimersCount = 0
+  const activeTimersPerInterval: Map<number, number> = new Map()
+
+  for (const time of allTimes) {
+    activeTimersCount += time.active
+    activeTimersPerInterval.set(time.time, activeTimersCount)
+  }
+
+  // Identify time ranges with high activity
+  let activeRangeStart: number | null = null
+  const activeTimeRanges: { start: number; end: number }[] = []
+
+  const maxActiveTimers = Math.max(...activeTimersPerInterval.values())
+
+  for (const [time, count] of activeTimersPerInterval.entries()) {
+    if (count === maxActiveTimers) {
+      if (activeRangeStart === null) {
+        activeRangeStart = time
+      }
+    } else {
+      if (activeRangeStart !== null) {
+        const activeRangeEnd =
+          allTimes.find((entry) => entry.time === time - 1)?.time || time
+        activeTimeRanges.push({ start: activeRangeStart, end: activeRangeEnd })
+        activeRangeStart = null
+      }
+    }
+  }
+
+  // Handle the case where the last time range extends to the end
+  if (activeRangeStart !== null) {
+    const activeRangeEnd = allTimes[allTimes.length - 1].time
+    activeTimeRanges.push({ start: activeRangeStart, end: activeRangeEnd })
+  }
+
+  return {
+    maxActiveTimers,
+    activeTimeRanges,
+  }
+}
+
+
+export const createAlert = async (session: any) => {
+  const alert = new devOpsAlert({
+    title: "Simulation Started",
+    description: `${session.name} simulation started at ${dayjs(new Date(session.createdAt ?? "")).format("YYYY-MM-DD HH:mm")}`
+  })
+
+  await alert.save()
+}
+
+export const alertList = async (req: any, res: Response) => {
+  try {
+    const alertList = await devOpsAlert
+      .find()
+      .sort({ createdAt: -1 })
+
+    res.json({
+      error: false,
+      items: alertList,
+      message: null,
+    })
+  } catch (err: any) {
+    const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+    Sentry.captureException(err)
+    res.json({
+      error: true,
+      message: message,
+      item: null,
+      itemCount: null,
+    })
+  }
 }

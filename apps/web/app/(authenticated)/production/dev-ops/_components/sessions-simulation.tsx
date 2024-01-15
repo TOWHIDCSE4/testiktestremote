@@ -26,7 +26,7 @@ const SessionSimulation: React.FC<Props> = ({ sessionsList }) => {
       <Divider />
       <div className="flex flex-col space-y-1 mt-2">
         <div className="flex flex-col space-y-1 h-[20 rem] overflow-y-auto">
-          {sessionsList?.items.length ? (
+          {sessionsList?.items?.length ? (
             sessionsList?.items?.map((session: any) => (
               <Simulation
                 key={session._id}
@@ -35,6 +35,11 @@ const SessionSimulation: React.FC<Props> = ({ sessionsList }) => {
                 heading={session.name}
                 noOfAlerts={session.noOfAlerts}
                 noOfTimers={session.noOfTimers}
+                startedAt={session.createdAt}
+                endAt={session.endTime}
+                date={session.date}
+                cycleMargin={session.unitCycleTime}
+                activeTimersRange={session.activeTimersRange}
               />
             ))
           ) : (

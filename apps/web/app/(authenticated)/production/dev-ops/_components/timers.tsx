@@ -18,8 +18,6 @@ const TimersGroups: React.FC<Props> = ({ timersGroups }) => {
     (group: any) => !group.isCurrentUser
   )
 
-  console.timeLog("otherUsersSessions", otherUsersSessions)
-
   if (currentUserSessions.length > 0 && otherUsersSessions.length > 0) {
     setActiveSession(currentUserSessions[0]?._id)
   }

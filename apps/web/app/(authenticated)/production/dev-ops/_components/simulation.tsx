@@ -7,6 +7,7 @@ import Cookies from "js-cookie"
 import { API_URL } from "../../../../../helpers/constants"
 import { revalidateDevOpsTimers } from "./actions"
 import { usePathname, useRouter } from "next/navigation"
+import dayjs from "dayjs"
 
 interface Props {
   heading: string
@@ -14,15 +15,26 @@ interface Props {
   noOfTimers: number
   noOfAlerts: number
   sessionId: string
+  startedAt: string
+  endAt: string
+  date: Date
+  cycleMargin: Array<number>
+  activeTimersRange: Array<{ start: Date; end: Date } | undefined>
 }
 
 const Simulation: React.FC<Props> = ({
-  heading,
+  activeTimersRange,
   description,
+  cycleMargin,
   noOfAlerts,
   noOfTimers,
   sessionId,
+  startedAt,
+  heading,
+  endAt,
+  date,
 }) => {
+  const timestamp = parseInt(endAt, 10) // Parse the string to an integer
   const pathname = usePathname()
   const router = useRouter()
   const reRunSession = useMutation({
@@ -89,6 +101,34 @@ const Simulation: React.FC<Props> = ({
                 <div className="flex items-center space-x-4">
                   <p>Number Of Timers:</p>
                   <p>{noOfTimers}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <p>Ran on:</p>
+                  <p>{dayjs(date).format("dddd YYYY-MM-DD")}</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <p>Started At:</p>
+                  <p>{dayjs(new Date(startedAt)).format("YYYY-MM-DD HH:mm")}</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <p>Ended At:</p>
+                  <p>{dayjs(new Date(timestamp)).format("YYYY-MM-DD HH:mm")}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <p>Cycle Margin:</p>
+                  <p>{cycleMargin.join("-") + " sec"}</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <p>Most Active Timers Duration:</p>
+                  <p>
+                    {dayjs(activeTimersRange[0]?.start).format("HH:mm:ss") +
+                      " - " +
+                      dayjs(activeTimersRange[0]?.end).format("HH:mm:ss")}
+                  </p>
                 </div>
               </div>
             </Disclosure.Panel>

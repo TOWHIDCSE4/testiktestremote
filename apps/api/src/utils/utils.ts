@@ -1,3 +1,5 @@
+import { analyzeTimerActivity } from "../routes/dev-ops/default"
+
 export const generateDevOpsTimers = ({
   sessionId,
   numberOfTimers,
@@ -46,14 +48,10 @@ export const generateDevOpsTimers = ({
         machineClassIds[Math.floor(Math.random() * machineClassIds.length)]
 
       bulkData.push({
-        factoryId: "64d5816bb996589a945a6405",
-        machineId: "64d5816bb996589a945a6405",
         machineClassId: randomMachineClassId,
-        partId: "64d5816bb996589a945a6405",
         locationId: locationId.split(",")[i],
         operatorName: `Operator ${i + j}`,
         sessionName: sessionName,
-        operator: "64d5816bb996589a945a6405",
         createdBy: createdBy,
         status: "STOP",
         cycleTime: randomUnitCycleTime,

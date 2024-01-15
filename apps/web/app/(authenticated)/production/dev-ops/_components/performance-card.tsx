@@ -66,7 +66,7 @@ const PerformanceCard: React.FC<Props> = ({ sessionsList }) => {
             </div>
           </div>
         </div>
-        {sessionsList?.items.length ? (
+        {sessionsList?.items?.length ? (
           <Table
             sx={{ minWidth: 650 }}
             aria-label="simple table"
