@@ -1,10 +1,12 @@
-import React, { Suspense } from "react"
-import MachineClassesCard from "./machine-classes"
-import PerformanceCard from "./performance-card"
-import { Card, Divider } from "antd"
+"use client"
 import { IconButton } from "@mui/material"
+import { Card, Divider } from "antd"
+import React, { Suspense } from "react"
 import { BiRefresh } from "react-icons/bi"
 import { LuMoreVertical } from "react-icons/lu"
+import useSessions from "../hooks/useSessions"
+import MachineClassesCard from "./machine-classes"
+import PerformanceCard from "./performance-card"
 
 const MachineClassesCardSkeleton: React.FC = () => {
   return (
@@ -30,12 +32,13 @@ const MachineClassesCardSkeleton: React.FC = () => {
     </Card>
   )
 }
-interface Props {
-  sessionsList: any
-}
 
-const PerformanceSection: React.FC<Props> = ({ sessionsList }) => {
-  return (
+const PerformanceSection: React.FC = () => {
+  const query = useSessions()
+  const sessionsList = query.data
+  return query.isLoading || query.isFetching ? (
+    <div>Loading ....</div>
+  ) : (
     <div className="flex flex-col space-y-2">
       <div className="flex items-center justify-between space-x-2  mt-6">
         <PerformanceCard sessionsList={sessionsList} />

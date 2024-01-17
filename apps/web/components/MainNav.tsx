@@ -30,6 +30,7 @@ import dayjs from "dayjs"
 import { T_BackendResponse } from "custom-validator"
 import { useSocket } from "../store/useSocket"
 import cn from "classnames"
+import { Button, Popover, Table } from "antd"
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ")
@@ -304,9 +305,51 @@ const MainNav = () => {
                         })}
                       />
                     </span>
-                    <Link href="#">
-                      <CircleStackIcon className="h-6 w-6 text-indigo-blue hidden md:block" />
-                    </Link>
+                    <Popover
+                      content={
+                        <Table
+                          pagination={false}
+                          dataSource={[
+                            {
+                              key: "1",
+                              name: "Mike",
+                              age: 32,
+                              address: "10 Downing Street",
+                            },
+                            {
+                              key: "2",
+                              name: "John",
+                              age: 42,
+                              address: "10 Downing Street",
+                            },
+                          ]}
+                          columns={[
+                            {
+                              title: "Name",
+                              dataIndex: "name",
+                              key: "name",
+                            },
+                            {
+                              title: "Age",
+                              dataIndex: "age",
+                              key: "age",
+                            },
+                            {
+                              title: "Address",
+                              dataIndex: "address",
+                              key: "address",
+                            },
+                          ]}
+                        />
+                      }
+                      // title="Title"
+                      trigger="hover"
+                    >
+                      <Button type="link" ghost>
+                        <CircleStackIcon className="h-6 w-6 text-indigo-blue hidden md:block" />
+                      </Button>
+                    </Popover>
+                    <Link href="#"></Link>
                     <Link href="#">
                       <LockClosedIcon className="h-6 w-6 text-indigo-blue hidden md:block" />
                     </Link>

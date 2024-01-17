@@ -1,15 +1,17 @@
+"use client"
 import { Card, Divider, IconButton } from "@mui/material"
+import ms from "ms"
 import { BiRefresh } from "react-icons/bi"
 import { LuMoreVertical } from "react-icons/lu"
+import useSessions from "../hooks/useSessions"
 import Simulation from "./simulation"
-import ms from "ms"
 
-interface Props {
-  sessionsList: any
-}
-
-const SessionSimulation: React.FC<Props> = ({ sessionsList }) => {
-  return (
+const SessionSimulation: React.FC = () => {
+  const query = useSessions()
+  const sessionsList = query.data
+  return query.isLoading || query.isFetching ? (
+    <div>Loading ....</div>
+  ) : (
     <Card className="">
       <div className="flex items-center justify-between space-x-2 p-2 z-50">
         <h2 className="font-semibold">Previous Simulations</h2>

@@ -14,6 +14,7 @@ interface States {
   selectedMachineClasses: string[] | string
   unitCycleTime: number[]
   activeSession: string
+  locations: string[]
 }
 
 interface Actions {
@@ -22,9 +23,10 @@ interface Actions {
   setEndTimerRange: (endTimerRange: number[]) => void
   setNumberOfTimers: (numberOfTimers: number) => void
   setDailyUnits: (timerId: { timerId: string }) => void
-  setSelectedMachineClasses: (selectedMachineClass: string) => void
+  setSelectedMachineClasses: (selectedMachineClass: string | string[]) => void
   setUnitCycleTime: (unitCycleTime: number[]) => void
   setActiveSession: (activeSession: string) => void
+  setLocations: (locations: string[]) => void
 }
 
 const useDevOpsTimers = create<States & Actions>((set, get) => ({
@@ -36,7 +38,9 @@ const useDevOpsTimers = create<States & Actions>((set, get) => ({
   selectedMachineClasses: [],
   unitCycleTime: [20, 40],
   activeSession: "",
+  locations: [],
 
+  setLocations: (locations) => set({ locations }),
   setActiveSession: (activeSession) => set({ activeSession }),
   setSessionName: (sessionName) => set({ sessionName }),
   setUnitCycleTime: (unitCycleTime) => set({ unitCycleTime }),

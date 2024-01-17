@@ -1,7 +1,4 @@
 "use client"
-import React from "react"
-import { T_DBReturn } from "../../../../_types"
-import { T_MachineClass } from "custom-validator"
 import {
   Checkbox,
   FormControl,
@@ -9,20 +6,28 @@ import {
   OutlinedInput,
   Select,
 } from "@mui/material"
+import { T_MachineClass } from "custom-validator"
+import React from "react"
+import { T_DBReturn } from "../../../../_types"
+import useMachineClasses from "../hooks/useMachineClasses"
 import useDevOpsTimers from "./_state"
 
 interface Props {
   machineClasses: T_DBReturn<T_MachineClass[]>
 }
 
-const SelectMachineClass: React.FC<Props> = ({ machineClasses }) => {
+const SelectMachineClass: React.FC = () => {
+  const query = useMachineClasses()
+  const machineClasses = query?.data
   const selectedMachineClasses = useDevOpsTimers(
     (state) => state.selectedMachineClasses
   )
   const setSelectedMachineClasses = useDevOpsTimers(
     (state) => state.setSelectedMachineClasses
   )
-  return (
+  return query.isLoading || query.isFetching ? (
+    <div>Loading ...</div>
+  ) : (
     <div>
       <h2 className="font-semibold">Machine Classes</h2>
       <FormControl sx={{ width: "100%", maxWidth: "220px" }}>

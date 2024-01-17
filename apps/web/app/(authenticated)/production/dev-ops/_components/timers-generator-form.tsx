@@ -1,11 +1,10 @@
 "use client"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Cookies from "js-cookie"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import toast from "react-hot-toast"
 import { API_URL } from "../../../../../helpers/constants"
 import useDevOpsTimers from "./_state"
-import { revalidateDevOpsTimers } from "./actions"
 
 type DevOpsTimerTypes = {
   noOfTimers: number
@@ -20,11 +19,15 @@ type DevOpsTimerTypes = {
 }
 
 const TimersGeneratorForm = () => {
+  const queryClient = useQueryClient()
   const pathname = usePathname()
   const router = useRouter()
+  const setSelectedMachineClasses = useDevOpsTimers(
+    (state) => state.setSelectedMachineClasses
+  )
+  const setNumberOfTimers = useDevOpsTimers((state) => state.setNumberOfTimers)
   const sessionName = useDevOpsTimers((state) => state.sessionName)
   const setSessionName = useDevOpsTimers((state) => state.setSessionName)
-  const setNumberOfTimers = useDevOpsTimers((state) => state.setNumberOfTimers)
   const startTime = useDevOpsTimers((state) => state.startTime)
   const endTimeRange = useDevOpsTimers((state) => state.endTimerRange)
   const numberOfTimers = useDevOpsTimers((state) => state.numberOfTimers)
@@ -58,8 +61,13 @@ const TimersGeneratorForm = () => {
       return await res.json()
     },
     onSuccess: () => {
-      revalidateDevOpsTimers()
-      router.replace(pathname)
+      queryClient.invalidateQueries(["devOps-timers-by-user"])
+      queryClient.invalidateQueries(["devOps-machine-classes"])
+      queryClient.invalidateQueries(["devOps-alert-list"])
+      queryClient.invalidateQueries(["devOps-sessions"])
+      setSelectedMachineClasses([])
+      setNumberOfTimers(0)
+      setSessionName("")
       toast.success("Timers has been generated")
     },
     onError: (e) => {
@@ -93,6 +101,7 @@ const TimersGeneratorForm = () => {
       />
       <input
         type="number"
+        value={numberOfTimers}
         placeholder="No of timers"
         className="rounded-md shadow-md"
         onChange={(e) => setNumberOfTimers(Number(e.target.value))}

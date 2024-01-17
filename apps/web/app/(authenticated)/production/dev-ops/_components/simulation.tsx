@@ -1,13 +1,12 @@
 "use client"
 import { Disclosure } from "@headlessui/react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import dayjs from "dayjs"
+import Cookies from "js-cookie"
+import { usePathname, useRouter } from "next/navigation"
 import React from "react"
 import { BsClockHistory, BsEye } from "react-icons/bs"
-import { useMutation } from "@tanstack/react-query"
-import Cookies from "js-cookie"
 import { API_URL } from "../../../../../helpers/constants"
-import { revalidateDevOpsTimers } from "./actions"
-import { usePathname, useRouter } from "next/navigation"
-import dayjs from "dayjs"
 
 interface Props {
   heading: string
@@ -34,6 +33,7 @@ const Simulation: React.FC<Props> = ({
   endAt,
   date,
 }) => {
+  const queryClient = useQueryClient()
   const timestamp = parseInt(endAt, 10) // Parse the string to an integer
   const pathname = usePathname()
   const router = useRouter()
@@ -51,8 +51,10 @@ const Simulation: React.FC<Props> = ({
       return await res.json()
     },
     onSuccess: () => {
-      revalidateDevOpsTimers()
-      router.replace(pathname)
+      queryClient.invalidateQueries(["devOps-timers-by-user"])
+      queryClient.invalidateQueries(["devOps-machine-classes"])
+      queryClient.invalidateQueries(["devOps-alert-list"])
+      queryClient.invalidateQueries(["devOps-sessions"])
     },
   })
 
