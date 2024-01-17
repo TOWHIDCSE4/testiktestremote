@@ -2,14 +2,6 @@ import mongoose from "mongoose"
 const { Schema } = mongoose
 
 const devOpsTimers = new Schema({
-  factoryId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Factory",
-  },
-  machineId: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Machine",
-  },
   machineClassId: {
     type: mongoose.Schema.ObjectId,
     ref: "MachineClass",
@@ -48,8 +40,7 @@ const devOpsTimers = new Schema({
   },
   status: {
     type: String,
-    enum: ["STOP", "RUNNING", "PAUSED"],
-    default: "STOP",
+    enum: ["SUCCESS", "FAILURE"],
   },
   endAt: {
     type: Date,

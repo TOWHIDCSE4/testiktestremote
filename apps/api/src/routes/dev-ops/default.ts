@@ -55,8 +55,7 @@ export const restartSession = async (req: Request, res: Response) => {
         { _id: sessionId },
         { $unset: { timers: 1 } }
       )
-      const noOfTimers =
-        session.noOfTimers ?? 1 / (session?.locationId?.split(",").length ?? 1)
+      const noOfTimers = (session.noOfTimers ?? 1) / (session?.locationId?.split(",").length ?? 1)
       const results = generateDevOpsTimers({
         sessionId,
         locationId: session.locationId ?? "",
@@ -81,6 +80,8 @@ export const restartSession = async (req: Request, res: Response) => {
         )
         .populate("timers")
     }
+
+    await createAlert("Simulation Restarted", `${session?.name} simulation re-run by the user ${res.locals.user.firstName} ${res.locals.user.lastName}`)
     res.json({
       error: false,
       items: updatedSession,
@@ -281,7 +282,7 @@ export const addSession = async (req: Request, res: Response) => {
             activeTimersRange: activeTimersRange?.activeTimeRanges,
           })
 
-          await createAlert(createSession);
+          await createAlert("Simulation started", `${createSession.name} simulation started at ${dayjs(new Date(createSession.createdAt ?? "")).format("YYYY-MM-DD HH:mm")}`);
           res.json({
             error: false,
             item: createSession,
@@ -324,9 +325,9 @@ export const addSession = async (req: Request, res: Response) => {
   }
 }
 
-export const requestTracker = (req: Request, res: Response) => {
+export const requestTracker = async (req: Request, res: Response) => {
   try {
-    const filteredEndpointStats = getFilteredEndpointStats()
+    const filteredEndpointStats = await getFilteredEndpointStats()
     res.json({
       message: "Endpoint Details",
       endpointStats: filteredEndpointStats,
@@ -338,7 +339,7 @@ export const requestTracker = (req: Request, res: Response) => {
   }
 }
 
-export const getFilteredEndpointStats = () => {
+export const getFilteredEndpointStats = async () => {
   const fullStats = getEndpointStats()
 
   // Create a copy of the stats without the 'totalTime' and 'requestTime' properties
@@ -351,6 +352,9 @@ export const getFilteredEndpointStats = () => {
     const { totalTime, requestTime, ...statsWithoutTotalAndRequestTime } =
       fullStats[endpoint]
     filteredStats[endpoint] = statsWithoutTotalAndRequestTime
+    if (statsWithoutTotalAndRequestTime.averageResponseTime > 30) {
+      await createAlert("Database Alert", `Slow API call detected on ${endpoint}`, "warning")
+    }
   }
 
   return filteredStats
@@ -408,10 +412,11 @@ export const analyzeTimerActivity = (generatedTimers: any[]) => {
 }
 
 
-export const createAlert = async (session: any) => {
+export const createAlert = async (title: string, description: string, severity?: string | null) => {
   const alert = new devOpsAlert({
-    title: "Simulation Started",
-    description: `${session.name} simulation started at ${dayjs(new Date(session.createdAt ?? "")).format("YYYY-MM-DD HH:mm")}`
+    title,
+    description, 
+    severity
   })
 
   await alert.save()
@@ -439,3 +444,4 @@ export const alertList = async (req: any, res: Response) => {
     })
   }
 }
+

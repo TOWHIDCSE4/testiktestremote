@@ -1,5 +1,3 @@
-import { analyzeTimerActivity } from "../routes/dev-ops/default"
-
 export const generateDevOpsTimers = ({
   sessionId,
   numberOfTimers,
@@ -47,16 +45,18 @@ export const generateDevOpsTimers = ({
       const randomMachineClassId =
         machineClassIds[Math.floor(Math.random() * machineClassIds.length)]
 
+        const isSuccess = end - start <= endTimeRange[1] * 60 * 1000; 
+
       bulkData.push({
         machineClassId: randomMachineClassId,
         locationId: locationId.split(",")[i],
         operatorName: `Operator ${i + j}`,
         sessionName: sessionName,
         createdBy: createdBy,
-        status: "STOP",
         cycleTime: randomUnitCycleTime,
         units: 0,
         sessionId,
+        status: isSuccess ? "SUCCESS" : "FAILURE",
         startAt: new Date(randomStartTime),
         endAt: new Date(end),
         updatedAt: Date.now(),
