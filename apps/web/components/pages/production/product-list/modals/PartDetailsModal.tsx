@@ -84,7 +84,7 @@ const PartDetailsModal = ({
   } = useForm<T_Part>({
     values: {
       ...partDetails?.item,
-      tons: tonsToPounds(partDetails?.item?.tons),
+      tons: partDetails?.item?.tons ? tonsToPounds(partDetails?.item?.tons) : 0,
     },
   })
   const [factoryId, setFactoryId] = useState(partDetails?.item?.factoryId)
