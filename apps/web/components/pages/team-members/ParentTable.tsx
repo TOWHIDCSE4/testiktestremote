@@ -4502,13 +4502,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     results
                   </p>
                 </div>
-                {(paginated as any)?.archivedUsersCount && (
+                {(paginated as any)?.archivedUsersCount ? (
                   <div>
                     <p className="text-sm  text-gray-700">
                       {(paginated as any)?.archivedUsersCount} user archived
                     </p>
                   </div>
-                )}
+                ) : null}
                 {/* <span className="py-1.5 text-center px-2 cursor-pointer border-1 text-[14px] uppercase bg-[#7F1D1D] border-black rounded-md text-white">
                   Create Team List
                 </span> */}
