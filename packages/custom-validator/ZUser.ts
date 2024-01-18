@@ -65,6 +65,7 @@ export const ZUser = z.object({
   factoryId: z.union([z.string(), ZFactory]).nullable().optional(),
   profile: ZUserProfile.nullable().optional(),
   approvedBy: z.string().optional(),
+  archivedBy: z.string().optional(),
   status: ZUserStatus,
   createdAt: z.date().optional(),
   updatedAt: z.date().nullable().optional(),

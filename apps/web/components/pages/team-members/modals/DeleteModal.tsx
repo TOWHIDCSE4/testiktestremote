@@ -8,6 +8,7 @@ import { T_BackendResponse, T_User } from "custom-validator"
 import toast from "react-hot-toast"
 import { T_UserStatus } from "custom-validator"
 import useUpdateUser from "../../../../hooks/users/useUpdateUser"
+import useProfile from "../../../../hooks/users/useProfile"
 
 interface DeleteModalProps {
   isOpen: boolean
@@ -19,6 +20,7 @@ interface DeleteModalProps {
 const DeleteModal = ({ isOpen, onClose, user, status }: DeleteModalProps) => {
   const queryClient = useQueryClient()
   const [isDeleted, setIsDeleted] = useState(false)
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const { mutate, isLoading: isUpdateUserLoading } = useUpdateUser()
 
   const close = () => {
@@ -91,7 +93,15 @@ const DeleteModal = ({ isOpen, onClose, user, status }: DeleteModalProps) => {
             disabled={isUpdateUserLoading}
             onClick={() => {
               setIsDeleted(true)
-              mutate({ ...user, status }, callBackReq)
+              mutate(
+                {
+                  ...user,
+                  status,
+                  archivedBy:
+                    status === "Archived" ? userProfile?.item?._id : undefined,
+                },
+                callBackReq
+              )
             }}
           >
             Yes
