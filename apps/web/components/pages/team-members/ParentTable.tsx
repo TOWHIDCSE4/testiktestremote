@@ -1902,7 +1902,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                           <p className="w-[20rem] ml-2"></p>
                                         </span>
                                         <div className="flex pl-3">
-                                          {item.archivedBy?._id ? (
+                                          {(item.archivedBy as T_User)?._id ? (
                                             <span className="flex px-3 w-[22rem] text-[13px] text-slate-900 justify-start items-start">
                                               <p
                                                 className={`px-0 text-sm text-gray-500 font-semibold ${
@@ -1920,7 +1920,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                                     : "text-red-500"
                                                 }`}
                                               >
-                                                {`${item.archivedBy?.firstName} ${item.archivedBy?.lastName}`}
+                                                {`${
+                                                  (item.archivedBy as T_User)
+                                                    ?.firstName
+                                                } ${
+                                                  (item.archivedBy as T_User)
+                                                    ?.lastName
+                                                }`}
                                               </p>
                                             </span>
                                           ) : null}
@@ -4496,10 +4502,10 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     results
                   </p>
                 </div>
-                {paginated?.archivedUsersCount && (
+                {(paginated as any)?.archivedUsersCount && (
                   <div>
                     <p className="text-sm  text-gray-700">
-                      {paginated?.archivedUsersCount} user archived
+                      {(paginated as any)?.archivedUsersCount} user archived
                     </p>
                   </div>
                 )}
