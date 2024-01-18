@@ -304,7 +304,11 @@ const PartDetailsModal = ({
                   <input
                     id="tons"
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
-                    // defaultValue={tonsToPounds(partDetails?.item?.tons)}
+                    defaultValue={
+                      partDetails?.item?.tons
+                        ? tonsToPounds(partDetails?.item?.tons)
+                        : undefined
+                    }
                     disabled={
                       !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdatePartLoading ||
