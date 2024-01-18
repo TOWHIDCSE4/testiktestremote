@@ -50,7 +50,7 @@ export const ZUserProfile = z.object({
   contentSuggestion: z.boolean(),
 })
 
-export const ZUser = z.object({
+export const ZUserBase = z.object({
   _id: z.string().optional(),
   firstName: z.string(),
   lastName: z.string(),
@@ -69,6 +69,10 @@ export const ZUser = z.object({
   createdAt: z.date().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
+})
+
+export const ZUser = ZUserBase.extend({
+  archivedBy: z.union([ZUserBase, z.string()]).optional(),
 })
 
 export const ZUserBasic = ZUser.pick({

@@ -64,6 +64,10 @@ const users = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "User",
   },
+  archivedBy: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+  },
   status: {
     type: String,
     enum: ["Approved", "Rejected", "Archived", "Blocked", "Pending"],

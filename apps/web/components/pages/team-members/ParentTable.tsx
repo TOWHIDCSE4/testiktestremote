@@ -1843,7 +1843,7 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                           </p>
                                         </span>
                                         <div className="flex pl-3">
-                                          <span className="flex w-[20rem] space-x-1 text-[13px] justify-center items-center">
+                                          <span className="flex w-[20rem] space-x-1 text-[13px] justify-start items-center">
                                             <p
                                               className={`px-3 text-sm  text-gray-500 font-semibold ${
                                                 item.email
@@ -1895,6 +1895,41 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                                               creation
                                             </p>
                                           </span>
+                                        </div>
+                                      </div>
+                                      <div className="flex ">
+                                        <span className="flex w-[12rem] text-[14px] text-green-800 font-semibold border-r-4 border-gray-500 p-0 pb-8">
+                                          <p className="w-[20rem] ml-2"></p>
+                                        </span>
+                                        <div className="flex pl-3">
+                                          {(item.archivedBy as T_User)?._id ? (
+                                            <span className="flex px-3 w-[22rem] text-[13px] text-slate-900 justify-start items-start">
+                                              <p
+                                                className={`px-0 text-sm text-gray-500 font-semibold ${
+                                                  item.locationId
+                                                    ? "text-gray-900"
+                                                    : "text-red-500"
+                                                }`}
+                                              >
+                                                ARCHIVED BY:
+                                              </p>
+                                              <p
+                                                className={`px-3 text-sm text-gray-900 ${
+                                                  item.locationId
+                                                    ? "text-gray-900"
+                                                    : "text-red-500"
+                                                }`}
+                                              >
+                                                {`${
+                                                  (item.archivedBy as T_User)
+                                                    ?.firstName
+                                                } ${
+                                                  (item.archivedBy as T_User)
+                                                    ?.lastName
+                                                }`}
+                                              </p>
+                                            </span>
+                                          ) : null}
                                         </div>
                                       </div>
                                     </div>
@@ -4467,6 +4502,13 @@ const Content: React.FC<ContentProps> = ({ userLog }) => {
                     results
                   </p>
                 </div>
+                {(paginated as any)?.archivedUsersCount && (
+                  <div>
+                    <p className="text-sm  text-gray-700">
+                      {(paginated as any)?.archivedUsersCount} user archived
+                    </p>
+                  </div>
+                )}
                 {/* <span className="py-1.5 text-center px-2 cursor-pointer border-1 text-[14px] uppercase bg-[#7F1D1D] border-black rounded-md text-white">
                   Create Team List
                 </span> */}

@@ -174,9 +174,21 @@ export const paginated = async (req: Request, res: Response) => {
       const getAllUsers = await Users.find({ $and: queryFilters })
         .populate("locationId")
         .populate("factoryId")
+        .populate("archivedBy")
         .sort(sorting)
         .skip(7 * (Number(page) - 1))
         .limit(7)
+      const archivedUsersCount = await Users.find({
+        $and: queryFilters.map((i) => {
+          if (i.status) {
+            return {
+              ...i,
+              status: "Archived",
+            }
+          }
+          return i
+        }),
+      }).countDocuments()
 
       const usersCount = await Users.find({
         $and: queryFilters,
@@ -186,6 +198,7 @@ export const paginated = async (req: Request, res: Response) => {
         error: false,
         items: getAllUsers,
         itemCount: usersCount,
+        archivedUsersCount,
         message: null,
       })
     } catch (err: any) {
