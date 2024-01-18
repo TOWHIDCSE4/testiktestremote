@@ -17,6 +17,7 @@ import { FileWithPath } from "react-dropzone"
 import useUploadMediaFiles from "../../../../../hooks/media/useUploadMediaFiles"
 import { Bebas_Neue } from "next/font/google"
 import useMachineClasses from "../../../../../hooks/machineClasses/useMachineClasses"
+import { poundsToTons } from "../../../../../helpers/unitConverter"
 const bebas_neueu = Bebas_Neue({ weight: "400", subsets: ["latin"] })
 
 interface NewModalProps {
@@ -112,7 +113,12 @@ const NewPartModal = ({
       uploadMediaFiles(files, uploadFilesCallBackReq)
     } else {
       mutate(
-        { ...data, locationId: locationId ? locationId : "", files: [] },
+        {
+          ...data,
+          tons: poundsToTons(data.tons),
+          locationId: locationId ? locationId : "",
+          files: [],
+        },
         callBackReq
       )
     }
@@ -256,7 +262,7 @@ const NewPartModal = ({
                           htmlFor="weight"
                           className="uppercase font-semibold text-gray-800 text-sm"
                         >
-                          Weight In Tons
+                          Weight In Pounds
                         </label>
                         <input
                           type="number"

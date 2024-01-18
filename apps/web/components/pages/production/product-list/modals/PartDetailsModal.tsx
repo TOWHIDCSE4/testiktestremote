@@ -28,6 +28,10 @@ import {
 } from "../../../../../helpers/constants"
 import useStoreSession from "../../../../../store/useStoreSession"
 import _ from "lodash"
+import {
+  poundsToTons,
+  tonsToPounds,
+} from "../../../../../helpers/unitConverter"
 
 interface DetailsModalProps {
   isOpen: boolean
@@ -78,7 +82,10 @@ const PartDetailsModal = ({
     watch,
     formState: { isDirty },
   } = useForm<T_Part>({
-    values: partDetails?.item,
+    values: {
+      ...partDetails?.item,
+      tons: partDetails?.item?.tons ? tonsToPounds(partDetails?.item?.tons) : 0,
+    },
   })
   const [factoryId, setFactoryId] = useState(partDetails?.item?.factoryId)
   const [isVerifiedPart, setIsVerifiedPart] = useState(
@@ -171,7 +178,14 @@ const PartDetailsModal = ({
     if (filesToUpload.length > 0) {
       uploadMediaFiles(filesToUpload, uploadFilesCallBackReq)
     } else {
-      mutate({ ...data, _id: partDetails?.item?._id as string }, callBackReq)
+      mutate(
+        {
+          ...data,
+          _id: partDetails?.item?._id as string,
+          tons: poundsToTons(data.tons),
+        },
+        callBackReq
+      )
     }
   }
 
@@ -285,12 +299,16 @@ const PartDetailsModal = ({
                     htmlFor="tons"
                     className="text-gray-700 uppercase font-semibold mr-3 text-sm whitespace-nowrap col-span-2"
                   >
-                    Tons:
+                    Pounds:
                   </label>
                   <input
                     id="tons"
                     className={`block uppercase col-span-2 md:mt-0 w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-700 font-medium ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-blue-950 text-sm sm:leading-6 disabled:opacity-70`}
-                    defaultValue={partDetails?.item?.tons}
+                    defaultValue={
+                      partDetails?.item?.tons
+                        ? tonsToPounds(partDetails?.item?.tons)
+                        : undefined
+                    }
                     disabled={
                       !PRODUCTION_ADMIN_ROLES.includes(storeSession.role) ||
                       isUpdatePartLoading ||
