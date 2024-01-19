@@ -88,19 +88,27 @@ export const getUserByEmail = async (req: Request, res: Response) => {
 }
 
 export const addUser = async (req: Request, res: Response) => {
-  const { firstName, lastName, email, password, locationId, role } = req.body
+  const { firstName, lastName, email, password, locationId, role, status } =
+    req.body
+  if (password.length < 8) {
+    res.status(400).json({
+      error: true,
+      message: "Password must be more than 8 characters",
+    })
+    return
+  }
   if (firstName && lastName && email && password && locationId && role) {
     const encryptPassword = CryptoJS.AES.encrypt(
       password,
       keys.encryptKey as string
     ).toString()
-    const emailDomain = email.split("@")
+    // const emailDomain = email.split("@")
     const newUser = new Users({
       firstName,
       lastName,
       role,
       email,
-      status: VALID_EMAIL.indexOf(emailDomain[1]) > -1 ? "Pending" : "Rejected",
+      status,
       password: encryptPassword,
       locationId,
       profile: null,
