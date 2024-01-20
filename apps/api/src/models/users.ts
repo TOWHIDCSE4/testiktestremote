@@ -56,7 +56,7 @@ const users = new Schema({
   isGlobalFactory: Boolean,
   profile: {
     type: Object,
-    default: null,
+    default: {},
   },
   lastLoggedIn: Date,
   lastLoggedOut: Date,
