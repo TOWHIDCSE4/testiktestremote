@@ -54,3 +54,4 @@ export type { T_DevOpsSession } from "./ZDevOpsSession"
 
 export * from "./ZProductionCycle"
 export * from "./ZReading"
+export * from "./ZAutoTimer"

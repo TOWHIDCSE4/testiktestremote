@@ -131,15 +131,15 @@ const Content = () => {
     )
   return (
     <div className={`my-20 pb-10`}>
-      <div className="content px-4 md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mx-auto mt-28">
-        <div className="flex justify-between items-center py-2">
+      <div className="px-4 mx-auto content md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mt-28">
+        <div className="flex items-center justify-between py-2">
           <div>
             <h2 className="text-gray-800 text-[33px] font-semibold leading-none">
               Timer and Analytics
             </h2>
-            <h4 className="uppercase text-sm text-gray-500 font-medium tracking-widest mt-2">
-              Production<span className="text-black mx-2">&gt;</span>Timer
-              <span className="text-black mx-2">&gt;</span>
+            <h4 className="mt-2 text-sm font-medium tracking-widest text-gray-500 uppercase">
+              Production<span className="mx-2 text-black">&gt;</span>Timer
+              <span className="mx-2 text-black">&gt;</span>
               <span className="text-red-500">{currentLocationTabName}</span>
             </h4>
           </div>
@@ -147,7 +147,7 @@ const Content = () => {
             {/* {userProfile?.item.role !== USER_ROLES.Personnel && ( */}
             <button
               type="button"
-              className="uppercase disabled:bg-gray-400 rounded-md bg-green-700 px-4 md:px-7 py-2 font-semibold text-white shadow-sm hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+              className="px-4 py-2 font-semibold text-white uppercase bg-green-700 rounded-md shadow-sm disabled:bg-gray-400 md:px-7 hover:bg-green-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
               onClick={() => setOpenNewModal(true)}
               disabled={userProfile?.item.role === "Personnel"}
             >
@@ -158,7 +158,7 @@ const Content = () => {
         </div>
         <div className="w-full h-0.5 bg-gray-200 mt-5"></div>
         {/* Location */}
-        <div className="grid grid-cols-3 gap-x-6 md:gap-x-8 2xl:gap-x-24 mt-5">
+        <div className="grid grid-cols-3 mt-5 gap-x-6 md:gap-x-8 2xl:gap-x-24">
           {locationTabs.map((tab) => (
             <div key={tab._id}>
               <button
@@ -181,7 +181,7 @@ const Content = () => {
                 {tab.name} {tab?.count ? `(${tab.count})` : null}
               </button>
               <div className="flex mt-1">
-                <div className="flex h-6 items-center">
+                <div className="flex items-center h-6">
                   <input
                     id="compare"
                     aria-describedby="compare-description"
@@ -190,10 +190,10 @@ const Content = () => {
                     disabled={
                       isTimerCityRoles && tab.name !== location?.item.name
                     }
-                    className="h-4 w-4 rounded border-gray-300 text-blue-950 focus:ring-1 focus:ring-blue-950"
+                    className="w-4 h-4 border-gray-300 rounded text-blue-950 focus:ring-1 focus:ring-blue-950"
                   />
                 </div>
-                <div className="ml-2 md:ml-3 text-xs md:text-sm leading-6">
+                <div className="ml-2 text-xs leading-6 md:ml-3 md:text-sm">
                   <label
                     htmlFor="compare"
                     className="font-medium text-gray-900 uppercase"
@@ -206,14 +206,14 @@ const Content = () => {
           ))}
           {isLocationsLoading && (
             <>
-              <div className="animate-pulse flex space-x-4">
-                <div className="h-14 w-full rounded bg-slate-200"></div>
+              <div className="flex space-x-4 animate-pulse">
+                <div className="w-full rounded h-14 bg-slate-200"></div>
               </div>
-              <div className="animate-pulse flex space-x-4">
-                <div className="h-14 w-full rounded bg-slate-200"></div>
+              <div className="flex space-x-4 animate-pulse">
+                <div className="w-full rounded h-14 bg-slate-200"></div>
               </div>
-              <div className="animate-pulse flex space-x-4">
-                <div className="h-14 w-full rounded bg-slate-200"></div>
+              <div className="flex space-x-4 animate-pulse">
+                <div className="w-full rounded h-14 bg-slate-200"></div>
               </div>
             </>
           )}
@@ -235,6 +235,7 @@ const Content = () => {
         />
         <div className="w-full h-[2.2px] bg-gray-200"></div>
         <Timers
+          locationName={currentLocationTabName ?? ""}
           locationId={currentLocationTab}
           machineClasses={selectedMachineClasses}
         />
