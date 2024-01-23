@@ -1,10 +1,14 @@
-import { T_ControllerTimer } from "custom-validator"
+import { T_ControllerTimer, T_Timer } from "custom-validator"
 import ControllerTimerRepository from "../repository/controllerTimersRepository"
+import Location from "../models/location"
+
 import {
   getEndOfDayTimezone,
   getHoursDifferent,
   getStartOfDayTimezone,
 } from "../utils/date"
+import MachineClass from "../models/machineClasses"
+import Timer from "../models/timers"
 
 const create = async (data: T_ControllerTimer) => {
   return ControllerTimerRepository.create(data)
@@ -112,6 +116,50 @@ const getProductionHourByTimerId = async (
   return getHoursDifferent(current.createdAt)
 }
 
+const startAllTimersByLocationMC = async (
+  locationId: string,
+  machineClassId: string
+) => {
+  const location = await Location.findOne({ _id: locationId })
+  const machineClass = await MachineClass.findOne({ _id: machineClassId })
+  const variantMC = await MachineClass.findOne({
+    name: "Variant",
+  })
+  if (!location || !machineClass) return false
+
+  console.log(`Start timers ${location.name} / ${machineClass.name}`)
+  const timers = await Timer.find({
+    locationId,
+    machineClassId:
+      machineClass.name == "Radial Press"
+        ? { $in: [machineClassId, variantMC?._id] }
+        : machineClassId,
+    deletedAt: null,
+  })
+
+  await Promise.all(
+    timers.map(async (item: any) => {
+      const timer = item as unknown as T_Timer
+      const isRunning = await isRunningTodayByTimerId(
+        String(timer._id),
+        location.timeZone ?? ""
+      )
+      if (!isRunning) {
+        await create({
+          timerId: String(timer._id ?? ""),
+          locationId: String(location._id ?? ""),
+          endAt: null,
+          createdAt: new Date(),
+          clientStartedAt: new Date(),
+        })
+        console.log("Auto Start timer for the day", timer._id)
+      } else {
+        console.log("Timer is already running", timer._id)
+      }
+    })
+  )
+}
+
 const ControllerTimerService = {
   endAllByTimerId,
   getAllRunningByTimerId,
@@ -122,6 +170,7 @@ const ControllerTimerService = {
   getCurrentRunningTodayByTimerId,
   getProductionHourByTimerId,
   getTodayByTimerId,
+  startAllTimersByLocationMC,
 }
 
 export default ControllerTimerService
