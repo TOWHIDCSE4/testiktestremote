@@ -11,6 +11,7 @@ import { ZFactory } from "./ZFactory"
 export const ZTimerLogStatus = z.enum(["Gain", "Loss"])
 
 export const ZTimerStopReason = z.enum([
+  "Auto-Start",
   "Unit Created",
   "Machine Error",
   "Material Low",

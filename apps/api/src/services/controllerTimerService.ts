@@ -9,6 +9,8 @@ import {
 } from "../utils/date"
 import MachineClass from "../models/machineClasses"
 import Timer from "../models/timers"
+import TimerLogs from "../models/timerLogs"
+import JobTimer from "../models/jobTimer"
 
 const create = async (data: T_ControllerTimer) => {
   return ControllerTimerRepository.create(data)
@@ -152,6 +154,36 @@ const startAllTimersByLocationMC = async (
           createdAt: new Date(),
           clientStartedAt: new Date(),
         })
+        const checkIfHasData = await TimerLogs.findOne()
+        const lastTimerLog = await TimerLogs.find()
+          .limit(1)
+          .sort({ $natural: -1 })
+
+        const globalCycle = !checkIfHasData
+          ? 100000
+          : (lastTimerLog[0].globalCycle ? lastTimerLog[0].globalCycle : 0) + 1
+
+        const job = await JobTimer.findOne({ timerId: timer._id })
+
+        const log = new TimerLogs({
+          stopReason: "Auto-Start",
+          createdAt: new Date(),
+          timerId: timer._id,
+          machineId: timer.machineId,
+          machineClassId: timer.machineClassId,
+          locationId: timer.locationId,
+          factoryId: timer.factoryId,
+          partId: timer.partId,
+          time: 0,
+          operator: null,
+          operatorName: null,
+          status: "Loss",
+          cycle: 0,
+          globalCycle,
+          // TODO: should attach proper job
+          jobId: job?._id,
+        })
+        await log.save()
         console.log("Auto Start timer for the day", timer._id)
       } else {
         console.log("Timer is already running", timer._id)

@@ -137,7 +137,7 @@ function TimerCards({
                     {autoTimer.isPM ? "PM" : "AM"}
                   </span>
                 ) : (
-                  <>NULL</>
+                  <>00:00</>
                 )}
               </button>
             </div>
