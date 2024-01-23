@@ -6,17 +6,15 @@ interface Props {
   index: number
 }
 
-const TimerTableRow: React.FC<Props> = async ({ rowData, index }) => {
+const TimerTableRowMobile: React.FC<Props> = async ({ rowData, index }) => {
   const query = useTotalTonsUnit({
     locationId: rowData.locationId,
     timerId: rowData._id,
   })
   return (
     <tr>
-      <td className="px-2 truncate">{rowData?.machine?.name}</td>
-      <td className="line-clamp-1">{rowData?.part?.name}</td>
-      <td className="px-2">{query?.data?.item?.dailyUnits}</td>
-      <td className="px-2">{query?.data?.item?.tons?.toFixed(2)}</td>
+      <td className="px-3">{query?.data?.item?.dailyUnits}</td>
+      <td className="px-3">{query?.data?.item?.tons?.toFixed(2)}</td>
       <td>
         <div
           className={`${
@@ -34,4 +32,4 @@ const TimerTableRow: React.FC<Props> = async ({ rowData, index }) => {
   )
 }
 
-export default TimerTableRow
+export default TimerTableRowMobile

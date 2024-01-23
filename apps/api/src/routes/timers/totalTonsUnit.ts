@@ -182,11 +182,12 @@ export const allLocationTotalUnits = async (req: Request, res: Response) => {
     dayjs.extend(utc.default)
     dayjs.extend(timezone.default)
 
+    const timeZone = "America/Chicago"
     const currentDateStart = dayjs
-      .utc(dayjs.tz(dayjs()).startOf("day"))
+      .utc(dayjs.tz(dayjs(), timeZone).startOf("day"))
       .toISOString()
     const currentDateEnd = dayjs
-      .utc(dayjs.tz(dayjs()).endOf("day"))
+      .utc(dayjs.tz(dayjs(), timeZone).endOf("day"))
       .toISOString()
 
     const getDayControllerLogs = await TimerLogs.find({

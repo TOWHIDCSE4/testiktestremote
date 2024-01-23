@@ -11,6 +11,7 @@ import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import _ from "lodash"
 import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
 import useWether from "../../../hooks/timers/useWether"
+import dayjs from "dayjs"
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
   style: ["normal", "italic"],
@@ -29,7 +30,7 @@ export default function ProductionEyeComponent(props: Props) {
   const gunter = useWether(33.4479, -96.7475)
   const conroe = useWether(30.312927, -95.4560512)
   const seguin = useWether(29.5979964, -98.1041023)
-  return (
+    return (
     <div className={`${lato.className} w-full mt-6`}>
       <div className="w-full !font-lato">
         <div className="w-full px-8 py-1 border border-gray-300 rounded-t-2xl">
@@ -46,7 +47,7 @@ export default function ProductionEyeComponent(props: Props) {
                     {/* {seguin.data?.current?.temperature_2m} */}
                     {seguin.data?.current?.temperature_2m}{" "}
                     <span className="text-xs font-normal align-top">
-                      {conroe.data?.current_units?.temperature_2m}
+                      {seguin.data?.current_units?.temperature_2m}
                     </span>
                   </span>
                 </div>
@@ -132,7 +133,6 @@ export default function ProductionEyeComponent(props: Props) {
                   {props.allTimers?.items
                     ?.filter((item: any) => item.locationId === location._id)
                     ?.map((mc: any, key: number) => {
-                      console.log("MC__", mc)
                       return (
                         <div key={key} className="py-1 pl-1">
                           <div className="text-xs font-black text-red-700 uppercase">
@@ -203,11 +203,11 @@ export default function ProductionEyeComponent(props: Props) {
           </div>
           <div className="flex flex-col mr-2 text-sm uppercase">
             <div className="flex justify-end gap-1">
-              <div className="text-gray-400">January 20 2024 :</div>
+              <div className="text-gray-400">{dayjs().format("MMMM DD YYYY")} :</div>
               <div className="font-bold">Date</div>
             </div>
             <div className="flex justify-end gap-1">
-              <div className="text-gray-400">7:03 AM :</div>
+              <div className="text-gray-400">{dayjs().format("hh:mm A")} :</div>
               <div className="font-bold">Time</div>
             </div>
           </div>

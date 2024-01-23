@@ -1,9 +1,6 @@
 "use client"
-import { T_MachineClass } from "custom-validator"
-import { useEffect, useState } from "react"
-import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import TimerTableRow from "./TimerTableRow"
-import useGetOverallTotal from "../../../hooks/timerLogs/useGetOverallTotal"
+import useGetMachineClassTonsUnit from "../../../hooks/timerLogs/useMachineClassTonsUnits"
 
 export default function TimerTableComponent({
   location,
@@ -17,7 +14,7 @@ export default function TimerTableComponent({
   machineClass: any
   timers: any
 }) {
-  const { data: totalTons } = useGetOverallTotal({
+  const { data: totalTons } = useGetMachineClassTonsUnit({
     locationId: location._id,
     machineClassId: machineClass.machineClass._id,
   })
@@ -40,8 +37,8 @@ export default function TimerTableComponent({
         <tr className="font-bold bg-white bg-opacity-20">
           <td></td>
           <td className="text-right uppercase">Total</td>
-          <td className="px-2">{totalTons?.item?.RPtons?.toFixed(2)}</td>
-          <td className="px-2">{totalTons?.item?.RPunits}</td>
+          <td className="px-2">{totalTons?.item?.units}</td>
+          <td className="px-2">{totalTons?.item?.tons?.toFixed(2)}</td>
           <td></td>
         </tr>
       </tbody>

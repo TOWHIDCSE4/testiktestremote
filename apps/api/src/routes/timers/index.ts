@@ -17,14 +17,15 @@ import { countByMachineClass } from "./countByMachineClass"
 import { assignJob } from "./assignJob"
 import { timerJobs } from "./timerJobs"
 import { allLocationTotalUnits, globalTotalUnits, locationGroupedTotals, totalTonsUnit } from "./totalTonsUnit"
+import { timerTonsUnits } from "./timerTonsUnits"
+import { getAllTimersByMachineClass } from "./groupByMachineClass"
 
-router.get("/count-machine-class", isUserLoggedIn, countByMachineClass)
 router.get("/timer-jobs", isUserLoggedIn, timerJobs)
 router.get("/total-tons-unit", isUserLoggedIn, totalTonsUnit)
 router.get("/count-machine-class", isUserLoggedIn, countByMachineClass)
 router.get("/all-global-tons-unit", isUserLoggedIn, allLocationTotalUnits)
 router.get("/global-tons-unit", isUserLoggedIn, globalTotalUnits)
-// router.get("/timer-tons-unit", isUserLoggedIn, timerTonsUnits)
+router.get("/timer-tons-unit", isUserLoggedIn, timerTonsUnits)
 router.get("/totals-by-location", isUserLoggedIn, locationGroupedTotals)
 router.post("/assign-job", isUserLoggedIn, assignJob)
 
@@ -41,5 +42,6 @@ router.delete("/:id", isUserLoggedIn, deleteTimer)
 //filter
 router.get("/find/filter/factory", getAllTimersByFactory)
 router.get("/find/filter/location", getAllTimersByLocation)
+router.get("/find/group/machine-class", getAllTimersByMachineClass)
 
 export default router

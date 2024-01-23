@@ -6,12 +6,25 @@ import PinnedDashboardComponents from "./pinned-dashboard-components/PinnedDashb
 import isDev from "../../../helpers/isDev"
 import ProductionEyeComponent from "./ProductionEye"
 import ProductionEyeMobileComponent from "./ProductionEyeMobile"
+import { HiChevronDoubleDown } from "react-icons/hi"
+import { BiFullscreen } from "react-icons/bi"
+import { LuMenu, LuMoon } from "react-icons/lu"
+import { Lato } from "next/font/google"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
-import useLocations from "../../../hooks/locations/useLocations"
+import { T_MachineClass } from "custom-validator"
 import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
-import useTotalTonsUnit from "../../../hooks/timers/useTotalTonsUnit"
-import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
+import useLocations from "../../../hooks/locations/useLocations"
+import useTotalTonsUnit from "../../../hooks/timers/useGetAllTimersTonsUnit"
 import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
+import dayjs from "dayjs"
+import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
+
+const lato = Lato({
+  weight: ["100", "300", "400", "700", "900"],
+  style: ["normal", "italic"],
+  display: "swap",
+  subsets: ["latin", "latin-ext"],
+})
 
 const Content = () => {
   const { data, isLoading: basicInfoLoading } = useProfile()
@@ -24,7 +37,7 @@ const Content = () => {
   const { data: machineClasses } = useMachineClasses()
   const { data: locations } = useLocations()
   const { data: allTimers } = useGetAllTimersGroup()
-  // const { data: totalTonsUnit } = useTotalTonsUnit()
+  const { data: totalTonsUnit } = useTotalTonsUnit()
   const { data: locationsTotals } = useGetLocationTotals()
   const { data: allLocationTonsUnits } = useGetAllLocationTonsUnits()
 

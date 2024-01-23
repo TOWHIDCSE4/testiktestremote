@@ -8,6 +8,10 @@ import { useEffect, useState } from "react"
 import { T_MachineClass } from "custom-validator"
 import TimerTableMobileComponent from "./TimerTableMobile"
 import MachineClassSelectComponent from "./MachineClassSelect"
+import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
+import useWether from "../../../hooks/timers/useWether"
+import dayjs from "dayjs"
+import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
   style: ["normal", "italic"],
@@ -18,7 +22,13 @@ const lato = Lato({
 export default function ProductionEyeMobileComponent() {
   const { data: machineClasses } = useMachineClasses()
   const { data: locations } = useLocations()
-
+  const { data: allTimers } = useGetAllTimersGroup()
+  const { data: allLocationTonsUnits } = useGetAllLocationTonsUnits()
+  const gunter = useWether(33.4479, -96.7475)
+  const conroe = useWether(30.312927, -95.4560512)
+  const seguin = useWether(29.5979964, -98.1041023)
+  
+  
   const [selectedLocationId, setSelectedLocationId] = useState<string>()
   useEffect(() => {
     if (!selectedLocationId && locations?.items && locations.items.length > 0) {
@@ -26,6 +36,8 @@ export default function ProductionEyeMobileComponent() {
     }
   }, [locations, selectedLocationId])
 
+  const filteredLocationData = allTimers?.items?.filter(((item: { locationId: string | undefined }) => item.locationId === selectedLocationId));
+  
   return (
     <div className={`${lato.className} w-full mt-6`}>
       <div className="w-full !font-lato">
@@ -39,24 +51,23 @@ export default function ProductionEyeMobileComponent() {
                 <div className="flex !flex-shrink-0 gap-2 font-semibold">
                   <div>Area Temp :</div>
                   <div>Seguin :</div>
-                  <span className="font-bold">
-                    44°
-                    <span className="text-xs font-normal align-top">/43°</span>
-                  </span>
+                  {seguin.data?.current?.temperature_2m}{" "}
+                    <span className="text-xs font-normal align-top">
+                      {seguin.data?.current_units?.temperature_2m}
+                    </span>
                 </div>
                 <div className="flex !flex-shrink-0 gap-2 font-semibold">
-                  <div>Conroe :</div>
-                  <span className="font-bold">
-                    44°
-                    <span className="text-xs font-normal align-top">/43°</span>
-                  </span>
+                {conroe.data?.current?.temperature_2m}{" "}
+                    <span className="text-xs font-normal align-top">
+                      {conroe.data?.current_units?.temperature_2m}
+                    </span>
                 </div>
                 <div className="flex !flex-shrink-0 gap-2 font-semibold">
-                  <div>Gunter :</div>
-                  <span className="font-bold">
-                    44°
-                    <span className="text-xs font-normal align-top">/43°</span>
-                  </span>
+                {gunter.data?.current?.temperature_2m}{" "}
+                    <span className="text-xs font-normal align-top">
+                      {" "}
+                      {gunter.data?.current_units?.temperature_2m}
+                    </span>
                 </div>
               </div>
 
@@ -78,9 +89,32 @@ export default function ProductionEyeMobileComponent() {
                     <div className="leading-4">Timers</div>
                   </div>
                 </div>
-                <div className="flex items-center ml-4 text-5xl font-bold">
-                  <span className="text-gray-400">0</span>41
-                </div>
+                <div className="flex items-center text-6xl font-bold">
+              {allTimers?.itemCount < 10 ? (
+                <>
+                  <span className="text-gray-400">00</span>
+                  <span className="text-black">
+                    {allTimers.itemCount}
+                  </span>
+                </>
+              ) : allTimers?.itemCount > 10 ||
+                allTimers?.itemCount < 100 ? (
+                <>
+                  <span className="text-gray-400">0</span>
+                  <span className="text-black">
+                    {allTimers.itemCount}
+                  </span>
+                </>
+              ) : allTimers?.itemCount >= 100 ? (
+                <>
+                  <span className="text-black">
+                    {allTimers.itemCount}
+                  </span>
+                </>
+              ) : (
+                <span className="text-gray-400">000</span>
+              )}
+            </div>
               </div>
             </div>
           </div>
@@ -120,21 +154,22 @@ export default function ProductionEyeMobileComponent() {
                 } px-2 pb-6 overflow-y-hidden h-80 w-full`}
               >
                 <div className="relative w-full h-full overflow-y-auto scrollbar-w-xs">
-                  {machineClasses?.items?.map(
-                    (mc: T_MachineClass, key: number) => (
-                      <div key={key} className="py-1 pl-1">
-                        <div className="text-xs font-black text-red-700 uppercase">
-                          {mc.name}
-                        </div>
-                        <div className="relative w-full">
-                          <TimerTableMobileComponent
-                            location={location}
-                            machineClass={mc}
-                          />
-                        </div>
-                      </div>
-                    )
-                  )}
+                  {filteredLocationData?.map(
+                    (mc: any, key: number) => {
+                      return <div key={key} className="py-1 pl-1">
+                        	<div className="text-xs font-black text-red-700 uppercase">
+                          	{mc.machineClass.name}
+                        	</div>
+                        	<div className="relative w-full">
+                          	<TimerTableMobileComponent
+                            	location={location}
+                            	machineClass={mc}
+                            	timers={mc.timers}
+                              />
+                        	</div>
+                      	</div>
+                    })
+                  }
                 </div>
                 <MachineClassSelectComponent
                   location={location}
@@ -176,17 +211,17 @@ export default function ProductionEyeMobileComponent() {
             <div className="flex items-center justify-between w-full gap-8 pl-4 text-2xl font-bold leading-4 uppercase">
               <div className="flex flex-1 gap-2">
                 <div>Units</div>
-                <div className="text-slate-400">00000</div>
+                <div className="text-slate-400"> {allLocationTonsUnits?.item?.dailyUnits}</div>
               </div>
               <div className="flex flex-1 gap-2">
                 <div>Tons</div>
-                <div className="text-slate-400">00000</div>
+                <div className="text-slate-400">{allLocationTonsUnits?.item?.tons?.toFixed(2)}</div>
               </div>
             </div>
             <div className="flex gap-1 text-sm text-gray-400 uppercase">
-              <div className="">January 20 2024 </div>
+              <div className="">{dayjs().format("MMMM DD YYYY")} </div>
               <div>|</div>
-              <div className="">7:03 AM</div>
+              <div className="">{dayjs().format("hh:mm A")}</div>
             </div>
           </div>
         </div>
