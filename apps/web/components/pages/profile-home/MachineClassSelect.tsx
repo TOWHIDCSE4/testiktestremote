@@ -1,5 +1,7 @@
 import { T_MachineClass } from "custom-validator"
 import { useState } from "react"
+import _ from "lodash"
+import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
 
 export default function MachineClassSelectComponent({
   machineClasses,
@@ -11,6 +13,9 @@ export default function MachineClassSelectComponent({
     name: string
   }
 }) {
+  const { data: locationsTotals } = useGetLocationTotals()
+  const t = locationsTotals?.item?.find((item: any) => item._id == location._id)
+  console.log("[TTTT]", t)
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
   return (
     <>
@@ -41,8 +46,8 @@ export default function MachineClassSelectComponent({
           onClick={() => setIsMenuOpen((prev) => !prev)}
           className="flex gap-2 p-1 mx-auto text-lg font-bold text-green-700 uppercase bg-white border border-b-0 rounded-t-lg lg:text-xs w-fit border-slate-600 whitespace-nowrap "
         >
-          <div>Total Units: 0000</div>
-          <div>Total Tons: 0000</div>
+          <div>Total Units: {t?.totalUnits}</div>
+          <div>Total Tons: {t?.totalTons?.toFixed(2)}</div>
         </button>
       </div>
     </>

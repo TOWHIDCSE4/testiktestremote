@@ -1,11 +1,17 @@
 "use client"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import useLocation from "../../../hooks/locations/useLocation"
 import useProfile from "../../../hooks/users/useProfile"
 import PinnedDashboardComponents from "./pinned-dashboard-components/PinnedDashboardComponents"
 import isDev from "../../../helpers/isDev"
 import ProductionEyeComponent from "./ProductionEye"
 import ProductionEyeMobileComponent from "./ProductionEyeMobile"
+import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
+import useLocations from "../../../hooks/locations/useLocations"
+import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
+import useTotalTonsUnit from "../../../hooks/timers/useTotalTonsUnit"
+import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
+import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
 
 const Content = () => {
   const { data, isLoading: basicInfoLoading } = useProfile()
@@ -15,6 +21,32 @@ const Content = () => {
     if (data?.item?.locationId)
       setSelectedLocationId(data?.item.locationId as string)
   }, [data, setSelectedLocationId])
+  const { data: machineClasses } = useMachineClasses()
+  const { data: locations } = useLocations()
+  const { data: allTimers } = useGetAllTimersGroup()
+  // const { data: totalTonsUnit } = useTotalTonsUnit()
+  const { data: locationsTotals } = useGetLocationTotals()
+  const { data: allLocationTonsUnits } = useGetAllLocationTonsUnits()
+
+  useEffect(() => {
+    if (data?.item?.locationId)
+      setSelectedLocationId(data?.item.locationId as string)
+  }, [data])
+
+  const [isMenuOpen, setIsMenuOpen] = useState<Array<boolean>>([
+    false,
+    false,
+    false,
+  ])
+
+  const toggleMenuOpen = (index: number) => {
+    if (index < 0 || index > 2) return
+    // eslint-disable-next-line prefer-const
+    let tmp = [...isMenuOpen]
+    tmp[index] = !tmp[index]
+    console.log(isMenuOpen, [...tmp])
+    setIsMenuOpen([...tmp])
+  }
 
   return (
     <>
@@ -39,7 +71,7 @@ const Content = () => {
           <div className="w-full h-0.5 bg-gray-200 mt-6"></div>
 
           <div className="hidden w-full lg:block">
-            <ProductionEyeComponent />
+            <ProductionEyeComponent allTimers={allTimers} />
           </div>
 
           <div className="block w-full lg:hidden">
