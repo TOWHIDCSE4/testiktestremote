@@ -16,6 +16,8 @@ import useAutoTimers from "../../../../hooks/autoTimer/useAutoTimers"
 import useSetAutoTimer from "../../../../hooks/autoTimer/useSetAutoTimer"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
+import useProfile from "../../../../hooks/users/useProfile"
+import { USER_ROLES } from "../../../../helpers/constants"
 
 type T_TimerByMachineClass = {
   id: string
@@ -37,6 +39,7 @@ function TimerCards({
   locationName: string
 }) {
   const queryClient = useQueryClient()
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
   const { data: autoTimers, isLoading: isAutoTimersLoading } = useAutoTimers()
   const { mutate: setAutoTimer } = useSetAutoTimer()
   const autoTimer = useMemo(() => {
@@ -96,6 +99,12 @@ function TimerCards({
     }
   }
 
+  const isAutoTimerDisabled =
+    !userProfile?.item.role ||
+    ![USER_ROLES.Administrator, USER_ROLES.Production].includes(
+      userProfile?.item.role ?? "undefined"
+    )
+
   return (
     <>
       <div>
@@ -113,22 +122,32 @@ function TimerCards({
             <div>Loading...</div>
           ) : (
             <div className="flex items-center gap-2">
-              <div className="font-bold uppercase">Auto Timer</div>
+              <div
+                className={`font-bold uppercase ${
+                  isAutoTimerDisabled ? "opacity-50" : ""
+                }`}
+              >
+                Auto Timer
+              </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
                   value=""
                   className="sr-only peer"
+                  disabled={isAutoTimerDisabled}
                   checked={isAutoTimerOn}
                   onChange={handleIsAutoTimerOn}
                 />
-                <div className="w-8 h-4 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[0px] after:start-[0px] after:border-gray-600 border border-gray-600 active:outline-none after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 after:bg-gray-300 peer-checked:after:bg-green-600"></div>
+                <div
+                  data-disabled={isAutoTimerDisabled}
+                  className="w-8 h-4 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[0px] after:start-[0px] after:border-gray-600 border border-gray-600 active:outline-none after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 after:bg-gray-300 peer-checked:after:bg-green-600 data-[disabled=true]:peer-checked:after:!bg-gray-400"
+                ></div>
               </label>
               <button
                 className="font-bold uppercase disabled:opacity-50"
-                disabled={!isAutoTimerOn}
+                disabled={!isAutoTimerOn || isAutoTimerDisabled}
                 onClick={() => {
-                  setIsOpenSetAutoTimerModal(true)
+                  if (!isAutoTimerDisabled) setIsOpenSetAutoTimerModal(true)
                 }}
               >
                 {autoTimer ? (
