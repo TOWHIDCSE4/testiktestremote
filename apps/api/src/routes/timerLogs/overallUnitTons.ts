@@ -100,3 +100,155 @@ export const overallUnitTons = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const machineClassUnitTons = async (req: Request, res: Response) => {
+  if (req.query.machineClassId && req.query.locationId) {
+    try {
+      dayjs.extend(utc.default)
+      dayjs.extend(timezone.default)
+      const locationId = String(req.query.locationId)
+      const location = await Locations.findOne({
+        _id: locationId,
+      })
+      const timeZone = location?.timeZone
+      const currentDateStart = dayjs
+        .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
+        .toISOString()
+      const currentDateEnd = dayjs
+        .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
+        .toISOString()
+      const getDayController = await ControllerTimers.findOne({
+        locationId: req.query.locationId,
+        createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+      })
+      if (getDayController) {
+        const getDayControllerLogs = await TimerLogs.find({
+          locationId: req.query.locationId,
+          stopReason: { $in: ["Unit Created"] },
+          machineClassId: req.query.machineClassId,
+          createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+        }).populate("partId")
+        const logTotalCount = getDayControllerLogs.length
+        if (logTotalCount > 0) {
+          const partsTotalTons = getDayControllerLogs
+            ? getDayControllerLogs.reduce((acc, val) => {
+                // @ts-expect-error
+                return acc + (val?.partId?.tons ? val?.partId?.tons : 0)
+              }, 0)
+            : 0
+          res.json({
+            error: false,
+            item: {
+              tons: partsTotalTons,
+              units: logTotalCount,
+            },
+            itemCount: null,
+            message: null,
+          })
+        } else {
+          res.json({
+            error: false,
+            item: { tons: 0, tonsPerHour: 0, unitPerHour: 0 },
+            itemCount: null,
+            message: null,
+          })
+        }
+      } else {
+        res.json({
+          error: false,
+          item: { unit: 0, tons: 0 },
+          itemCount: null,
+          message: null,
+        })
+      }
+    } catch (err: any) {
+      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED
+      Sentry.captureException(err)
+      res.json({
+        error: true,
+        message: message,
+        items: null,
+        itemCount: null,
+      })
+    }
+  } else {
+    res.json({
+      error: true,
+      itemCount: null,
+      message: REQUIRED_VALUES_MISSING,
+    })
+  }
+}
+
+export const machineClassesTotals = async (req: Request, res: Response) => {
+  if (req.query.locationId && req.query.machineClassIds) {
+    try {
+      dayjs.extend(utc.default)
+      dayjs.extend(timezone.default)
+      const locationId = String(req.query.locationId)
+      const location = await Locations.findOne({
+        _id: locationId,
+      })
+      const timeZone = location?.timeZone
+      const currentDateStart = dayjs
+        .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").startOf("day"))
+        .toISOString()
+      const currentDateEnd = dayjs
+        .utc(dayjs.tz(dayjs(), timeZone ? timeZone : "").endOf("day"))
+        .toISOString()
+
+      //@ts-expect-error
+      const machineClassIds = req.query.machineClassIds.split(',');
+
+      let totalUnits = 0;
+      let totalTons = 0;
+
+      for (const machineClassId of machineClassIds) {
+        const getDayControllerLogs = await TimerLogs.find({
+          locationId,
+          stopReason: { $in: ["Unit Created"] },
+          machineClassId,
+          createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
+        }).populate("partId");
+
+        const logTotalCount = getDayControllerLogs.length;
+
+        if (logTotalCount > 0) {
+          const partsTotalTons = getDayControllerLogs.reduce((acc, val) => {
+            // @ts-expect-error
+            return acc + (val?.partId?.tons ? val?.partId?.tons : 0);
+          }, 0);
+
+          totalUnits += logTotalCount;
+          totalTons += partsTotalTons;
+        }
+      }
+
+      res.json({
+        error: false,
+        item: {
+          tons: totalTons,
+          units: totalUnits,
+        },
+        itemCount: null,
+        message: null,
+      });
+    } catch (err: any) {
+      const message = err.message ? err.message : UNKNOWN_ERROR_OCCURRED;
+      Sentry.captureException(err);
+      res.json({
+        error: true,
+        message: message,
+        items: null,
+        itemCount: null,
+      });
+    }
+  } else {
+    res.json({
+      error: true,
+      itemCount: null,
+      message: REQUIRED_VALUES_MISSING,
+    });
+  }
+};
+

@@ -55,3 +55,7 @@ export const API_URL_READINGS = `${NEXT_PUBLIC_API_URL}/api/readings`
 export const API_URL_EVENTS = `${NEXT_PUBLIC_API_URL}/api/events`
 export const API_URL = `${NEXT_PUBLIC_API_URL}`
 export const API_URL_REPORTS = `${NEXT_PUBLIC_API_URL}/api/reports`
+export const API_URL_TIMERS_MACHINECLASS = `${NEXT_PUBLIC_API_URL}/api/timers/find/group/machine-class`
+export const API_URL_TIMERS_TONSUNIT = `${NEXT_PUBLIC_API_URL}/api/timers/timer-tons-unit`
+export const API_URL_ALL_LOCATIONS_TOTAL_TONSUNIT = `${NEXT_PUBLIC_API_URL}/api/timers/all-global-tons-unit`
+export const API_URL_AUTOTIMER = `${NEXT_PUBLIC_API_URL}/api/auto-timer`

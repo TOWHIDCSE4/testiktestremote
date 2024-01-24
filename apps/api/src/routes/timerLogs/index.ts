@@ -10,7 +10,7 @@ import {
 import isUserLoggedIn from "../../helpers/isUserloggedIn"
 import { timer, timerCount, timerUnitsCreatedCount } from "./timer"
 import { productInventory } from "./productInventory"
-import { overallUnitTons } from "./overallUnitTons"
+import { machineClassUnitTons, machineClassesTotals, overallUnitTons } from "./overallUnitTons"
 import {
   batchActionUpdate,
   calculateGlobalMetrics,
@@ -32,6 +32,8 @@ router.get("/global/multi/filter", isUserLoggedIn, globalLogsMulti)
 router.get("/inventory/:partId", isUserLoggedIn, productInventory)
 router.get("/overall-unit-tons", isUserLoggedIn, overallUnitTons)
 router.put("/batch-action", isUserLoggedIn, batchActionUpdate)
+router.get("/machine-class-unit-tons", isUserLoggedIn, machineClassUnitTons)
+router.get("/machine-classes-totals", isUserLoggedIn, machineClassesTotals)
 router.get("/get-global-metrics", isUserLoggedIn, calculateGlobalMetrics)
 router.get(
   "/get-machine-class-metrics",
