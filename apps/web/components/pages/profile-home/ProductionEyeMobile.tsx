@@ -13,7 +13,7 @@ import dayjs from "dayjs"
 import { useSocket } from "../../../store/useSocket"
 import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
-import { Radio } from "antd"
+import TonsUnitsBarChart from "./TonsUnitsBarChart"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -195,7 +195,8 @@ export default function ProductionEyeMobileComponent() {
                 </div>
                 <MachineClassSelectComponent
                   location={location}
-                  machineClasses={machineClasses?.items}
+                  machineClasses={machineClasses?.items.reverse()}
+                  selectedMachineClasses={allTimers?.items}
                 />
               </div>
             ))}
@@ -210,101 +211,7 @@ export default function ProductionEyeMobileComponent() {
                 Global Rundown
               </div>
             </div>
-            {/* <div className="flex flex-col">
-              <div className="flex items-center gap-1">
-                <div className="w-16 text-xs font-bold text-right uppercase text-slate-600">
-                  Seguin
-                </div>
-                <div className="w-[180px] bg-slate-600 border border-slate-900 h-2"></div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-16 text-xs font-bold text-right uppercase text-slate-800">
-                  Conroe
-                </div>
-                <div className="w-[250px] bg-slate-800 border border-slate-900 h-2"></div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-16 text-xs font-bold text-right uppercase text-slate-400">
-                  Gunter
-                </div>
-                <div className="w-[130px] bg-slate-400 border border-slate-900 h-2"></div>
-              </div>
-            </div> */}
-            <div className="flex flex-col w-[300px] ml-4">
-              <div className="flex justify-end">
-                <Radio.Group
-                  defaultValue="units"
-                  size="small"
-                  onChange={(e) => setIsUnits(e.target.value)}
-                >
-                  <Radio.Button value="units">Units</Radio.Button>
-                  <Radio.Button value="tons">Tons</Radio.Button>
-                </Radio.Group>
-              </div>
-              {locations?.items?.map((location, index) => {
-                const locationTonsUnits =
-                  locationBasedUnitsTons.data?.item?.find(
-                    (item: any) => item._id === location._id
-                  )
-
-                const a = locationBasedUnitsTons.data?.item?.map(
-                  (item: any) => item?.totalUnits
-                )
-                const b = locationBasedUnitsTons.data?.item?.map((item: any) =>
-                  Math.round(Number(item?.totalTons))
-                )
-                const bigUnit = Math.max(...(a ?? []))
-                const bigTon = Math.max(...(b ?? []))
-
-                return (
-                  <div key={location._id}
-                  className="flex items-center gap-1">
-                    <div
-                      className={`w-16 text-xs font-bold text-right uppercase text-slate-600 ${
-                        index == 0
-                          ? "text-slate-800"
-                          : index == 1
-                          ? "text-slate-600"
-                          : index == 2
-                          ? "text-slate-400"
-                          : ""
-                      }`}
-                    >
-                      {location.name}
-                    </div>
-                    <div className="overflow-hidden w-60">
-                      <div
-                        className={` border border-slate-900 h-2 
-                      ${
-                        index == 0
-                          ? "bg-slate-800"
-                          : index == 1
-                          ? "bg-slate-600"
-                          : index == 2
-                          ? "bg-slate-400"
-                          : ""
-                      }
-                      
-                      `}
-                        style={{
-                          width:
-                            isUnits === "units"
-                              ? `${
-                                  (locationTonsUnits?.totalUnits / bigUnit) *
-                                  100
-                                }%`
-                              : `${
-                                  (Math.round(locationTonsUnits?.totalTons) /
-                                    bigTon) *
-                                  100
-                                }%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+            <TonsUnitsBarChart />
             <div className="flex items-center justify-between w-full gap-8 pl-4 text-2xl font-bold leading-4 uppercase">
               <div className="flex flex-1 gap-2">
                 <div>Units</div>

@@ -116,7 +116,7 @@ export const getAllTimersByMachineClass = async (
           preserveNullAndEmptyArrays: true,
         },
       },
-    ])
+    ]).sort({ rowNumber: 1 })
 
     res.json({
       error: false,

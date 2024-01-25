@@ -16,7 +16,7 @@ export const getAllMachineClasses = async (req: Request, res: Response) => {
   try {
     const machineClassesCount = await MachineClasses.find().countDocuments()
     const getAllMachineClasses = await MachineClasses.find().sort({
-      createdAt: -1,
+      rowNumber: 1,
     })
     res.json({
       items: getAllMachineClasses,
