@@ -1,4 +1,6 @@
+import { useEffect } from "react"
 import useGetMachineClassTonsUnit from "../../../hooks/timerLogs/useMachineClassTonsUnits"
+import { useSocket } from "../../../store/useSocket"
 import TimerTableRowMobile from "./TimerTableRowMobile"
 
 export default function TimerTableMobileComponent({
@@ -13,10 +15,37 @@ export default function TimerTableMobileComponent({
   machineClass: any
   timers: any
 }) {
-  const { data: totalTons } = useGetMachineClassTonsUnit({
-    locationId: location._id,
-    machineClassId: machineClass.machineClass._id,
-  })
+
+  const socket = useSocket((state: any) => state.instance)
+
+  const { data: totalTons, refetch: refetchMachineClassesTonsUnits } =
+    useGetMachineClassTonsUnit({
+      locationId: location._id,
+      machineClassId: machineClass.machineClass._id,
+    })
+
+    useEffect(() => {
+      const handleTimerEvent = (data: any) => {
+        console.log("__EVENT_DATA", data)
+        if (data?.message === "refetch") {
+          refetchMachineClassesTonsUnits()
+        }
+      }
+  
+      // Check if socket is defined before attaching the event listener
+      if (socket) {
+        socket.on("timer-event", handleTimerEvent)
+      }
+  
+      // Return a cleanup function
+      return () => {
+        // Check if socket is defined before detaching the event listener
+        if (socket) {
+          socket.off("timer-event", handleTimerEvent)
+        }
+      }
+    }, [socket])
+  
   return (
     <table className="w-full text-md">
       <thead className="font-bold">

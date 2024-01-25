@@ -15,7 +15,9 @@ export async function fetcherfn() {
 }
 
 function useGetLocationTotals() {
-  const query = useQuery(["locations-totals"], () => fetcherfn(), {})
+  const query = useQuery(["locations-totals"], () => fetcherfn(), {
+    refetchOnWindowFocus: false,
+  })
   return query
 }
 

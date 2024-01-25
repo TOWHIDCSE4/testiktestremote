@@ -5,13 +5,16 @@ import { LuMenu, LuMoon } from "react-icons/lu"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 import useLocations from "../../../hooks/locations/useLocations"
 import { useEffect, useState } from "react"
-import { T_MachineClass } from "custom-validator"
 import TimerTableMobileComponent from "./TimerTableMobile"
 import MachineClassSelectComponent from "./MachineClassSelect"
 import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
 import useWether from "../../../hooks/timers/useWether"
 import dayjs from "dayjs"
+import { useSocket } from "../../../store/useSocket"
 import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
+import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
+import { Radio } from "antd"
+
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
   style: ["normal", "italic"],
@@ -20,24 +23,49 @@ const lato = Lato({
 })
 
 export default function ProductionEyeMobileComponent() {
+  const socket = useSocket((state: any) => state.instance)
+  const [isUnits, setIsUnits] = useState<"tons" | "units">("units")
   const { data: machineClasses } = useMachineClasses()
   const { data: locations } = useLocations()
   const { data: allTimers } = useGetAllTimersGroup()
-  const { data: allLocationTonsUnits } = useGetAllLocationTonsUnits()
+  const locationBasedUnitsTons = useGetLocationTotals()
+  const { data: allLocationTonsUnits, refetch: refetchAllLocationsTonsUnits } =
+    useGetAllLocationTonsUnits()
   const gunter = useWether(33.4479, -96.7475)
   const conroe = useWether(30.312927, -95.4560512)
   const seguin = useWether(29.5979964, -98.1041023)
-  
-  
+
   const [selectedLocationId, setSelectedLocationId] = useState<string>()
+
   useEffect(() => {
     if (!selectedLocationId && locations?.items && locations.items.length > 0) {
       setSelectedLocationId(locations.items[0]._id)
     }
   }, [locations, selectedLocationId])
 
-  const filteredLocationData = allTimers?.items?.filter(((item: { locationId: string | undefined }) => item.locationId === selectedLocationId));
-  
+  useEffect(() => {
+    const handleTimerEvent = (data: any) => {
+      if (data?.message === "refetch") {
+        refetchAllLocationsTonsUnits()
+      }
+    }
+
+    if (socket) {
+      socket.on("timer-event", handleTimerEvent)
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("timer-event", handleTimerEvent)
+      }
+    }
+  }, [socket])
+
+  const filteredLocationData = allTimers?.items?.filter(
+    (item: { locationId: string | undefined }) =>
+      item.locationId === selectedLocationId
+  )
+
   return (
     <div className={`${lato.className} w-full mt-6`}>
       <div className="w-full !font-lato">
@@ -52,22 +80,22 @@ export default function ProductionEyeMobileComponent() {
                   <div>Area Temp :</div>
                   <div>Seguin :</div>
                   {seguin.data?.current?.temperature_2m}{" "}
-                    <span className="text-xs font-normal align-top">
-                      {seguin.data?.current_units?.temperature_2m}
-                    </span>
+                  <span className="text-xs font-normal align-top">
+                    {seguin.data?.current_units?.temperature_2m}
+                  </span>
                 </div>
                 <div className="flex !flex-shrink-0 gap-2 font-semibold">
-                {conroe.data?.current?.temperature_2m}{" "}
-                    <span className="text-xs font-normal align-top">
-                      {conroe.data?.current_units?.temperature_2m}
-                    </span>
+                  {conroe.data?.current?.temperature_2m}{" "}
+                  <span className="text-xs font-normal align-top">
+                    {conroe.data?.current_units?.temperature_2m}
+                  </span>
                 </div>
                 <div className="flex !flex-shrink-0 gap-2 font-semibold">
-                {gunter.data?.current?.temperature_2m}{" "}
-                    <span className="text-xs font-normal align-top">
-                      {" "}
-                      {gunter.data?.current_units?.temperature_2m}
-                    </span>
+                  {gunter.data?.current?.temperature_2m}{" "}
+                  <span className="text-xs font-normal align-top">
+                    {" "}
+                    {gunter.data?.current_units?.temperature_2m}
+                  </span>
                 </div>
               </div>
 
@@ -90,31 +118,25 @@ export default function ProductionEyeMobileComponent() {
                   </div>
                 </div>
                 <div className="flex items-center text-6xl font-bold">
-              {allTimers?.itemCount < 10 ? (
-                <>
-                  <span className="text-gray-400">00</span>
-                  <span className="text-black">
-                    {allTimers.itemCount}
-                  </span>
-                </>
-              ) : allTimers?.itemCount > 10 ||
-                allTimers?.itemCount < 100 ? (
-                <>
-                  <span className="text-gray-400">0</span>
-                  <span className="text-black">
-                    {allTimers.itemCount}
-                  </span>
-                </>
-              ) : allTimers?.itemCount >= 100 ? (
-                <>
-                  <span className="text-black">
-                    {allTimers.itemCount}
-                  </span>
-                </>
-              ) : (
-                <span className="text-gray-400">000</span>
-              )}
-            </div>
+                  {allTimers?.itemCount < 10 ? (
+                    <>
+                      <span className="text-gray-400">00</span>
+                      <span className="text-black">{allTimers.itemCount}</span>
+                    </>
+                  ) : allTimers?.itemCount > 10 ||
+                    allTimers?.itemCount < 100 ? (
+                    <>
+                      <span className="text-gray-400">0</span>
+                      <span className="text-black">{allTimers.itemCount}</span>
+                    </>
+                  ) : allTimers?.itemCount >= 100 ? (
+                    <>
+                      <span className="text-black">{allTimers.itemCount}</span>
+                    </>
+                  ) : (
+                    <span className="text-gray-400">000</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -154,22 +176,22 @@ export default function ProductionEyeMobileComponent() {
                 } px-2 pb-6 overflow-y-hidden h-80 w-full`}
               >
                 <div className="relative w-full h-full overflow-y-auto scrollbar-w-xs">
-                  {filteredLocationData?.map(
-                    (mc: any, key: number) => {
-                      return <div key={key} className="py-1 pl-1">
-                        	<div className="text-xs font-black text-red-700 uppercase">
-                          	{mc.machineClass.name}
-                        	</div>
-                        	<div className="relative w-full">
-                          	<TimerTableMobileComponent
-                            	location={location}
-                            	machineClass={mc}
-                            	timers={mc.timers}
-                              />
-                        	</div>
-                      	</div>
-                    })
-                  }
+                  {filteredLocationData?.map((mc: any, key: number) => {
+                    return (
+                      <div key={key} className="py-1 pl-1">
+                        <div className="text-xs font-black text-red-700 uppercase">
+                          {mc.machineClass.name}
+                        </div>
+                        <div className="relative w-full">
+                          <TimerTableMobileComponent
+                            location={location}
+                            machineClass={mc}
+                            timers={mc.timers}
+                          />
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
                 <MachineClassSelectComponent
                   location={location}
@@ -188,7 +210,7 @@ export default function ProductionEyeMobileComponent() {
                 Global Rundown
               </div>
             </div>
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <div className="flex items-center gap-1">
                 <div className="w-16 text-xs font-bold text-right uppercase text-slate-600">
                   Seguin
@@ -207,15 +229,95 @@ export default function ProductionEyeMobileComponent() {
                 </div>
                 <div className="w-[130px] bg-slate-400 border border-slate-900 h-2"></div>
               </div>
+            </div> */}
+            <div className="flex flex-col w-[300px] ml-4">
+              <div className="flex justify-end">
+                <Radio.Group
+                  defaultValue="units"
+                  size="small"
+                  onChange={(e) => setIsUnits(e.target.value)}
+                >
+                  <Radio.Button value="units">Units</Radio.Button>
+                  <Radio.Button value="tons">Tons</Radio.Button>
+                </Radio.Group>
+              </div>
+              {locations?.items?.map((location, index) => {
+                const locationTonsUnits =
+                  locationBasedUnitsTons.data?.item?.find(
+                    (item: any) => item._id === location._id
+                  )
+
+                const a = locationBasedUnitsTons.data?.item?.map(
+                  (item: any) => item?.totalUnits
+                )
+                const b = locationBasedUnitsTons.data?.item?.map((item: any) =>
+                  Math.round(Number(item?.totalTons))
+                )
+                const bigUnit = Math.max(...(a ?? []))
+                const bigTon = Math.max(...(b ?? []))
+
+                return (
+                  <div key={location._id}
+                  className="flex items-center gap-1">
+                    <div
+                      className={`w-16 text-xs font-bold text-right uppercase text-slate-600 ${
+                        index == 0
+                          ? "text-slate-800"
+                          : index == 1
+                          ? "text-slate-600"
+                          : index == 2
+                          ? "text-slate-400"
+                          : ""
+                      }`}
+                    >
+                      {location.name}
+                    </div>
+                    <div className="overflow-hidden w-60">
+                      <div
+                        className={` border border-slate-900 h-2 
+                      ${
+                        index == 0
+                          ? "bg-slate-800"
+                          : index == 1
+                          ? "bg-slate-600"
+                          : index == 2
+                          ? "bg-slate-400"
+                          : ""
+                      }
+                      
+                      `}
+                        style={{
+                          width:
+                            isUnits === "units"
+                              ? `${
+                                  (locationTonsUnits?.totalUnits / bigUnit) *
+                                  100
+                                }%`
+                              : `${
+                                  (Math.round(locationTonsUnits?.totalTons) /
+                                    bigTon) *
+                                  100
+                                }%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
             </div>
             <div className="flex items-center justify-between w-full gap-8 pl-4 text-2xl font-bold leading-4 uppercase">
               <div className="flex flex-1 gap-2">
                 <div>Units</div>
-                <div className="text-slate-400"> {allLocationTonsUnits?.item?.dailyUnits}</div>
+                <div className="text-slate-400">
+                  {" "}
+                  {allLocationTonsUnits?.item?.dailyUnits}
+                </div>
               </div>
               <div className="flex flex-1 gap-2">
                 <div>Tons</div>
-                <div className="text-slate-400">{allLocationTonsUnits?.item?.tons?.toFixed(2)}</div>
+                <div className="text-slate-400">
+                  {allLocationTonsUnits?.item?.tons?.toFixed(2)}
+                </div>
               </div>
             </div>
             <div className="flex gap-1 text-sm text-gray-400 uppercase">
