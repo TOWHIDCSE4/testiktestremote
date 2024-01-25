@@ -19,7 +19,9 @@ export async function fetcherfn() {
 }
 
 function useGetAllTimersTonsUnit() {
-  const query = useQuery(["timers-tons-unit"], () => fetcherfn(), {})
+  const query = useQuery(["timers-tons-unit"], () => fetcherfn(), {
+    refetchOnWindowFocus: false,
+  })
   return query
 }
 

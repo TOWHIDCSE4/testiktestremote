@@ -16,7 +16,9 @@ export async function fetcherfn() {
 }
 
 function useGetAllTimersGroup() {
-  const query = useQuery(["all-timers"], () => fetcherfn(), {})
+  const query = useQuery(["all-timers"], () => fetcherfn(), {
+    refetchOnWindowFocus: false,
+  })
   return query
 }
 

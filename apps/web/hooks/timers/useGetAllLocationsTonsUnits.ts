@@ -17,7 +17,9 @@ export async function fetcherfn() {
 }
 
 function useGetAllLocationTonsUnits() {
-  const query = useQuery(["all-location-tons-units"], () => fetcherfn(), {})
+  const query = useQuery(["all-location-tons-units"], () => fetcherfn(), {
+    refetchOnWindowFocus: false,
+  })
   return query
 }
 
