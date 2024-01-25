@@ -70,14 +70,14 @@ const TonsUnitsBarChart = () => {
         const bgColor =
           value === maxValue
             ? "bg-slate-800"
-            : value > maxValue
+            : value > maxValue / 2
             ? "bg-slate-600"
             : "bg-slate-400"
 
         const textColor =
           value === maxValue
             ? "text-slate-800"
-            : value > maxValue
+            : value > maxValue / 2
             ? "text-slate-600"
             : "text-slate-400"
 
