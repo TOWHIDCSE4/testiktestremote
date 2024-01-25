@@ -8,6 +8,7 @@ const machineClasses = new Schema({
     type: Date,
     default: Date.now,
   },
+  order: Number,
   updatedAt: Date,
   deletedAt: Date,
 })
