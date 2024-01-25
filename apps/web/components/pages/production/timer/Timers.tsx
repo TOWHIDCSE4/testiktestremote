@@ -11,19 +11,22 @@ type T_TimerByMachineClass = {
   rowNumber: number
   timers: T_Timer[]
   isSelected: boolean
+  machineClasses: T_MachineClass[]
 }
 
 const Timers = ({
+  locationName,
   locationId,
   machineClasses,
 }: {
+  locationName: string
   locationId: string
   machineClasses: (T_MachineClass & { isSelected: boolean })[]
 }) => {
-    const [timersByMachineClass, setTimersByMachineClass] = useState<
+  const [timersByMachineClass, setTimersByMachineClass] = useState<
     T_TimerByMachineClass[]
   >([])
-    const {
+  const {
     data: timersByLocation,
     isLoading: isTimersByLocationLoading,
     setLocationId,
@@ -55,7 +58,7 @@ const Timers = ({
             return timer
           }
         }) || []
-            const machineClassGroup = machineClassesVariantRemoved
+      const machineClassGroup = machineClassesVariantRemoved
         ?.map((machineClass) => {
           const timerByMachineClass =
             timersByLocation?.items?.filter((timer: T_Timer) => {
@@ -64,7 +67,7 @@ const Timers = ({
               }
             }) || []
           const isRadialPress = machineClass.name === "Radial Press"
-                    return {
+          return {
             id: machineClass._id,
             name: isRadialPress
               ? `${machineClass.name} and Variants`
@@ -77,6 +80,9 @@ const Timers = ({
               ? [...timerByMachineClass, ...variantTimers]
               : timerByMachineClass,
             isSelected: machineClass.isSelected,
+            machineClasses: isRadialPress
+              ? [machineClass, machineClassesVariant]
+              : [machineClass],
           }
         })
         .sort(function (a, b) {
@@ -99,6 +105,7 @@ const Timers = ({
             rowNumber: machineClass.rowNumber,
             timers: timerByMachineClass,
             isSelected: machineClass.isSelected,
+            machineClasses: [machineClass],
           }
         })
         .sort(function (a, b) {
@@ -125,6 +132,7 @@ const Timers = ({
                   timerByMachineClass={timerByMachineClass}
                   isLoading={isTimersByLocationLoading}
                   locationId={locationId}
+                  locationName={locationName}
                 />
               </div>
             )

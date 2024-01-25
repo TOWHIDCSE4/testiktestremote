@@ -1,29 +1,109 @@
-import { T_Machine, T_Timer } from "custom-validator"
-import { useState } from "react"
+import {
+  T_BackendResponse,
+  T_Location,
+  T_Machine,
+  T_MachineClass,
+  T_Timer,
+} from "custom-validator"
+import { ChangeEvent, useEffect, useMemo, useState } from "react"
 import Timer from "./Timer"
 import TimerTracker from "./TimerTracker"
 import DeleteModal from "./modals/DeleteModal"
 import DetailsModal from "./modals/DetailsModal"
+import useGetOverallTotal from "../../../../hooks/timerLogs/useGetOverallTotal"
+import SetAutoTimerModalComponent from "./modals/SetAutoTimerModal"
+import useAutoTimers from "../../../../hooks/autoTimer/useAutoTimers"
+import useSetAutoTimer from "../../../../hooks/autoTimer/useSetAutoTimer"
+import toast from "react-hot-toast"
+import { useQueryClient } from "@tanstack/react-query"
+import useProfile from "../../../../hooks/users/useProfile"
+import { USER_ROLES } from "../../../../helpers/constants"
 
 type T_TimerByMachineClass = {
   id: string
   name: string
   count: number
   timers: T_Timer[]
+  machineClasses: T_MachineClass[]
 }
 
 function TimerCards({
   timerByMachineClass,
   isLoading,
   locationId,
+  locationName,
 }: {
   timerByMachineClass: T_TimerByMachineClass
   isLoading: boolean
   locationId: string
+  locationName: string
 }) {
+  const queryClient = useQueryClient()
+  const { data: userProfile, isLoading: isUserProfileLoading } = useProfile()
+  const { data: autoTimers, isLoading: isAutoTimersLoading } = useAutoTimers()
+  const { mutate: setAutoTimer } = useSetAutoTimer()
+  const autoTimer = useMemo(() => {
+    const machineClassId = timerByMachineClass.machineClasses[0]._id
+    const tmp = autoTimers?.items?.find(
+      (item) =>
+        item.locationId == locationId && item.machineClassId == machineClassId
+    )
+    return tmp
+  }, [autoTimers, locationId, timerByMachineClass.machineClasses])
+
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [selectedTimerId, setSelectedTimerId] = useState("")
+  const { data: totalTons } = useGetOverallTotal({
+    locationId: locationId as string,
+    machineClassId: timerByMachineClass.id,
+  })
+
+  const [isAutoTimerOn, setIsAutoTimerOn] = useState<boolean>(false)
+  useEffect(() => {
+    if (autoTimer) {
+      setIsAutoTimerOn(autoTimer.isActive)
+    }
+  }, [autoTimer])
+
+  const [isOpenSetAutoTimerModal, setIsOpenSetAutoTimerModal] =
+    useState<boolean>(false)
+
+  const handleIsAutoTimerOn = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setIsOpenSetAutoTimerModal(true)
+    } else {
+      if (autoTimer) {
+        setAutoTimer(
+          { ...autoTimer, isActive: e.target.checked },
+          {
+            onSuccess: (data: T_BackendResponse) => {
+              queryClient.invalidateQueries({
+                queryKey: ["auto-timers"],
+              })
+              if (data.error) {
+                toast.error(String(data.message))
+              }
+            },
+            onError: (err: any) => {
+              queryClient.invalidateQueries({
+                queryKey: ["auto-timers"],
+              })
+              toast.error(String(err))
+            },
+          }
+        )
+      } else {
+        setIsAutoTimerOn(e.target.checked)
+      }
+    }
+  }
+
+  const isAutoTimerDisabled =
+    !userProfile?.item.role ||
+    ![USER_ROLES.Administrator, USER_ROLES.Production].includes(
+      userProfile?.item.role ?? "undefined"
+    )
 
   return (
     <>
@@ -38,7 +118,49 @@ function TimerCards({
               {timerByMachineClass.name} - Timers
             </h6>
           )}
-
+          {isAutoTimersLoading ? (
+            <div>Loading...</div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <div
+                className={`font-bold uppercase ${
+                  isAutoTimerDisabled ? "opacity-50" : ""
+                }`}
+              >
+                Auto Timer
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  value=""
+                  className="sr-only peer"
+                  disabled={isAutoTimerDisabled}
+                  checked={isAutoTimerOn}
+                  onChange={handleIsAutoTimerOn}
+                />
+                <div
+                  data-disabled={isAutoTimerDisabled}
+                  className="w-8 h-4 bg-gray-200 peer-focus:outline-none peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full after:content-[''] after:absolute after:top-[0px] after:start-[0px] after:border-gray-600 border border-gray-600 active:outline-none after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 after:bg-gray-300 peer-checked:after:bg-green-600 data-[disabled=true]:peer-checked:after:!bg-gray-400"
+                ></div>
+              </label>
+              <button
+                className="font-bold uppercase disabled:opacity-50"
+                disabled={!isAutoTimerOn || isAutoTimerDisabled}
+                onClick={() => {
+                  if (!isAutoTimerDisabled) setIsOpenSetAutoTimerModal(true)
+                }}
+              >
+                {autoTimer ? (
+                  <span>
+                    {autoTimer.timeH} : {autoTimer.timeM}{" "}
+                    {autoTimer.isPM ? "PM" : "AM"}
+                  </span>
+                ) : (
+                  <>00:00</>
+                )}
+              </button>
+            </div>
+          )}
           {isLoading ? (
             <div className="flex space-x-4 animate-pulse">
               <div className="w-24 h-8 rounded bg-slate-200"></div>
@@ -50,6 +172,36 @@ function TimerCards({
             </h6>
           )}
         </div>
+        {isLoading ? (
+          <></>
+        ) : (
+          <div className={"flex gap-4"}>
+            {timerByMachineClass.machineClasses.map((item) => (
+              <div key={item._id} className="flex flex-col min-w-[12rem]">
+                <div className="flex flex-1 gap-2">
+                  <div>
+                    {item.name == "Radial Press" ? "RP" : item.name} Units:
+                  </div>
+                  <div>
+                    {item.name == "Radial Press"
+                      ? totalTons?.item.RPunits
+                      : totalTons?.item.units}
+                  </div>
+                </div>
+                <div className="flex flex-1 gap-2">
+                  <div>
+                    {item.name == "Radial Press" ? "RP" : item.name} Tons:
+                  </div>
+                  <div>
+                    {item.name == "Radial Press"
+                      ? totalTons?.item?.RPtons?.toFixed(3)
+                      : totalTons?.item?.tons?.toFixed(3)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         {timerByMachineClass.timers.length > 0 ? (
           <>
             <div className="mx-auto">
@@ -145,6 +297,16 @@ function TimerCards({
         />
       </div>
       <div className="w-full h-[2.2px] bg-gray-200 mt-7"></div>
+      <SetAutoTimerModalComponent
+        isOpen={isOpenSetAutoTimerModal}
+        onClose={() => {
+          setIsOpenSetAutoTimerModal(false)
+        }}
+        locationId={locationId}
+        locationName={locationName}
+        machineClass={timerByMachineClass.machineClasses[0]}
+        item={autoTimer}
+      />
     </>
   )
 }

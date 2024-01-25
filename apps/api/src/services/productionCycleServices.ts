@@ -4,6 +4,7 @@ import {
   getStartOfDayTimezone,
   getYesterdayEndOfDayTimzeone,
 } from "../utils/date"
+import Location from "../models/location"
 
 const isProductionCycleExistsInLocation = async (
   locationId: string,
@@ -93,6 +94,22 @@ const getCurrentRunningByLocationId = async (
   )
 }
 
+const startProductionCycleByLocation = async (locationId: string) => {
+  const location = await Location.findOne({ _id: locationId })
+  if (!location) return false
+  console.log(`Start production cycle in ${location.name}`)
+  const isRunning = await isProductionCycleExistsInLocation(
+    locationId,
+    location.timeZone ?? ""
+  )
+  if (!isRunning) {
+    await startByLocation(locationId, new Date())
+    return true
+  } else {
+    return false
+  }
+}
+
 const ProductionCycleService = {
   isProductionCycleExistsInLocation,
   create,
@@ -100,6 +117,7 @@ const ProductionCycleService = {
   getCurrentByLocation,
   endByLocationId,
   getCurrentRunningByLocationId,
+  startProductionCycleByLocation,
 }
 
 export default ProductionCycleService

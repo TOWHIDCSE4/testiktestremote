@@ -17,6 +17,7 @@ import dashboardConfigRoute from "./dashboardConfig"
 import readingsRoute from "./readings"
 import reportsRoute from "./reports"
 import devOpsRoute from "./dev-ops"
+import autoTimerRoute from "./autoTimer"
 
 const App = (app: Application) => {
   app.use(`${API_ROOT}/users`, UsersRoute)
@@ -36,6 +37,7 @@ const App = (app: Application) => {
   app.use(`${API_ROOT}/readings`, readingsRoute)
   app.use(`${API_ROOT}/reports`, reportsRoute)
   app.use(`${API_ROOT}/dev-ops`, devOpsRoute)
+  app.use(`${API_ROOT}/auto-timer`, autoTimerRoute)
 }
 
 export default App

@@ -50,6 +50,7 @@ const timerLogs = new Schema({
   stopReason: {
     type: [String],
     enum: [
+      "Auto-Start",
       "Unit Created",
       "Production Ended",
       "Machine Error",

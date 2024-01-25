@@ -96,7 +96,8 @@ export const todayControllerTimer = async (req: Request, res: Response) => {
         res.json({
           error: false,
           items: controllerTimer ? [controllerTimer] : [],
-          controllerStartedAt: firstCycle ? firstCycle.clientStartedAt : null,
+          controllerStartedAt: controllerTimer.createdAt,
+          // controllerStartedAt: firstCycle ? firstCycle.clientStartedAt : null,
           controllerShouldEndAt,
           totalProductionTime,
           hourToEnd,
