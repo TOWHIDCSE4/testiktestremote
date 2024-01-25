@@ -4,14 +4,17 @@ import { BiFullscreen } from "react-icons/bi"
 import { LuMenu, LuMoon } from "react-icons/lu"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 import useLocations from "../../../hooks/locations/useLocations"
-import { T_MachineClass } from "custom-validator"
 import TimerTableComponent from "./TimerTable"
 import MachineClassSelectComponent from "./MachineClassSelect"
-import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import _ from "lodash"
 import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
 import useWether from "../../../hooks/timers/useWether"
+import { Radio } from "antd"
 import dayjs from "dayjs"
+import { useEffect, useState } from "react"
+import { useSocket } from "../../../store/useSocket"
+import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
+
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
   style: ["normal", "italic"],
@@ -24,13 +27,36 @@ type Props = {
 }
 
 export default function ProductionEyeComponent(props: Props) {
-  const { data: machineClasses } = useMachineClasses()
+  const [isUnits, setIsUnits] = useState<"tons" | "units">("units")
+  const locationBasedUnitsTons = useGetLocationTotals()
+  const socket = useSocket((state: any) => state.instance)
+  const { data: machineClasses, refetch: refetchMachineClasses } =
+    useMachineClasses()
   const { data: locations } = useLocations()
-  const { data: allLocationTonsUnits } = useGetAllLocationTonsUnits()
+  const { data: allLocationTonsUnits, refetch: refetchAllLocationsTonsUnits } = useGetAllLocationTonsUnits()
   const gunter = useWether(33.4479, -96.7475)
   const conroe = useWether(30.312927, -95.4560512)
   const seguin = useWether(29.5979964, -98.1041023)
-    return (
+
+  useEffect(() => {
+    const handleTimerEvent = (data: any) => {
+      if (data?.message === "refetch") {
+        refetchAllLocationsTonsUnits()
+      }
+    }
+
+    if (socket) {
+      socket.on("timer-event", handleTimerEvent)
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("timer-event", handleTimerEvent)
+      }
+    }
+  }, [socket])
+
+  return (
     <div className={`${lato.className} w-full mt-6`}>
       <div className="w-full !font-lato">
         <div className="w-full px-8 py-1 border border-gray-300 rounded-t-2xl">
@@ -172,18 +198,69 @@ export default function ProductionEyeComponent(props: Props) {
                 </div>
                 <div className="w-[180px] bg-slate-600 border border-slate-900 h-2"></div>
               </div>
-              <div className="flex items-center gap-1">
-                <div className="w-16 text-xs font-bold text-right uppercase text-slate-800">
-                  Conroe
-                </div>
-                <div className="w-[250px] bg-slate-800 border border-slate-900 h-2"></div>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-16 text-xs font-bold text-right uppercase text-slate-400">
-                  Gunter
-                </div>
-                <div className="w-[130px] bg-slate-400 border border-slate-900 h-2"></div>
-              </div>
+              {locations?.items?.map((location, index) => {
+                const locationTonsUnits =
+                  locationBasedUnitsTons.data?.item?.find(
+                    (item: any) => item._id === location._id
+                  )
+
+                const a = locationBasedUnitsTons.data?.item?.map(
+                  (item: any) => item?.totalUnits
+                )
+                const b = locationBasedUnitsTons.data?.item?.map((item: any) =>
+                  Math.round(Number(item?.totalTons))
+                )
+                const bigUnit = Math.max(...(a ?? []))
+                const bigTon = Math.max(...(b ?? []))
+
+                return (
+                  <div key={location._id}
+                  className="flex items-center gap-1">
+                    <div
+                      className={`w-16 text-xs font-bold text-right uppercase text-slate-600 ${
+                        index == 0
+                          ? "text-slate-800"
+                          : index == 1
+                          ? "text-slate-600"
+                          : index == 2
+                          ? "text-slate-400"
+                          : ""
+                      }`}
+                    >
+                      {location.name}
+                    </div>
+                    <div className="overflow-hidden w-60">
+                      <div
+                        className={` border border-slate-900 h-2 
+                      ${
+                        index == 0
+                          ? "bg-slate-800"
+                          : index == 1
+                          ? "bg-slate-600"
+                          : index == 2
+                          ? "bg-slate-400"
+                          : ""
+                      }
+                      
+                      `}
+                        style={{
+                          width:
+                            isUnits === "units"
+                              ? `${
+                                  (locationTonsUnits?.totalUnits / bigUnit) *
+                                  100
+                                }%`
+                              : `${
+                                  (Math.round(locationTonsUnits?.totalTons) /
+                                    bigTon) *
+                                  100
+                                }%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
             </div>
             <div className="mx-4"></div>
             <div className="flex items-center gap-8 pl-4 font-bold leading-4 uppercase border-l-4 border-slate-900">
