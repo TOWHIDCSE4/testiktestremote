@@ -9,13 +9,20 @@ import useGetMachineClassesTotals from "../../../hooks/timerLogs/useGetMachineCl
 export default function MachineClassSelectComponent({
   machineClasses,
   location,
+  selectedMachineClasses,
 }: {
   machineClasses: T_MachineClass[]
   location: {
     _id?: string
     name: string
   }
+  selectedMachineClasses: any
 }) {
+  const selectedClasses =
+    selectedMachineClasses
+      ?.filter((item: any) => item.locationId === location._id)
+      .map((mc: any) => mc.machineClass._id) ?? []
+
   const socket = useSocket((state: any) => state.instance)
   const {
     setMachineClassId,
@@ -23,18 +30,16 @@ export default function MachineClassSelectComponent({
     refetch: refetchMachineClassTotal,
   } = useGetMachineClassesTotals({ locationId: location._id })
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
-  const [selectedMachineClassIds, setSelectedMachineClassIds] = useState<
-    Array<string>
-  >([])
+  const [selectedMachineClassIds, setSelectedMachineClassIds] =
+    useState<Array<string>>(selectedClasses)
 
   useEffect(() => {
-    setMachineClassId(
-      machineClasses?.map((machineClass) => machineClass._id).join(",")
-    )
+    setMachineClassId(selectedClasses)
+    setSelectedMachineClassIds(selectedClasses)
   }, [machineClasses])
 
   useEffect(() => {
-    setMachineClassId(selectedMachineClassIds.map((id) => id).join(","))
+    setMachineClassId(selectedMachineClassIds)
   }, [selectedMachineClassIds])
 
   const handleMC = (e: ChangeEvent<HTMLInputElement>) => {
@@ -104,28 +109,30 @@ export default function MachineClassSelectComponent({
               </button>
             </div>
             <div className="relative max-h-[13rem] flex flex-col flex-1 px-4 py-1 gap-1 overflow-auto scrollbar-w-xs">
-              {machineClasses?.map((mc: T_MachineClass, idx: number) => (
-                <div key={idx} className="flex justify-between gap-1 w-fit">
-                  <div className="flex items-center">
-                    <input
-                      id={location.name + "machineClass" + mc._id}
-                      onChange={handleMC}
-                      checked={selectedMachineClassIds.some(
-                        (item) => item == mc._id
-                      )}
-                      value={mc._id}
-                      name={location.name + "machineClass"}
-                      type="checkbox"
-                    />
-                    <label
-                      htmlFor={location.name + "machineClass" + mc._id}
-                      className="px-2 whitespace-nowrap"
-                    >
-                      {mc.name}
-                    </label>
+              {machineClasses
+                // ?.reverse()
+                ?.map((mc: T_MachineClass, idx: number) => (
+                  <div key={idx} className="flex justify-between gap-1 w-fit">
+                    <div className="flex items-center">
+                      <input
+                        id={location.name + "machineClass" + mc._id}
+                        onChange={handleMC}
+                        checked={selectedMachineClassIds.includes(
+                          mc._id as string
+                        )}
+                        value={mc._id}
+                        // name={location.name + "machineClass"}
+                        type="checkbox"
+                      />
+                      <label
+                        htmlFor={location.name + "machineClass" + mc._id}
+                        className="px-2 whitespace-nowrap"
+                      >
+                        {mc.name}
+                      </label>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </div>

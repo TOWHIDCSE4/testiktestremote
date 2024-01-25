@@ -41,10 +41,14 @@ import {
   }: {
     locationId: string | undefined
   }) {
-    const [machineClassId, setMachineClassId] = useState("")
+    const [machineClassId, setMachineClassId] = useState<Array<string>>([])
     const query = useQuery(
       ["overall-unit-tons", locationId, machineClassId],
-      () => getMachineClassesTotals({ locationId, machineClassId }),
+      () =>
+        getMachineClassesTotals({
+          locationId,
+          machineClassId: machineClassId.join(",").toString(),
+        }),
       {
         refetchOnWindowFocus: false,
         enabled: !!locationId && !!machineClassId,
@@ -53,11 +57,9 @@ import {
     )
     useEffect(() => {
       if (machineClassId) {
-          query.refetch()
+        query.refetch()
       }
-    }, [
-      machineClassId,
-    ])
+    }, [machineClassId])
     return {
       ...query,
       setMachineClassId,

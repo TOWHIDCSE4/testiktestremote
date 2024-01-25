@@ -56,14 +56,10 @@ const ProductionEyeTableFooter = () => {
       </div>
       <div className="flex flex-col mr-2 text-sm uppercase">
         <div className="flex justify-end gap-1">
-          <div className="text-gray-400">
-            {dayjs().format("MMMM DD YYYY")} :
-          </div>
-          <div className="font-bold">Date</div>
+          <div className="text-gray-400">{dayjs().format("MMMM DD YYYY")}</div>
         </div>
         <div className="flex justify-end gap-1">
-          <div className="text-gray-400">{dayjs().format("hh:mm A")} :</div>
-          <div className="font-bold">Time</div>
+          <div className="text-gray-400">{dayjs().format("hh:mm A")}</div>
         </div>
       </div>
     </div>
