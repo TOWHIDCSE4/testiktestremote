@@ -5,13 +5,15 @@ import { useSocket } from "../../../store/useSocket"
 import useTimerStatus from "../../../hooks/timers/useGetTimerStatus"
 import combineClasses from "../../../helpers/combineClasses"
 import useGetTimerIsEnded from "../../../hooks/timers/useGetTimerIsEnded"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface Props {
   rowData: any
   index: number
 }
 
-const TimerTableRow: React.FC<Props> = async ({ rowData, index }) => {
+const TimerTableRow: React.FC<Props> = ({ rowData, index }) => {
+  const queryClient = useQueryClient()
   const socket = useSocket((state: any) => state.instance)
 
   const query = useTotalTonsUnit({
@@ -28,10 +30,9 @@ const TimerTableRow: React.FC<Props> = async ({ rowData, index }) => {
 
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
-      console.log("__EVENT_DATA", data)
       if (data?.message === "refetch") {
-        query.refetch()
-        status.refetch()
+        queryClient.invalidateQueries(["total-tons-unit", rowData.locationId, rowData._id])
+        queryClient.invalidateQueries(["timer-status", rowData._id])
       }
     }
 

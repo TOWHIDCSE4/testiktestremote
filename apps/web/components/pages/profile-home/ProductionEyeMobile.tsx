@@ -14,6 +14,7 @@ import { useSocket } from "../../../store/useSocket"
 import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
 import TonsUnitsBarChart from "./TonsUnitsBarChart"
+import { useQueryClient } from "@tanstack/react-query"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -23,6 +24,7 @@ const lato = Lato({
 })
 
 export default function ProductionEyeMobileComponent() {
+  const queryClient = useQueryClient()
   const socket = useSocket((state: any) => state.instance)
   const [isUnits, setIsUnits] = useState<"tons" | "units">("units")
   const { data: machineClasses } = useMachineClasses()
@@ -34,7 +36,6 @@ export default function ProductionEyeMobileComponent() {
   const gunter = useWether(33.4479, -96.7475)
   const conroe = useWether(30.312927, -95.4560512)
   const seguin = useWether(29.5979964, -98.1041023)
-
   const [selectedLocationId, setSelectedLocationId] = useState<string>()
 
   useEffect(() => {
@@ -46,7 +47,8 @@ export default function ProductionEyeMobileComponent() {
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
       if (data?.message === "refetch") {
-        refetchAllLocationsTonsUnits()
+        queryClient.invalidateQueries(["all-location-tons-units"])
+        // refetchAllLocationsTonsUnits()
       }
     }
 

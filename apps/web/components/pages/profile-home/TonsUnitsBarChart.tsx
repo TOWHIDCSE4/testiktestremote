@@ -5,18 +5,19 @@ import { Radio } from "antd"
 import useLocations from "../../../hooks/locations/useLocations"
 import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
 import { useSocket } from "../../../store/useSocket"
+import { useQueryClient } from "@tanstack/react-query"
 
 const TonsUnitsBarChart = () => {
-  const socket = useSocket((state: any) => state.instance)
-
-  const [isUnits, setIsUnits] = useState<"tons" | "units">("units")
+  const queryClient = useQueryClient()
   const { data: locations } = useLocations()
+  const socket = useSocket((state: any) => state.instance)
+  const [isUnits, setIsUnits] = useState<"tons" | "units">("units")
   const locationBasedUnitsTons = useGetLocationTotals()
 
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
       if (data?.message === "refetch") {
-        locationBasedUnitsTons.refetch()
+        queryClient.invalidateQueries(["locations-totals"])
       }
     }
 

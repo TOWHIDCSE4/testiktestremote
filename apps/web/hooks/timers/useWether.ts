@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { ONE_DAY } from "../../helpers/constants"
+import { TWELVE_HOURS } from "../../helpers/constants"
 
 export async function fetcherfn(lat: number, long: number) {
   const res = await fetch(
@@ -11,7 +11,7 @@ export async function fetcherfn(lat: number, long: number) {
 function useWether(lat: number, long: number) {
   const query = useQuery(["weather", lat], () => fetcherfn(lat, long), {
     refetchOnWindowFocus: false,
-    staleTime: ONE_DAY,
+    staleTime: TWELVE_HOURS,
   })
   return query
 }

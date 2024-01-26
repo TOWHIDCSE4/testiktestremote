@@ -1,6 +1,9 @@
 "use client"
 import TimerTableRow from "./TimerTableRow"
 import useGetMachineClassTonsUnit from "../../../hooks/timerLogs/useMachineClassTonsUnits"
+import { useEffect } from "react"
+import { useSocket } from "../../../store/useSocket"
+import { useQueryClient } from "@tanstack/react-query"
 
 export default function TimerTableComponent({
   location,
@@ -14,10 +17,34 @@ export default function TimerTableComponent({
   machineClass: any
   timers: any
 }) {
-  const { data: totalTons } = useGetMachineClassTonsUnit({
-    locationId: location._id,
-    machineClassId: machineClass.machineClass._id,
-  })
+  const queryClient = useQueryClient()
+  const socket = useSocket((state: any) => state.instance)
+
+  const { data: totalTons, refetch: refetchMachineClassesTonsUnits } =
+    useGetMachineClassTonsUnit({
+      locationId: location._id,
+      machineClassId: machineClass.machineClass._id,
+    })
+
+  useEffect(() => {
+    const handleTimerEvent = (data: any) => {
+      console.log("__EVENT_DATA", data)
+      if (data?.message === "refetch") {
+        queryClient.invalidateQueries(["machine-class-unit-tons", location._id, machineClass.machineClass._id])
+        // refetchMachineClassesTonsUnits()
+      }
+    }
+
+    if (socket) {
+      socket.on("timer-event", handleTimerEvent)
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("timer-event", handleTimerEvent)
+      }
+    }
+  }, [socket])
 
   return (
     <table className="w-full text-xs">

@@ -12,7 +12,6 @@ const ProductionEyeWether = () => {
         <div>Area Temp :</div>
         <div>Seguin :</div>
         <span className="font-bold">
-          {/* {seguin.data?.current?.temperature_2m} */}
           {seguin.data?.current?.temperature_2m}{" "}
           <span className="text-xs font-normal align-top">
             {seguin.data?.current_units?.temperature_2m}
@@ -22,7 +21,6 @@ const ProductionEyeWether = () => {
       <div className="flex gap-2 font-semibold">
         <div>Conroe :</div>
         <span className="font-bold">
-          {/* {conroe.data?.current?.temperature_2m} */}
           {conroe.data?.current?.temperature_2m}{" "}
           <span className="text-xs font-normal align-top">
             {conroe.data?.current_units?.temperature_2m}
