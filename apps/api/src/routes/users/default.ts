@@ -88,8 +88,15 @@ export const getUserByEmail = async (req: Request, res: Response) => {
 }
 
 export const addUser = async (req: Request, res: Response) => {
-  const { firstName, lastName, email, password, locationId, role, status } =
-    req.body
+  const {
+    firstName,
+    lastName,
+    email: _email,
+    password,
+    locationId,
+    role,
+    status,
+  } = req.body
   if (password.length < 8) {
     res.status(400).json({
       error: true,
@@ -97,6 +104,7 @@ export const addUser = async (req: Request, res: Response) => {
     })
     return
   }
+  const email = _email?.toLowerCase()
   if (firstName && lastName && email && password && locationId && role) {
     const encryptPassword = CryptoJS.AES.encrypt(
       password,
