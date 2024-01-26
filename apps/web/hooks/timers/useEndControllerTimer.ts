@@ -9,7 +9,7 @@ import Cookies from "js-cookie"
 export async function endControllerTimer(timerId: string, locationId: string) {
   const token = Cookies.get("tfl")
   const res = await fetch(`${API_URL_CONTROLLER_TIMER}/end`, {
-    method: "PATCH",
+    method: "PUT",
     body: JSON.stringify({ timerId, locationId }),
     headers: {
       "content-type": "application/json",

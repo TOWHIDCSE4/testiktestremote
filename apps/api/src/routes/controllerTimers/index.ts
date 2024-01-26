@@ -20,7 +20,7 @@ router.get(
   isUserLoggedIn,
   locationLastUpdate
 )
-router.patch("/end", isUserLoggedIn, endControllerTimer)
+router.put("/end", isUserLoggedIn, endControllerTimer)
 
 //default
 router.get("/", isUserLoggedIn, getAllControllerTimers)
