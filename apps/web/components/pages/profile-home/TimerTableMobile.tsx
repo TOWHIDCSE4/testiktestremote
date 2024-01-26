@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import useGetMachineClassTonsUnit from "../../../hooks/timerLogs/useMachineClassTonsUnits"
 import { useSocket } from "../../../store/useSocket"
 import TimerTableRowMobile from "./TimerTableRowMobile"
+import { useQueryClient } from "@tanstack/react-query"
 
 export default function TimerTableMobileComponent({
   location,
@@ -16,8 +17,8 @@ export default function TimerTableMobileComponent({
   timers: any
 }) {
 
+  const queryClient = useQueryClient()
   const socket = useSocket((state: any) => state.instance)
-
   const { data: totalTons, refetch: refetchMachineClassesTonsUnits } =
     useGetMachineClassTonsUnit({
       locationId: location._id,
@@ -28,18 +29,16 @@ export default function TimerTableMobileComponent({
       const handleTimerEvent = (data: any) => {
         console.log("__EVENT_DATA", data)
         if (data?.message === "refetch") {
-          refetchMachineClassesTonsUnits()
+        queryClient.invalidateQueries(["machine-class-unit-tons", location._id, machineClass.machineClass._id])
+          // refetchMachineClassesTonsUnits()
         }
       }
   
-      // Check if socket is defined before attaching the event listener
       if (socket) {
         socket.on("timer-event", handleTimerEvent)
       }
   
-      // Return a cleanup function
       return () => {
-        // Check if socket is defined before detaching the event listener
         if (socket) {
           socket.off("timer-event", handleTimerEvent)
         }

@@ -5,8 +5,11 @@ import TonsUnitsBarChart from "./TonsUnitsBarChart"
 import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
 import { useSocket } from "../../../store/useSocket"
 import dayjs from "dayjs"
+import { useQueryClient } from "@tanstack/react-query"
+
 
 const ProductionEyeTableFooter = () => {
+  const queryClient = useQueryClient()
   const socket = useSocket((state: any) => state.instance)
 
   const allLocationTonsUnits = useGetAllLocationTonsUnits()
@@ -14,7 +17,7 @@ const ProductionEyeTableFooter = () => {
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
       if (data?.message === "refetch") {
-        allLocationTonsUnits.refetch()
+        queryClient.invalidateQueries(["all-location-tons-units"])
       }
     }
 

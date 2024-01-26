@@ -4,15 +4,17 @@ import { useSocket } from "../../../store/useSocket"
 import combineClasses from "../../../helpers/combineClasses"
 import useGetTimerIsEnded from "../../../hooks/timers/useGetTimerIsEnded"
 import useTimerStatus from "../../../hooks/timers/useGetTimerStatus"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface Props {
   rowData: any
   index: number
 }
 
-const TimerTableRowMobile: React.FC<Props> = async ({ rowData, index }) => {
+const TimerTableRowMobile: React.FC<Props> = ({ rowData, index }) => {
+  const queryClient = useQueryClient()
   const socket = useSocket((state: any) => state.instance)
-  
+
   const query = useTotalTonsUnit({
     locationId: rowData.locationId,
     timerId: rowData._id,
@@ -29,31 +31,32 @@ const TimerTableRowMobile: React.FC<Props> = async ({ rowData, index }) => {
     const handleTimerEvent = (data: any) => {
       console.log("__EVENT_DATA", data)
       if (data?.message === "refetch") {
-        query.refetch()
-        status.refetch()
+        queryClient.invalidateQueries([
+          "total-tons-unit",
+          rowData.locationId,
+          rowData._id,
+        ])
+        queryClient.invalidateQueries(["timer-status", rowData._id])
       }
     }
 
-    // Check if socket is defined before attaching the event listener
     if (socket) {
       socket.on("timer-event", handleTimerEvent)
     }
 
-    // Return a cleanup function
     return () => {
-      // Check if socket is defined before detaching the event listener
       if (socket) {
         socket.off("timer-event", handleTimerEvent)
       }
     }
   }, [socket])
-  
+
   return (
     <tr>
       <td className="px-3">{query?.data?.item?.dailyUnits}</td>
       <td className="px-3">{query?.data?.item?.tons?.toFixed(2)}</td>
       <td>
-      <div
+        <div
           className={combineClasses(
             "border border-slate-500 rounded-full w-[6px] h-[6px]",
             status.data?.items[0]?.status === "Loss" && "bg-red-500",

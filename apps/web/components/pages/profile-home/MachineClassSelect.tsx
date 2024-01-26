@@ -4,6 +4,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import { HiChevronDoubleDown } from "react-icons/hi"
 import _ from "lodash"
 import { useSocket } from "../../../store/useSocket"
+import { useQueryClient } from "@tanstack/react-query"
 import useGetMachineClassesTotals from "../../../hooks/timerLogs/useGetMachineClassesTotals"
 
 export default function MachineClassSelectComponent({
@@ -23,6 +24,7 @@ export default function MachineClassSelectComponent({
       ?.filter((item: any) => item.locationId === location._id)
       .map((mc: any) => mc.machineClass._id) ?? []
 
+  const queryClient = useQueryClient()
   const socket = useSocket((state: any) => state.instance)
   const {
     setMachineClassId,
@@ -59,7 +61,8 @@ export default function MachineClassSelectComponent({
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
       if (data?.message === "refetch") {
-        refetchMachineClassTotal()
+        queryClient.invalidateQueries(["overall-unit-tons", location._id, selectedMachineClassIds])
+        // refetchMachineClassTotal()
       }
     }
 
