@@ -84,8 +84,14 @@ export default function ProductionEyeComponent() {
                   className="relative flex-1 px-2 pb-6 overflow-y-hidden h-80"
                 >
                   <div className="relative w-full h-full overflow-y-auto scrollbar-w-xs">
-                    <div className="text-xl font-bold uppercase">
-                      {location.name} Timers
+                    <div className="flex gap-2">
+                      <div className="text-xl font-bold uppercase">
+                        {location.name} Timers
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" className="sr-only peer" />
+                        <div className="w-3 h-3 bg-white border-2 border-white shadow-sm shadow-gray-500 peer peer-checked:bg-black"></div>
+                      </label>
                     </div>
                     {allTimers?.items
                       ?.filter((item: any) => item.locationId === location._id)

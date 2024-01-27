@@ -148,8 +148,8 @@ export default function ProductionEyeMobileComponent() {
           <div className="relative flex flex-col justify-between w-full overflow-hidden bg-gray-300">
             <div className="sticky top-0 flex justify-between w-full">
               {locations?.items?.map((location, idx) => (
-                <button
-                  className={`px-4 py-1 ${
+                <div
+                  className={`px-4 py-1 flex gap-2 justify-center ${
                     location._id == selectedLocationId
                       ? "font-bold flex-1 text-center text-lg bg-opacity-0"
                       : "text-gray-300"
@@ -161,13 +161,22 @@ export default function ProductionEyeMobileComponent() {
                       : "bg-gray-900"
                   }`}
                   key={idx}
-                  onClick={() => {
-                    setSelectedLocationId(location._id)
-                  }}
                 >
-                  {location.name}
-                  {location._id == selectedLocationId && <span>: 12</span>}
-                </button>
+                  <button
+                    onClick={() => {
+                      setSelectedLocationId(location._id)
+                    }}
+                  >
+                    {location.name}
+                    {location._id == selectedLocationId && <span>: 12</span>}
+                  </button>
+                  {location._id !== selectedLocationId && (
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" />
+                      <div className="w-3 h-3 bg-white border-2 border-white shadow-sm shadow-gray-500 peer peer-checked:bg-black"></div>
+                    </label>
+                  )}
+                </div>
               ))}
             </div>
             {locations?.items?.map((location) => (
