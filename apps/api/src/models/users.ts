@@ -39,7 +39,7 @@ const users = new Schema({
       ],
     },
   ],
-  email: String,
+  email: { type: String, lowercase: true },
   password: String,
   locationId: {
     type: mongoose.Schema.ObjectId,

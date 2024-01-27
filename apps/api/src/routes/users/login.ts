@@ -13,7 +13,8 @@ import * as Sentry from "@sentry/node"
 export const auth = async (req: Request, res: Response) => {
   const validateUserInput = ZLogin.safeParse(req.body)
   if (validateUserInput.success) {
-    const { email, password } = req.body
+    const { email: _email, password } = req.body
+    const email = _email?.toLowerCase()
     if (email && password) {
       try {
         const user = await Users.findOne({
