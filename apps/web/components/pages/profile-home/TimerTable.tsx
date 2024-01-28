@@ -30,7 +30,11 @@ export default function TimerTableComponent({
     const handleTimerEvent = (data: any) => {
       console.log("__EVENT_DATA", data)
       if (data?.message === "refetch") {
-        queryClient.invalidateQueries(["machine-class-unit-tons", location._id, machineClass.machineClass._id])
+        queryClient.invalidateQueries([
+          "machine-class-unit-tons",
+          location._id,
+          machineClass.machineClass._id,
+        ])
         // refetchMachineClassesTonsUnits()
       }
     }
@@ -64,8 +68,12 @@ export default function TimerTableComponent({
         <tr className="font-bold bg-white bg-opacity-20">
           <td></td>
           <td className="text-right uppercase">Total</td>
-          <td className="px-2">{totalTons?.item?.units}</td>
-          <td className="px-2">{totalTons?.item?.tons?.toFixed(2)}</td>
+          <td className="px-2 !w-fit">
+            {String(totalTons?.item?.units ?? 0).padStart(4, "0")}
+          </td>
+          <td className="px-2 !w-fit">
+            {totalTons?.item?.tons?.toFixed(2).padStart(7, "0")}
+          </td>
           <td></td>
         </tr>
       </tbody>

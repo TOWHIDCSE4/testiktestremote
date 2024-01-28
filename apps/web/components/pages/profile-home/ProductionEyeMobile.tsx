@@ -101,8 +101,8 @@ export default function ProductionEyeMobileComponent() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between px-6">
-                <div className="flex items-center flex-1 gap-4">
+              <div className="relative flex items-center justify-between px-6">
+                <div className="flex items-center flex-1 h-full gap-4">
                   <div className="flex items-center flex-1 gap-3">
                     <button className="flex items-center justify-center w-6 h-6 text-sm text-white bg-black rounded-lg">
                       <LuMenu />
@@ -114,7 +114,7 @@ export default function ProductionEyeMobileComponent() {
                       <BiFullscreen />
                     </button>
                   </div>
-                  <div className="flex flex-col items-center text-sm font-bold uppercase">
+                  <div className="flex flex-col items-center justify-end h-full pt-2 pr-2 text-sm font-bold uppercase lg:pt-0">
                     <div className="leading-4">Active</div>
                     <div className="leading-4">Timers</div>
                   </div>
