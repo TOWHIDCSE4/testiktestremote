@@ -33,8 +33,8 @@ const TonsUnitsBarChart = () => {
   }, [socket])
 
   return (
-    <div className="relative flex items-center justify-between w-full px-2">
-      <div className="flex flex-col items-center lg:hidden">
+    <div className="relative flex items-center justify-between w-full gap-2 px-2 ml-2 lg:w-auto">
+      <div className="flex flex-col items-center ml-4 lg:ml-0">
         <label className="relative inline-flex items-center cursor-pointer">
           <input
             type="radio"
@@ -64,7 +64,7 @@ const TonsUnitsBarChart = () => {
           </div>
         </label>
       </div>
-      <div className="flex flex-col flex-1 ml-4">
+      <div className="flex flex-col">
         <div className="flex justify-end">
           {/* <Radio.Group
           defaultValue="units"

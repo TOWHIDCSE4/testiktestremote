@@ -81,9 +81,9 @@ export default function ProductionEyeComponent() {
               return (
                 <div
                   key={location._id}
-                  className="relative flex-1 px-2 pb-6 overflow-y-hidden h-80"
+                  className="relative flex-1 pb-6 overflow-y-hidden h-80"
                 >
-                  <div className="relative w-full h-full overflow-y-auto scrollbar-w-xs">
+                  <div className="relative w-full h-full pl-2 pr-3 overflow-y-auto scrollbar-w-xs">
                     <div className="flex gap-2">
                       <div className="text-xl font-bold uppercase">
                         {location.name} Timers

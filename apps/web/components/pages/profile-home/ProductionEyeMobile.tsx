@@ -223,7 +223,7 @@ export default function ProductionEyeMobileComponent() {
               </div>
             </div>
             <TonsUnitsBarChart />
-            <div className="flex items-center justify-between w-full gap-8 pl-4 text-2xl font-bold leading-4 uppercase">
+            <div className="flex items-center justify-between w-auto gap-8 pl-4 text-2xl font-bold leading-4 uppercase">
               <div className="flex flex-1 gap-2">
                 <div>Units</div>
                 <div className="text-slate-400">
