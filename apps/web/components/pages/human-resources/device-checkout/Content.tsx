@@ -20,9 +20,13 @@ const lato = Lato({
 const Content = () => {
   const { refetch: refetchDevices } = useDevices()
   const { data: userProfile } = useProfile()
-  const isAdmin = [USER_ROLES.Administrator, USER_ROLES.Production].includes(
-    userProfile?.item?.role ?? ""
-  )
+  const isAdmin = [
+    USER_ROLES.Super,
+    USER_ROLES.Administrator,
+    USER_ROLES.HR,
+    USER_ROLES.HR_Director,
+    USER_ROLES.Production,
+  ].includes(userProfile?.item?.role ?? "")
   const [isNewModalOpen, setIsNewModalOpen] = useState<boolean>(false)
   const toggleNewModalOpen = () => {
     setIsNewModalOpen((prev) => !prev)

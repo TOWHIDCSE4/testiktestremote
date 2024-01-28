@@ -12,6 +12,8 @@ import { Lato } from "next/font/google"
 import useApproveDeviceRequest from "../../../../../../hooks/device/useApproveDeviceRequest"
 import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
+import useProfile from "../../../../../../hooks/users/useProfile"
+import { USER_ROLES } from "../../../../../../helpers/constants"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -98,6 +100,16 @@ export default function PendingDeviceItemComponent({
       }
     )
   }
+
+  const { data: userProfile } = useProfile()
+  const isAdmin = [
+    USER_ROLES.Super,
+    USER_ROLES.Administrator,
+    USER_ROLES.HR,
+    USER_ROLES.HR_Director,
+    USER_ROLES.Production,
+  ].includes(userProfile?.item?.role ?? "")
+
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
@@ -124,15 +136,17 @@ export default function PendingDeviceItemComponent({
                 ? `${item.userId.firstName} ${item.userId.lastName}`
                 : ""}
             </button>
-            <div className="flex items-center gap-2">
-              <button onClick={(e) => onApprove(e)} className="bg-none">
-                Approve
-              </button>
-              ||
-              <button onClick={(e) => onDeny(e)} className="bg-none">
-                Deny
-              </button>
-            </div>
+            {isAdmin && (
+              <div className="flex items-center gap-2">
+                <button onClick={(e) => onApprove(e)} className="bg-none">
+                  Approve
+                </button>
+                ||
+                <button onClick={(e) => onDeny(e)} className="bg-none">
+                  Deny
+                </button>
+              </div>
+            )}
           </div>
         </PopoverTrigger>
         <PopoverContent

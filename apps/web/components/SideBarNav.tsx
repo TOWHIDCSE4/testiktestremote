@@ -82,7 +82,14 @@ const navigation = [
       {
         name: "Device Checkout",
         href: "/human-resources/device-checkout",
-        showOnLive: false,
+        // showOnLive: false,
+        showOnlyFor: [
+          USER_ROLES.Super,
+          USER_ROLES.Administrator,
+          USER_ROLES.HR,
+          USER_ROLES.HR_Director,
+          USER_ROLES.Production,
+        ],
       },
       { name: "ADT", href: "/human-resources/adt" },
       { name: "Down Time", href: "/human-resources/down-time" },
