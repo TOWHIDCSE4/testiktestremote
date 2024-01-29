@@ -11,6 +11,9 @@ import _ from "lodash"
 import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import ProductionEyeTableFooter from "./ProductionEyeTableFooter"
 import ProductionEyeWether from "./ProductionEyeWether"
+import LocationCheckboxComponent from "./production-eye/locationCheckbox"
+import { useProductionEyeContext } from "./production-eye/productinEyeContext"
+import { useEffect, useLayoutEffect } from "react"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -24,6 +27,12 @@ export default function ProductionEyeComponent() {
   const { data: machineClasses, refetch: refetchMachineClasses } =
     useMachineClasses()
   const { data: locations } = useLocations()
+
+  const { selectedLocationIds, onSelectLocation } = useProductionEyeContext()
+
+  useLayoutEffect(() => {
+    console.log("Desktop")
+  }, [])
 
   return (
     <div className={`${lato.className} w-full mt-6`}>
@@ -88,10 +97,12 @@ export default function ProductionEyeComponent() {
                       <div className="text-xl font-bold uppercase">
                         {location.name} Timers
                       </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" />
-                        <div className="w-3 h-3 bg-white border-2 border-white shadow-sm shadow-gray-500 peer peer-checked:bg-black"></div>
-                      </label>
+                      <LocationCheckboxComponent
+                        checked={selectedLocationIds.includes(location._id)}
+                        onChange={(checked) =>
+                          onSelectLocation(location._id, checked)
+                        }
+                      />
                     </div>
                     {allTimers?.items
                       ?.filter((item: any) => item.locationId === location._id)

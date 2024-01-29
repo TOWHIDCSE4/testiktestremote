@@ -8,6 +8,7 @@ import ProductionEyeComponent from "./ProductionEye"
 import ProductionEyeMobileComponent from "./ProductionEyeMobile"
 import { Lato } from "next/font/google"
 import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
+import ProductionEyeContextProvider from "./production-eye/productinEyeContext"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -38,13 +39,15 @@ const Content = () => {
         </h4>
         <div className="w-full h-0.5 bg-gray-200 mt-6"></div>
 
-        <div className="hidden w-full lg:block">
-          <ProductionEyeComponent />
-        </div>
+        <ProductionEyeContextProvider>
+          <div className="hidden w-full lg:block">
+            <ProductionEyeComponent />
+          </div>
 
-        <div className="block w-full lg:hidden">
-          <ProductionEyeMobileComponent />
-        </div>
+          <div className="block w-full lg:hidden">
+            <ProductionEyeMobileComponent />
+          </div>
+        </ProductionEyeContextProvider>
 
         {isDev && (
           <div className="w-full h-0.5 bg-gray-200 mt-6">

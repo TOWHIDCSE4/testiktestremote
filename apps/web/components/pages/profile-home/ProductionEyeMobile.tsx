@@ -4,7 +4,7 @@ import { BiFullscreen } from "react-icons/bi"
 import { LuMenu, LuMoon } from "react-icons/lu"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 import useLocations from "../../../hooks/locations/useLocations"
-import { useEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useState } from "react"
 import TimerTableMobileComponent from "./TimerTableMobile"
 import MachineClassSelectComponent from "./MachineClassSelect"
 import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
@@ -15,6 +15,8 @@ import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
 import TonsUnitsBarChart from "./TonsUnitsBarChart"
 import { useQueryClient } from "@tanstack/react-query"
+import { useProductionEyeContext } from "./production-eye/productinEyeContext"
+import LocationCheckboxComponent from "./production-eye/locationCheckbox"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -36,13 +38,17 @@ export default function ProductionEyeMobileComponent() {
   const gunter = useWether(33.4479, -96.7475)
   const conroe = useWether(30.312927, -95.4560512)
   const seguin = useWether(29.5979964, -98.1041023)
-  const [selectedLocationId, setSelectedLocationId] = useState<string>()
 
-  useEffect(() => {
-    if (!selectedLocationId && locations?.items && locations.items.length > 0) {
-      setSelectedLocationId(locations.items[0]._id)
-    }
-  }, [locations, selectedLocationId])
+  const {
+    selectedLocationIds,
+    onSelectLocation,
+    primaryLocationId,
+    setPrimaryLocationId,
+  } = useProductionEyeContext()
+
+  useLayoutEffect(() => {
+    console.log("Mobile")
+  }, [])
 
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
@@ -65,7 +71,7 @@ export default function ProductionEyeMobileComponent() {
 
   const filteredLocationData = allTimers?.items?.filter(
     (item: { locationId: string | undefined }) =>
-      item.locationId === selectedLocationId
+      item.locationId === primaryLocationId
   )
 
   return (
@@ -150,7 +156,7 @@ export default function ProductionEyeMobileComponent() {
               {locations?.items?.map((location, idx) => (
                 <div
                   className={`px-4 py-1 flex gap-2 justify-center ${
-                    location._id == selectedLocationId
+                    location._id == primaryLocationId
                       ? "font-bold flex-1 text-center text-lg bg-opacity-0"
                       : "text-gray-300"
                   } uppercase ${
@@ -164,53 +170,61 @@ export default function ProductionEyeMobileComponent() {
                 >
                   <button
                     onClick={() => {
-                      setSelectedLocationId(location._id)
+                      if (location._id) {
+                        setPrimaryLocationId(location._id)
+                      }
                     }}
                   >
                     {location.name}
-                    {location._id == selectedLocationId && <span>: 12</span>}
+                    {location._id == primaryLocationId && <span>: 12</span>}
                   </button>
-                  {location._id !== selectedLocationId && (
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" className="sr-only peer" />
-                      <div className="w-3 h-3 bg-white border-2 border-white shadow-sm shadow-gray-500 peer peer-checked:bg-black"></div>
-                    </label>
+                  {location._id && location._id !== primaryLocationId && (
+                    <LocationCheckboxComponent
+                      checked={selectedLocationIds.includes(location._id)}
+                      onChange={(checked) =>
+                        onSelectLocation(location._id ?? "", checked)
+                      }
+                    />
                   )}
                 </div>
               ))}
             </div>
-            {locations?.items?.map((location) => (
-              <div
-                key={location._id}
-                className={`${
-                  location._id == selectedLocationId ? "" : "hidden"
-                } px-2 pb-6 overflow-y-hidden h-80 w-full`}
-              >
-                <div className="relative w-full h-full overflow-y-auto scrollbar-w-xs">
-                  {filteredLocationData?.map((mc: any, key: number) => {
-                    return (
-                      <div key={key} className="py-1 pl-1">
-                        <div className="text-xs font-black text-red-700 uppercase">
-                          {mc.machineClass.name}
+            {locations?.items?.map((location) =>
+              location._id == primaryLocationId ? (
+                <div
+                  key={location._id}
+                  className={`${
+                    location._id == primaryLocationId ? "" : "hidden"
+                  } px-2 pb-6 overflow-y-hidden h-80 w-full`}
+                >
+                  <div className="relative w-full h-full overflow-y-auto scrollbar-w-xs">
+                    {filteredLocationData?.map((mc: any, key: number) => {
+                      return (
+                        <div key={key} className="py-1 pl-1">
+                          <div className="text-xs font-black text-red-700 uppercase">
+                            {mc.machineClass.name}
+                          </div>
+                          <div className="relative w-full">
+                            <TimerTableMobileComponent
+                              location={location}
+                              machineClass={mc}
+                              timers={mc.timers}
+                            />
+                          </div>
                         </div>
-                        <div className="relative w-full">
-                          <TimerTableMobileComponent
-                            location={location}
-                            machineClass={mc}
-                            timers={mc.timers}
-                          />
-                        </div>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
+                  </div>
+                  <MachineClassSelectComponent
+                    location={location}
+                    machineClasses={machineClasses?.items.reverse()}
+                    selectedMachineClasses={allTimers?.items}
+                  />
                 </div>
-                <MachineClassSelectComponent
-                  location={location}
-                  machineClasses={machineClasses?.items.reverse()}
-                  selectedMachineClasses={allTimers?.items}
-                />
-              </div>
-            ))}
+              ) : (
+                <></>
+              )
+            )}
           </div>
         </div>
         <div className="w-full h-2 bg-slate-700"></div>
