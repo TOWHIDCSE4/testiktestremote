@@ -77,17 +77,17 @@ const MainNav = () => {
     <>
       <Disclosure
         as="nav"
-        className="bg-light-cyan-blue shadow-lg fixed w-full z-40"
+        className="fixed top-0 z-40 w-full shadow-lg bg-light-cyan-blue"
       >
         {({ open }) => (
           <>
-            <div className="mx-auto px-2 sm:px-4 lg:px-8">
-              <div className="flex h-16 justify-between">
+            <div className="px-2 mx-auto sm:px-4 lg:px-8">
+              <div className="flex justify-between h-16">
                 <div className="flex md:px-0">
                   <div className="flex items-center mr-5 lg:hidden">
                     {/* Mobile menu button */}
                     <Disclosure.Button
-                      className="relative inline-flex items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-500 ml-2 md:mr-0"
+                      className="relative inline-flex items-center justify-center ml-2 text-gray-400 rounded-md hover:bg-gray-100 hover:text-gray-500 md:mr-0"
                       onClick={() =>
                         setShowSideNav((showSideNav) => !showSideNav)
                       }
@@ -96,32 +96,32 @@ const MainNav = () => {
                       <span className="sr-only">Open main menu</span>
                       {open ? (
                         <XMarkIcon
-                          className="block h-6 w-6"
+                          className="block w-6 h-6"
                           aria-hidden="true"
                         />
                       ) : (
                         <Bars3Icon
-                          className="block h-6 w-6"
+                          className="block w-6 h-6"
                           aria-hidden="true"
                         />
                       )}
                     </Disclosure.Button>
                   </div>
 
-                  <div className="items-center mr-4 flex">
+                  <div className="flex items-center mr-4">
                     <div className="relative h-10 w-52">
                       <Image src={DarkLogo} alt="logo" fill />
                     </div>
                   </div>
-                  <div className="hidden lg:ml-6 lg:flex lg:space-x-10 items-center">
+                  <div className="items-center hidden lg:ml-6 lg:flex lg:space-x-10">
                     <div className="">
                       <label htmlFor="search" className="sr-only">
                         Search
                       </label>
                       <div className="relative">
-                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                           <MagnifyingGlassIcon
-                            className="h-5 w-5 text-gray-900"
+                            className="w-5 h-5 text-gray-900"
                             aria-hidden="true"
                           />
                         </div>
@@ -158,14 +158,14 @@ const MainNav = () => {
                     </Switch.Group>
                   </div>
                 </div>
-                <div className="md:ml-4 flex items-center">
+                <div className="flex items-center md:ml-4">
                   {/* Profile dropdown for medium to large screen*/}
                   <Menu
                     as="div"
-                    className="relative ml-4 flex-shrink-0 hidden lg:block"
+                    className="relative flex-shrink-0 hidden ml-4 lg:block"
                   >
                     <div>
-                      <Menu.Button className="relative flex rounded-full text-sm">
+                      <Menu.Button className="relative flex text-sm rounded-full">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
                         <div className="flex items-center">
@@ -187,8 +187,8 @@ const MainNav = () => {
                                 fill
                               />
                             ) : (
-                              <div className="animate-pulse flex space-x-4">
-                                <div className="h-9 w-9 rounded-full bg-slate-200"></div>
+                              <div className="flex space-x-4 animate-pulse">
+                                <div className="rounded-full h-9 w-9 bg-slate-200"></div>
                               </div>
                             )}
                           </div>
@@ -199,8 +199,8 @@ const MainNav = () => {
                           >
                             <span className="text-left font-bold text-indigo-blue text-[15px]">
                               {isUserProfileLoading ? (
-                                <div className="animate-pulse flex space-x-4">
-                                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                                <div className="flex space-x-4 animate-pulse">
+                                  <div className="w-24 h-3 rounded bg-slate-200"></div>
                                 </div>
                               ) : (
                                 (() => {
@@ -233,10 +233,10 @@ const MainNav = () => {
                                 })()
                               )}
                             </span>
-                            <span className="text-left text-gray-500 font-semibold">
+                            <span className="font-semibold text-left text-gray-500">
                               {isUserProfileLoading ? (
-                                <div className="animate-pulse flex space-x-4">
-                                  <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                                <div className="flex space-x-4 animate-pulse">
+                                  <div className="w-24 h-3 rounded bg-slate-200"></div>
                                 </div>
                               ) : (
                                 <>
@@ -247,7 +247,7 @@ const MainNav = () => {
                               )}
                             </span>
                           </div>
-                          <ChevronDownIcon className="h-4 w-4 ml-3" />
+                          <ChevronDownIcon className="w-4 h-4 ml-3" />
                         </div>
                       </Menu.Button>
                     </div>
@@ -260,7 +260,7 @@ const MainNav = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="absolute right-0 z-10 w-full mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <Menu.Item>
                           {({ active }) => (
                             <Link
@@ -290,14 +290,14 @@ const MainNav = () => {
                       </Menu.Items>
                     </Transition>
                   </Menu>
-                  <div className="md:space-x-5 flex items-center h-full ml-10">
+                  <div className="flex items-center h-full ml-10 md:space-x-5">
                     <Link href="#">
-                      <BellIcon className="h-6 w-6 text-indigo-blue mr-5 md:mr-0" />
+                      <BellIcon className="w-6 h-6 mr-5 text-indigo-blue md:mr-0" />
                     </Link>
                     <Link href="#">
-                      <ClockIcon className="h-6 w-6 text-indigo-blue mr-2 md:mr-0" />
+                      <ClockIcon className="w-6 h-6 mr-2 text-indigo-blue md:mr-0" />
                     </Link>
-                    <span className="border-x h-full border-gray-300 hidden md:flex items-center">
+                    <span className="items-center hidden h-full border-gray-300 border-x md:flex">
                       <ChartBarIcon
                         className={cn("h-6 w-6 mx-2 ", {
                           "text-green-700": isOnline && isSocketConnected,
@@ -346,12 +346,15 @@ const MainNav = () => {
                       trigger="hover"
                     >
                       <Button type="link" ghost>
-                        <CircleStackIcon className="h-6 w-6 text-indigo-blue hidden md:block" />
+                        <CircleStackIcon className="hidden w-6 h-6 text-indigo-blue md:block" />
                       </Button>
                     </Popover>
-                    <Link href="#"></Link>
+                    {/* <Link href="#"></Link>
                     <Link href="#">
-                      <LockClosedIcon className="h-6 w-6 text-indigo-blue hidden md:block" />
+                      <CircleStackIcon className="hidden w-6 h-6 text-indigo-blue md:block" />
+                    </Link> */}
+                    <Link href="#">
+                      <LockClosedIcon className="hidden w-6 h-6 text-indigo-blue md:block" />
                     </Link>
                   </div>
                 </div>
@@ -363,9 +366,9 @@ const MainNav = () => {
       <div className={`${showSideNav ? "block" : "hidden lg:block"} w-64`}>
         <SideBarNav />
       </div>
-      <div className="p-4 w-full fixed bottom-0 bg-gray-200 lg:pl-72 flex items-center gap-2 justify-center z-20">
+      <div className="fixed bottom-0 z-20 flex items-center justify-center w-full gap-2 p-4 text-black bg-gray-200 lg:pl-72">
         © {dayjs().format("YYYY")} AmeriTex Pipe & Products, made with{" "}
-        <HeartIcon className="h-5 w-5 text-red-500" /> by Ieko Media.
+        <HeartIcon className="w-5 h-5 text-red-500" /> by Ieko Media.
       </div>
     </>
   )

@@ -59,3 +59,5 @@ export const API_URL_TIMERS_MACHINECLASS = `${NEXT_PUBLIC_API_URL}/api/timers/fi
 export const API_URL_TIMERS_TONSUNIT = `${NEXT_PUBLIC_API_URL}/api/timers/timer-tons-unit`
 export const API_URL_ALL_LOCATIONS_TOTAL_TONSUNIT = `${NEXT_PUBLIC_API_URL}/api/timers/all-global-tons-unit`
 export const API_URL_AUTOTIMER = `${NEXT_PUBLIC_API_URL}/api/auto-timer`
+export const API_URL_DEVICE_TYPES = `${NEXT_PUBLIC_API_URL}/api/device/types`
+export const API_URL_DEVICE = `${NEXT_PUBLIC_API_URL}/api/device`

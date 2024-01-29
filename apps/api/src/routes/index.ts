@@ -18,6 +18,7 @@ import readingsRoute from "./readings"
 import reportsRoute from "./reports"
 import devOpsRoute from "./dev-ops"
 import autoTimerRoute from "./autoTimer"
+import deviceRouter from "./device"
 
 const App = (app: Application) => {
   app.use(`${API_ROOT}/users`, UsersRoute)
@@ -38,6 +39,7 @@ const App = (app: Application) => {
   app.use(`${API_ROOT}/reports`, reportsRoute)
   app.use(`${API_ROOT}/dev-ops`, devOpsRoute)
   app.use(`${API_ROOT}/auto-timer`, autoTimerRoute)
+  app.use(`${API_ROOT}/device`, deviceRouter)
 }
 
 export default App
