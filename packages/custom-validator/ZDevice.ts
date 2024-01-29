@@ -69,7 +69,7 @@ export const ZDevice = z.object({
   }),
 })
 
-export const ZCreateDevice = ZDevice.omit({ _id: true }).partial({
+export const ZCreateDevice = ZDevice.omit({ _id: true, status: true }).partial({
   createdAt: true,
   updatedAt: true,
 })

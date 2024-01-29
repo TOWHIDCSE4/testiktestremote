@@ -48,9 +48,6 @@ export default function DeviceItemViewComponent({
       {
         _id: device._id,
         status: device.status == "disabled" ? "idle" : "disabled",
-        name: device.name,
-        sn: device.sn,
-        typeId: device.typeId,
       },
       {
         onSuccess: (data: T_BackendResponse) => {

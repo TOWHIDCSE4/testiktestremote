@@ -91,17 +91,13 @@ export default function NewDeviceModalComponent({
             name,
             typeId,
             sn,
-            status: "idle",
             note,
             _id: device._id,
             lastUpdatedAt,
           },
           callBackReq
         )
-      : createDevice(
-          { name, typeId, sn, status: "idle", note, lastUpdatedAt },
-          callBackReq
-        )
+      : createDevice({ name, typeId, sn, note, lastUpdatedAt }, callBackReq)
   }
 
   return (

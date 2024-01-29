@@ -23,19 +23,19 @@ const initDeviceTypes = async () => {
         name: "Laptop",
         order: 1,
         image:
-          "https://unsplash.com/photos/macbook-pro-on-white-top-zW7gkUqFA8I",
+          "https://images.unsplash.com/photo-1511844941619-5eadcd3735e6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
       {
         name: "Mobile",
         order: 2,
         image:
-          "https://unsplash.com/photos/black-android-smartphone-OYMKjv5zmGU",
+          "https://images.unsplash.com/photo-1544866092-1935c5ef2a8f?q=80&w=2076&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
       {
         name: "Tablet",
         order: 3,
         image:
-          "https://unsplash.com/photos/black-and-silver-laptop-computer-q8Dw_aF2_9M",
+          "https://images.unsplash.com/photo-1583418855574-dcb771a0c46b?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       },
     ])
   } else {
