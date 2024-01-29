@@ -1,5 +1,6 @@
 "use client"
 
+import isDev from "../../../../helpers/isDev"
 import Analytics from "./Analytics"
 
 const Content = () => {
@@ -13,9 +14,11 @@ const Content = () => {
             <span className="text-black mx-2">&gt;</span>
             <span className="text-red-500">Analytics</span>
           </h4>
-          <div className="w-full h-0.5 bg-gray-200 mt-6">
-            <Analytics />
-          </div>
+          {isDev && (
+            <div className="w-full h-0.5 bg-gray-200 mt-6">
+              <Analytics />
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -42,8 +42,8 @@ const navigation = [
     showOnLive: true,
     children: [
       { name: "Timer", href: "/production/timer" },
-      { name: "Analytics", href: "/production/analytics", showOnLive: false },
-      { name: "Dev Ops", href: "/production/dev-ops", showOnLive: false },
+      { name: "Analytics", href: "/production/analytics", showOnLive: true },
+      { name: "Dev Ops", href: "/production/dev-ops", showOnLive: true },
       {
         name: "System Check",
         href: "/production/system-check",
