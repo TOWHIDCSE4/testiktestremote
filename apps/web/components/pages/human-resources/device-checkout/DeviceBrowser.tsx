@@ -324,16 +324,56 @@ export default function DeviceBrowserComponent() {
         >
           <div className="col-span-4 md:border-r md:col-span-1 border-primary-dark-blue">
             <div className="flex flex-col gap-1 uppercase md:gap-4">
-              <div className="flex flex-col col-span-2">
-                <div className="font-black md:leading-4 md:text-xs text-gold">
-                  Checked Out By
+              {currentDevice?.status == "idle" ? (
+                <div className="flex flex-col col-span-2">
+                  <div className="font-black md:leading-4 md:text-xs text-gold">
+                    {currentDevice
+                      ? currentDevice.lastUserId
+                        ? "Checked in By"
+                        : "Created By"
+                      : "Unknown"}
+                  </div>
+                  <div className="break-all lmd:eading-3 line-clamp-1">
+                    {currentDevice
+                      ? currentDevice?.lastUserId
+                        ? typeof currentDevice?.lastUserId == "object"
+                          ? `${currentDevice.lastUserId?.firstName} ${currentDevice.lastUserId?.lastName}`
+                          : "Unknown"
+                        : currentDevice.userId &&
+                          typeof currentDevice.userId == "object"
+                        ? `${currentDevice.userId.firstName} ${currentDevice.userId.lastName}`
+                        : `Unknown`
+                      : "Undefined Device"}
+                  </div>
                 </div>
-                <div className="break-all lmd:eading-3 line-clamp-1">
-                  {typeof currentDevice?.lastUserId == "object"
-                    ? `${currentDevice.lastUserId?.firstName} ${currentDevice.lastUserId?.lastName}`
-                    : "Unknown"}
+              ) : currentDevice?.status == "using" ? (
+                <div className="flex flex-col col-span-2">
+                  <div className="font-black md:leading-4 md:text-xs text-gold">
+                    Checked Out By
+                  </div>
+                  <div className="break-all lmd:eading-3 line-clamp-1">
+                    {currentDevice?.history &&
+                    typeof currentDevice.history == "object" &&
+                    typeof currentDevice.history.userId == "object"
+                      ? `${currentDevice.history.userId.firstName} ${currentDevice.history.userId.lastName}`
+                      : "Unknown"}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="flex flex-col col-span-2">
+                  {/* broken */}
+                  <div className="font-black md:leading-4 md:text-xs text-gold">
+                    Disabled
+                  </div>
+                  <div className="break-all lmd:eading-3 line-clamp-1">
+                    {currentDevice ? (
+                      <span className="uppercase">{currentDevice.status}</span>
+                    ) : (
+                      "Undefined Device"
+                    )}
+                  </div>
+                </div>
+              )}
               <div className="flex flex-col col-span-2">
                 <div className="font-black md:leading-4 md:text-xs text-gold">
                   Primary Location
@@ -393,19 +433,28 @@ export default function DeviceBrowserComponent() {
                 </div>
                 <div className="break-all md:leading-3 line-clamp-1 text-disabled">
                   {/* Checked Out 03/11/24 */}
-                  {typeof currentDevice?.history == "object"
-                    ? `${
-                        currentDevice.history?.status == "ended"
-                          ? "Checked In"
-                          : "Checked Out"
-                      } ${
-                        currentDevice.history?.startAt
-                          ? dayjs(currentDevice.history?.startAt).format(
-                              "MM/DD/YY"
-                            )
-                          : ""
-                      }`
-                    : `Unknown`}
+                  {currentDevice
+                    ? currentDevice.status == "idle"
+                      ? typeof currentDevice?.history == "object"
+                        ? `${
+                            currentDevice.history?.status == "ended"
+                              ? "Checked In"
+                              : "!" + currentDevice.history?.status
+                          } ${
+                            currentDevice.history?.startAt
+                              ? dayjs(currentDevice.history?.startAt).format(
+                                  "MM/DD/YY"
+                                )
+                              : ""
+                          }`
+                        : `Unknown`
+                      : currentDevice.status == "using"
+                      ? currentDevice.lastUserId &&
+                        typeof currentDevice.lastUserId == "object"
+                        ? "Checked In"
+                        : "Created"
+                      : "Unknown"
+                    : "Unknown Device"}
                 </div>
               </div>
             </div>
@@ -419,7 +468,7 @@ export default function DeviceBrowserComponent() {
               <div className="col-span-8 md:col-span-3">
                 <div className="flex items-center">
                   <Image
-                    className="w-full mb-2 border rounded-lg md:mb-0 border-slate-400"
+                    className="object-cover w-full mb-2 border rounded-lg md:mb-0 border-slate-400"
                     width={300}
                     height={150}
                     alt="image"

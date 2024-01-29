@@ -7,6 +7,10 @@ const deviceTypeSchema = new Schema(
     name: String,
     image: String,
     deletedAt: Date,
+    order: {
+      type: Number,
+      default: 1000,
+    },
   },
   {
     timestamps: {

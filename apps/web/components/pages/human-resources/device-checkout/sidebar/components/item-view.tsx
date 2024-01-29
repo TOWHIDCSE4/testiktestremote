@@ -14,6 +14,7 @@ import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import useDeviceLogs from "../../../../../../hooks/device/useDeviceLogs"
 import DeviceLogsTableComponent from "./log-table"
+import useRemoveDevice from "../../../../../../hooks/device/useRemoveDevice"
 
 export default function DeviceItemViewComponent({
   device,
@@ -30,9 +31,12 @@ export default function DeviceItemViewComponent({
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false)
   useEffect(() => {
     if (open) {
-      // TODO: should implement reloading logs
+      queryClient.invalidateQueries({
+        queryKey: ["device-log", device._id],
+      })
     }
-  }, [open])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, device._id])
   const onClose = () => {
     setOpen(false)
   }
@@ -71,6 +75,42 @@ export default function DeviceItemViewComponent({
         },
       }
     )
+  }
+  const { mutate: removeDevice } = useRemoveDevice()
+  const onRemoveClick = () => {
+    if (
+      confirm(
+        `Are you sure you want to remove this device: ${device.name} ?`
+      ) === true
+    ) {
+      removeDevice(
+        { id: device._id },
+        {
+          onSuccess: (data: T_BackendResponse) => {
+            queryClient.invalidateQueries({
+              queryKey: ["devices"],
+            })
+            queryClient.invalidateQueries({
+              queryKey: ["device-log", device._id],
+            })
+            queryClient.invalidateQueries({
+              queryKey: ["device-log"],
+            })
+            if (!data.error) {
+              toast.success(String(data.message))
+            } else {
+              toast.error(String(data.message))
+            }
+          },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onError: (error: any) => {
+            toast.error(String(error.message))
+          },
+        }
+      )
+    } else {
+      return false
+    }
   }
 
   return (
@@ -166,6 +206,16 @@ export default function DeviceItemViewComponent({
               >
                 {device.status == "disabled" ? "Recommission" : "Decommission"}
               </button>
+              {!device.history &&
+                !device.lastUserId &&
+                device.status !== "using" && (
+                  <button
+                    onClick={onRemoveClick}
+                    className="px-2 py-1 text-white uppercase bg-red-700 rounded-lg text-2xs"
+                  >
+                    Remove
+                  </button>
+                )}
               <button
                 onClick={onEditClick}
                 className="px-2 py-1 text-white uppercase rounded-lg text-2xs bg-indigo-blue"

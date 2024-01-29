@@ -7,8 +7,46 @@ import DeviceHistory from "../models/deviceHistory"
 import DeviceLog from "../models/deviceLog"
 import User from "../models/users"
 
+const initDeviceTypes = async () => {
+  const deviceTypes: T_DeviceType[] = await DeviceType.find({})
+  if (!deviceTypes || deviceTypes.length == 0) {
+    // adding default device types
+    console.log(`Adding default device types`)
+    await DeviceType.insertMany([
+      {
+        name: "Virtual Reality Headset",
+        order: 0,
+        image:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTP_tgYbIWnrvIR09OWvGT-08ndDrQJCO7EJvOqgou5fg&s",
+      },
+      {
+        name: "Laptop",
+        order: 1,
+        image:
+          "https://unsplash.com/photos/macbook-pro-on-white-top-zW7gkUqFA8I",
+      },
+      {
+        name: "Mobile",
+        order: 2,
+        image:
+          "https://unsplash.com/photos/black-android-smartphone-OYMKjv5zmGU",
+      },
+      {
+        name: "Tablet",
+        order: 3,
+        image:
+          "https://unsplash.com/photos/black-and-silver-laptop-computer-q8Dw_aF2_9M",
+      },
+    ])
+  } else {
+    return false
+  }
+}
+
 const getDeviceTypes = async () => {
   const data: T_DeviceType[] = await DeviceType.find({})
+    .sort({ order: 1 })
+    .lean()
   return data
 }
 
@@ -87,7 +125,7 @@ const updateDevice = async (id: string, req: Request, user: T_User) => {
         status: "pending",
       })
 
-      item.history = undefined
+      // item.history = undefined
     } else if (status == "idle") {
       logNote = `${item.name} is enabled by ${user.firstName} ${user.lastName}`
     }
@@ -254,7 +292,7 @@ const approveDeviceRequest = async ({
           status: "approved",
         })
         // Remove other request
-        // !FIXME: should consider if it's true
+        // FIXME: should consider if it's true
         await DeviceHistory.deleteMany({
           status: "pending",
           deviceId: history.deviceId,
@@ -277,7 +315,8 @@ const approveDeviceRequest = async ({
           endAt: new Date(),
         })
         await device.updateOne({
-          history: null,
+          // FIXME: should consider if it's true
+          // history: null,
           status: "idle",
           lastUserId: history.userId,
         })
@@ -304,16 +343,25 @@ const approveDeviceRequest = async ({
   }
 }
 
+const removeDevice = async (id: string) => {
+  await Device.deleteOne({ _id: id })
+  await DeviceHistory.deleteMany({ deviceId: id })
+  await DeviceLog.deleteMany({ deviceId: id })
+  return true
+}
+
 const DeviceService = {
   getDeviceLogsById,
   createDevice,
   updateDevice,
+  removeDevice,
   getDeviceTypes,
   getDevices,
   requestDeviceUse,
   getDeviceCheckoutRequests,
   getDeviceCheckinRequests,
   approveDeviceRequest,
+  initDeviceTypes,
 }
 
 export default DeviceService

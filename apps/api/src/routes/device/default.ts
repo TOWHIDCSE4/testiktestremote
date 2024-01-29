@@ -182,3 +182,21 @@ export const getDeviceLogs = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const removeDevice = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+    const items = await DeviceService.removeDevice(id)
+    return res.status(200).json({
+      error: false,
+      message: "success",
+      items,
+    })
+  } catch (error: any) {
+    console.log(error)
+    return res.status(500).json({
+      error: true,
+      message: error.message,
+    })
+  }
+}

@@ -7,6 +7,7 @@ import {
   getDeviceLogs,
   getDeviceTypes,
   getDevices,
+  removeDevice,
   requestDeviceUse,
   updateDevice,
 } from "./default"
@@ -23,6 +24,7 @@ router.get("/request/out", getDeviceCheckoutRequests)
 router.post("/request/:id/approve", isUserLoggedIn, approveDeviceRequest)
 router.post("/", isUserLoggedIn, createDevice)
 router.put("/:id", isUserLoggedIn, updateDevice)
+router.delete("/:id", isUserLoggedIn, removeDevice)
 router.post("/:id/request", isUserLoggedIn, requestDeviceUse)
 
 export default router

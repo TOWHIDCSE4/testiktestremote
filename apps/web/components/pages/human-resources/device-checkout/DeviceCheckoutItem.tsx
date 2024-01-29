@@ -158,7 +158,11 @@ export default function DeviceCheckoutItemComponent({
               <span className="font-bold uppercase">
                 Time Checked Out :{` `}
               </span>
-              <span className="text-disabled">2024-01-11</span>
+              <span className="text-disabled">
+                {history
+                  ? dayjs(history.startAt).format("HH:mm:ss")
+                  : "undefined"}
+              </span>
             </p>
             <p>
               <span className="font-bold uppercase">Location :{` `}</span>
