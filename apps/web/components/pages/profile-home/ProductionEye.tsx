@@ -11,6 +11,9 @@ import _ from "lodash"
 import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import ProductionEyeTableFooter from "./ProductionEyeTableFooter"
 import ProductionEyeWether from "./ProductionEyeWether"
+import LocationCheckboxComponent from "./production-eye/locationCheckbox"
+import { useProductionEyeContext } from "./production-eye/productinEyeContext"
+import { useEffect, useLayoutEffect } from "react"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -24,6 +27,12 @@ export default function ProductionEyeComponent() {
   const { data: machineClasses, refetch: refetchMachineClasses } =
     useMachineClasses()
   const { data: locations } = useLocations()
+
+  const { selectedLocationIds, onSelectLocation } = useProductionEyeContext()
+
+  useLayoutEffect(() => {
+    console.log("Desktop")
+  }, [])
 
   return (
     <div className={`${lato.className} w-full mt-6`}>
@@ -81,11 +90,19 @@ export default function ProductionEyeComponent() {
               return (
                 <div
                   key={location._id}
-                  className="relative flex-1 px-2 pb-6 overflow-y-hidden h-80"
+                  className="relative flex-1 pb-6 overflow-y-hidden h-80"
                 >
-                  <div className="relative w-full h-full overflow-y-auto scrollbar-w-xs">
-                    <div className="text-xl font-bold uppercase">
-                      {location.name} Timers
+                  <div className="relative w-full h-full pl-2 pr-3 overflow-y-auto scrollbar-w-xs">
+                    <div className="flex gap-2">
+                      <div className="text-xl font-bold uppercase">
+                        {location.name} Timers
+                      </div>
+                      <LocationCheckboxComponent
+                        checked={selectedLocationIds.includes(location._id)}
+                        onChange={(checked) =>
+                          onSelectLocation(location._id, checked)
+                        }
+                      />
                     </div>
                     {allTimers?.items
                       ?.filter((item: any) => item.locationId === location._id)

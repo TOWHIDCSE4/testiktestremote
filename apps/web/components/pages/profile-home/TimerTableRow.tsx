@@ -31,7 +31,11 @@ const TimerTableRow: React.FC<Props> = ({ rowData, index }) => {
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
       if (data?.message === "refetch") {
-        queryClient.invalidateQueries(["total-tons-unit", rowData.locationId, rowData._id])
+        queryClient.invalidateQueries([
+          "total-tons-unit",
+          rowData.locationId,
+          rowData._id,
+        ])
         queryClient.invalidateQueries(["timer-status", rowData._id])
       }
     }
@@ -50,9 +54,15 @@ const TimerTableRow: React.FC<Props> = ({ rowData, index }) => {
   return (
     <tr>
       <td className="px-2 truncate">{rowData?.machine?.name}</td>
-      <td className="line-clamp-1">{rowData?.part?.name}</td>
-      <td className="px-2">{query?.data?.item?.dailyUnits ?? 0}</td>
-      <td className="px-2">{query?.data?.item?.tons?.toFixed(2)}</td>
+      <td className="!w-[99%]">
+        <div className="line-clamp-1">{rowData?.part?.name}</div>
+      </td>
+      <td className="px-2 !w-fit">
+        {String(query?.data?.item?.dailyUnits ?? 0).padStart(4, "0")}
+      </td>
+      <td className="px-2 !w-fit">
+        {query?.data?.item?.tons?.toFixed(2).padStart(7, "0")}
+      </td>
       <td>
         <div
           className={combineClasses(

@@ -7,7 +7,6 @@ import isDev from "../../../helpers/isDev"
 import ProductionEyeComponent from "./ProductionEye"
 import ProductionEyeMobileComponent from "./ProductionEyeMobile"
 import { Lato } from "next/font/google"
-import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -21,8 +20,9 @@ const Content = () => {
   const { data: location, setSelectedLocationId } = useLocation()
 
   useEffect(() => {
-    if (data?.item?.locationId)
+    if (data?.item?.locationId) {
       setSelectedLocationId(data?.item.locationId as string)
+    }
   }, [data, setSelectedLocationId])
 
   return (
@@ -38,13 +38,17 @@ const Content = () => {
         </h4>
         <div className="w-full h-0.5 bg-gray-200 mt-6"></div>
 
-        <div className="hidden w-full lg:block">
-          <ProductionEyeComponent />
-        </div>
+        <div className="hidden w-full lg:flex justify-center items-center">
+          <div style={{ width: "100%", maxWidth: "390px" }}>
+            <ProductionEyeMobileComponent />
+          </div>
 
-        <div className="block w-full lg:hidden">
-          <ProductionEyeMobileComponent />
         </div>
+          <div className="hidden w-full lg:flex justify-center items-center" style={{ fontStyle: 'italic', fontSize: 'small' }}>Module under construction!</div>
+
+          <div className="block w-full lg:hidden">
+            <ProductionEyeMobileComponent />
+          </div>
 
         {isDev && (
           <div className="w-full h-0.5 bg-gray-200 mt-6">

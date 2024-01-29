@@ -4,7 +4,7 @@ import { BiFullscreen } from "react-icons/bi"
 import { LuMenu, LuMoon } from "react-icons/lu"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 import useLocations from "../../../hooks/locations/useLocations"
-import { useEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useState } from "react"
 import TimerTableMobileComponent from "./TimerTableMobile"
 import MachineClassSelectComponent from "./MachineClassSelect"
 import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
@@ -15,6 +15,8 @@ import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
 import TonsUnitsBarChart from "./TonsUnitsBarChart"
 import { useQueryClient } from "@tanstack/react-query"
+import { useProductionEyeContext } from "./production-eye/productinEyeContext"
+import LocationCheckboxComponent from "./production-eye/locationCheckbox"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -36,7 +38,7 @@ export default function ProductionEyeMobileComponent() {
   const gunter = useWether(33.4479, -96.7475)
   const conroe = useWether(30.312927, -95.4560512)
   const seguin = useWether(29.5979964, -98.1041023)
-  const [selectedLocationId, setSelectedLocationId] = useState<string>()
+const [selectedLocationId, setSelectedLocationId] = useState<string>()
 
   useEffect(() => {
     if (!selectedLocationId && locations?.items && locations.items.length > 0) {
@@ -101,8 +103,8 @@ export default function ProductionEyeMobileComponent() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between px-6">
-                <div className="flex items-center flex-1 gap-4">
+              <div className="relative flex items-center justify-between px-6">
+                <div className="flex items-center flex-1 h-full gap-4">
                   <div className="flex items-center flex-1 gap-3">
                     <button className="flex items-center justify-center w-6 h-6 text-sm text-white bg-black rounded-lg">
                       <LuMenu />
@@ -114,7 +116,7 @@ export default function ProductionEyeMobileComponent() {
                       <BiFullscreen />
                     </button>
                   </div>
-                  <div className="flex flex-col items-center text-sm font-bold uppercase">
+                  <div className="flex flex-col items-center justify-end h-full pt-2 pr-2 text-sm font-bold uppercase lg:pt-0">
                     <div className="leading-4">Active</div>
                     <div className="leading-4">Timers</div>
                   </div>
@@ -148,8 +150,8 @@ export default function ProductionEyeMobileComponent() {
           <div className="relative flex flex-col justify-between w-full overflow-hidden bg-gray-300">
             <div className="sticky top-0 flex justify-between w-full">
               {locations?.items?.map((location, idx) => (
-                <button
-                  className={`px-4 py-1 ${
+                <div
+                  className={`px-4 py-1 flex gap-2 justify-center ${
                     location._id == selectedLocationId
                       ? "font-bold flex-1 text-center text-lg bg-opacity-0"
                       : "text-gray-300"
@@ -161,47 +163,56 @@ export default function ProductionEyeMobileComponent() {
                       : "bg-gray-900"
                   }`}
                   key={idx}
-                  onClick={() => {
-                    setSelectedLocationId(location._id)
-                  }}
                 >
-                  {location.name}
-                  {location._id == selectedLocationId && <span>: 12</span>}
-                </button>
+                  <button
+                    onClick={() => {
+                      setSelectedLocationId(location._id)
+                                          }}
+                  >
+                    {location.name}
+                    {location._id == selectedLocationId && <span>: 12</span>}
+                  </button>
+                  {location._id !== selectedLocationId && (
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" className="sr-only peer" />
+                      <div className="w-3 h-3 bg-white border-2 border-white shadow-sm shadow-gray-500 peer peer-checked:bg-black"></div>
+                    </label>
+                  )}
+                </div>
               ))}
             </div>
             {locations?.items?.map((location) => (
-              <div
-                key={location._id}
-                className={`${
-                  location._id == selectedLocationId ? "" : "hidden"
-                } px-2 pb-6 overflow-y-hidden h-80 w-full`}
-              >
-                <div className="relative w-full h-full overflow-y-auto scrollbar-w-xs">
-                  {filteredLocationData?.map((mc: any, key: number) => {
-                    return (
-                      <div key={key} className="py-1 pl-1">
-                        <div className="text-xs font-black text-red-700 uppercase">
-                          {mc.machineClass.name}
+                <div
+                  key={location._id}
+                  className={`${
+                    location._id == selectedLocationId ? "" : "hidden"
+                  } px-2 pb-6 overflow-y-hidden h-80 w-full`}
+                >
+                  <div className="relative w-full h-full overflow-y-auto scrollbar-w-xs">
+                    {filteredLocationData?.map((mc: any, key: number) => {
+                      return (
+                        <div key={key} className="py-1 pl-1">
+                          <div className="text-xs font-black text-red-700 uppercase">
+                            {mc.machineClass.name}
+                          </div>
+                          <div className="relative w-full">
+                            <TimerTableMobileComponent
+                              location={location}
+                              machineClass={mc}
+                              timers={mc.timers}
+                            />
+                          </div>
                         </div>
-                        <div className="relative w-full">
-                          <TimerTableMobileComponent
-                            location={location}
-                            machineClass={mc}
-                            timers={mc.timers}
-                          />
-                        </div>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
+                  </div>
+                  <MachineClassSelectComponent
+                    location={location}
+                    machineClasses={machineClasses?.items.reverse()}
+                    selectedMachineClasses={allTimers?.items}
+                  />
                 </div>
-                <MachineClassSelectComponent
-                  location={location}
-                  machineClasses={machineClasses?.items.reverse()}
-                  selectedMachineClasses={allTimers?.items}
-                />
-              </div>
-            ))}
+              ))}
           </div>
         </div>
         <div className="w-full h-2 bg-slate-700"></div>
@@ -214,7 +225,7 @@ export default function ProductionEyeMobileComponent() {
               </div>
             </div>
             <TonsUnitsBarChart />
-            <div className="flex items-center justify-between w-full gap-8 pl-4 text-2xl font-bold leading-4 uppercase">
+            <div className="flex items-center justify-between w-auto gap-8 pl-4 text-2xl font-bold leading-4 uppercase">
               <div className="flex flex-1 gap-2">
                 <div>Units</div>
                 <div className="text-slate-400">

@@ -7,7 +7,6 @@ import { useSocket } from "../../../store/useSocket"
 import dayjs from "dayjs"
 import { useQueryClient } from "@tanstack/react-query"
 
-
 const ProductionEyeTableFooter = () => {
   const queryClient = useQueryClient()
   const socket = useSocket((state: any) => state.instance)
@@ -42,7 +41,7 @@ const ProductionEyeTableFooter = () => {
         </div>
         <TonsUnitsBarChart />
         <div className="mx-4"></div>
-        <div className="flex items-center gap-8 pl-4 font-bold leading-4 uppercase border-l-4 border-slate-900">
+        <div className="flex items-center justify-between flex-1 gap-8 pl-4 font-bold leading-4 uppercase border-l-4 border-slate-900">
           <div className="flex flex-col">
             <div>Units</div>
             <div className="text-slate-400">
@@ -57,7 +56,7 @@ const ProductionEyeTableFooter = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col mr-2 text-sm uppercase">
+      <div className="flex flex-col ml-4 mr-2 text-sm uppercase">
         <div className="flex justify-end gap-1">
           <div className="text-gray-400">{dayjs().format("MMMM DD YYYY")}</div>
         </div>

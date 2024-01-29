@@ -52,23 +52,30 @@ const TimerTableRowMobile: React.FC<Props> = ({ rowData, index }) => {
   }, [socket])
 
   return (
-    <tr>
-      <td className="px-3">{query?.data?.item?.dailyUnits}</td>
-      <td className="px-3">{query?.data?.item?.tons?.toFixed(2)}</td>
-      <td>
-        <div
-          className={combineClasses(
-            "border border-slate-500 rounded-full w-[6px] h-[6px]",
-            status.data?.items[0]?.status === "Loss" && "bg-red-500",
-            status.data?.items[0]?.status === "Gain" && "bg-green-500",
-            isTimerEnded.data?.items[0]?.endAt && "bg-gray-500",
-            isTimerEnded.data?.items[0]?.endAt &&
-              !status.data?.items[0]?.stopReason.includes("Unit Created") &&
-              "bg-yellow-500"
-          )}
-        ></div>
+    <>
+      <td className="!w-[99%] px-2">
+        <div className="flex items-center gap-1">
+          {rowData.machine.name}
+          <div
+            className={combineClasses(
+              "border border-slate-500 rounded-full w-[6px] h-[6px]",
+              status.data?.items[0]?.status === "Loss" && "bg-red-500",
+              status.data?.items[0]?.status === "Gain" && "bg-green-500",
+              isTimerEnded.data?.items[0]?.endAt && "bg-gray-500",
+              isTimerEnded.data?.items[0]?.endAt &&
+                !status.data?.items[0]?.stopReason.includes("Unit Created") &&
+                "bg-yellow-500"
+            )}
+          ></div>
+        </div>
       </td>
-    </tr>
+      <td className="px-2 whitespace-nowrap">
+        {String(query?.data?.item?.dailyUnits ?? 0).padStart(4, "0")}
+      </td>
+      <td className="px-2 whitespace-nowrap">
+        {query?.data?.item?.tons?.toFixed(2).padStart(7, "0")}
+      </td>
+    </>
   )
 }
 
