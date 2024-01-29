@@ -37,11 +37,12 @@ const TonsUnitsBarChart = () => {
       <div className="flex flex-col items-center ml-4 lg:ml-0">
         <label className="relative inline-flex items-center cursor-pointer">
           <input
-            type="radio"
+            type="checkbox"
             name="u/t"
             className="sr-only peer"
             checked={isUnits == "units"}
             onChange={(e) => {
+              console.log(e.target.checked)
               if (e.target.checked) setIsUnits("units")
             }}
           />
@@ -51,11 +52,12 @@ const TonsUnitsBarChart = () => {
         </label>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
-            type="radio"
+            type="checkbox"
             name="u/t"
             className="sr-only peer"
             checked={isUnits == "tons"}
             onChange={(e) => {
+              console.log(e.target.checked)
               if (e.target.checked) setIsUnits("tons")
             }}
           />

@@ -46,9 +46,9 @@ const Content = () => {
         </div>
           <div className="hidden w-full lg:flex justify-center items-center" style={{ fontStyle: 'italic', fontSize: 'small' }}>Module under construction!</div>
 
-        <div className="block w-full lg:hidden">
-          <ProductionEyeMobileComponent />
-        </div>
+          <div className="block w-full lg:hidden">
+            <ProductionEyeMobileComponent />
+          </div>
 
         {isDev && (
           <div className="w-full h-0.5 bg-gray-200 mt-6">
