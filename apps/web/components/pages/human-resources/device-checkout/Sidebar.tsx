@@ -19,7 +19,6 @@ export default function SidebarComponent() {
     USER_ROLES.Administrator,
     USER_ROLES.HR,
     USER_ROLES.HR_Director,
-    USER_ROLES.Production,
   ].includes(userProfile?.item?.role ?? "")
 
   return (

@@ -30,7 +30,7 @@ export default function IdleDeviceItemComponent({ item }: { item: T_Device }) {
           <div className="relative flex items-center justify-between w-full gap-2 pl-4 text-sm">
             <button
               onClick={triggerPopover}
-              className="flex-1 font-semibold text-left line-clamp-1"
+              className="flex-1 text-xs font-semibold text-left line-clamp-1"
             >
               {item.name}
             </button>

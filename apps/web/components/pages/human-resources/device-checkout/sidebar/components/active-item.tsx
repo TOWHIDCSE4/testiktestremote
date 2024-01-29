@@ -63,7 +63,7 @@ export default function ActiveDeviceItemComponent({
               className="object-cover w-6 h-6 rounded-full"
               alt=""
             />
-            <div className="flex-1 font-semibold text-left line-clamp-1">
+            <div className="flex-1 text-xs font-semibold text-left line-clamp-1">
               {item.name}
             </div>
             <div className="flex items-center justify-end gap-2 text-xs">

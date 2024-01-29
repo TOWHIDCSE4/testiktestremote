@@ -10,6 +10,8 @@ import useProfile from "../../../../hooks/users/useProfile"
 import { USER_ROLES } from "../../../../helpers/constants"
 import NewDeviceModalComponent from "./modals/NewDeviceModal"
 import { HiChevronLeft } from "react-icons/hi"
+import ModalContextProvider from "./context/modalContext"
+import ConfirmModalComponent from "./context/confirmModal"
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
   style: ["normal", "italic"],
@@ -25,7 +27,6 @@ const Content = () => {
     USER_ROLES.Administrator,
     USER_ROLES.HR,
     USER_ROLES.HR_Director,
-    USER_ROLES.Production,
   ].includes(userProfile?.item?.role ?? "")
   const [isNewModalOpen, setIsNewModalOpen] = useState<boolean>(false)
   const toggleNewModalOpen = () => {
@@ -37,7 +38,7 @@ const Content = () => {
   }
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
   return (
-    <>
+    <ModalContextProvider>
       <div className={`my-20 pb-20`}>
         <div className="px-4 mx-auto content md:px-7 lg:px-16 2xl:px-44 2xl:max-w-7xl mt-28">
           <div className="flex items-center justify-between py-2">
@@ -95,7 +96,8 @@ const Content = () => {
         isOpen={isNewModalOpen}
         onClose={onCloseNewModal}
       />
-    </>
+      <ConfirmModalComponent />
+    </ModalContextProvider>
   )
 }
 

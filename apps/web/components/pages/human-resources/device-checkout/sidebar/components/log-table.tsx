@@ -42,15 +42,22 @@ export default function DeviceLogsTableComponent({
           <thead className="sticky top-0 z-10 bg-white">
             <tr>
               <th>Date</th>
-              <th>Time</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {paginatedItems?.map((log) => (
-              <tr key={log._id}>
-                <td>{dayjs(log.createdAt).format("MM/DD/YY")}</td>
-                <td>{dayjs(log.createdAt).format("HH:mm:ss")}</td>
+              <tr key={log._id} className="border-t border-slate-200">
+                <td>
+                  <div className="flex flex-col items-center">
+                    <div className="text-2xs">
+                      {dayjs(log.createdAt).format("MM/DD/YY")}
+                    </div>
+                    <div className="text-xs font-bold">
+                      {dayjs(log.createdAt).format("HH:mm:ss")}
+                    </div>
+                  </div>
+                </td>
                 <td className="w-[99%]">{log.note}</td>
               </tr>
             ))}

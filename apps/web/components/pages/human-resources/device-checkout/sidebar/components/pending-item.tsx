@@ -14,6 +14,7 @@ import toast from "react-hot-toast"
 import { useQueryClient } from "@tanstack/react-query"
 import useProfile from "../../../../../../hooks/users/useProfile"
 import { USER_ROLES } from "../../../../../../helpers/constants"
+import { useModalContext } from "../../context/modalContext"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -36,69 +37,92 @@ export default function PendingDeviceItemComponent({
   const triggerPopover = () => {
     setOpen((prev) => !prev)
   }
+  const { openModal } = useModalContext()
   const onApprove = (e: MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    approveDeviceRequest(
-      { id: item._id, cancel: false },
-      {
-        onSuccess: (data: T_BackendResponse) => {
-          queryClient.invalidateQueries({
-            queryKey: ["devices"],
-          })
-          queryClient.invalidateQueries({
-            queryKey: ["device-request-in"],
-          })
-          queryClient.invalidateQueries({
-            queryKey: ["device-request-out"],
-          })
-          queryClient.invalidateQueries({
-            queryKey: ["device-log", item._id],
-          })
-          queryClient.invalidateQueries({
-            queryKey: ["device-log"],
-          })
-          if (!data.error) {
-            toast.success(String(data.message))
-          } else {
-            toast.error(String(data.message))
+    if (item.deviceId && typeof item.deviceId == "object")
+      openModal({
+        title: item.deviceId.name,
+        description: `Are you sure you want to approve device check-${
+          item.deviceId.status == "idle" ? "out" : "in"
+        } request?`,
+        callback: (res) => {
+          if (res) {
+            approveDeviceRequest(
+              { id: item._id, cancel: false },
+              {
+                onSuccess: (data: T_BackendResponse) => {
+                  queryClient.invalidateQueries({
+                    queryKey: ["devices"],
+                  })
+                  queryClient.invalidateQueries({
+                    queryKey: ["device-request-in"],
+                  })
+                  queryClient.invalidateQueries({
+                    queryKey: ["device-request-out"],
+                  })
+                  queryClient.invalidateQueries({
+                    queryKey: ["device-log", item._id],
+                  })
+                  queryClient.invalidateQueries({
+                    queryKey: ["device-log"],
+                  })
+                  if (!data.error) {
+                    toast.success(String(data.message))
+                  } else {
+                    toast.error(String(data.message))
+                  }
+                },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onError: (error: any) => {
+                  toast.error(String(error.message))
+                },
+              }
+            )
           }
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onError: (error: any) => {
-          toast.error(String(error.message))
-        },
-      }
-    )
+      })
   }
   const onDeny = (e: MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    approveDeviceRequest(
-      { id: item._id, cancel: true },
-      {
-        onSuccess: (data: T_BackendResponse) => {
-          queryClient.invalidateQueries({
-            queryKey: ["devices"],
-          })
-          queryClient.invalidateQueries({
-            queryKey: ["device-request-in"],
-          })
-          queryClient.invalidateQueries({
-            queryKey: ["device-request-out"],
-          })
-          if (!data.error) {
-            toast.success(String(data.message))
-          } else {
-            toast.error(String(data.message))
+    if (item.deviceId && typeof item.deviceId == "object")
+      openModal({
+        title: item.deviceId.name,
+        description: `Are you sure you want to reject device check-${
+          item.deviceId.status == "idle" ? "out" : "in"
+        } request?`,
+        callback: (res) => {
+          if (res) {
+            approveDeviceRequest(
+              { id: item._id, cancel: true },
+              {
+                onSuccess: (data: T_BackendResponse) => {
+                  queryClient.invalidateQueries({
+                    queryKey: ["devices"],
+                  })
+                  queryClient.invalidateQueries({
+                    queryKey: ["device-request-in"],
+                  })
+                  queryClient.invalidateQueries({
+                    queryKey: ["device-request-out"],
+                  })
+                  if (!data.error) {
+                    toast.success(String(data.message))
+                  } else {
+                    toast.error(String(data.message))
+                  }
+                },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onError: (error: any) => {
+                  toast.error(String(error.message))
+                },
+              }
+            )
           }
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onError: (error: any) => {
-          toast.error(String(error.message))
-        },
-      }
-    )
+      })
   }
 
   const { data: userProfile } = useProfile()
@@ -107,14 +131,13 @@ export default function PendingDeviceItemComponent({
     USER_ROLES.Administrator,
     USER_ROLES.HR,
     USER_ROLES.HR_Director,
-    USER_ROLES.Production,
   ].includes(userProfile?.item?.role ?? "")
 
   return (
     <>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger>
-          <div className="relative flex items-center justify-between w-full gap-2 text-sm">
+          <div className="relative flex items-center justify-between w-full gap-2 text-xs">
             <Image
               src={
                 typeof item.userId == "object"

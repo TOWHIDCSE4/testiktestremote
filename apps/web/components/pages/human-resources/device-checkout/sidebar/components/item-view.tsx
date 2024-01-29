@@ -15,6 +15,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import useDeviceLogs from "../../../../../../hooks/device/useDeviceLogs"
 import DeviceLogsTableComponent from "./log-table"
 import useRemoveDevice from "../../../../../../hooks/device/useRemoveDevice"
+import { useModalContext } from "../../context/modalContext"
 
 export default function DeviceItemViewComponent({
   device,
@@ -26,6 +27,8 @@ export default function DeviceItemViewComponent({
   const queryClient = useQueryClient()
   const { mutate: updateDevice } = useUpdateDevice()
   const { data: deviceLogs } = useDeviceLogs(device._id)
+
+  const { openModal } = useModalContext()
 
   const [open, setOpen] = useState<boolean>(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false)
@@ -44,70 +47,82 @@ export default function DeviceItemViewComponent({
     setIsEditModalOpen(true)
   }
   const onDisableClick = () => {
-    updateDevice(
-      {
-        _id: device._id,
-        status: device.status == "disabled" ? "idle" : "disabled",
+    openModal({
+      title: device.name,
+      description: `Are you sure you want to ${
+        device.status == "disabled" ? "enable device" : "disable device"
+      }?`,
+      callback: (res: boolean) => {
+        if (res) {
+          updateDevice(
+            {
+              _id: device._id,
+              status: device.status == "disabled" ? "idle" : "disabled",
+            },
+            {
+              onSuccess: (data: T_BackendResponse) => {
+                queryClient.invalidateQueries({
+                  queryKey: ["devices"],
+                })
+                queryClient.invalidateQueries({
+                  queryKey: ["device-log", device._id],
+                })
+                queryClient.invalidateQueries({
+                  queryKey: ["device-log"],
+                })
+                if (!data.error) {
+                  toast.success(String(data.message))
+                } else {
+                  toast.error(String(data.message))
+                }
+              },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onError: (error: any) => {
+                toast.error(String(error.message))
+              },
+            }
+          )
+        }
       },
-      {
-        onSuccess: (data: T_BackendResponse) => {
-          queryClient.invalidateQueries({
-            queryKey: ["devices"],
-          })
-          queryClient.invalidateQueries({
-            queryKey: ["device-log", device._id],
-          })
-          queryClient.invalidateQueries({
-            queryKey: ["device-log"],
-          })
-          if (!data.error) {
-            toast.success(String(data.message))
-          } else {
-            toast.error(String(data.message))
-          }
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onError: (error: any) => {
-          toast.error(String(error.message))
-        },
-      }
-    )
+    })
   }
   const { mutate: removeDevice } = useRemoveDevice()
   const onRemoveClick = () => {
-    if (
-      confirm(
-        `Are you sure you want to remove this device: ${device.name} ?`
-      ) === true
-    ) {
-      removeDevice(
-        { id: device._id },
-        {
-          onSuccess: (data: T_BackendResponse) => {
-            queryClient.invalidateQueries({
-              queryKey: ["devices"],
-            })
-            queryClient.invalidateQueries({
-              queryKey: ["device-log", device._id],
-            })
-            queryClient.invalidateQueries({
-              queryKey: ["device-log"],
-            })
-            if (!data.error) {
-              toast.success(String(data.message))
-            } else {
-              toast.error(String(data.message))
+    openModal({
+      title: device.name,
+      description: `Are you sure you want to remove?`,
+      callback: (res: boolean) => {
+        if (res) {
+          removeDevice(
+            { id: device._id },
+            {
+              onSuccess: (data: T_BackendResponse) => {
+                queryClient.invalidateQueries({
+                  queryKey: ["devices"],
+                })
+                queryClient.invalidateQueries({
+                  queryKey: ["device-log", device._id],
+                })
+                queryClient.invalidateQueries({
+                  queryKey: ["device-log"],
+                })
+                if (!data.error) {
+                  toast.success(String(data.message))
+                } else {
+                  toast.error(String(data.message))
+                }
+              },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onError: (error: any) => {
+                toast.error(String(error.message))
+              },
             }
-          },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onError: (error: any) => {
-            toast.error(String(error.message))
-          },
+          )
+        } else {
+          return false
         }
-      )
-    } else {
-      return false
-    }
+      },
+    })
   }
 
   return (
