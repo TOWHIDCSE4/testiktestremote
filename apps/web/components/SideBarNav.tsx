@@ -43,7 +43,7 @@ const navigation = [
     children: [
       { name: "Timer", href: "/production/timer" },
       { name: "Analytics", href: "/production/analytics", showOnLive: true },
-      { name: "Dev Ops", href: "/production/dev-ops", showOnLive: true },
+      { name: "Dev Ops", href: "/production/dev-ops", showOnLive: false },
       {
         name: "System Check",
         href: "/production/system-check",
