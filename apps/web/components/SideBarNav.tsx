@@ -79,7 +79,11 @@ const navigation = [
     children: [
       { name: "HR Dashboard", href: "/human-resources/hr-dashboard" },
       { name: "Gallery", href: "/human-resources/gallery" },
-      { name: "Device Checkout", href: "/human-resources/device-checkout" },
+      {
+        name: "Device Checkout",
+        href: "/human-resources/device-checkout",
+        showOnLive: false,
+      },
       { name: "ADT", href: "/human-resources/adt" },
       { name: "Down Time", href: "/human-resources/down-time" },
       { name: "Community", href: "/human-resources/community" },
@@ -142,8 +146,8 @@ const SideBarNav = () => {
     mutate(undefined, callBackReq)
   }
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-dark-blue pr-4 fixed h-full mt-16 z-30">
-      <div className="lg:hidden ml-4">
+    <div className="fixed top-0 z-30 flex flex-col h-full pr-4 mt-16 overflow-y-auto border-r border-gray-200 grow gap-y-5 bg-dark-blue">
+      <div className="ml-4 lg:hidden">
         <Menu
           as="div"
           className="flex items-center bg-white px-3 py-1.5 w-full rounded-full mt-7 relative"
@@ -152,8 +156,8 @@ const SideBarNav = () => {
             <div className="flex items-center">
               <div className="relative h-9 w-9">
                 {isUserProfileLoading ? (
-                  <div className="animate-pulse flex space-x-4">
-                    <div className="h-9 w-9 rounded-full bg-slate-200"></div>
+                  <div className="flex space-x-4 animate-pulse">
+                    <div className="rounded-full h-9 w-9 bg-slate-200"></div>
                   </div>
                 ) : (
                   <Image
@@ -167,8 +171,8 @@ const SideBarNav = () => {
               <div className="flex flex-col ml-2">
                 <span className="text-left font-bold text-gray-600 text-[15px] leading-5">
                   {isUserProfileLoading ? (
-                    <div className="animate-pulse flex space-x-4">
-                      <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                    <div className="flex space-x-4 animate-pulse">
+                      <div className="w-24 h-3 rounded bg-slate-200"></div>
                     </div>
                   ) : (
                     <>
@@ -177,10 +181,10 @@ const SideBarNav = () => {
                     </>
                   )}
                 </span>
-                <span className="text-left text-gray-500 font-semibold text-sm leading-5">
+                <span className="text-sm font-semibold leading-5 text-left text-gray-500">
                   {isUserProfileLoading ? (
-                    <div className="animate-pulse flex space-x-4">
-                      <div className="h-3 w-24 bg-slate-200 rounded"></div>
+                    <div className="flex space-x-4 animate-pulse">
+                      <div className="w-24 h-3 rounded bg-slate-200"></div>
                     </div>
                   ) : (
                     <>
@@ -191,7 +195,7 @@ const SideBarNav = () => {
                   )}
                 </span>
               </div>
-              <ChevronDownIcon className="h-3 w-3 absolute right-5" />
+              <ChevronDownIcon className="absolute w-3 h-3 right-5" />
             </div>
           </Menu.Button>
           <Transition
@@ -203,7 +207,7 @@ const SideBarNav = () => {
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
           >
-            <Menu.Items className="absolute right-0 z-10 mt-40 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Items className="absolute right-0 z-10 w-full mt-40 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <Menu.Item>
                 {({ active }) => (
                   <Link
@@ -241,13 +245,13 @@ const SideBarNav = () => {
             <input
               id="search"
               name="search"
-              className="block text-sm w-56 rounded-md border-0 py-2 pl-4 pr-3 text-white bg-dark-cyan-blue placeholder:text-gray-400"
+              className="block w-56 py-2 pl-4 pr-3 text-sm text-white border-0 rounded-md bg-dark-cyan-blue placeholder:text-gray-400"
               placeholder="Search..."
               type="search"
             />
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
               <MagnifyingGlassIcon
-                className="h-4 w-4 text-gray-400"
+                className="w-4 h-4 text-gray-400"
                 aria-hidden="true"
               />
             </div>
@@ -255,7 +259,7 @@ const SideBarNav = () => {
         </div>
       </div>
       <nav className={`flex flex-1 flex-col lg:mt-7`}>
-        <ul role="list" className="flex flex-1 flex-col gap-y-7">
+        <ul role="list" className="flex flex-col flex-1 gap-y-7">
           <li>
             <ul role="list" className="space-y-1">
               {navigation.map((item, index) => {

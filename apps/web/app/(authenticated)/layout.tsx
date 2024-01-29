@@ -17,7 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`bg-[#F5F7FA] ${exo.className}`}>
+      <body
+        className={`bg-[#F5F7FA] w-screen overflow-x-hidden min-h-screen ${exo.className}`}
+      >
         <Toaster />
         <QueryWrapper>
           <AuthGuard>

@@ -1,0 +1,24 @@
+.TabsTrigger {
+}
+.TabsTrigger:hover {
+}
+.TabsTrigger[data-state="active"] {
+}
+.TabsTrigger:focus {
+}
+
+.logs-table {
+  tbody {
+    tr {
+      &:nth-child(odd) {
+        background-color: #f2f2f2;
+      }
+      // &:nth-child(even) {
+      //     background-color: #f2f2f2;
+      // }
+      td {
+        @apply px-2;
+      }
+    }
+  }
+}
