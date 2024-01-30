@@ -131,7 +131,7 @@ export default function ProductionEyeComponent() {
         <div className="relative w-full px-4 overflow-hidden">
           <div className="flex items-center justify-around bg-gray-600">
             {locations?.items?.map((location, idx) => (
-              <button
+              <button key={location._id}
                 disabled={selectedLocationIds.length > 1}
                 onClick={() => {
                   setPrimaryLocationId(location._id)
