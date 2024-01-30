@@ -21,7 +21,19 @@ import useStoreSession from "../store/useStoreSession"
 import { T_BackendResponse } from "custom-validator"
 import isDev from "../helpers/isDev"
 
-const navigation = [
+const navigation: Array<{
+  name: string
+  slug: string
+  href?: string
+  showOnLive?: boolean
+  showOnlyFor?: Array<string>
+  children?: Array<{
+    name: string
+    href: string
+    showOnLive?: boolean
+    showOnlyFor?: Array<string>
+  }>
+}> = [
   { name: "Profile Home", slug: "profile-home", href: "/profile-home" },
   {
     name: "Order Flow",
@@ -82,7 +94,7 @@ const navigation = [
       {
         name: "Device Checkout",
         href: "/human-resources/device-checkout",
-        // showOnLive: false,
+        showOnLive: true,
         showOnlyFor: [
           USER_ROLES.Super,
           USER_ROLES.Administrator,
@@ -284,7 +296,7 @@ const SideBarNav = () => {
                     <li key={item.name}>
                       {!item.children ? (
                         <Link
-                          href={item.href}
+                          href={item.href ?? "#"}
                           className={combineClasses(
                             item.href === pathname
                               ? "text-white"
@@ -304,7 +316,21 @@ const SideBarNav = () => {
                         </Link>
                       ) : (
                         <Accordion
-                          item={item}
+                          item={{
+                            ...item,
+                            children: item.children.filter((child) => {
+                              const willShowForRole = child.showOnlyFor
+                                ? child.showOnlyFor.some(
+                                    (role) => role === currentUserRole
+                                  )
+                                : true
+                              const willShowOnCurrentEnv =
+                                !isDev && typeof child.showOnLive === "boolean"
+                                  ? child.showOnLive
+                                  : true
+                              return willShowForRole && willShowOnCurrentEnv
+                            }),
+                          }}
                           activePage={activePage}
                           setActivePage={setActivePage}
                         />
