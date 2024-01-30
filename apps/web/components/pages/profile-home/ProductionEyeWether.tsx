@@ -7,7 +7,7 @@ const ProductionEyeWether = () => {
   const conroe = useWether(30.312927, -95.4560512)
   const seguin = useWether(29.5979964, -98.1041023)
   return (
-    <div className="flex gap-4 text-sm">
+    <div className="flex justify-center text-xs">
       <div className="flex gap-2 font-semibold">
         <div>Area Temp :</div>
         <div>Seguin :</div>

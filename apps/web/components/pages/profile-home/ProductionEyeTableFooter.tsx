@@ -32,36 +32,34 @@ const ProductionEyeTableFooter = () => {
   }, [socket])
 
   return (
-    <div className="flex items-center w-full px-2 py-2 border border-gray-300 rounded-b-2xl">
-      <div className="relative flex items-center flex-1">
-        <HiChevronDoubleDown className="text-3xl text-gold" />
-        <div className="flex flex-col ml-10 font-bold leading-4 uppercase">
-          <div>Global</div>
-          <div>Rundown</div>
+    <div className="flex flex-col items-center w-full gap-2 px-2 py-2 border border-gray-300 rounded-b-2xl">
+      <div className="relative flex flex-col items-center w-full gap-2">
+        <div className="relative w-full">
+          <HiChevronDoubleDown className="absolute top-0 left-0 text-xl text-gold" />
+          <div className="text-2xl font-bold leading-4 text-center uppercase">
+            Global Rundown
+          </div>
         </div>
         <TonsUnitsBarChart />
-        <div className="mx-4"></div>
-        <div className="flex items-center justify-between flex-1 gap-8 pl-4 font-bold leading-4 uppercase border-l-4 border-slate-900">
-          <div className="flex flex-col">
+        <div className="flex items-center justify-between w-auto gap-8 pl-4 text-2xl font-bold leading-4 uppercase">
+          <div className="flex flex-1 gap-2">
             <div>Units</div>
             <div className="text-slate-400">
-              {allLocationTonsUnits.data?.item?.dailyUnits ?? 0}
+              {" "}
+              {allLocationTonsUnits.data?.item?.dailyUnits}
             </div>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-1 gap-2">
             <div>Tons</div>
             <div className="text-slate-400">
               {allLocationTonsUnits.data?.item?.tons?.toFixed(2)}
             </div>
           </div>
         </div>
-      </div>
-      <div className="flex flex-col ml-4 mr-2 text-sm uppercase">
-        <div className="flex justify-end gap-1">
-          <div className="text-gray-400">{dayjs().format("MMMM DD YYYY")}</div>
-        </div>
-        <div className="flex justify-end gap-1">
-          <div className="text-gray-400">{dayjs().format("hh:mm A")}</div>
+        <div className="flex gap-1 text-sm text-gray-400 uppercase">
+          <div className="">{dayjs().format("MMMM DD YYYY")} </div>
+          <div>|</div>
+          <div className="">{dayjs().format("hh:mm A")}</div>
         </div>
       </div>
     </div>

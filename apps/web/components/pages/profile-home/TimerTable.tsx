@@ -22,8 +22,8 @@ export default function TimerTableComponent({
 
   const { data: totalTons, refetch: refetchMachineClassesTonsUnits } =
     useGetMachineClassTonsUnit({
-      locationId: location._id,
-      machineClassId: machineClass.machineClass._id,
+      locationId: location?._id,
+      machineClassId: machineClass?.machineClass?._id,
     })
 
   useEffect(() => {

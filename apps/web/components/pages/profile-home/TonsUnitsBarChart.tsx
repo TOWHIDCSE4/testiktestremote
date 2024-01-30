@@ -124,7 +124,7 @@ const TonsUnitsBarChart = () => {
               >
                 {location.name}
               </div>
-              <div className="overflow-hidden w-60">
+              <div className="w-48 overflow-hidden md:w-60">
                 <div
                   className={`border border-slate-900 h-2 ${bgColor}`}
                   style={{ width: barWidth }}
