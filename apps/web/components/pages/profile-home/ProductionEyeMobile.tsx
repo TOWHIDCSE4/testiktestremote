@@ -1,7 +1,7 @@
 import { Lato } from "next/font/google"
 import { HiChevronDoubleDown } from "react-icons/hi"
 import { BiFullscreen } from "react-icons/bi"
-import { LuMenu, LuMoon } from "react-icons/lu"
+import { LuMenu, LuMoon, LuSettings2 } from "react-icons/lu"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 import useLocations from "../../../hooks/locations/useLocations"
 import { useEffect, useLayoutEffect, useState } from "react"
@@ -38,13 +38,17 @@ export default function ProductionEyeMobileComponent() {
   const gunter = useWether(33.4479, -96.7475)
   const conroe = useWether(30.312927, -95.4560512)
   const seguin = useWether(29.5979964, -98.1041023)
-const [selectedLocationId, setSelectedLocationId] = useState<string>()
 
-  useEffect(() => {
-    if (!selectedLocationId && locations?.items && locations.items.length > 0) {
-      setSelectedLocationId(locations.items[0]._id)
-    }
-  }, [locations, selectedLocationId])
+  const {
+    selectedLocationIds,
+    onSelectLocation,
+    primaryLocationId,
+    setPrimaryLocationId,
+  } = useProductionEyeContext()
+
+  useLayoutEffect(() => {
+    console.log("Mobile")
+  }, [])
 
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
@@ -67,7 +71,7 @@ const [selectedLocationId, setSelectedLocationId] = useState<string>()
 
   const filteredLocationData = allTimers?.items?.filter(
     (item: { locationId: string | undefined }) =>
-      item.locationId === selectedLocationId
+      item.locationId === primaryLocationId
   )
 
   return (
@@ -107,7 +111,7 @@ const [selectedLocationId, setSelectedLocationId] = useState<string>()
                 <div className="flex items-center flex-1 h-full gap-4">
                   <div className="flex items-center flex-1 gap-3">
                     <button className="flex items-center justify-center w-6 h-6 text-sm text-white bg-black rounded-lg">
-                      <LuMenu />
+                      <LuSettings2 />
                     </button>
                     <button className="flex items-center justify-center w-6 h-6 text-sm text-white bg-black rounded-lg">
                       <LuMoon />
@@ -152,7 +156,7 @@ const [selectedLocationId, setSelectedLocationId] = useState<string>()
               {locations?.items?.map((location, idx) => (
                 <div
                   className={`px-4 py-1 flex gap-2 justify-center ${
-                    location._id == selectedLocationId
+                    location._id == primaryLocationId
                       ? "font-bold flex-1 text-center text-lg bg-opacity-0"
                       : "text-gray-300"
                   } uppercase ${
@@ -166,26 +170,28 @@ const [selectedLocationId, setSelectedLocationId] = useState<string>()
                 >
                   <button
                     onClick={() => {
-                      setSelectedLocationId(location._id)
-                                          }}
+                      if (location._id) {
+                        setPrimaryLocationId(location._id)
+                      }
+                    }}
                   >
                     {location.name}
-                    {location._id == selectedLocationId && <span>: 12</span>}
+                    {location._id == primaryLocationId && <span>: 12</span>}
                   </button>
-                  {location._id !== selectedLocationId && (
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input type="checkbox" className="sr-only peer" />
-                      <div className="w-3 h-3 bg-white border-2 border-white shadow-sm shadow-gray-500 peer peer-checked:bg-black"></div>
-                    </label>
+                  {location._id && location._id !== primaryLocationId && (
+                    <LocationCheckboxComponent
+                      checked={selectedLocationIds.includes(location._id)}
+                      onChange={(checked) => onSelectLocation(location._id ?? "", checked)} classNames={""}                    />
                   )}
                 </div>
               ))}
             </div>
-            {locations?.items?.map((location) => (
+            {locations?.items?.map((location) =>
+              location._id == primaryLocationId ? (
                 <div
                   key={location._id}
                   className={`${
-                    location._id == selectedLocationId ? "" : "hidden"
+                    location._id == primaryLocationId ? "" : "hidden"
                   } px-2 pb-6 overflow-y-hidden h-80 w-full`}
                 >
                   <div className="relative w-full h-full overflow-y-auto scrollbar-w-xs">
@@ -212,7 +218,10 @@ const [selectedLocationId, setSelectedLocationId] = useState<string>()
                     selectedMachineClasses={allTimers?.items}
                   />
                 </div>
-              ))}
+              ) : (
+                <></>
+              )
+            )}
           </div>
         </div>
         <div className="w-full h-2 bg-slate-700"></div>

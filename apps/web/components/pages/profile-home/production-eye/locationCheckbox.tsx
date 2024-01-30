@@ -1,12 +1,16 @@
 export default function LocationCheckboxComponent({
   checked,
   onChange,
+  classNames,
 }: {
   checked: boolean
   onChange?: (checked: boolean) => void
+  classNames: string
 }) {
   return (
-    <label className="relative inline-flex items-center cursor-pointer">
+    <label
+      className={`relative inline-flex items-center mr-1 cursor-pointer ${classNames}`}
+    >
       <input
         checked={checked}
         onChange={(e) => {
