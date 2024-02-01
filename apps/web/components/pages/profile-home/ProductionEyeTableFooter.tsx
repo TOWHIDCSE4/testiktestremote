@@ -1,17 +1,39 @@
 "use client"
-import React, { useEffect } from "react"
-import { HiChevronDoubleDown } from "react-icons/hi"
-import TonsUnitsBarChart from "./TonsUnitsBarChart"
-import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
-import { useSocket } from "../../../store/useSocket"
-import dayjs from "dayjs"
 import { useQueryClient } from "@tanstack/react-query"
+import dayjs from "dayjs"
+import { useEffect } from "react"
+import { HiChevronDoubleDown } from "react-icons/hi"
+import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
+import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
+import { useSocket } from "../../../store/useSocket"
+import TonsUnitsBarChart from "./TonsUnitsBarChart"
+import { useProductionEyeContext } from "./production-eye/productinEyeContext"
 
 const ProductionEyeTableFooter = () => {
   const queryClient = useQueryClient()
   const socket = useSocket((state: any) => state.instance)
 
+  const { selectedLocationIds, primaryLocationId } = useProductionEyeContext()
+
   const allLocationTonsUnits = useGetAllLocationTonsUnits()
+
+  const locationBasedUnitsTons = useGetLocationTotals()
+  const data =
+    selectedLocationIds.length <= 1
+      ? locationBasedUnitsTons.data?.item.find((loc: any) => {
+          return loc._id === primaryLocationId
+        })
+      : locationBasedUnitsTons.data?.item
+          .filter((loc: any) => selectedLocationIds.includes(loc._id))
+          .reduce(
+            (acc: any, next: any) => {
+              return {
+                totalUnits: acc.totalUnits + next.totalUnits,
+                totalTons: acc.totalTons + next.totalTons,
+              }
+            },
+            { totalUnits: 0, totalTons: 0 }
+          )
 
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
@@ -45,14 +67,14 @@ const ProductionEyeTableFooter = () => {
           <div className="flex flex-1 gap-2">
             <div>Units</div>
             <div className="text-slate-400">
-              {" "}
-              {allLocationTonsUnits.data?.item?.dailyUnits}
+              {data?.totalUnits ?? allLocationTonsUnits.data?.item?.dailyUnits}
             </div>
           </div>
           <div className="flex flex-1 gap-2">
             <div>Tons</div>
             <div className="text-slate-400">
-              {allLocationTonsUnits.data?.item?.tons?.toFixed(2)}
+              {data?.totalTons?.toFixed(2) ??
+                allLocationTonsUnits.data?.item?.tons?.toFixed(2)}
             </div>
           </div>
         </div>
