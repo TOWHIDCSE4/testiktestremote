@@ -13,6 +13,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       {/* <link rel="icon" type="image/x-icon" href={`/saleskits_logo.png`} /> */}
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
       <body className={exo.className}>
         <Toaster position="top-left" />
         <QueryWrapper>{children}</QueryWrapper>

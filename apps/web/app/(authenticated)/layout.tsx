@@ -17,6 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
       <body
         className={`bg-[#F5F7FA] w-screen overflow-x-hidden min-h-screen ${exo.className}`}
       >
