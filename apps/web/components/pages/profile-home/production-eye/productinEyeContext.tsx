@@ -1,3 +1,5 @@
+import { T_BackendResponse, T_User } from "custom-validator"
+import _ from "lodash"
 import {
   ReactNode,
   createContext,
@@ -6,7 +8,10 @@ import {
   useState,
 } from "react"
 import useProfile from "../../../../hooks/users/useProfile"
-import _ from "lodash"
+
+type T_DBReturn = Omit<T_BackendResponse, "item"> & {
+  item: T_User
+}
 
 type T_ProductionEyeContext = {
   isMobile: boolean
@@ -14,8 +19,13 @@ type T_ProductionEyeContext = {
   selectedLocationIds: Array<string>
   setSelectedLocationIds: (value: Array<string>) => void
   primaryLocationId: string | undefined
+  primaryMachineClassId: string | undefined
+  primaryFactoryId: string | undefined
   setPrimaryLocationId: (value?: string) => void
+  setPrimaryMachineClassId: (value?: string) => void
+  setPrimaryFactoryId: (value?: string) => void
   onSelectLocation: (id: string, checked: boolean) => void
+  userProfile?: T_DBReturn
 }
 
 const defaultContextValues = {
@@ -24,7 +34,11 @@ const defaultContextValues = {
   selectedLocationIds: [],
   setSelectedLocationIds: (value: Array<string>) => {},
   primaryLocationId: undefined,
+  primaryMachineClassId: undefined,
+  primaryFactoryId: undefined,
   setPrimaryLocationId: (val?: string) => {},
+  setPrimaryMachineClassId: (val?: string) => {},
+  setPrimaryFactoryId: (val?: string) => {},
   onSelectLocation: (id: string, checked: boolean) => {},
 }
 
@@ -43,9 +57,16 @@ export default function ProductionEyeContextProvider({
   const [selectedLocationIds, setSelectedLocationIds] = useState<Array<string>>(
     []
   )
+
   const [primaryLocationId, setPrimaryLocationId] = useState<
     string | undefined
   >()
+
+  const [primaryMachineClassId, setPrimaryMachineClassId] = useState<
+    string | undefined
+  >()
+
+  const [primaryFactoryId, setPrimaryFactoryId] = useState<string | undefined>()
 
   const onSelectLocation = (id: string, checked: boolean) => {
     setSelectedLocationIds((prev) =>
@@ -63,6 +84,16 @@ export default function ProductionEyeContextProvider({
       setPrimaryLocationId(userLocationId)
       onSelectLocation(userLocationId, true)
     }
+
+    if (userProfile?.item?.machineClassId) {
+      const userMachineClassId = userProfile?.item.machineClassId as string
+      setPrimaryMachineClassId(userMachineClassId)
+    }
+
+    if (userProfile?.item?.factoryId) {
+      const userFactoryId = userProfile?.item.factoryId as string
+      setPrimaryFactoryId(userFactoryId)
+    }
   }, [userProfile])
 
   return (
@@ -72,9 +103,14 @@ export default function ProductionEyeContextProvider({
         setIsMobile,
         primaryLocationId,
         setPrimaryLocationId,
+        primaryMachineClassId,
+        setPrimaryMachineClassId,
+        primaryFactoryId,
+        setPrimaryFactoryId,
         selectedLocationIds,
         setSelectedLocationIds,
         onSelectLocation,
+        userProfile,
       }}
     >
       {children}

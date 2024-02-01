@@ -1,7 +1,7 @@
 import { Lato } from "next/font/google"
 import { HiChevronDoubleDown } from "react-icons/hi"
 import { BiFullscreen } from "react-icons/bi"
-import { LuMenu, LuMoon, LuSettings2 } from "react-icons/lu"
+import { LuMenu, LuMoon } from "react-icons/lu"
 import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 import useLocations from "../../../hooks/locations/useLocations"
 import { useEffect, useLayoutEffect, useState } from "react"
@@ -111,7 +111,7 @@ export default function ProductionEyeMobileComponent() {
                 <div className="flex items-center flex-1 h-full gap-4">
                   <div className="flex items-center flex-1 gap-3">
                     <button className="flex items-center justify-center w-6 h-6 text-sm text-white bg-black rounded-lg">
-                      <LuSettings2 />
+                      <LuMenu />
                     </button>
                     <button className="flex items-center justify-center w-6 h-6 text-sm text-white bg-black rounded-lg">
                       <LuMoon />
@@ -180,8 +180,12 @@ export default function ProductionEyeMobileComponent() {
                   </button>
                   {location._id && location._id !== primaryLocationId && (
                     <LocationCheckboxComponent
+                      classNames=""
                       checked={selectedLocationIds.includes(location._id)}
-                      onChange={(checked) => onSelectLocation(location._id ?? "", checked)} classNames={""}                    />
+                      onChange={(checked) =>
+                        onSelectLocation(location._id ?? "", checked)
+                      }
+                    />
                   )}
                 </div>
               ))}

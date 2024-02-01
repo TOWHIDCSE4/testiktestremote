@@ -1,4 +1,5 @@
 "use client"
+import { Lato } from "next/font/google"
 import { useEffect } from "react"
 import useLocation from "../../../hooks/locations/useLocation"
 import useProfile from "../../../hooks/users/useProfile"
@@ -6,8 +7,6 @@ import PinnedDashboardComponents from "./pinned-dashboard-components/PinnedDashb
 import isDev from "../../../helpers/isDev"
 import ProductionEyeComponent from "./ProductionEye"
 import ProductionEyeMobileComponent from "./ProductionEyeMobile"
-import { Lato } from "next/font/google"
-import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import ProductionEyeContextProvider from "./production-eye/productinEyeContext"
 
 const lato = Lato({
