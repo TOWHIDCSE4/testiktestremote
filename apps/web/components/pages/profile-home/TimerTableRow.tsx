@@ -1,11 +1,11 @@
 "use client"
+import { useQueryClient } from "@tanstack/react-query"
 import React, { useEffect } from "react"
-import useTotalTonsUnit from "../../../hooks/timers/useTotalTonsUnit"
-import { useSocket } from "../../../store/useSocket"
-import useTimerStatus from "../../../hooks/timers/useGetTimerStatus"
 import combineClasses from "../../../helpers/combineClasses"
 import useGetTimerIsEnded from "../../../hooks/timers/useGetTimerIsEnded"
-import { useQueryClient } from "@tanstack/react-query"
+import useTimerStatus from "../../../hooks/timers/useGetTimerStatus"
+import useTotalTonsUnit from "../../../hooks/timers/useTotalTonsUnit"
+import { useSocket } from "../../../store/useSocket"
 
 interface Props {
   rowData: any
@@ -58,10 +58,14 @@ const TimerTableRow: React.FC<Props> = ({ rowData, index }) => {
         <div className="line-clamp-1">{rowData?.part?.name}</div>
       </td>
       <td className="px-2 !w-fit">
-        {String(query?.data?.item?.dailyUnits ?? 0).padStart(4, "0")}
+        {query?.data?.item?.dailyUnits
+          ? String(query?.data?.item?.dailyUnits ?? 0).padStart(4, "0")
+          : ""}
       </td>
       <td className="px-2 !w-fit">
-        {query?.data?.item?.tons?.toFixed(2).padStart(7, "0")}
+        {query?.data?.item?.tons
+          ? query?.data?.item?.tons?.toFixed(2).padStart(4, "0")
+          : ""}
       </td>
       <td>
         <div

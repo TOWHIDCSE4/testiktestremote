@@ -20,22 +20,19 @@ export default function TimerTableComponent({
   const queryClient = useQueryClient()
   const socket = useSocket((state: any) => state.instance)
 
-  const { data: totalTons, refetch: refetchMachineClassesTonsUnits } =
-    useGetMachineClassTonsUnit({
-      locationId: location?._id,
-      machineClassId: machineClass?.machineClass?._id,
-    })
+  const { data: totalTons } = useGetMachineClassTonsUnit({
+    locationId: location?._id,
+    machineClassId: machineClass?.machineClass?._id,
+  })
 
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
-      console.log("__EVENT_DATA", data)
       if (data?.message === "refetch") {
         queryClient.invalidateQueries([
           "machine-class-unit-tons",
           location._id,
           machineClass.machineClass._id,
         ])
-        // refetchMachineClassesTonsUnits()
       }
     }
 

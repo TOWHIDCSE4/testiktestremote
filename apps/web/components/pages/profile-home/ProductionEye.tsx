@@ -46,7 +46,27 @@ export default function ProductionEyeComponent() {
   useEffect(() => {
     if (!primaryLocationId) return
     const selectedOneLocation = allTimers?.items.filter((item) => {
-      return item.locationId === primaryLocationId
+      if (userProfile?.item?.role === "Administrator") {
+        return item.locationId === primaryLocationId
+      }
+      if (userProfile?.item?.role === "Production") {
+        return primaryLocationId === userProfile?.item.locationId
+          ? item.machineClass.factoryId === primaryFactoryId &&
+              item.machineClass._id === primaryMachineClassId
+          : item.locationId === primaryLocationId
+      }
+      if (userProfile?.item?.role === "Personnel") {
+        return primaryLocationId === userProfile?.item.locationId
+          ? item.locationId === primaryLocationId &&
+              item.machineClass._id === primaryMachineClassId
+          : item.locationId === primaryLocationId
+      }
+      // return primaryMachineClassId && primaryFactoryId
+      //   ? primaryLocationId === userProfile?.item.locationId
+      //     ? item.machineClass._id === primaryMachineClassId &&
+      //       item.location._id === userProfile?.item.locationId
+      //     : item.locationId === primaryLocationId
+      //   : item.locationId === primaryLocationId
     })
     setOneLocations(selectedOneLocation)
   }, [primaryLocationId, allTimers])
@@ -66,6 +86,13 @@ export default function ProductionEyeComponent() {
   useLayoutEffect(() => {
     console.log("Desktop")
   }, [])
+
+  // console.log("userProfile__", userProfile?.item)
+  // console.log("allTimers?.items__", allTimers?.items)
+  // console.log("selectedCompareLocations__", selectedCompareLocations)
+  // console.log("oneLocation", oneLocation)
+  // console.log("userProfile__", userProfile?.item)
+  // console.log("userProfile__", userProfile?.item)
 
   return (
     <div
@@ -129,14 +156,15 @@ export default function ProductionEyeComponent() {
         <div className="relative w-full px-4 overflow-hidden">
           <div className="flex items-center justify-around bg-gray-600">
             {locations?.items?.map((location, idx) => (
-              <button key={location._id}
+              <button
+                key={location._id}
                 disabled={selectedLocationIds.length > 1}
                 onClick={() => {
                   setPrimaryLocationId(location._id)
-                  // onSelectLocation(
-                  //   location._id,
-                  //   location._id === primaryLocationId
-                  // )
+                  onSelectLocation(
+                    location._id,
+                    location._id === primaryLocationId
+                  )
                 }}
                 className={combineClasses(
                   "w-full p-2 flex items-center  uppercase cursor-pointer",
@@ -211,21 +239,21 @@ export default function ProductionEyeComponent() {
                 <div className="relative flex-1 pb-6 overflow-y-hidden h-80">
                   <div className="relative w-full h-full pl-2 pr-3 overflow-y-auto scrollbar-w-xs">
                     {oneLocation?.map((mc: any, key: number) => {
-                        return (
-                          <div key={key} className="w-full py-1 pl-1">
-                            <div className="text-xs font-black text-red-700 uppercase">
-                              {mc.machineClass.name}
-                            </div>
-                            <div className="relative">
-                              <TimerTableComponent
-                                location={mc.location}
-                                machineClass={mc.mc}
-                                timers={mc.timers}
-                              />
-                            </div>
+                      return (
+                        <div key={key} className="w-full py-1 pl-1">
+                          <div className="text-xs font-black text-red-700 uppercase">
+                            {mc.machineClass.name}
                           </div>
-                        )
-                      })}
+                          <div className="relative">
+                            <TimerTableComponent
+                              location={mc.location}
+                              machineClass={mc}
+                              timers={mc.timers}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                   <MachineClassSelectComponent
                     location={location}
