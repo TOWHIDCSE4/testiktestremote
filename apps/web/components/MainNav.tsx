@@ -46,6 +46,16 @@ const MainNav = () => {
   const { mutate } = useLogout()
   const isSocketConnected = useSocket((state) => state.isConnected)
   const [isOnline, setIsOnline] = useState(onlineManager.isOnline())
+  const onFlush = () => {
+    queryClient
+      .resetQueries()
+      .then(() => {
+        toast.success("Cleaned all data")
+      })
+      .catch((err) =>
+        toast.error(String(err.message ?? "Something went wrong!"))
+      )
+  }
   onlineManager.subscribe(() => {
     setIsOnline(onlineManager.isOnline())
   })
@@ -307,40 +317,14 @@ const MainNav = () => {
                     </span>
                     <Popover
                       content={
-                        <Table
-                          pagination={false}
-                          dataSource={[
-                            {
-                              key: "1",
-                              name: "Mike",
-                              age: 32,
-                              address: "10 Downing Street",
-                            },
-                            {
-                              key: "2",
-                              name: "John",
-                              age: 42,
-                              address: "10 Downing Street",
-                            },
-                          ]}
-                          columns={[
-                            {
-                              title: "Name",
-                              dataIndex: "name",
-                              key: "name",
-                            },
-                            {
-                              title: "Age",
-                              dataIndex: "age",
-                              key: "age",
-                            },
-                            {
-                              title: "Address",
-                              dataIndex: "address",
-                              key: "address",
-                            },
-                          ]}
-                        />
+                        <div>
+                          <button
+                            className="bg-red-700 rounded-lg px-3 py-1 text-white"
+                            onClick={onFlush}
+                          >
+                            Flush
+                          </button>
+                        </div>
                       }
                       // title="Title"
                       trigger="hover"
