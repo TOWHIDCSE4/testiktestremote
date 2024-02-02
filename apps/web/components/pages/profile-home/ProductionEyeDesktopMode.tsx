@@ -26,7 +26,7 @@ const ProductionEyeDesktopMode: React.FC = () => {
         viewMode: "desktop",
       },
     })
-    queryClient.invalidateQueries(["profile", storeSession.email])
+    // queryClient.invalidateQueries(["profile", storeSession.email])
     toast.success("View mode updated to desktop")
   }
 

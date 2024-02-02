@@ -22,12 +22,7 @@ export default function MachineClassSelectComponent({
 }) {
   const {
     selectedLocationIds,
-    onSelectLocation,
     primaryLocationId,
-    setPrimaryLocationId,
-    userProfile,
-    primaryFactoryId,
-    primaryMachineClassId,
   } = useProductionEyeContext()
 
   const selectedClasses =
@@ -45,7 +40,6 @@ export default function MachineClassSelectComponent({
   const {
     setMachineClassId,
     data: machineClassesTotals,
-    refetch: refetchMachineClassTotal,
   } = useGetMachineClassesTotals({ locationId: location._id })
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
   const [selectedMachineClassIds, setSelectedMachineClassIds] =
@@ -82,7 +76,6 @@ export default function MachineClassSelectComponent({
           location._id,
           selectedMachineClassIds,
         ])
-        // refetchMachineClassTotal()
       }
     }
 
@@ -142,7 +135,6 @@ export default function MachineClassSelectComponent({
                         mc._id as string
                       )}
                       value={mc._id}
-                      // name={location.name + "machineClass"}
                       type="checkbox"
                     />
                     <label

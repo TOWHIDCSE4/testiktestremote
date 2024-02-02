@@ -24,7 +24,7 @@ const ProductionEyeMobileMode: React.FC = () => {
         viewMode: "mobile",
       },
     })
-    queryClient.invalidateQueries(["profile", storeSession.email])
+    // queryClient.invalidateQueries(["profile", storeSession.email])
     toast.success("View mode updated to mobile")
   }
 
@@ -33,10 +33,6 @@ const ProductionEyeMobileMode: React.FC = () => {
       setIsMobile(data.item.defaultSettings.viewMode)
     }
   }, [data])
-
-  // console.log("userProfile__", userProfile)
-  // console.log("data", data)
-
   return (
     <FaMobileScreenButton
       onClick={onSubmit}

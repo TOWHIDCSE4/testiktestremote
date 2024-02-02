@@ -64,12 +64,6 @@ export default function ProductionEyeComponent() {
               item.machineClass._id === primaryMachineClassId
           : item.locationId === primaryLocationId
       }
-      // return primaryMachineClassId && primaryFactoryId
-      //   ? primaryLocationId === userProfile?.item.locationId
-      //     ? item.machineClass._id === primaryMachineClassId &&
-      //       item.location._id === userProfile?.item.locationId
-      //     : item.locationId === primaryLocationId
-      //   : item.locationId === primaryLocationId
     })
     setOneLocations(selectedOneLocation)
   }, [primaryLocationId, allTimers])
