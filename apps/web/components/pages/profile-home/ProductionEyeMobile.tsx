@@ -15,6 +15,7 @@ import ProductionEyeTableFooter from "./ProductionEyeTableFooter"
 import TimerTableMobileComponent from "./TimerTableMobile"
 import LocationCheckboxComponent from "./production-eye/locationCheckbox"
 import { useProductionEyeContext } from "./production-eye/productinEyeContext"
+import ProductionEyeSettings from "./ProductionEyeSettings"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -109,9 +110,7 @@ export default function ProductionEyeMobileComponent() {
               <div className="relative flex items-center justify-between px-6">
                 <div className="flex items-center flex-1 h-full gap-4">
                   <div className="flex items-center flex-1 gap-3">
-                    <button className="flex items-center justify-center w-6 h-6 text-sm text-white bg-black rounded-lg">
-                      <LuMenu />
-                    </button>
+                    <ProductionEyeSettings />
                     <button className="flex items-center justify-center w-6 h-6 text-sm text-white bg-black rounded-lg">
                       <LuMoon />
                     </button>

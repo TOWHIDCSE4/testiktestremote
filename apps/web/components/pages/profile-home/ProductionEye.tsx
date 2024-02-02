@@ -87,13 +87,6 @@ export default function ProductionEyeComponent() {
     console.log("Desktop")
   }, [])
 
-  // console.log("userProfile__", userProfile?.item)
-  // console.log("allTimers?.items__", allTimers?.items)
-  // console.log("selectedCompareLocations__", selectedCompareLocations)
-  // console.log("oneLocation", oneLocation)
-  // console.log("userProfile__", userProfile?.item)
-  // console.log("userProfile__", userProfile?.item)
-
   return (
     <div
       className={combineClasses(
