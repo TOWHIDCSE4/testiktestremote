@@ -6,21 +6,20 @@ import Link from "next/link"
 import DarkLogo from "../../../assets/logo/logo-dark.png"
 import Slider from "../../Slider"
 import useLogin from "../../../hooks/users/useLogin"
-import { useForm } from "react-hook-form"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import Cookies from "js-cookie"
 import { T_BackendResponse } from "custom-validator"
 import { useEffect, useState } from "react"
+import { FormGroup } from "@mui/material"
 
 const Content = () => {
   const [showPassword, setShowPassword] = useState(false)
-  const { register, handleSubmit } = useForm<{
-    email: string
-    password: string
-  }>()
+  const [email, setEmail] = useState<string>()
+  const [password, setPassword] = useState<string>()
+
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
+    setShowPassword((prev) => !prev)
   }
   const router = useRouter()
   const { mutate, isLoading } = useLogin()
@@ -31,6 +30,8 @@ const Content = () => {
           if (data.item) {
             Cookies.set("tfl", data.item?.token)
             router.push(`/profile-home`)
+          } else {
+            toast.error(String(data.message ?? "Something went wrong!"))
           }
         } else {
           toast.error(String(data.message))
@@ -70,7 +71,7 @@ const Content = () => {
             {/* Login form */}
             <div className="mt-8">
               <div>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                <FormGroup className="space-y-5">
                   <div>
                     <label
                       htmlFor="email"
@@ -81,7 +82,8 @@ const Content = () => {
                     <div className="mt-2">
                       <input
                         id="email"
-                        {...register("email", { required: true })}
+                        value={email ?? ""}
+                        onChange={(e) => setEmail(e.target.value)}
                         name="email"
                         type="email"
                         disabled={isLoading}
@@ -101,7 +103,8 @@ const Content = () => {
                       <div className="mt-2 relative rounded-md shadow-sm">
                         <input
                           id="password"
-                          {...register("password", { required: true })}
+                          value={password ?? ""}
+                          onChange={(e) => setPassword(e.target.value)}
                           name="password"
                           type={showPassword ? "text" : "password"}
                           autoComplete="current-password"
@@ -111,7 +114,11 @@ const Content = () => {
                         />
                         <button
                           type="button"
-                          onClick={togglePasswordVisibility}
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            togglePasswordVisibility()
+                          }}
                           className="absolute inset-y-0 right-0 pr-3 flex items-center focus:outline-none"
                         >
                           {showPassword ? (
@@ -142,6 +149,14 @@ const Content = () => {
                     <div>
                       <button
                         type="submit"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          if (email && password) {
+                            onSubmit({ email, password })
+                          } else {
+                            toast.error("Please fill all the fields")
+                          }
+                        }}
                         disabled={isLoading}
                         className="flex items-center w-full justify-center rounded-md bg-blue-950 mt-6 md:mt-0 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-70"
                       >
@@ -159,7 +174,7 @@ const Content = () => {
                       </button>
                     </div>
                   </div>
-                </form>
+                </FormGroup>
               </div>
               <div className="mt-10">
                 <p className="text-sm text-center">
