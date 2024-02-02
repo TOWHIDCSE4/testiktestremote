@@ -175,32 +175,80 @@ function TimerCards({
         {isLoading ? (
           <></>
         ) : (
-          <div className={"flex gap-4"}>
-            {timerByMachineClass.machineClasses.map((item) => (
-              <div key={item._id} className="flex flex-col min-w-[12rem]">
-                <div className="flex flex-1 gap-2">
+          <>
+            <div
+              className={
+                "flex flex-col lg:flex-row md:items-center lg:justify-center space-y-2 lg:space-y-0 lg:space-x-12 mt-6"
+              }
+            >
+              {timerByMachineClass.machineClasses.map((item) => (
+                <div
+                  key={item._id}
+                  className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-12"
+                >
                   <div>
-                    {item.name == "Radial Press" ? "RP" : item.name} Units:
+                    <div className="flex mb-1">
+                      <div className="whitespace-nowrap font-bold">
+                        {item.name == "Radial Press" ? "RP" : item.name} Units:
+                      </div>
+                      <div className="ml-2">
+                        {item.name == "Radial Press"
+                          ? totalTons?.item.RPunits || 0
+                          : totalTons?.item.units || 0}
+                      </div>
+                    </div>
+                    <div className="flex text-sm">
+                      <div className="whitespace-nowrap">AVR Units:</div>
+                      <div className="ml-2">0.00</div>
+                    </div>
                   </div>
                   <div>
-                    {item.name == "Radial Press"
-                      ? totalTons?.item.RPunits
-                      : totalTons?.item.units}
+                    <div className="flex mb-1">
+                      <div className="whitespace-nowrap font-bold">
+                        {item.name == "Radial Press" ? "RP" : item.name} Tons:
+                      </div>
+                      <div className="ml-2">
+                        {item.name == "Radial Press"
+                          ? totalTons?.item?.RPtons?.toFixed(3) || "0.000"
+                          : totalTons?.item?.tons?.toFixed(3) || "0.000"}
+                      </div>
+                    </div>
+                    <div className="flex text-sm">
+                      <div className="whitespace-nowrap">AVR Tons:</div>
+                      <div className="ml-2">0.00</div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-1 gap-2">
-                  <div>
-                    {item.name == "Radial Press" ? "RP" : item.name} Tons:
+              ))}
+            </div>
+            {timerByMachineClass.machineClasses.length > 1 && (
+              <>
+                <div className="flex flex-col md:flex-row md:justify-center space-y-2 md:space-y-0 md:space-x-8 lg:space-x-12 text-sm mt-4">
+                  <div className="">
+                    <span className="whitespace-nowrap">Overall Units:</span>
+                    <span className="ml-2">0</span>
                   </div>
-                  <div>
-                    {item.name == "Radial Press"
-                      ? totalTons?.item?.RPtons?.toFixed(3)
-                      : totalTons?.item?.tons?.toFixed(3)}
+                  <div className="">
+                    <span className="whitespace-nowrap">Overall Tons:</span>
+                    <span className="ml-2">0</span>
+                  </div>
+                  <div className="">
+                    <span className="whitespace-nowrap">
+                      Overall AVG Units:
+                    </span>
+                    <span className="ml-2">0</span>
+                  </div>
+                  <div className="">
+                    <span className="whitespace-nowrap">Overall AVG Tons:</span>
+                    <span className="ml-2">0</span>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+                <div className="w-full max-w-3xl text-center text-sm text-gray-400 border-0 border-b-8 border-gray-400 rounded mt-6 mx-auto">
+                  <i>WORK IN PROGRESS COMING SOON</i>
+                </div>
+              </>
+            )}
+          </>
         )}
         {timerByMachineClass.timers.length > 0 ? (
           <>

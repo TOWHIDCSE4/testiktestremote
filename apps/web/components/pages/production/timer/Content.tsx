@@ -13,6 +13,7 @@ import useLocation from "../../../../hooks/locations/useLocation"
 import useProfile from "../../../../hooks/users/useProfile"
 import { useSocket } from "../../../../store/useSocket"
 import { usePrefetchTimersByLocation } from "../../../../hooks/timers/useTimersByLocation"
+import { TotalsComponent } from "./Totals"
 
 type T_LocationTabs = {
   _id?: string
@@ -233,6 +234,7 @@ const Content = () => {
           setSelectedMachineClasses={setSelectedMachineClasses}
           selectedMachineClasses={selectedMachineClasses}
         />
+        <TotalsComponent locationId={currentLocationTab} />
         <div className="w-full h-[2.2px] bg-gray-200"></div>
         <Timers
           locationName={currentLocationTabName ?? ""}
