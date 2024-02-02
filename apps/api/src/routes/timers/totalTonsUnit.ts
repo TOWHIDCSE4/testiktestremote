@@ -30,7 +30,6 @@ export const totalTonsUnit = async (req: Request, res: Response) => {
       const getDayController = await ControllerTimers.findOne({
         timerId: req.query.timerId,
         createdAt: { $gte: currentDateStart, $lte: currentDateEnd },
-        endAt: null,
       }).sort({ $natural: -1 })
       if (getDayController) {
         const getDayControllerLogs = await TimerLogs.find({

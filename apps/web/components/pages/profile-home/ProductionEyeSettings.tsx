@@ -1,45 +1,18 @@
 "use client"
-import { Checkbox, Popover } from "antd"
-import { T_MachineClass } from "custom-validator"
+import { Popover } from "antd"
 import { useState } from "react"
 import { LuSettings2 } from "react-icons/lu"
-import useLocations from "../../../hooks/locations/useLocations"
-import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
+import DefaultLocations from "./DefaultLocations"
+import DefaultMachineClasses from "./DefaultMachineClasses"
 import ProductionEyeDesktopMode from "./ProductionEyeDesktopMode"
 import ProductionEyeMobileMode from "./ProductionEyeMobileMode"
 
 const ProductionEyeSettings: React.FC = () => {
   const [open, setOpen] = useState(false)
 
-  const { data: locations } = useLocations()
-  const { data: machineClasses } = useMachineClasses()
-
-  const hide = () => {
-    setOpen(false)
-  }
-
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen)
   }
-
-  const onChangeLocations = (checkedValues: any) => {
-    console.log("checked locations = ", checkedValues)
-  }
-  const onChangeMachineClass = (checkedValues: any) => {
-    console.log("checked machine classes = ", checkedValues)
-  }
-
-  const locationsCheckboxes = locations?.items.map((item) => ({
-    label: item.name,
-    value: item._id as string,
-  }))
-
-  const machineClassesCheckboxes = machineClasses?.items.map(
-    (item: T_MachineClass) => ({
-      label: item.name,
-      value: item._id as string,
-    })
-  )
 
   return (
     <Popover
@@ -54,19 +27,9 @@ const ProductionEyeSettings: React.FC = () => {
           </div>
           <div className="flex flex-col space-y-1">
             <h2 className="font-semibold">Default Location</h2>
-            <Checkbox.Group
-              options={locationsCheckboxes}
-              //   defaultValue={["array_of_ids"]}
-              onChange={onChangeLocations}
-              rootClassName="flex flex-col"
-            />
+            <DefaultLocations />
             <h2 className="font-semibold">Default Machine Classes</h2>
-            <Checkbox.Group
-              options={machineClassesCheckboxes}
-              //   defaultValue={["array_of_ids"]}
-              onChange={onChangeMachineClass}
-              rootClassName="flex flex-col "
-            />
+            <DefaultMachineClasses />
           </div>
         </div>
       }

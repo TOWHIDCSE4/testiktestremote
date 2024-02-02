@@ -1,3 +1,4 @@
+"use client"
 import { T_BackendResponse, T_User } from "custom-validator"
 import _ from "lodash"
 import {
@@ -10,14 +11,22 @@ import {
 import useProfile from "../../../../hooks/users/useProfile"
 
 type T_DBReturn = Omit<T_BackendResponse, "item"> & {
-  item: T_User
+  item: T_User & {
+    defaultSettings?: {
+      viewMode: string
+      locations: string[]
+      machineClasses: string[]
+    }
+  }
 }
 
 type T_ProductionEyeContext = {
-  isMobile: boolean
-  setIsMobile: (val: boolean) => void
+  isMobile: string | undefined
+  setIsMobile: (val: string) => void
   selectedLocationIds: Array<string>
+  selectedMcIds: Array<string>
   setSelectedLocationIds: (value: Array<string>) => void
+  setSelectedMcIds: (value: Array<string>) => void
   primaryLocationId: string | undefined
   primaryMachineClassId: string | undefined
   primaryFactoryId: string | undefined
@@ -29,8 +38,8 @@ type T_ProductionEyeContext = {
 }
 
 const defaultContextValues = {
-  isMobile: false,
-  setIsMobile: (val: boolean) => {},
+  isMobile: "mobile",
+  setIsMobile: (val: string) => {},
   selectedLocationIds: [],
   setSelectedLocationIds: (value: Array<string>) => {},
   primaryLocationId: undefined,
@@ -40,6 +49,9 @@ const defaultContextValues = {
   setPrimaryMachineClassId: (val?: string) => {},
   setPrimaryFactoryId: (val?: string) => {},
   onSelectLocation: (id: string, checked: boolean) => {},
+  userProfile: undefined,
+  selectedMcIds: [],
+  setSelectedMcIds: (value: Array<string>) => {},
 }
 
 const productionEyeContext =
@@ -57,6 +69,8 @@ export default function ProductionEyeContextProvider({
   const [selectedLocationIds, setSelectedLocationIds] = useState<Array<string>>(
     []
   )
+
+  const [selectedMcIds, setSelectedMcIds] = useState<Array<string>>([])
 
   const [primaryLocationId, setPrimaryLocationId] = useState<
     string | undefined
@@ -76,7 +90,7 @@ export default function ProductionEyeContextProvider({
     )
   }
 
-  const [isMobile, setIsMobile] = useState<boolean>(false)
+  const [isMobile, setIsMobile] = useState<string | undefined>()
 
   useEffect(() => {
     if (userProfile?.item?.locationId) {
@@ -93,6 +107,26 @@ export default function ProductionEyeContextProvider({
     if (userProfile?.item?.factoryId) {
       const userFactoryId = userProfile?.item.factoryId as string
       setPrimaryFactoryId(userFactoryId)
+    }
+
+    if (userProfile?.item?.defaultSettings?.viewMode) {
+      const isMobile = userProfile?.item?.defaultSettings?.viewMode
+      setIsMobile(isMobile)
+    }
+
+    if (userProfile?.item?.defaultSettings?.machineClasses) {
+      const defaultMC = userProfile?.item?.defaultSettings?.machineClasses
+      setSelectedMcIds(defaultMC)
+    }
+
+    if (Number(userProfile?.item?.defaultSettings?.locations.length) === 1) {
+      const defaultLocations = userProfile?.item?.defaultSettings?.locations[0]
+      setPrimaryLocationId(defaultLocations)
+    }
+
+    if (Number(userProfile?.item?.defaultSettings?.locations.length) > 1) {
+      const defaultLocations = userProfile?.item?.defaultSettings?.locations
+      setSelectedLocationIds(defaultLocations as string[])
     }
   }, [userProfile])
 
@@ -111,6 +145,8 @@ export default function ProductionEyeContextProvider({
         setSelectedLocationIds,
         onSelectLocation,
         userProfile,
+        selectedMcIds,
+        setSelectedMcIds,
       }}
     >
       {children}

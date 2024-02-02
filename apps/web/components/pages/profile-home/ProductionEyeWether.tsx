@@ -9,17 +9,17 @@ const ProductionEyeWether = () => {
   return (
     <div className="flex justify-center text-xs space-x-2">
       <div className="flex  font-semibold">
-        <div>Area Temp :</div>
-        <div>Seguin :</div>
-        <span className="font-bold">
+        <div className="mr-2">Area Temp :</div>
+        <div>Seguin:</div>
+        <span className="font-bold ml-1">
           {seguin.data?.current?.temperature_2m}{" "}
           <span className="text-xs font-normal align-top">
             {seguin.data?.current_units?.temperature_2m}
           </span>
         </span>
       </div>
-      <div className="flex  font-semibold">
-        <div>Conroe :</div>
+      <div className="flex gap-1 font-semibold">
+        <div>Conroe:</div>
         <span className="font-bold">
           {conroe.data?.current?.temperature_2m}{" "}
           <span className="text-xs font-normal align-top1">
@@ -27,8 +27,8 @@ const ProductionEyeWether = () => {
           </span>
         </span>
       </div>
-      <div className="flex  font-semibold">
-        <div>Gunter :</div>
+      <div className="flex  gap-1 font-semibold">
+        <div>Gunter:</div>
         <span className="font-bold">
           {gunter.data?.current?.temperature_2m}{" "}
           <span className="text-xs font-normal align-top">

@@ -37,7 +37,10 @@ export default function ProductionEyeComponent() {
     userProfile,
     primaryFactoryId,
     primaryMachineClassId,
+    selectedMcIds,
   } = useProductionEyeContext()
+
+  // console.log("userProfile", userProfile)
 
   const [oneLocation, setOneLocations] = useState()
   const [selectedCompareLocations, setSelectedCompareLocations] = useState()
@@ -61,12 +64,6 @@ export default function ProductionEyeComponent() {
               item.machineClass._id === primaryMachineClassId
           : item.locationId === primaryLocationId
       }
-      // return primaryMachineClassId && primaryFactoryId
-      //   ? primaryLocationId === userProfile?.item.locationId
-      //     ? item.machineClass._id === primaryMachineClassId &&
-      //       item.location._id === userProfile?.item.locationId
-      //     : item.locationId === primaryLocationId
-      //   : item.locationId === primaryLocationId
     })
     setOneLocations(selectedOneLocation)
   }, [primaryLocationId, allTimers])
@@ -81,7 +78,7 @@ export default function ProductionEyeComponent() {
     })
     setCompareLocations(compareLocation)
     setSelectedCompareLocations(selectedCompareLocation)
-  }, [selectedLocationIds])
+  }, [selectedLocationIds, allTimers])
 
   useLayoutEffect(() => {
     console.log("Desktop")
@@ -186,47 +183,94 @@ export default function ProductionEyeComponent() {
           </div>
           <div className="relative flex justify-between w-full px-2 pt-4 overflow-hidden bg-gray-300">
             {selectedLocationIds.length > 1 ? (
-              compareLocations?.map((location) => {
-                return (
-                  <div
-                    key={location._id}
-                    className="relative flex-1 pb-6 overflow-y-hidden h-80"
-                  >
-                    <div className="relative w-full h-full pl-2 pr-3 overflow-y-auto scrollbar-w-xs">
-                      {selectedCompareLocations
-                        ?.filter((item) => {
-                          return item.locationId === location._id
-                        })
-                        ?.sort((a, b) => {
-                          const first = a.machineClass?.rowNumber
-                          const second = b.machineClass.rowNumber
-                          return first - second
-                        })
-                        ?.map((mc: any, key: number) => {
-                          return (
-                            <div key={key} className="w-full py-1 pl-1">
-                              <div className="text-xs font-black text-red-700 uppercase">
-                                {mc.machineClass.name}
+              selectedMcIds.length ? (
+                compareLocations?.map((location) => {
+                  return (
+                    <div
+                      key={location._id}
+                      className="relative flex-1 pb-6 overflow-y-hidden h-80"
+                    >
+                      <div className="relative w-full h-full pl-2 pr-3 overflow-y-auto scrollbar-w-xs">
+                        {allTimers?.items
+                          ?.filter((item) => {
+                            return (
+                              item.locationId === location._id &&
+                              selectedMcIds.includes(item.machineClass._id)
+                            )
+                          })
+                          ?.sort((a, b) => {
+                            const first = a.machineClass?.rowNumber
+                            const second = b.machineClass.rowNumber
+                            return first - second
+                          })
+                          ?.map((mc: any, key: number) => {
+                            return (
+                              <div key={key} className="w-full py-1 pl-1">
+                                <div className="text-xs font-black text-red-700 uppercase">
+                                  {mc.machineClass.name}
+                                </div>
+                                <div className="relative">
+                                  <TimerTableComponent
+                                    location={location}
+                                    machineClass={mc}
+                                    timers={mc.timers}
+                                  />
+                                </div>
                               </div>
-                              <div className="relative">
-                                <TimerTableComponent
-                                  location={location}
-                                  machineClass={mc}
-                                  timers={mc.timers}
-                                />
-                              </div>
-                            </div>
-                          )
-                        })}
+                            )
+                          })}
+                      </div>
+                      <MachineClassSelectComponent
+                        location={location}
+                        machineClasses={machineClasses?.items}
+                        selectedMachineClasses={allTimers?.items}
+                      />
                     </div>
-                    <MachineClassSelectComponent
-                      location={location}
-                      machineClasses={machineClasses?.items}
-                      selectedMachineClasses={allTimers?.items}
-                    />
-                  </div>
-                )
-              })
+                  )
+                })
+              ) : (
+                compareLocations?.map((location) => {
+                  return (
+                    <div
+                      key={location._id}
+                      className="relative flex-1 pb-6 overflow-y-hidden h-80"
+                    >
+                      <div className="relative w-full h-full pl-2 pr-3 overflow-y-auto scrollbar-w-xs">
+                        {selectedCompareLocations
+                          ?.filter((item) => {
+                            return item.locationId === location._id
+                          })
+                          ?.sort((a, b) => {
+                            const first = a.machineClass?.rowNumber
+                            const second = b.machineClass.rowNumber
+                            return first - second
+                          })
+                          ?.map((mc: any, key: number) => {
+                            return (
+                              <div key={key} className="w-full py-1 pl-1">
+                                <div className="text-xs font-black text-red-700 uppercase">
+                                  {mc.machineClass.name}
+                                </div>
+                                <div className="relative">
+                                  <TimerTableComponent
+                                    location={location}
+                                    machineClass={mc}
+                                    timers={mc.timers}
+                                  />
+                                </div>
+                              </div>
+                            )
+                          })}
+                      </div>
+                      <MachineClassSelectComponent
+                        location={location}
+                        machineClasses={machineClasses?.items}
+                        selectedMachineClasses={allTimers?.items}
+                      />
+                    </div>
+                  )
+                })
+              )
             ) : (
               <Suspense fallback={<div>Loading ...</div>}>
                 <div className="relative flex-1 pb-6 overflow-y-hidden h-80">
