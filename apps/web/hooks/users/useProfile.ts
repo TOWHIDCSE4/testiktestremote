@@ -5,7 +5,13 @@ import Cookies from "js-cookie"
 import useStoreSession from "../../store/useStoreSession"
 
 type T_DBReturn = Omit<T_BackendResponse, "item"> & {
-  item: T_User
+  item: T_User & {
+    defaultSettings?: {
+      viewMode: string
+      locations: string[]
+      machineClasses: string[]
+    }
+  }
 }
 
 export async function getProfile(email: string) {

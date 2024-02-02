@@ -1,4 +1,5 @@
 import Content from "../../../components/pages/profile-home/Content"
+import ProductionEyeContextProvider from "../../../components/pages/profile-home/production-eye/productinEyeContext"
 
 export const metadata = {
   title: "APMS - Profile Home",
@@ -6,7 +7,11 @@ export const metadata = {
 }
 
 const ProfileHome = () => {
-  return <Content />
+  return (
+    <ProductionEyeContextProvider>
+      <Content />
+    </ProductionEyeContextProvider>
+  )
 }
 
 export default ProfileHome

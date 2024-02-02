@@ -1,13 +1,14 @@
 "use client"
+import dynamic from "next/dynamic"
 import { Lato } from "next/font/google"
 import { useEffect } from "react"
 import isDev from "../../../helpers/isDev"
 import useLocation from "../../../hooks/locations/useLocation"
 import useProfile from "../../../hooks/users/useProfile"
-import ProductionEyeComponent from "./ProductionEye"
-import ProductionEyeMobileComponent from "./ProductionEyeMobile"
 import PinnedDashboardComponents from "./pinned-dashboard-components/PinnedDashboardComponents"
-import ProductionEyeContextProvider from "./production-eye/productinEyeContext"
+import { useProductionEyeContext } from "./production-eye/productinEyeContext"
+const ProductionEye = dynamic(() => import("./ProductionEye"))
+const ProductionEyeMobile = dynamic(() => import("./ProductionEyeMobile"))
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -19,7 +20,7 @@ const lato = Lato({
 const Content = () => {
   const { data } = useProfile()
   const { data: location, setSelectedLocationId } = useLocation()
-
+  const { isMobile } = useProductionEyeContext()
   useEffect(() => {
     if (data?.item?.locationId)
       setSelectedLocationId(data?.item.locationId as string)
@@ -38,16 +39,23 @@ const Content = () => {
         </h4>
         <div className="w-full h-0.5 bg-gray-200 mt-6"></div>
 
-        <ProductionEyeContextProvider>
-          <div className="items-center justify-center hidden w-full lg:flex">
-            <ProductionEyeComponent />
-            {/* <ProductionEyeMobileComponent /> */}
+        {isMobile === "mobile" ? (
+          <div className="flex items-center justify-center w-full">
+            <div className=" lg:w-[40%] w-full">
+              <ProductionEyeMobile />
+            </div>
           </div>
-
-          <div className="block w-full lg:hidden">
-            <ProductionEyeMobileComponent />
+        ) : isMobile === "desktop" ? (
+          <div className="flex w-full items-center justify-center">
+            <ProductionEye />
           </div>
-        </ProductionEyeContextProvider>
+        ) : (
+          <div className="flex items-center justify-center w-full">
+            <div className=" lg:w-[40%] w-full">
+              <ProductionEyeMobile />
+            </div>
+          </div>
+        )}
 
         {isDev && (
           <div className="w-full h-0.5 bg-gray-200 mt-6">
