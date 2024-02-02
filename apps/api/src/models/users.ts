@@ -39,6 +39,11 @@ const users = new Schema({
       ],
     },
   ],
+  defaultSettings: {
+    viewMode: String,
+    locations: Array<String>,
+    machineClasses: Array<String>
+  },
   email: { type: String, lowercase: true },
   password: String,
   locationId: {

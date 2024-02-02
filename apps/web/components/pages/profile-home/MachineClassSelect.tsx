@@ -1,11 +1,12 @@
 "use client"
+import { useQueryClient } from "@tanstack/react-query"
 import { T_MachineClass } from "custom-validator"
+import _ from "lodash"
 import { ChangeEvent, useEffect, useState } from "react"
 import { HiChevronDoubleDown } from "react-icons/hi"
-import _ from "lodash"
-import { useSocket } from "../../../store/useSocket"
-import { useQueryClient } from "@tanstack/react-query"
 import useGetMachineClassesTotals from "../../../hooks/timerLogs/useGetMachineClassesTotals"
+import { useSocket } from "../../../store/useSocket"
+import { useProductionEyeContext } from "./production-eye/productinEyeContext"
 
 export default function MachineClassSelectComponent({
   machineClasses,
@@ -19,9 +20,24 @@ export default function MachineClassSelectComponent({
   }
   selectedMachineClasses: any
 }) {
+  const {
+    selectedLocationIds,
+    onSelectLocation,
+    primaryLocationId,
+    setPrimaryLocationId,
+    userProfile,
+    primaryFactoryId,
+    primaryMachineClassId,
+  } = useProductionEyeContext()
+
   const selectedClasses =
     selectedMachineClasses
-      ?.filter((item: any) => item.locationId === location._id)
+      ?.filter((item: any) =>
+        selectedLocationIds.length <= 1
+          ? item.locationId === primaryLocationId
+          : selectedLocationIds.includes(item.locationId) &&
+            item.locationId === location._id
+      )
       .map((mc: any) => mc.machineClass._id) ?? []
 
   const queryClient = useQueryClient()
@@ -38,7 +54,7 @@ export default function MachineClassSelectComponent({
   useEffect(() => {
     setMachineClassId(selectedClasses)
     setSelectedMachineClassIds(selectedClasses)
-  }, [machineClasses])
+  }, [machineClasses, primaryLocationId])
 
   useEffect(() => {
     setMachineClassId(selectedMachineClassIds)
@@ -61,7 +77,11 @@ export default function MachineClassSelectComponent({
   useEffect(() => {
     const handleTimerEvent = (data: any) => {
       if (data?.message === "refetch") {
-        queryClient.invalidateQueries(["overall-unit-tons", location._id, selectedMachineClassIds])
+        queryClient.invalidateQueries([
+          "overall-unit-tons",
+          location._id,
+          selectedMachineClassIds,
+        ])
         // refetchMachineClassTotal()
       }
     }
@@ -112,30 +132,28 @@ export default function MachineClassSelectComponent({
               </button>
             </div>
             <div className="relative max-h-[13rem] flex flex-col flex-1 px-4 py-1 gap-1 overflow-auto scrollbar-w-xs">
-              {machineClasses
-                // ?.reverse()
-                ?.map((mc: T_MachineClass, idx: number) => (
-                  <div key={idx} className="flex justify-between gap-1 w-fit">
-                    <div className="flex items-center">
-                      <input
-                        id={location.name + "machineClass" + mc._id}
-                        onChange={handleMC}
-                        checked={selectedMachineClassIds.includes(
-                          mc._id as string
-                        )}
-                        value={mc._id}
-                        // name={location.name + "machineClass"}
-                        type="checkbox"
-                      />
-                      <label
-                        htmlFor={location.name + "machineClass" + mc._id}
-                        className="px-2 whitespace-nowrap"
-                      >
-                        {mc.name}
-                      </label>
-                    </div>
+              {machineClasses?.map((mc: T_MachineClass, idx: number) => (
+                <div key={idx} className="flex justify-between gap-1 w-fit">
+                  <div className="flex items-center">
+                    <input
+                      id={location.name + "machineClass" + mc._id}
+                      onChange={handleMC}
+                      checked={selectedMachineClassIds.includes(
+                        mc._id as string
+                      )}
+                      value={mc._id}
+                      // name={location.name + "machineClass"}
+                      type="checkbox"
+                    />
+                    <label
+                      htmlFor={location.name + "machineClass" + mc._id}
+                      className="px-2 whitespace-nowrap"
+                    >
+                      {mc.name}
+                    </label>
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
           </div>
         </div>

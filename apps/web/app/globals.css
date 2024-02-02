@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #9d9fa0 !important;
+  border-color: #9d9fa0;
+}
+.ant-checkbox-wrapper:hover .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #9d9fa0 !important;
+  border-color: #9d9fa0 !important;
+}
+.ant-checkbox-checked:hover .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #9d9fa0 !important;
+  border-color: #9d9fa0 !important;
+}
+.ant-checkbox-checked::after {
+  border-color: #9d9fa0 !important;
+}
+.ant-checkbox:hover::after {
+  border-color: #9d9fa0 !important;
+}
+.ant-checkbox:hover .ant-checkbox-inner {
+  border-color: #9d9fa0 !important;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;

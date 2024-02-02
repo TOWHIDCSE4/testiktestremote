@@ -1,22 +1,21 @@
+import { useQueryClient } from "@tanstack/react-query"
 import { Lato } from "next/font/google"
-import { HiChevronDoubleDown } from "react-icons/hi"
+import { useEffect, useLayoutEffect, useState } from "react"
 import { BiFullscreen } from "react-icons/bi"
 import { LuMenu, LuMoon } from "react-icons/lu"
-import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 import useLocations from "../../../hooks/locations/useLocations"
-import { useEffect, useLayoutEffect, useState } from "react"
-import TimerTableMobileComponent from "./TimerTableMobile"
-import MachineClassSelectComponent from "./MachineClassSelect"
+import useMachineClasses from "../../../hooks/machineClasses/useMachineClasses"
 import useGetAllLocationTonsUnits from "../../../hooks/timers/useGetAllLocationsTonsUnits"
-import useWether from "../../../hooks/timers/useWether"
-import dayjs from "dayjs"
-import { useSocket } from "../../../store/useSocket"
 import useGetAllTimersGroup from "../../../hooks/timers/useGetAllTimersGroup"
 import useGetLocationTotals from "../../../hooks/timers/useGetLocationTotals"
-import TonsUnitsBarChart from "./TonsUnitsBarChart"
-import { useQueryClient } from "@tanstack/react-query"
-import { useProductionEyeContext } from "./production-eye/productinEyeContext"
+import useWether from "../../../hooks/timers/useWether"
+import { useSocket } from "../../../store/useSocket"
+import MachineClassSelectComponent from "./MachineClassSelect"
+import ProductionEyeTableFooter from "./ProductionEyeTableFooter"
+import TimerTableMobileComponent from "./TimerTableMobile"
 import LocationCheckboxComponent from "./production-eye/locationCheckbox"
+import { useProductionEyeContext } from "./production-eye/productinEyeContext"
+import ProductionEyeSettings from "./ProductionEyeSettings"
 
 const lato = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -69,10 +68,11 @@ export default function ProductionEyeMobileComponent() {
     }
   }, [socket])
 
-  const filteredLocationData = allTimers?.items?.filter(
-    (item: { locationId: string | undefined }) =>
-      item.locationId === primaryLocationId
-  )
+  const filteredLocationData = allTimers?.items?.filter((item: any) => {
+    return selectedLocationIds.length <= 1
+      ? primaryLocationId === item.locationId
+      : selectedLocationIds.includes(item.locationId)
+  })
 
   return (
     <div className={`${lato.className} w-full mt-6`}>
@@ -110,9 +110,7 @@ export default function ProductionEyeMobileComponent() {
               <div className="relative flex items-center justify-between px-6">
                 <div className="flex items-center flex-1 h-full gap-4">
                   <div className="flex items-center flex-1 gap-3">
-                    <button className="flex items-center justify-center w-6 h-6 text-sm text-white bg-black rounded-lg">
-                      <LuMenu />
-                    </button>
+                    <ProductionEyeSettings />
                     <button className="flex items-center justify-center w-6 h-6 text-sm text-white bg-black rounded-lg">
                       <LuMoon />
                     </button>
@@ -203,7 +201,7 @@ export default function ProductionEyeMobileComponent() {
                       return (
                         <div key={key} className="py-1 pl-1">
                           <div className="text-xs font-black text-red-700 uppercase">
-                            {mc.machineClass.name}
+                            {mc.machineClass.name} - {mc.location.name}
                           </div>
                           <div className="relative w-full">
                             <TimerTableMobileComponent
@@ -229,37 +227,7 @@ export default function ProductionEyeMobileComponent() {
           </div>
         </div>
         <div className="w-full h-2 bg-slate-700"></div>
-        <div className="flex flex-col items-center w-full gap-2 px-2 py-2 border border-gray-300 rounded-b-2xl">
-          <div className="relative flex flex-col items-center w-full gap-2">
-            <div className="relative w-full">
-              <HiChevronDoubleDown className="absolute top-0 left-0 text-xl text-gold" />
-              <div className="text-2xl font-bold leading-4 text-center uppercase">
-                Global Rundown
-              </div>
-            </div>
-            <TonsUnitsBarChart />
-            <div className="flex items-center justify-between w-auto gap-8 pl-4 text-2xl font-bold leading-4 uppercase">
-              <div className="flex flex-1 gap-2">
-                <div>Units</div>
-                <div className="text-slate-400">
-                  {" "}
-                  {allLocationTonsUnits?.item?.dailyUnits}
-                </div>
-              </div>
-              <div className="flex flex-1 gap-2">
-                <div>Tons</div>
-                <div className="text-slate-400">
-                  {allLocationTonsUnits?.item?.tons?.toFixed(2)}
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-1 text-sm text-gray-400 uppercase">
-              <div className="">{dayjs().format("MMMM DD YYYY")} </div>
-              <div>|</div>
-              <div className="">{dayjs().format("hh:mm A")}</div>
-            </div>
-          </div>
-        </div>
+        <ProductionEyeTableFooter />
       </div>
     </div>
   )
