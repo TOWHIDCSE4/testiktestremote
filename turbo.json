@@ -1,0 +1,35 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "build/**"],
+      "env": [
+        "SENTRY_DSN",
+        "NODE_ENV",
+        "ENCRYPT_KEY",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_PROJECT",
+        "SIGN_KEY",
+        "MONGO_URL",
+        "REDIS_URL",
+        "ORIGINS",
+        "API_PORT",
+        "PORT",
+        "NEXT_PUBLIC_API_URL",
+        "ENV_NAME",
+        "NEXT_PUBLIC_ENV_NAME",
+        "WEB_URL",
+        "MEDIA_URL",
+        "MEDIA_KEY",
+        "SENTRY_WEB_DSN"
+      ]
+    },
+    "lint": {},
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
