@@ -40,13 +40,83 @@ const groupByMachineClass = (data: any[], machineClassId?: string) => {
   return grouped
 }
 
+interface ReportData {
+  locationName: string
+  total: number
+}
+
+interface DummyReportData {
+  [key: string]: ReportData[]
+}
+
+const dummyReportData: DummyReportData = {
+  units: [
+    {
+      locationName: "Seguin",
+      total: 50,
+    },
+    {
+      locationName: "Conroe",
+      total: 200,
+    },
+    {
+      locationName: "Gunter",
+      total: 80,
+    },
+  ],
+  tons: [
+    {
+      locationName: "Seguin",
+      total: 100,
+    },
+    {
+      locationName: "Conroe",
+      total: 200,
+    },
+    {
+      locationName: "Gunter",
+      total: 40,
+    },
+  ],
+  units2: [
+    {
+      locationName: "Seguin",
+      total: 50,
+    },
+    {
+      locationName: "Conroe",
+      total: 100,
+    },
+    {
+      locationName: "Gunter",
+      total: 20,
+    },
+  ],
+  tons2: [
+    {
+      locationName: "Seguin",
+      total: 100,
+    },
+    {
+      locationName: "Conroe",
+      total: 200,
+    },
+    {
+      locationName: "Gunter",
+      total: 40,
+    },
+  ],
+}
+
 interface Props {
   machineClassId?: string
 }
 const MachineProductionTracker = ({ machineClassId }: Props) => {
   const { data: reportData, isLoading: isReportLoading } =
     useGetReportByLocationAndMachine()
-  const [selectedType, setSelectedType] = useState("units")
+  const [selectedType, setSelectedType] = useState<
+    "units" | "tons" | "units2" | "tons2"
+  >("units")
   const [selectedMachineClass, setSelectedMachineClass] = useState<string>()
   const filteredReportData = machineClassId
     ? reportData?.[selectedType]?.filter(
@@ -68,6 +138,14 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
       }
     })
   }
+
+  const usedData: ReportData[] = dummyReportData[selectedType]
+  const legendItems = [
+    { label: "Seguin", color: "#f6b87b" },
+    { label: "Gunter", color: "#989af1" },
+    { label: "Conroe", color: "#98ccf1" },
+  ]
+
   const allKeys =
     selectedMachineClass && data?.length
       ? data.reduce((prev: any, next: any) => {
@@ -87,7 +165,7 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
   }
   return (
     <div className="flex-grow w-full">
-      <h2 className="text-2xl flex gap-4 items-center">
+      <div className="text-2xl flex gap-4 items-center">
         <div className="w-fit">
           <Select
             value={{ value: selectedMachineClass, label: selectedMachineClass }}
@@ -95,10 +173,63 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
             onChange={(d) => setSelectedMachineClass(d?.value as string)}
           />
         </div>
-        <div>Performance</div>
-      </h2>
-      <div className="w-full mx-4 sm:h-40 xl:min-h-[270px]  flex flex-col">
-        <ResponsiveBar
+        <div className="w-full flex flex-col ">
+          <div>Performance</div>
+          <p className="text-center text-xs uppercase text-gray-500">
+            Performance between Conroe seguin and gunter
+          </p>
+        </div>
+      </div>
+      <div className="w-full mx-4 sm:h-40 xl:min-h-[290px] flex flex-col">
+        <div className="w-full flex items-center sm:h-40 xl:min-h-[290px]">
+          <div className="w-[80%] h-full">
+            <ResponsiveBar
+              data={sortBy(usedData, ["locationName"]) as any}
+              layout="horizontal"
+              indexBy="locationName"
+              keys={["total"]}
+              valueScale={{ type: "linear" }}
+              indexScale={{ type: "band", round: true }}
+              margin={{ top: 10, right: 60, bottom: 50, left: 60 }}
+              padding={0.1}
+              colors={["#98ccf1", "#989af1", "#f6b87b"]}
+              axisBottom={{
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                truncateTickAt: 0,
+                legendOffset: 0,
+              }}
+              labelSkipWidth={12}
+              labelSkipHeight={18}
+              colorBy="indexValue"
+              axisLeft={{
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+              }}
+              labelTextColor="black"
+              enableGridX={true}
+              enableGridY={true}
+              label={(d) => `${d.value}`}
+              // label={(d) => `${d.value} and <br/> ${d.id as string}`}
+              labelFormat={(d) => `${d}`}
+            />
+          </div>
+          <div className="flex flex-col items-start w-[20%]">
+            {legendItems.map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 "
+                  style={{ backgroundColor: item.color }}
+                ></div>
+                <span>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* <ResponsiveBar
           data={sortBy(data, ["allTotal"])}
           label={(d) => {
             return (d.id as string).replace("machine_", "")
@@ -125,26 +256,50 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
           keys={sortBy(allKeys)}
           layout="horizontal"
           labelTextColor="white"
-        />
-        <div className={"flex gap-4"}>
-          <button
-            onClick={() => setSelectedType("tons")}
-            className={cn("w-40 py-1 rounded-sm", {
-              "bg-gray-300": selectedType !== "tons",
-              "bg-blue-400 text-white": selectedType === "tons",
-            })}
-          >
-            Tons
-          </button>
-          <button
-            onClick={() => setSelectedType("units")}
-            className={cn(" w-40 py-1 rounded-sm ", {
-              "bg-blue-400 text-white": selectedType === "units",
-              "bg-gray-300": selectedType !== "units",
-            })}
-          >
-            units
-          </button>
+        /> */}
+        <div className="flex items-center justify-between">
+          <div className={"flex gap-2"}>
+            <button
+              onClick={() => setSelectedType("units")}
+              className={cn(" text-xs px-2 py-1 rounded-sm tracking-tighter ", {
+                "bg-[#1b426d] text-white": selectedType === "units",
+                "bg-gray-300": selectedType !== "units",
+              })}
+            >
+              Show Units
+            </button>
+            <button
+              onClick={() => setSelectedType("tons")}
+              className={cn("text-xs px-2 py-1 rounded-sm tracking-tighter", {
+                "bg-gray-300": selectedType !== "tons",
+                "bg-[#1b426d] text-white": selectedType === "tons",
+              })}
+            >
+              Show Tons
+            </button>
+            <button
+              onClick={() => setSelectedType("tons2")}
+              className={cn("text-xs px-2 py-1 rounded-sm tracking-tighter", {
+                "bg-gray-300": selectedType !== "tons2",
+                "bg-[#1b426d] text-white": selectedType === "tons2",
+              })}
+            >
+              Show Units
+            </button>
+            <button
+              onClick={() => setSelectedType("units2")}
+              className={cn(" text-xs px-2 py-1 rounded-sm tracking-tighter ", {
+                "bg-[#1b426d] text-white": selectedType === "units2",
+                "bg-gray-300": selectedType !== "units2",
+              })}
+            >
+              Show Units
+            </button>
+          </div>
+          <div className="flex gap-2 items-center">
+            <div className="w-7 h-3 bg-green-300 border-green-500 border-2"></div>
+            <p className="text-xs uppercase"> leader in green</p>
+          </div>
         </div>
       </div>
     </div>
