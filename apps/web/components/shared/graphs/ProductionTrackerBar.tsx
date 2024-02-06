@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { sortBy } from "lodash"
 import { ResponsiveBar } from "@nivo/bar"
 import cn from "classnames"
+import useGetReportByLocation from "../../../hooks/reports/useGetReportByLocation"
 
 interface ReportData {
   locationName: string
@@ -72,6 +73,9 @@ const dummyReportData: DummyReportData = {
 }
 
 const ProductionTrackerBar: React.FC = () => {
+  const { data: reportData, isLoading: isReportDataLoading } =
+    useGetReportByLocation()
+
   const [selectedType, setSelectedType] = useState<
     "units" | "tons" | "units2" | "tons2"
   >("units")
@@ -126,8 +130,8 @@ const ProductionTrackerBar: React.FC = () => {
               tickRotation: 0,
             }}
             labelTextColor="black"
-            enableGridX={true}
-            enableGridY={true}
+            enableGridX={false}
+            enableGridY={false}
             enableLabel={false}
           />
         </div>
@@ -146,40 +150,22 @@ const ProductionTrackerBar: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className={"flex gap-2"}>
           <button
+            onClick={() => setSelectedType("tons")}
+            className={cn("w-40 py-1 rounded-sm", {
+              "bg-gray-300": selectedType !== "tons",
+              "bg-blue-400 text-white": selectedType === "tons",
+            })}
+          >
+            Tons
+          </button>
+          <button
             onClick={() => setSelectedType("units")}
-            className={cn(" text-xs px-2 py-1 rounded-sm tracking-tighter ", {
-              "bg-[#1b426d] text-white": selectedType === "units",
+            className={cn(" w-40 py-1 rounded-sm ", {
+              "bg-blue-400 text-white": selectedType === "units",
               "bg-gray-300": selectedType !== "units",
             })}
           >
-            Show Units
-          </button>
-          <button
-            onClick={() => setSelectedType("tons")}
-            className={cn("text-xs px-2 py-1 rounded-sm tracking-tighter", {
-              "bg-gray-300": selectedType !== "tons",
-              "bg-[#1b426d] text-white": selectedType === "tons",
-            })}
-          >
-            Show Tons
-          </button>
-          <button
-            onClick={() => setSelectedType("tons2")}
-            className={cn("text-xs px-2 py-1 rounded-sm tracking-tighter", {
-              "bg-gray-300": selectedType !== "tons2",
-              "bg-[#1b426d] text-white": selectedType === "tons2",
-            })}
-          >
-            Show Units
-          </button>
-          <button
-            onClick={() => setSelectedType("units2")}
-            className={cn(" text-xs px-2 py-1 rounded-sm tracking-tighter ", {
-              "bg-[#1b426d] text-white": selectedType === "units2",
-              "bg-gray-300": selectedType !== "units2",
-            })}
-          >
-            Show Units
+            units
           </button>
         </div>
         <div className="flex gap-2 items-center">

@@ -209,8 +209,8 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
                 tickRotation: 0,
               }}
               labelTextColor="black"
-              enableGridX={true}
-              enableGridY={true}
+              enableGridX={false}
+              enableGridY={false}
               label={(d) => `${d.value}`}
               // label={(d) => `${d.value} and <br/> ${d.id as string}`}
               labelFormat={(d) => `${d}`}
@@ -260,40 +260,22 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
         <div className="flex items-center justify-between">
           <div className={"flex gap-2"}>
             <button
+              onClick={() => setSelectedType("tons")}
+              className={cn("w-40 py-1 rounded-sm", {
+                "bg-gray-300": selectedType !== "tons",
+                "bg-blue-400 text-white": selectedType === "tons",
+              })}
+            >
+              Tons
+            </button>
+            <button
               onClick={() => setSelectedType("units")}
-              className={cn(" text-xs px-2 py-1 rounded-sm tracking-tighter ", {
-                "bg-[#1b426d] text-white": selectedType === "units",
+              className={cn(" w-40 py-1 rounded-sm ", {
+                "bg-blue-400 text-white": selectedType === "units",
                 "bg-gray-300": selectedType !== "units",
               })}
             >
-              Show Units
-            </button>
-            <button
-              onClick={() => setSelectedType("tons")}
-              className={cn("text-xs px-2 py-1 rounded-sm tracking-tighter", {
-                "bg-gray-300": selectedType !== "tons",
-                "bg-[#1b426d] text-white": selectedType === "tons",
-              })}
-            >
-              Show Tons
-            </button>
-            <button
-              onClick={() => setSelectedType("tons2")}
-              className={cn("text-xs px-2 py-1 rounded-sm tracking-tighter", {
-                "bg-gray-300": selectedType !== "tons2",
-                "bg-[#1b426d] text-white": selectedType === "tons2",
-              })}
-            >
-              Show Units
-            </button>
-            <button
-              onClick={() => setSelectedType("units2")}
-              className={cn(" text-xs px-2 py-1 rounded-sm tracking-tighter ", {
-                "bg-[#1b426d] text-white": selectedType === "units2",
-                "bg-gray-300": selectedType !== "units2",
-              })}
-            >
-              Show Units
+              units
             </button>
           </div>
           <div className="flex gap-2 items-center">
