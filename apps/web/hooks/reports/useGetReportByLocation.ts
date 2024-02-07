@@ -19,7 +19,7 @@ function useGetReportByLocation() {
     ["reports", "per-location"],
     () => getReportsByLocation(),
     {
-      // refetchInterval: 3000,
+      refetchInterval: 3000,
     }
   )
   return query

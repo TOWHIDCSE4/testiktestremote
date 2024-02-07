@@ -139,6 +139,10 @@ const MachineProductionTracker = ({ machineClassId }: Props) => {
     })
   }
 
+  useEffect(() => {
+    console.log("reportData", reportData)
+  }, [reportData])
+
   const usedData: ReportData[] = dummyReportData[selectedType]
   const legendItems = [
     { label: "Seguin", color: "#f6b87b" },

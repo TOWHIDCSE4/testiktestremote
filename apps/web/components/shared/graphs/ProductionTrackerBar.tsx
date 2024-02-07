@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { sortBy } from "lodash"
 import { ResponsiveBar } from "@nivo/bar"
 import cn from "classnames"
@@ -93,6 +93,10 @@ const ProductionTrackerBar: React.FC = () => {
     { label: "Gunter", color: "#989af1" },
     { label: "Conroe", color: "#98ccf1" },
   ]
+
+  useEffect(() => {
+    console.log("reportData production tracker component", reportData)
+  }, [reportData])
 
   return (
     <div className="flex flex-col gap-2">
